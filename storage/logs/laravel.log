@@ -1,0 +1,56 @@
+[2018-09-10 12:17:45] development.ERROR: Class 'Crawler\Objects\ts_testparent' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Crawler\\Objects\\ts_testparent' not found at /home/lokal/projekte/sunhill/tests/objects/ts_testchild.php:6)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:17:45] development.ERROR: Class 'Crawler\Objects\ts_testparent' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Crawler\\Objects\\ts_testparent' not found at /home/lokal/projekte/sunhill/tests/objects/ts_testchild.php:6)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:18:31] development.ERROR: Class 'Sunhill\Objects\oo_object' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Objects\\oo_object' not found at /home/lokal/projekte/sunhill/tests/objects/ts_testparent.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:18:31] development.ERROR: Class 'Sunhill\Objects\oo_object' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Objects\\oo_object' not found at /home/lokal/projekte/sunhill/tests/objects/ts_testparent.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:19:16] development.ERROR: Class 'Sunhill\Objects\oo_object' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Objects\\oo_object' not found at /home/lokal/projekte/sunhill/tests/objects/ts_testparent.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:19:16] development.ERROR: Class 'Sunhill\Objects\oo_object' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Objects\\oo_object' not found at /home/lokal/projekte/sunhill/tests/objects/ts_testparent.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:21:09] development.ERROR: Class 'Sunhill\Objects\oo_object' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Objects\\oo_object' not found at /home/lokal/projekte/sunhill/tests/objects/ts_testparent.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:21:09] development.ERROR: Class 'Sunhill\Objects\oo_object' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Objects\\oo_object' not found at /home/lokal/projekte/sunhill/tests/objects/ts_testparent.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:23:10] development.ERROR: Class 'Crawler\base' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Crawler\\base' not found at /home/lokal/projekte/sunhill/lib/objects/oo_property.php:9)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:23:10] development.ERROR: Class 'Crawler\base' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Crawler\\base' not found at /home/lokal/projekte/sunhill/lib/objects/oo_property.php:9)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:25:04] development.ERROR: Cannot use 'object' as class name as it is reserved {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot use 'object' as class name as it is reserved at /home/lokal/projekte/sunhill/app/object.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:25:04] development.ERROR: Cannot use 'object' as class name as it is reserved {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot use 'object' as class name as it is reserved at /home/lokal/projekte/sunhill/app/object.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:26:00] development.ERROR: Cannot use 'object' as class name as it is reserved {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot use 'object' as class name as it is reserved at /home/lokal/projekte/sunhill/app/object.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-10 12:26:00] development.ERROR: Cannot use 'object' as class name as it is reserved {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot use 'object' as class name as it is reserved at /home/lokal/projekte/sunhill/app/object.php:7)
+[stacktrace]
+#0 {main}
+"} 
