@@ -10,9 +10,10 @@ class InspiringCommandTest extends TestCase
     /**
      * A basic test example.
      */
-    public function testDummy(): void
+    public function testInspiringCommand(): void
     {
+        Artisan::call('inspiring');
 
-        $this->assertTrue(true);
+        $this->assertContains('Leonardo da Vinci', Artisan::output());
     }
 }
