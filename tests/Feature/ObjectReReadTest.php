@@ -9,73 +9,144 @@ use Sunhill\Test;
 
 class ObjectReReadTest extends ObjectCommon
 {
-
-	public function testStoreSimpleFields()
-    {
-		$this->setup_scenario();
-    	$test = new \Sunhill\Test\ts_testparent();
-    	$values = array('int'=>1,'char'=>'A','float'=>1.1,'text'=>'ABC DEF','datetime'=>'2001-01-01 01:01:01',
-    			        'date'=>'2011-01-01','time'=>'11:11:11','enum'=>'testA');
-    	foreach ($values as $key => $value) {
-    		$varname = 'parent'.$key;
-    		$test->$varname = $value;
-    	}
-		$test->commit();		
-		$test = new \Sunhill\Test\ts_testparent();
-		$read->load($test->get_id());
-		$reread = array();
-		foreach ($values as $key=>$value) {
-			$varname = 'parent'.$key;
-			$reread[$key] = $read->$varname;
-		}
-		$this->assertEquals($values, $reread);
+	/**
+	 * @dataProvider FieldProvider
+	 * @param unknown $classname
+	 * @param unknown $init
+	 * @param unknown $init_callback
+	 * @param unknown $modify
+	 * @param unknown $modify_callback
+	 * @param unknown $expect
+	 * @param unknown $expect_callback
+	 */
+	public function testFields($classname,$init,$init_callback,$modify,$modify_callback,$expect,$expect_callback) {
+	    $classname = 'Sunhill\\Test\\'.$classname;
+	    $init_object = new $classname;
+	    if (!is_null($init)) {
+	        foreach ($init as $key => $value) {
+	            if (is_array($value)) {
+	                foreach ($value as $single_value) {
+	                    $init_object->$key[] = $single_value;
+	                }
+	            } else {
+	                $init_object->$key = $value;
+	            }
+	        }
+	    }
+	    if (!is_null($init_callback)) {
+	        if (!$init_callback($init_object)) {
+	            $this->fail("Init_Callback fehlgeschlagen.");
+	        }
+	    }
+	    if (!is_null($init)) {
+	        foreach ($init as $key => $value) {
+	            $this->assertEquals($value,$init_object->$key,"Initialiserung von Feld '$key' fehlgeschlagen.");
+	        }
+	    }
+	    $init_object->commit();
+	    
+	    $read_object = new $classname;
+	    $read_object->load($init_object->get_id());
+	    if (!is_null($init)) {
+	        foreach ($init as $key => $value) {
+	            $this->assertEquals($value,$read_object->$key,"Wiederauslesen von Feld '$key' fehlgeschlagen.");
+	        }
+	    }
+	    
 	}
 	
-	public function testStoreSimpleFieldsChild()
-	{
-		$test = new \Sunhill\Test\ts_testchild();
-		$values = array('parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parenttext'=>'ABC DEF','parentdatetime'=>'2001-01-01 01:01:01',
-				'parentdate'=>'2011-01-01','parenttime'=>'11:11:11','parentenum'=>'testA','childint'=>2,'childchar'=>'B','childfloat'=>2.2,'childtext'=>'BCD EFG','childdatetime'=>'2002-02-02 02:02:02',
-				'childdate'=>'2022-02-02','childtime'=>'22:22:22','childenum'=>'testB');
-		foreach ($values as $key => $value) {
-			$varname = $key;
-			$test->$varname = $value;
-		}
-		$test->commit();
-		$test = new \Sunhill\Test\ts_testchild();
-		$read->load($test->get_id());
-		$reread = array();
-		foreach ($values as $key=>$value) {
-			$varname = $key;
-			$reread[$key] = $read->$varname;
-		}
-		$this->assertEquals($values, $reread);
-		
+	public function FieldProvider() {
+	    return [
+            [ //Einfacher Test für einfache Felder
+                'ts_testparent',
+                [   'parentchar'=>'ABC',
+                    'parentint'=>123,
+                    'parentfloat'=>1.23,
+                    'parenttext'=>'ABC DEF',
+                    'parentdatetime'=>'2001-01-01 01:01:01',
+                    'parentdate'=>'2011-01-01',
+                    'parenttime'=>'11:11:11',
+                    'parentenum'=>'testA'
+                ],
+                null,
+                [   'parentchar'=>'DEF',
+                    'parentint'=>456,
+                    'parentfloat'=>4.56,
+                    'parenttext'=>'GHI JKL',
+                    'parentdatetime'=>'2002-02-02 02:02:02',
+                    'parentdate'=>'2022-02-22',
+                    'parenttime'=>'22:22:22',
+                    'parentenum'=>'testB'
+                ],
+                null,
+                [   'parentchar'=>'DEF',
+                    'parentint'=>456,
+                    'parentfloat'=>4.56,
+                    'parenttext'=>'GHI JKL',
+                    'parentdatetime'=>'2002-02-02 02:02:02',
+                    'parentdate'=>'2022-02-22',
+                    'parenttime'=>'22:22:22',
+                    'parentenum'=>'testB'
+                ],
+                null
+            ],
+	        [ //Einfacher Test für geerbte Felder beide modifiziert
+	            'ts_testchild',
+	            [   'parentchar'=>'ABC',
+	                'parentint'=>123,
+	                'parentfloat'=>1.23,
+	                'parenttext'=>'ABC DEF',
+	                'parentdatetime'=>'2001-01-01 01:01:01',
+	                'parentdate'=>'2011-01-01',
+	                'parenttime'=>'11:11:11',
+	                'parentenum'=>'testA',
+                    'childchar'=>'CCC',
+	                'childint'=>666,
+	                'childfloat'=>3.33,
+	                'childtext'=>'Lorem ipsum',
+	                'childdatetime'=>'2001-02-22 22:01:22',
+	                'childdate'=>'2011-02-02',
+	                'childtime'=>'12:12:12',
+	                'childenum'=>'testB'
+	            ],
+	            null,
+	            [   'parentchar'=>'DEF',
+	                'parentint'=>456,
+	                'parentfloat'=>4.56,
+	                'parenttext'=>'GHI JKL',
+	                'parentdatetime'=>'2002-02-02 02:02:02',
+	                'parentdate'=>'2022-02-22',
+	                'parenttime'=>'22:22:22',
+	                'parentenum'=>'testB',
+                    'childchar'=>'DDD',
+	                'childint'=>667,
+	                'childfloat'=>3.43,
+	                'childtext'=>'Sorem Lipsum',
+	                'childdatetime'=>'2022-02-22 22:01:22',
+	                'childdate'=>'2022-02-02',
+	                'childtime'=>'12:22:12',
+	                'childenum'=>'testC'
+	            ],
+	            null,
+	            [   'parentchar'=>'DEF',
+	                'parentint'=>456,
+	                'parentfloat'=>4.56,
+	                'parenttext'=>'GHI JKL',
+	                'parentdatetime'=>'2002-02-02 02:02:02',
+	                'parentdate'=>'2022-02-22',
+	                'parenttime'=>'22:22:22',
+	                'parentenum'=>'testB',
+	                'childchar'=>'DDD',
+	                'childint'=>667,
+	                'childfloat'=>3.43,
+	                'childtext'=>'Sorem Lipsum',
+	                'childdatetime'=>'2022-02-22 22:01:22',
+	                'childdate'=>'2022-02-02',
+	                'childtime'=>'12:22:12',
+	                'childenum'=>'testC'	                
+	            ],
+	            null
+	        ]	        
+	    ];
 	}
-	
-	public function testStoreComplexFields()
-	{
-	    $test = new \Sunhill\Test\ts_testparent();
-	    $obj1 = new \Sunhill\Test\ts_testparent();
-		$obj1->parentint = 2;
-		$obj2 = new \Sunhill\Test\ts_testparent();
-		$obj2->parentint = 3;
-		$obj3 = new \Sunhill\Test\ts_testparent();
-		$obj3->parentint = 4;
-		$test->parentobject = $obj1;
-		$test->parentsarray[] = 'A';
-		$test->parentsarray[] = 'B';
-		$test->parentoarray[] = $obj2;
-		$test->parentoarray[] = $obj3;
-		$values = array('int'=>1,'char'=>'A','float'=>1.1,'text'=>'ABC DEF','datetime'=>'2001-01-01 01:01:01',
-				'date'=>'2011-01-01','time'=>'11:11:11','enum'=>'testA');
-		foreach ($values as $key => $value) {
-			$varname = 'parent'.$key;
-			$test->$varname = $value;
-		}
-		$test->commit();
-		$this->assertGreaterThan(0, $id = $test->get_id());
-		return $id;
-	}
-	
 }

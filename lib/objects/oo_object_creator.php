@@ -19,7 +19,7 @@ class oo_object_creator extends oo_object_worker {
 			foreach ($fields as $field) {
 				$model->$field = $this->object->$field;
 			}
-			if ($model_name == $this->object->default_ns."\object") {
+			if ($model_name == $this->object->default_ns."\coreobject") {
 				$model->save();
 				$result = $model->id;
 			} else {

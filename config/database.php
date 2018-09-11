@@ -14,8 +14,11 @@ return [
     */
     'connections' => [
         'default' => [
-            'driver' => 'sqlite',
-            'database' => database_path('database.sqlite'),
+            'driver' => 'mysql',
+            'database' => 'sunhill',
+            'username'=>'sunhill',
+            'password'=>'sunhill#1',
+            'host'=>'localhost'
         ],
     ],
 
