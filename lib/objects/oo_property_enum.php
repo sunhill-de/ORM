@@ -9,7 +9,7 @@ class oo_property_enum extends oo_property {
 	private $allowed;
 	
 	protected function validate($value) {
-		if (!in_array($value, $this->allowed)) {
+	    if (!in_array($value, $this->allowed)) {
 			throw new InvalidValueException("$value ist kein gültiger Enum-Wert.");
 		}
 		return $value;
