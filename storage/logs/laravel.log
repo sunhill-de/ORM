@@ -54,3 +54,35 @@
 [stacktrace]
 #0 {main}
 "} 
+[2018-09-11 21:15:28] development.ERROR: Class 'ts_passthru' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'ts_passthru' not found at /home/lokal/projekte/sunhill/tests/objects/ts_secondlevelchild.php:3)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-11 21:15:28] development.ERROR: Class 'ts_passthru' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'ts_passthru' not found at /home/lokal/projekte/sunhill/tests/objects/ts_secondlevelchild.php:3)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-11 21:15:28] development.ERROR: Class 'ts_passthru' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'ts_passthru' not found at /home/lokal/projekte/sunhill/tests/objects/ts_secondlevelchild.php:3)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-11 21:15:28] development.ERROR: Class 'ts_passthru' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'ts_passthru' not found at /home/lokal/projekte/sunhill/tests/objects/ts_secondlevelchild.php:3)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-11 21:16:39] development.ERROR: Class 'Sunhill\Test\testparent' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Test\\testparent' not found at /home/lokal/projekte/sunhill/tests/objects/ts_passthru.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-11 21:16:39] development.ERROR: Class 'Sunhill\Test\testparent' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Test\\testparent' not found at /home/lokal/projekte/sunhill/tests/objects/ts_passthru.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-11 21:16:39] development.ERROR: Class 'Sunhill\Test\testparent' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Test\\testparent' not found at /home/lokal/projekte/sunhill/tests/objects/ts_passthru.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2018-09-11 21:16:39] development.ERROR: Class 'Sunhill\Test\testparent' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Sunhill\\Test\\testparent' not found at /home/lokal/projekte/sunhill/tests/objects/ts_passthru.php:5)
+[stacktrace]
+#0 {main}
+"} 

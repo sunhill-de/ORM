@@ -15,12 +15,15 @@ class oo_object_loader extends oo_object_worker {
 	private function load_simple_fields() {
 		$fields = $this->object->get_simple_fields();
 		foreach ($fields as $model=>$fields) {
-			$model_name = $this->object->default_ns.'\\'.$model;			
-			$model = $model_name::where('id','=',$this->object->get_id())->first();
-			foreach ($fields as $field) {
-				$this->object->$field = $model->$field;
-			}
+    		    if (!empty($model)) {
+    		         $model_name = $this->object->default_ns.'\\'.$model;			
+    			     $model = $model_name::where('id','=',$this->object->get_id())->first();
+    			     foreach ($fields as $field) {
+    				        $this->object->$field = $model->$field;
+    			     }
+		          }
 		}
+		
 	}
 	
 	private function load_complex_fields() {

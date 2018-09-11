@@ -14,18 +14,20 @@ class oo_object_creator extends oo_object_worker {
 	private function store_simple_fields() {
 		$fields = $this->object->get_simple_fields();
 		foreach ($fields as $model_name=>$fields) {
-			$model_name = $this->object->default_ns.'\\'.$model_name;
-			$model = new $model_name;
-			foreach ($fields as $field) {
-				$model->$field = $this->object->$field;
-			}
-			if ($model_name == $this->object->default_ns."\coreobject") {
-				$model->save();
-				$result = $model->id;
-			} else {
-				$model->id = $result;
-				$model->save();
-			}			
+		    if (!empty($model_name)) {
+    		    $model_name = $this->object->default_ns.'\\'.$model_name;
+    			$model = new $model_name;
+    			foreach ($fields as $field) {
+    				$model->$field = $this->object->$field;
+    			}
+    			if ($model_name == $this->object->default_ns."\coreobject") {
+    				$model->save();
+    				$result = $model->id;
+    			} else {
+    				$model->id = $result;
+    				$model->save();
+    			}			
+		    }
 		}
 		return $result;
 	}

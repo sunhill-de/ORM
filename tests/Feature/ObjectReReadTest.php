@@ -223,7 +223,35 @@ class ObjectReReadTest extends ObjectCommon
 	                'childenum'=>'testC'
 	            ],
 	            null
-	        ]
+	        ],
+	        [ // Passthrutest
+	            'ts_secondlevelchild',
+	            [   'parentchar'=>'ABC',
+	                'parentint'=>123,
+	                'parentfloat'=>1.23,
+	                'parenttext'=>'ABC DEF',
+	                'parentdatetime'=>'2001-01-01 01:01:01',
+	                'parentdate'=>'2011-01-01',
+	                'parenttime'=>'11:11:11',
+	                'parentenum'=>'testA',
+	                'childint'=>678
+	            ],
+	            null,
+	            [   'childint'=>1314
+	            ],
+	            null,
+	            [   'parentchar'=>'ABC',
+	                'parentint'=>123,
+	                'parentfloat'=>1.23,
+	                'parenttext'=>'ABC DEF',
+	                'parentdatetime'=>'2001-01-01 01:01:01',
+	                'parentdate'=>'2011-01-01',
+	                'parenttime'=>'11:11:11',
+	                'parentenum'=>'testA',
+	                'childint'=>1314
+	            ],
+	            null
+	        ],
 	        
 	    ];
 	}

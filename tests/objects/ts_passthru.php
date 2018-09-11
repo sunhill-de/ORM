@@ -1,6 +1,8 @@
 <?php
 
-class ts_passthru extends testparent {
+namespace Sunhill\Test;
+
+class ts_passthru extends ts_testparent {
 	
 }
 
