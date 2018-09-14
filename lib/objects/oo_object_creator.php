@@ -4,32 +4,30 @@ namespace Sunhill\Objects;
 
 class oo_object_creator extends oo_object_worker {
 	
+    protected $id;
+    
 	public function store() {
-		$id = $this->store_simple_fields();
-		$this->store_complex_fields($id);
-		$this->store_tags($id);
-		return $id;
+		$this->store_simple_fields();
+		$this->store_complex_fields($this->id);
+		$this->store_tags($this->id);
+		return $this->id;
+	}
+	
+	protected function store_simple_callback($model_name,$model,$fields) {
+	    foreach ($fields as $field) {
+	        $model->$field = $this->object->$field;
+	    }
+	    if ($model_name == $this->object->default_ns."\coreobject") {
+	        $model->save();
+	        $this->id = $model->id;
+	    } else {
+	        $model->id = $this->id;
+	        $model->save();
+	    }	    
 	}
 	
 	private function store_simple_fields() {
-		$fields = $this->object->get_simple_fields();
-		foreach ($fields as $model_name=>$fields) {
-		    if (!empty($model_name)) {
-    		    $model_name = $this->object->default_ns.'\\'.$model_name;
-    			$model = new $model_name;
-    			foreach ($fields as $field) {
-    				$model->$field = $this->object->$field;
-    			}
-    			if ($model_name == $this->object->default_ns."\coreobject") {
-    				$model->save();
-    				$result = $model->id;
-    			} else {
-    				$model->id = $result;
-    				$model->save();
-    			}			
-		    }
-		}
-		return $result;
+		$this->walk_simple_fields('store_simple_callback');
 	}
 	
 	private function store_complex_fields() {

@@ -6,7 +6,7 @@ use App\tag;
 
 define('TO_LEAFABLE',0x0001);
 
-class oo_tag extends \Crawler\base {
+class oo_tag extends \Sunhill\base {
 	
 	public $parent;
 	

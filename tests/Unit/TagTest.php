@@ -12,7 +12,7 @@ class TagTest extends TestCase
 	
 	use \Tests\DatabaseSetup;
 	
-	public function setUp() {
+	protected function setUp():void {
 		parent::setUp();
 		$this->artisan('migrate:refresh', ['--seed'=>true]);
 	}

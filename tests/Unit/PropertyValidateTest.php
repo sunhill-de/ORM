@@ -73,8 +73,8 @@ class PropertyValidateTest extends TestCase
     
     public function testObjectsPropertyPass() {
     	$test = new oo_property_object(null);
-    	$test->set_allowed_objects(['ts_testparent']);
-    	$object = new \Sunhill\Objects\ts_testparent();
+    	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
+    	$object = new \Sunhill\Test\ts_testparent();
     	$object->parentint = 22;
     	$test->set_value($object);
     	$this->assertEquals(22,$test->get_value()->parentint);
@@ -82,8 +82,8 @@ class PropertyValidateTest extends TestCase
     
     public function testObjectsPropertyPassWithChild() {
     	$test = new oo_property_object(null);
-    	$test->set_allowed_objects(['ts_testparent']);
-    	$object = new \Sunhill\Objects\ts_testchild();
+    	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
+    	$object = new \Sunhill\Test\ts_testchild();
     	$test->set_value($object);
     	$this->assertEquals($object,$test->get_value());
     }
@@ -93,15 +93,15 @@ class PropertyValidateTest extends TestCase
      */
     public function testObjectsFail() {
     	$test = new oo_property_object(null);
-    	$test->set_allowed_objects(['ts_testchild']);
-    	$object = new \Sunhill\Objects\ts_testparent();
+    	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testchild']);
+    	$object = new \Sunhill\Test\ts_testparent();
     	$test->set_value($object);
     }
     
     public function testArrayOfObjectsPropertyPass() {
     	$test = new \Sunhill\Objects\oo_property_array_of_objects(null);
-    	$test->set_allowed_objects(['ts_testparent']);
-    	$object = new \Sunhill\Objects\ts_testparent();
+    	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
+    	$object = new \Sunhill\Test\ts_testparent();
     	$object->parentint = 22;
     	$test->get_value()[] = $object;
     	$this->assertEquals(22,$test->get_value()[0]->parentint);
@@ -109,8 +109,8 @@ class PropertyValidateTest extends TestCase
     
     public function testArrayOfObjectsPropertyPassWithChild() {
     	$test = new \Sunhill\Objects\oo_property_array_of_objects(null);
-    	$test->set_allowed_objects(['ts_testparent']);
-    	$object = new \Sunhill\Objects\ts_testchild();
+    	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
+    	$object = new \Sunhill\Test\ts_testchild();
     	$object->parentint = 23;
     	$test->get_value()[] = $object;
     	$this->assertEquals(23,$test->get_value()[0]->parentint);
@@ -121,8 +121,8 @@ class PropertyValidateTest extends TestCase
      */
     public function testArrayOfObjectsFail() {
     	$test = new \Sunhill\Objects\oo_property_array_of_objects(null);
-    	$test->set_allowed_objects(['ts_testchild']);
-    	$object = new \Sunhill\Objects\ts_testparent();
+    	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testchild']);
+    	$object = new \Sunhill\Test\ts_testparent();
     	$test->get_value()[] = $object;
     }
     

@@ -15,7 +15,7 @@ class AutoTagTest extends TestCase
      */
     public function testAutotag()
     {
-        $test = new \Sunhill\Objects\ts_testparent();
+        $test = new \Sunhill\Test\ts_testparent();
         $test->add_auto_tag('gps.Deutschland.Buende.Sonnenhuegel.8');
         $this->assertEquals('autotag.gps.Deutschland.Buende.Sonnenhuegel.8',$test->get_tag(0)->get_fullpath());
     }

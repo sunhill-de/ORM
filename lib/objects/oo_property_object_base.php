@@ -19,7 +19,7 @@ class oo_property_object_base extends oo_property {
 			return true;
 		}
 		foreach ($this->allowed_objects as $object) {
-			if (is_a($test,'\\Crawler\\Objects\\'.$object)) {
+			if (is_a($test,$object)) {
 				return true;
 			}
 		}

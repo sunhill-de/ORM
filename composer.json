@@ -33,7 +33,8 @@
 			"App\\" : "app/",
 			"Sunhill\\Test\\" : "tests/objects",
 			"Sunhill\\Objects\\" : "lib/objects",
-			"Sunhill\\" : "lib"
+			"Sunhill\\" : "lib",
+			"Tests\\" : "tests/lib"
 		}
 	},
 	"autoload-dev" : {

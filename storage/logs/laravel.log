@@ -86,3 +86,7 @@
 [stacktrace]
 #0 {main}
 "} 
+[2018-09-14 11:18:29] development.ERROR: Class 'Crawler\base' not found {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Class 'Crawler\\base' not found at /home/lokal/projekte/sunhill/lib/objects/oo_tag.php:9)
+[stacktrace]
+#0 {main}
+"} 
