@@ -18,6 +18,8 @@ class CreateTagcacheTable extends Migration
             $table->string('name');
             $table->integer('tag_id');
             $table->timestamps();
+            //$table->primary('id');
+            $table->index('name');
         });
     }
 

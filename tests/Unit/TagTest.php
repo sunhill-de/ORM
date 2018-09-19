@@ -14,7 +14,10 @@ class TagTest extends TestCase
 	
 	protected function setUp():void {
 		parent::setUp();
-		$this->artisan('migrate:refresh', ['--seed'=>true]);
+		exec(dirname(__FILE__).'/../../application migrate:refresh');
+		exec(dirname(__FILE__).'/../../application db:seed');
+		
+	//	$this->artisan('migrate:refresh', ['--seed'=>true]);
 	}
 	
 	public function testLoadTag()

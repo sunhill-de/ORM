@@ -16,7 +16,12 @@
 			<attribute name="composer" value="source"/>
 		</attributes>
 	</buildpathentry>
-	<buildpathentry excluding="objects/" kind="src" path="tests">
+	<buildpathentry kind="src" path="tests/lib">
+		<attributes>
+			<attribute name="composer" value="source"/>
+		</attributes>
+	</buildpathentry>
+	<buildpathentry excluding="lib/|objects/" kind="src" path="tests">
 		<attributes>
 			<attribute name="composer" value="source"/>
 		</attributes>
