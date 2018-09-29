@@ -27,7 +27,25 @@ class oo_object_loader extends oo_object_worker {
 	}
 	
 	private function load_complex_fields() {
-		
+		$this->load_object_fields();
+		$this->load_string_fields();
+	}
+	
+	private function load_object_fields() {
+	     $references = \App\objectobjectassign::where('container_id','=',$this->object->get_id())->get();
+	     foreach ($references as $reference) {
+	        $fieldname = $reference->$field;
+            $property = $this->object->get_property($fieldname);
+            
+            if ($property->is_array()) {
+                $this->object->$fieldname[$reference->index] = $object; 
+            } else {
+                $this->object->$fieldname = $object;                
+            }
+	     }
+	}
+	
+	private function load_string_fields() {
 	}
 	
 	private function load_tags($id) {

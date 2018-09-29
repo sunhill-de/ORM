@@ -16,9 +16,9 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 		$this->date('parentdate')->set_model('testparent');
 		$this->time('parenttime')->set_model('testparent');
 		$this->enum('parentenum')->set_model('testparent')->set_values(['testA','testB','testC']);
-		$this->object('parentobject')->set_model('testparent')->set_allowed_objects(['ts_testparent']);
+		$this->object('parentobject')->set_model('testparent')->set_allowed_objects(['\Sunhill\test\ts_dummy']);
 		$this->arrayofstrings('parentsarray')->set_model('testparent');
-		$this->arrayofobjects('parentoarray')->set_model('testparent');
+		$this->arrayofobjects('parentoarray')->set_model('testparent')->set_allowed_objects(['\Sunhill\Test\ts_dummy']);
 	}
 	
 }

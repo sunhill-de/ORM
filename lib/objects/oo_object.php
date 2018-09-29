@@ -394,5 +394,19 @@ class oo_object extends \Sunhill\base {
 		return $models;
 	}
 	
+	/**
+	 * Liefert die complexen Felder zurück
+	 * @return array[]
+	 */
+	public function get_complex_fields() {
+	    $result = array();
+	    foreach ($this->properties as $property) {
+	        if (!$property->is_simple()) {
+	            $result[] = $property->get_name();
+	        }
+	    }
+	    return $result;
+	}
+	
 	
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateObjectobjectassignsTable extends Migration
+class CreateStringobjectassignsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateObjectobjectassignsTable extends Migration
      */
     public function up()
     {
-        Schema::create('objectobjectassigns', function (Blueprint $table) {
+        Schema::create('stringobjectassigns', function (Blueprint $table) {
             $table->integer('container_id');
-            $table->integer('item_id');
-            $table->varchar('field');
+            $table->string('element_id');
+            $table->string('field');
             $table->integer('index');
-            $table->primary(['container_id','item_id','field']);
+            $table->primary(['container_id','element_id','field']);
         });
     }
 
@@ -29,6 +29,6 @@ class CreateObjectobjectassignsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('objectobjectassigns');
+        Schema::dropIfExists('stringobjectassigns');
     }
 }

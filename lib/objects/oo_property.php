@@ -6,7 +6,7 @@ class PropertyException extends \Exception {}
 
 class InvalidValueException extends PropertyException {}
 
-class oo_property extends \Sunhill\base implements \ArrayAccess {
+class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	
 	protected $owner;
 	
@@ -192,5 +192,9 @@ class oo_property extends \Sunhill\base implements \ArrayAccess {
 	
 	public function offsetUnset($offset) {
 		unsset($this->value[$offset]);
+	}
+	
+	public function count() {
+	    return count($this->value);
 	}
 }

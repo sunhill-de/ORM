@@ -15,10 +15,10 @@ class CreateObjectobjectassignsTable extends Migration
     {
         Schema::create('objectobjectassigns', function (Blueprint $table) {
             $table->integer('container_id');
-            $table->integer('item_id');
-            $table->varchar('field');
+            $table->integer('element_id');
+            $table->string('field');
             $table->integer('index');
-            $table->primary(['container_id','item_id','field']);
+            $table->primary(['container_id','element_id','field']);
         });
     }
 

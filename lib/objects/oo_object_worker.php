@@ -21,4 +21,13 @@ class oo_object_worker extends \Sunhill\base {
 	    }
 	}
 	
+	protected function walk_complex_fields($callback) {
+	    $fields = $this->object->get_complex_fields();
+	    foreach ($fields as $fieldname) {
+	        if (!empty($model_name)) {
+	            $this->$callback($fieldname);
+	        }
+	    }
+	}
+	
 }
