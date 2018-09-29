@@ -21,6 +21,7 @@ class CreateTagsTable extends Migration
             $table->integer('parent_id')->unsigned()->nullable();
             //$table->primary('id');
             $table->index('name');
+            $table->index('parent_id');
         });
     }
 

@@ -155,6 +155,9 @@ class oo_tag extends \Sunhill\base {
 	 */
 	public function load($id) {
 		$this->model = tag::where('id','=',$id)->first();
+		if (is_null($this->model)) {
+		    throw new \Exception("Tag mit der id '$id' nicht gefunden.");
+		}
 		if ($this->model->parent_id) {
 			$this->parent = new oo_tag($this->model->parent_id);
 		}

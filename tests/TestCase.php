@@ -25,9 +25,9 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         $this->app = $this->createApplication();
-        if (!self::$db_up ) {
+/*        if (!self::$db_up ) {
             \Tests\setup_db();
             self::$db_up = true;
-        }
+        } */
     }
 }

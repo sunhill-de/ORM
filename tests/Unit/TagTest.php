@@ -7,22 +7,21 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Crawler;
 
-class TagTest extends TestCase
+class TagTest extends \Tests\sunhill_testcase
 {
 	
 	use \Tests\DatabaseSetup;
 	
 	protected function setUp():void {
 		parent::setUp();
-		exec(dirname(__FILE__).'/../../application migrate:refresh');
-		exec(dirname(__FILE__).'/../../application db:seed');
-		
+		$this->clear_system_tables();
+		$this->seed();
 	//	$this->artisan('migrate:refresh', ['--seed'=>true]);
 	}
 	
 	public function testLoadTag()
     {
-    	$tag = new \Sunhill\Objects\oo_tag(1);
+    	$tag = new \Sunhill\Objects\oo_tag(1); 
 		$this->assertEquals('TagA',$tag->get_name());
 	}
 	
