@@ -2,15 +2,17 @@
 
 namespace Sunhill\Objects;
 
-class oo_object_updater extends oo_object_worker {
+use Illuminate\Support\Facades\DB;
+
+
+class oo_object_updater extends oo_object_storage {
 	
 	public function update() {
-		$this->update_simple_fields();
-		$this->update_complex_fields();
-		$this->update_tags();
+        $this->work();
+        return $this;
 	}
 	
-	private function update_simple_fields() {
+	protected function work_simple_fields() {
 		$fields = $this->object->get_changed_fields();
 		foreach ($fields as $model_name=>$fields) {
 			$model_name = $this->object->default_ns.'\\'.$model_name;
@@ -28,11 +30,12 @@ class oo_object_updater extends oo_object_worker {
 		}
 	}
 	
-	private function update_complex_fields() {
-		
+	protected function work_complex_fields() {
+	    $this->delete_references(); 
+	    $this->store_references();
 	}
 	
-	private function update_tags() {
+	protected function work_tags() {
 	}
 
 	/**
@@ -41,7 +44,7 @@ class oo_object_updater extends oo_object_worker {
 	 * @param oo_tag $tag
 	 */
 	private function store_tag(oo_tag $tag) {
-		$test = \App\tagobjectassign::firstOrCreate(['object_id'=>$this->object->get_id(),
+		$test = \App\tagobjectassign::firstOrCreate(['container_id'=>$this->object->get_id(),
 				'tag_id'=>$tag->get_id()]);
 	}
 	

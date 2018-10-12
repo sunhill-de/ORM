@@ -174,16 +174,24 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 		return $this->is_simple;
 	}
 	
+	private function check_array() {
+	    if (!$this->is_array()) {
+	        throw new \Exception('Die Property "'.$this->name.'" wurde mit array Funktionen aufgerufen obwohl vom Typ "'.$this->type.'"');
+	    }
+	}
 	public function offsetExists($offset) {
-		return isset($this->value[$offset]);
+	    $this->check_array();
+	    return isset($this->value[$offset]);
 	}
 
 	public function offsetGet($offset) {
-		return $this->value[$offset];
+	    $this->check_array();
+	    return $this->value[$offset];
 	}
 	
 	public function offsetSet($offset, $value) {
-		if (isset($offset)) {
+	    $this->check_array();
+	    if (isset($offset)) {
 			$this->value[$offset] = $this->validate($value);
 		} else {
 			$this->value[] = $this->validate($value);
@@ -191,10 +199,12 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	}
 	
 	public function offsetUnset($offset) {
-		unsset($this->value[$offset]);
+	    $this->check_array();
+	    unsset($this->value[$offset]);
 	}
 	
 	public function count() {
+	    $this->check_array();
 	    return count($this->value);
 	}
 }

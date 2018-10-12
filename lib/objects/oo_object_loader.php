@@ -4,15 +4,18 @@ namespace Sunhill\Objects;
 
 class oo_object_loader extends oo_object_worker {
 	
+    /**
+     * Der Wrapper um die Worker-Methode
+     * @param int $id: Id des zu ladenden Objektes
+     * @return \Sunhill\Objects\oo_object
+     */
 	public function load($id) {
-		$this->object->set_id($id);
-		$this->load_simple_fields();
-		$this->load_complex_fields();
-		$this->load_tags($id);
-		return $this;		
+	    $this->object->set_id($id);
+	    $this->work();
+		return $this->object;		
 	}
 	
-	private function load_simple_fields() {
+	protected function work_simple_fields() {
 		$fields = $this->object->get_simple_fields();
 		foreach ($fields as $model=>$fields) {
     		    if (!empty($model)) {
@@ -26,7 +29,7 @@ class oo_object_loader extends oo_object_worker {
 		
 	}
 	
-	private function load_complex_fields() {
+	protected function work_complex_fields() {
 		$this->load_object_fields();
 		$this->load_string_fields();
 	}
@@ -34,8 +37,11 @@ class oo_object_loader extends oo_object_worker {
 	private function load_object_fields() {
 	     $references = \App\objectobjectassign::where('container_id','=',$this->object->get_id())->get();
 	     foreach ($references as $reference) {
-	        $fieldname = $reference->$field;
+	        $fieldname = $reference->field;
             $property = $this->object->get_property($fieldname);
+            
+            // Load Object
+            $object = $this->object::load_object_of($reference->element_id);
             
             if ($property->is_array()) {
                 $this->object->$fieldname[$reference->index] = $object; 
@@ -46,10 +52,15 @@ class oo_object_loader extends oo_object_worker {
 	}
 	
 	private function load_string_fields() {
+	    $references = \App\stringobjectassign::where('container_id','=',$this->object->get_id())->get();
+	    foreach ($references as $reference) {
+	        $fieldname = $reference->field;
+	        $this->object->$fieldname[$reference->index] = $reference->element_id;
+	    }
 	}
 	
-	private function load_tags($id) {
-		$assigns = \App\tagobjectassign::where('object_id','=',$id)->get();
+	protected function work_tags() {
+		$assigns = \App\tagobjectassign::where('container_id','=',$this->object->get_id())->get();
 		foreach ($assigns as $assign) {
 			$tag = new \Sunhill\Objects\oo_tag($assign->tag_id);
 			$this->object->add_tag($tag);

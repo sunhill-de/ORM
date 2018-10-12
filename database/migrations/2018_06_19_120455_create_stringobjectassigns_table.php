@@ -15,10 +15,10 @@ class CreateStringobjectassignsTable extends Migration
     {
         Schema::create('stringobjectassigns', function (Blueprint $table) {
             $table->integer('container_id');
-            $table->string('element_id');
-            $table->string('field');
+            $table->string('element_id',200);
+            $table->string('field',50);
             $table->integer('index');
-            $table->primary(['container_id','element_id','field']);
+          //  $table->primary(['container_id','element_id','field']);
         });
     }
 

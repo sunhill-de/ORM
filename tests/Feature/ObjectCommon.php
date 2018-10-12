@@ -12,7 +12,7 @@ class ObjectCommon extends \Tests\sunhill_testcase
     protected function setUp():void {
         parent::setUp();
         $this->BuildTestClasses();
-        $this->clear_system_tables();
+        $this->clear_system_tables(); 
     }
     
     

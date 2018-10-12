@@ -55,7 +55,7 @@ class ObjectReReadTest extends ObjectCommon
 	    }
 	    if (!is_null($read_callback)) {
 	        if (!$read_callback($read_object)) {
-	            $this->fail("Reread_Callback fehlgeschlagen.");
+	            $this->fail("Read_Callback fehlgeschlagen.");
 	        }
 	    }
 	    
@@ -91,7 +91,7 @@ class ObjectReReadTest extends ObjectCommon
 	}
 	
 	public function FieldProvider() {
-	    return [
+	    return [ 
             [ //Einfacher Test für einfache Felder
                 'ts_testparent',
                 [   'parentchar'=>'ABC',
@@ -258,7 +258,7 @@ class ObjectReReadTest extends ObjectCommon
 	                'childint'=>1314
 	            ],
 	            null
-	        ],
+	        ], 
 	        [ // Einfacher Test mit Komplexen-Felder
 	            'ts_testparent',
 	            [   'parentchar'=>'ABC',
@@ -284,16 +284,16 @@ class ObjectReReadTest extends ObjectCommon
 	                $object->parentsarray[] = 'DCB';
 	                return ($object->parentobject->dummyint == 1234) && 
 	                       ($object->parentoarray[0]->dummyint == 2345) &&
-	                       ($object->parentoarray[count($object->parentoarray)]->dummyint == 3456) &&
+	                       ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 3456) &&
 	                       ($object->parentsarray[0] == 'CBA') &&
-	                       ($object->parentsarray[count($object->parentsarray)] == 'DCB');
+	                       ($object->parentsarray[count($object->parentsarray)-1] == 'DCB');
 	            },	            
 	            function($object) {
 	                return ($object->parentobject->dummyint == 1234) &&
 	                ($object->parentoarray[0]->dummyint == 2345) &&
-	                ($object->parentoarray[count($object->parentoarray)]->dummyint == 3456) &&
+	                ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 3456) &&
 	                ($object->parentsarray[0] == 'CBA') &&
-	                ($object->parentsarray[count($object->parentsarray)] == 'DCB');
+	                ($object->parentsarray[count($object->parentsarray)-1] == 'DCB');
 	            },
 	            [   'parentchar'=>'DEF',
 	                'parentint'=>456,
@@ -314,9 +314,9 @@ class ObjectReReadTest extends ObjectCommon
 	                $object->parentsarray[] = 'EDC';
 	                return ($object->parentobject->dummyint == 4321) &&
 	                ($object->parentoarray[0]->dummyint == 2345) &&
-	                ($object->parentoarray[count($object->parentoarray)]->dummyint == 5432) &&
+	                ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 5432) &&
 	                ($object->parentsarray[0] == 'CBA') &&
-	                ($object->parentsarray[count($object->parentsarray)] == 'EDC');
+	                ($object->parentsarray[count($object->parentsarray)-1] == 'EDC');
 	            },
 	            [   'parentchar'=>'DEF',
 	                'parentint'=>456,
@@ -327,14 +327,14 @@ class ObjectReReadTest extends ObjectCommon
 	                'parenttime'=>'22:22:22',
 	                'parentenum'=>'testB'
 	            ],
-	            function($object) {
+	            function($object) { // Expect-Callback
 	                return ($object->parentobject->dummyint == 4321) &&
 	                ($object->parentoarray[0]->dummyint == 2345) &&
 	                ($object->parentoarray[1]->dummyint == 3456) &&
-	                ($object->parentoarray[count($object->parentoarray)]->dummyint == 5432) &&
+	                ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 5432) &&
 	                ($object->parentsarray[0] == 'CBA') &&
 	                ($object->parentsarray[1] == 'DCB') &&
-	                ($object->parentsarray[count($object->parentsarray)] == 'EDC');
+	                ($object->parentsarray[count($object->parentsarray)-1] == 'EDC');
 	            },
 	            ],
 	    ];

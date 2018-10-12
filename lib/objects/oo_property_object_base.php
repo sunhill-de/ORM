@@ -12,6 +12,7 @@ class oo_property_object_base extends oo_property {
 		} else {
 			$this->allowed_objects = $object;
 		}
+		return $this;
 	}
 	
 	protected function is_allowed_object($test) {

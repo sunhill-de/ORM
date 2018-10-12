@@ -31,7 +31,10 @@
 	"autoload" : {
 		"psr-4" : {
 			"App\\" : "app/",
-			"Sunhill\\Test\\" : "tests/objects",
+			"Sunhill\\Test\\" : [
+				"tests/lib",
+				"tests/objects"
+			],
 			"Sunhill\\Objects\\" : "lib/objects",
 			"Sunhill\\" : "lib",
 			"Tests\\" : "tests/lib"

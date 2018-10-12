@@ -13,7 +13,7 @@ class ts_testchild extends ts_testparent {
 		$this->date('childdate')->set_model('testchild');
 		$this->time('childtime')->set_model('testchild');
 		$this->enum('childenum')->set_model('testchild')->set_values(['testA','testB','testC']);
-		$this->object('childobject')->set_model('testchild')->set_allowed_objects(['ts_testparent']);
+		$this->object('childobject')->set_model('testchild')->set_allowed_objects(['ts_testparent'])->set_default(null);;
 		$this->arrayofstrings('childsarray')->set_model('testchild');
 		$this->arrayofobjects('childoarray')->set_model('testchild')->set_allowed_objects(['ts_testparent']);
 	}

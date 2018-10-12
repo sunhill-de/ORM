@@ -2,15 +2,12 @@
 
 namespace Sunhill\Objects;
 
-class oo_object_creator extends oo_object_worker {
+class oo_object_creator extends oo_object_storage {
 	
-    protected $id;
     
 	public function store() {
-		$this->store_simple_fields();
-		$this->store_complex_fields($this->id);
-		$this->store_tags($this->id);
-		return $this->id;
+		$this->work();
+		return $this->object->get_id();
 	}
 	
 	protected function store_simple_callback($model_name,$model,$fields) {
@@ -18,77 +15,28 @@ class oo_object_creator extends oo_object_worker {
 	        $model->$field = $this->object->$field;
 	    }
 	    if ($model_name == $this->object->default_ns."\coreobject") {
+	        $model->classname = get_class($this->object);
 	        $model->save();
-	        $this->id = $model->id;
-	    } else {
-	        $model->id = $this->id;
+	        $this->object->set_id( $model->id);
+	    } else { 
+	        $model->id = $this->object->get_id();
 	        $model->save();
 	    }	    
 	}
 	
-	private function store_simple_fields() {
+	protected function work_simple_fields() {
 		$this->walk_simple_fields('store_simple_callback');
 	}
 	
-	private function store_complex_fields() {
-		$this->walk_complex_fields('store_complex_field');
+	protected function work_complex_fields() {
+	    $this->store_references();
 	}
 	
-	protected function store_complex_field($fieldname,$type) {
-	    switch ($type) {
-	        case 'object':
-	            $this->store_object_field($fieldname);
-	            break;
-	        case 'array_of_objects':
-	            $this->store_oarray_field($fieldname);
-	            break;
-	        case 'array_of_strings':   
-	            $this->store_sarray_field($fieldname);
-	            break;
-	    }
-	}
-	
-	private function store_object_reference($fieldname,$element,$index) {
-	    $model = new \App\objectobjectassign();
-	    $model->container = $this->object->get_id();
-	    $model->element = $element;
-	    $model->field = $fieldname;
-	    $model->index = $index;
-	    $model->save();	    
-	}
-	
-	private function store_string_reference($fieldname,$element,$index) {
-	    $model = new \App\stringobjectassign();
-	    $model->container = $this->object->get_id();
-	    $model->element = $element;
-	    $model->field = $fieldname;
-	    $model->index = $index;
-	    $model->save();
-	}
-	
-	private function store_object_field($fieldname) {
-	    if (!is_null($this->object->$fieldname)) {
-	        $this->store_object_reference($fieldname, $this->object->$fieldname->get_id(), 0);
-	    }
-	}
-	
-	private function store_oarray_field($fieldname) {
-	    for ($i=0;$i<count($this->object->$fieldname);$i++) {
-	        $this->store_object_reference($fieldname, $this->object->$fieldname[$i], $i);
-	    }
-	}
-	
-	private function store_sarray_field($fieldname) {
-	    for ($i=0;$i<count($this->object->$fieldname);$i++) {
-	        $this->store_string_reference($fieldname, $this->object->$fieldname[$i], $i);
-	    }	    
-	}
-	
-	private function store_tags($id) {
+	protected function work_tags() {
 		for ($i=0;$i<$this->object->get_tag_count();$i++)
 		{
 			$tag = $this->object->get_tag($i);
-			$this->store_tag($tag,$id);
+			$this->store_tag($tag,$this->object->get_id());
 		}
 	}
 

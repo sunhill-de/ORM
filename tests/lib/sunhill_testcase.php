@@ -16,6 +16,7 @@ class sunhill_testcase extends TestCase {
             "childenum ENUM('testA','testB','testC'))");
         DB::statement("create table passthrus (id int primary key)");
         DB::statement("create table secondlevelchildren (id int primary key,childint int)");        
+        DB::statement("create table dummies (id int primary key,dummyint int)");
     }
     
     protected function DropTestClasses() {
@@ -23,6 +24,7 @@ class sunhill_testcase extends TestCase {
         DB::statement("drop table if exists testchildren");
         DB::statement("drop table if exists passthrus");
         DB::statement("drop table if exists secondlevelchildren");        
+        DB::statement("drop table if exists dummies");
     }
     
     protected function clear_system_tables() {
@@ -30,6 +32,8 @@ class sunhill_testcase extends TestCase {
         DB::statement("truncate tags");
         DB::statement("truncate tags");
         DB::statement("truncate tagcache");
+        DB::statement("truncate objectobjectassigns");
+        DB::statement("truncate stringobjectassigns");
     }
     
     protected function seed() {

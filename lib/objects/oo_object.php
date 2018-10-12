@@ -194,7 +194,7 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	private function update() {
-		$updater = new oo_object_updater($this);
+	    $updater = new oo_object_updater($this);
 		$updater->update();
 	}
 	
@@ -408,5 +408,25 @@ class oo_object extends \Sunhill\base {
 	    return $result;
 	}
 	
+	/**
+	 * Ermittelt den Klassennamen von dem Object mit der ID $id
+	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll 
+	 * @return string Der Klassenname
+	 */
+	public static function get_class_name_of($id) {
+	    $object = \App\coreobject::where('id','=',$id)->first();
+	    return $object->classname;
+	}
 	
+	/**
+	 * Erzeugt ein passendes Objekt zur übergebenen ID
+	 * @param int $id ID des Objektes von dem ein Objekt erzeugt werden soll
+	 * @return oo_object oder Abkömmling
+	 */
+	public static function load_object_of($id) {
+	    $classname = self::get_class_name_of($id);
+	    $object = new $classname();
+	    $object->load($id);
+	    return $object;
+	}
 }
