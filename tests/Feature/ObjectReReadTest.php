@@ -10,16 +10,13 @@ use Sunhill\Test;
 class ObjectReReadTest extends ObjectCommon
 {
 	/**
-	 * @dataProvider FieldProvider
+	 * @dataProvider SimpleFieldProvider
 	 * @param string $classname
 	 * @param array $init
-	 * @param callback $init_callback
 	 * @param array $modify
-	 * @param callback $modify_callback
 	 * @param array $expect
-	 * @param callback $expect_callback
 	 */
-	public function testFields($classname,$init,$init_callback,$read_callback,$modify,$modify_callback,$expect,$expect_callback) {
+	public function testSimpleFields($classname,$init,$modify,$expect) {
 	    $classname = 'Sunhill\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -31,11 +28,6 @@ class ObjectReReadTest extends ObjectCommon
 	            } else {
 	                $init_object->$key = $value;
 	            }
-	        }
-	    }
-	    if (!is_null($init_callback)) {
-	        if (!$init_callback($init_object)) {
-	            $this->fail("Init_Callback fehlgeschlagen.");
 	        }
 	    }
 	    if (!is_null($init)) {
@@ -53,12 +45,6 @@ class ObjectReReadTest extends ObjectCommon
 	            $this->assertEquals($value,$read_object->$key,"Wiederauslesen von Feld '$key' fehlgeschlagen.");
 	        }
 	    }
-	    if (!is_null($read_callback)) {
-	        if (!$read_callback($read_object)) {
-	            $this->fail("Read_Callback fehlgeschlagen.");
-	        }
-	    }
-	    
 	    if (!is_null($modify)) {
 	        foreach ($modify as $key => $value) {
 	            if (is_array($value)) {
@@ -70,12 +56,8 @@ class ObjectReReadTest extends ObjectCommon
 	            }	            
 	        }
 	    }
-	    if (!is_null($modify_callback)) {
-	        if (!$modify_callback($read_object)) {
-	            $this->fail("Modify_Callback fehlgeschlagen.");
-	        }
-	    }
 	    $read_object->commit();
+
 	    $reread_object = new $classname;
 	    $reread_object->load($init_object->get_id());
 	    if (!is_null($expect)) {
@@ -83,14 +65,9 @@ class ObjectReReadTest extends ObjectCommon
 	            $this->assertEquals($value,$reread_object->$key,"Wiederauslesen nach Modify von Feld '$key' fehlgeschlagen.");
 	        }
 	    }
-	    if (!is_null($expect_callback)) {
-	        if (!$expect_callback($read_object)) {
-	            $this->fail("Expect_Callback fehlgeschlagen.");
-	        }
-	    }
 	}
 	
-	public function FieldProvider() {
+	public function SimpleFieldProvider() {
 	    return [ 
             [ //Einfacher Test für einfache Felder
                 'ts_testparent',
@@ -103,7 +80,6 @@ class ObjectReReadTest extends ObjectCommon
                     'parenttime'=>'11:11:11',
                     'parentenum'=>'testA'
                 ],
-                null,null,
                 [   'parentchar'=>'DEF',
                     'parentint'=>456,
                     'parentfloat'=>4.56,
@@ -113,7 +89,6 @@ class ObjectReReadTest extends ObjectCommon
                     'parenttime'=>'22:22:22',
                     'parentenum'=>'testB'
                 ],
-                null,
                 [   'parentchar'=>'DEF',
                     'parentint'=>456,
                     'parentfloat'=>4.56,
@@ -123,7 +98,6 @@ class ObjectReReadTest extends ObjectCommon
                     'parenttime'=>'22:22:22',
                     'parentenum'=>'testB'
                 ],
-                null
             ],
 	        [ //Einfacher Test für geerbte Felder beide modifiziert
 	            'ts_testchild',
@@ -144,7 +118,6 @@ class ObjectReReadTest extends ObjectCommon
 	                'childtime'=>'12:12:12',
 	                'childenum'=>'testB'
 	            ],
-	            null,null,
 	            [   'parentchar'=>'DEF',
 	                'parentint'=>456,
 	                'parentfloat'=>4.56,
@@ -162,7 +135,6 @@ class ObjectReReadTest extends ObjectCommon
 	                'childtime'=>'12:22:12',
 	                'childenum'=>'testC'
 	            ],
-	            null,
 	            [   'parentchar'=>'DEF',
 	                'parentint'=>456,
 	                'parentfloat'=>4.56,
@@ -180,7 +152,6 @@ class ObjectReReadTest extends ObjectCommon
 	                'childtime'=>'12:22:12',
 	                'childenum'=>'testC'	                
 	            ],
-	            null
 	        ],
 	        [ //Einfacher Test für geerbte Felder nur Kinder modifiziert
 	            'ts_testchild',
@@ -201,7 +172,6 @@ class ObjectReReadTest extends ObjectCommon
 	                'childtime'=>'12:12:12',
 	                'childenum'=>'testB'
 	            ],
-	            null,null,
 	            [   'childchar'=>'DDD',
 	                'childint'=>667,
 	                'childfloat'=>3.43,
@@ -211,7 +181,6 @@ class ObjectReReadTest extends ObjectCommon
 	                'childtime'=>'12:22:12',
 	                'childenum'=>'testC'
 	            ],
-	            null,
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -229,7 +198,6 @@ class ObjectReReadTest extends ObjectCommon
 	                'childtime'=>'12:22:12',
 	                'childenum'=>'testC'
 	            ],
-	            null
 	        ],
 	        [ // Passthrutest
 	            'ts_secondlevelchild',
@@ -243,10 +211,8 @@ class ObjectReReadTest extends ObjectCommon
 	                'parentenum'=>'testA',
 	                'childint'=>678
 	            ],
-	            null,null,
 	            [   'childint'=>1314
 	            ],
-	            null,
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -257,8 +223,68 @@ class ObjectReReadTest extends ObjectCommon
 	                'parentenum'=>'testA',
 	                'childint'=>1314
 	            ],
-	            null
-	        ], 
+	        ]];
+	}
+
+	/**
+	 * @dataProvider ComplexFieldProvider
+	 * @param string $classname
+	 * @param array $init
+	 * @param callback $init_callback
+	 * @param array $modify
+	 * @param callback $modify_callback
+	 * @param array $expect
+	 * @param callback $expect_callback
+	 */
+	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
+	    $classname = 'Sunhill\\Test\\'.$classname;
+	    $init_object = new $classname;
+	    if (!is_null($init)) {
+	        foreach ($init as $key => $value) {
+	            if (is_array($value)) {
+	                foreach ($value as $single_value) {
+	                    $init_object->$key[] = $single_value;
+	                }
+	            } else {
+	                $init_object->$key = $value;
+	            }
+	        }
+	    }
+	    if (!is_null($init_callback)) {
+	        if (!$init_callback($init_object)) {
+	            $this->fail("Init_Callback fehlgeschlagen.");
+	        }
+	    }
+	    $init_object->commit();
+	    
+	    // Read
+	    $read_object = new $classname;
+	    $read_object->load($init_object->get_id());
+	    if (!is_null($read_callback)) {
+	        if (!$read_callback($read_object)) {
+	            $this->fail("Read_Callback fehlgeschlagen.");
+	        }
+	    }
+	    
+	    if (!is_null($modify_callback)) {
+	        if (!$modify_callback($read_object)) {
+	            $this->fail("Modify_Callback fehlgeschlagen.");
+	        }
+	    }
+	    $read_object->commit();
+
+	    $reread_object = new $classname;
+	    $reread_object->load($init_object->get_id());
+	    if (!is_null($expect_callback)) {
+	        if (!$expect_callback($read_object)) {
+	            $this->fail("Expect_Callback fehlgeschlagen.");
+	        }
+	    }
+	    $this->assertTrue(true); // Damit nicht Risky
+	}
+	
+	public function ComplexFieldProvider() {
+	    return [
 	        [ // Einfacher Test mit Komplexen-Felder
 	            'ts_testparent',
 	            [   'parentchar'=>'ABC',
@@ -282,12 +308,12 @@ class ObjectReReadTest extends ObjectCommon
 	                $object->parentoarray[] = $add3;
 	                $object->parentsarray[] = 'CBA';
 	                $object->parentsarray[] = 'DCB';
-	                return ($object->parentobject->dummyint == 1234) && 
-	                       ($object->parentoarray[0]->dummyint == 2345) &&
-	                       ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 3456) &&
-	                       ($object->parentsarray[0] == 'CBA') &&
-	                       ($object->parentsarray[count($object->parentsarray)-1] == 'DCB');
-	            },	            
+	                return ($object->parentobject->dummyint == 1234) &&
+	                ($object->parentoarray[0]->dummyint == 2345) &&
+	                ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 3456) &&
+	                ($object->parentsarray[0] == 'CBA') &&
+	                ($object->parentsarray[count($object->parentsarray)-1] == 'DCB');
+	            },
 	            function($object) {
 	                return ($object->parentobject->dummyint == 1234) &&
 	                ($object->parentoarray[0]->dummyint == 2345) &&
@@ -295,15 +321,6 @@ class ObjectReReadTest extends ObjectCommon
 	                ($object->parentsarray[0] == 'CBA') &&
 	                ($object->parentsarray[count($object->parentsarray)-1] == 'DCB');
 	            },
-	            [   'parentchar'=>'DEF',
-	                'parentint'=>456,
-	                'parentfloat'=>4.56,
-	                'parenttext'=>'GHI JKL',
-	                'parentdatetime'=>'2002-02-02 02:02:02',
-	                'parentdate'=>'2022-02-22',
-	                'parenttime'=>'22:22:22',
-	                'parentenum'=>'testB'
-	            ],
 	            function($object) {
 	                $add1 = new \Sunhill\Test\ts_dummy();
 	                $add2 = new \Sunhill\Test\ts_dummy();
@@ -318,15 +335,6 @@ class ObjectReReadTest extends ObjectCommon
 	                ($object->parentsarray[0] == 'CBA') &&
 	                ($object->parentsarray[count($object->parentsarray)-1] == 'EDC');
 	            },
-	            [   'parentchar'=>'DEF',
-	                'parentint'=>456,
-	                'parentfloat'=>4.56,
-	                'parenttext'=>'GHI JKL',
-	                'parentdatetime'=>'2002-02-02 02:02:02',
-	                'parentdate'=>'2022-02-22',
-	                'parenttime'=>'22:22:22',
-	                'parentenum'=>'testB'
-	            ],
 	            function($object) { // Expect-Callback
 	                return ($object->parentobject->dummyint == 4321) &&
 	                ($object->parentoarray[0]->dummyint == 2345) &&
@@ -337,6 +345,7 @@ class ObjectReReadTest extends ObjectCommon
 	                ($object->parentsarray[count($object->parentsarray)-1] == 'EDC');
 	            },
 	            ],
-	    ];
+	            ];
 	}
+	
 }
