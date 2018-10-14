@@ -17,6 +17,7 @@ class sunhill_testcase extends TestCase {
         DB::statement("create table passthrus (id int primary key)");
         DB::statement("create table secondlevelchildren (id int primary key,childint int)");        
         DB::statement("create table dummies (id int primary key,dummyint int)");
+        DB::statement("create table referenceonlies (id int primary key,testint int)");
     }
     
     protected function DropTestClasses() {
@@ -25,6 +26,7 @@ class sunhill_testcase extends TestCase {
         DB::statement("drop table if exists passthrus");
         DB::statement("drop table if exists secondlevelchildren");        
         DB::statement("drop table if exists dummies");
+        DB::statement("drop table if exists referenceonlies");
     }
     
     protected function clear_system_tables() {

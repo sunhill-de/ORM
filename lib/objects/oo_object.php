@@ -26,6 +26,10 @@ class oo_object extends \Sunhill\base {
 	 */
 	private $tags_shadow;
 	
+	private $comitting = false;
+	
+	private static $objectcache = array();
+	
 	public function __construct() {
 		//parent::__construct();
 		$this->tags = array();
@@ -53,7 +57,7 @@ class oo_object extends \Sunhill\base {
 	 */
 	public function load($id) {
 		$loader = new oo_object_loader($this);
-		$result = $loader->load($id);
+		$result = $loader->load($id); 
 		$this->clean_properties();
 		return $result;
 	}
@@ -65,18 +69,22 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function commit() {
-		if ($this->get_id()) {
-			$this->pre_update();
-			$this->update();
-			$this->post_update();
-			$this->post_update_tags();
-		} else {
-			$this->pre_create();
-			$this->create();
-			$this->post_create();
-			$this->post_create_tags();
-		}
-		$this->comitted();
+	    if (!$this->comitting) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
+	        $this->comitting = true;
+	        if ($this->get_id()) {
+    			$this->pre_update();
+    			$this->update();
+    			$this->post_update();
+    			$this->post_update_tags();
+    		} else {
+    			$this->pre_create();
+    			$this->create();
+    			$this->post_create();
+    			$this->post_create_tags();
+    		}
+    		$this->comitted();
+	        $this->comitting = false;
+	    }
 	}
 	
 	/**
@@ -424,9 +432,19 @@ class oo_object extends \Sunhill\base {
 	 * @return oo_object oder Abkömmling
 	 */
 	public static function load_object_of($id) {
-	    $classname = self::get_class_name_of($id);
-	    $object = new $classname();
-	    $object->load($id);
-	    return $object;
+	    if (isset(self::$objectcache[$id])) {
+//	        echo "Cache!";
+	        return self::$objectcache[$id];
+	    } else {
+	        $classname = self::get_class_name_of($id);
+	        $object = new $classname();
+	        self::$objectcache[$id] = $object;
+	        $object->load($id);
+	        return $object;
+	    }
+	}
+	
+	public static function flush_cache() {
+	    self::$objectcache = array();
 	}
 }

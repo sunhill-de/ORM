@@ -30,8 +30,8 @@ class oo_object_loader extends oo_object_worker {
 	}
 	
 	protected function work_complex_fields() {
-		$this->load_object_fields();
-		$this->load_string_fields();
+	    $this->load_object_fields();
+	    $this->load_string_fields();
 	}
 	
 	private function load_object_fields() {
@@ -39,10 +39,9 @@ class oo_object_loader extends oo_object_worker {
 	     foreach ($references as $reference) {
 	        $fieldname = $reference->field;
             $property = $this->object->get_property($fieldname);
-            
             // Load Object
             $object = $this->object::load_object_of($reference->element_id);
-            
+
             if ($property->is_array()) {
                 $this->object->$fieldname[$reference->index] = $object; 
             } else {

@@ -238,6 +238,8 @@ class ObjectReReadTest extends ObjectCommon
 	 * @group complex
 	 */
 	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
+	    \Sunhill\Objects\oo_object::flush_cache();
+	    $this->clear_system_tables();
 	    $classname = 'Sunhill\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -256,11 +258,10 @@ class ObjectReReadTest extends ObjectCommon
 	            $this->fail("Init_Callback fehlgeschlagen.");
 	        }
 	    }
-	    $init_object->commit();
-	    
+	    $init_object->commit(); 
+	    $id = $init_object->get_id();
 	    // Read
-	    $read_object = new $classname;
-	    $read_object->load($init_object->get_id());
+	    $read_object = \Sunhill\Objects\oo_object::load_object_of($id);
 	    if (!is_null($read_callback)) {
 	        if (!$read_callback($read_object)) {
 	            $this->fail("Read_Callback fehlgeschlagen.");
@@ -285,7 +286,7 @@ class ObjectReReadTest extends ObjectCommon
 	}
 	
 	public function ComplexFieldProvider() {
-	    return [
+	    return [ 
 	        [ // Einfacher Test mit Komplexen-Felder
 	            'ts_testparent',
 	            [   'parentchar'=>'ABC',
@@ -451,7 +452,56 @@ class ObjectReReadTest extends ObjectCommon
 	                    ($object->childsarray[0] == 'EDC') &&
 	                    ($object->childsarray[count($object->parentsarray)-1] == 'QRS');
 	                },
-	                ]
+	                ],
+	                [ // Änderung nur der untergebenen Objekte, hier mit doppelter Referenz
+	                    'ts_referenceonly',
+	                    ['testint'=>1234],
+	                    function($object) {
+	                        $add1 = new \Sunhill\Test\ts_dummy();
+	                        $add1->dummyint = 4321;
+	                        $object->testobject = $add1;
+	                        $object->testoarray[] = $add1;
+	                        return true;
+	                    },
+	                    function($object) { // Read-Callback
+	                        return ($object->testint == 1234) && ($object->testobject->dummyint == 4321) &&
+	                               ($object->testoarray[0]->dummyint == 4321);
+	                    },
+	                    function($object) { // Modify Callback
+	                        $object->testoarray[0]->dummyint = 666;
+	                        return true;
+	                    },
+	                    function($object) { // Expect Callback
+	                        return ($object->testint == 1234) && ($object->testobject->dummyint == 666) &&
+	                        ($object->testoarray[0]->dummyint == 666);
+	                    }
+	                    
+	                ],
+	                [ // Zirkuläre Referenzen
+	                    'ts_referenceonly',
+	                    ['testint'=>1234],
+	                    function($object) {
+	                        $add1 = new \Sunhill\Test\ts_referenceonly();
+	                        $add1->testint = 4321;
+	                        $add1->testobject = $object;
+	                        $object->testobject = $add1;
+	                        return true;
+	                    },
+	                    function($object) { // Read-Callback
+	                        return ($object->testint == 1234) && ($object->testobject->testint == 4321) &&
+	                        ($object->testobject->testobject->testint == 1234);
+	                    },
+	                    function($object) { // Modify Callback
+	                        $object->testobject->testint = 666;
+	                        return true;
+	                    },
+	                    function($object) { // Expect Callback
+	                        return ($object->testint == 1234) && ($object->testobject->testint == 666) &&
+	                        ($object->testobject->testobject->testint == 1234);
+	                    }
+	                    
+	                    ]
+	                    
 	            ];
 	}
 	
