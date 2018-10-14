@@ -235,6 +235,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @param callback $modify_callback
 	 * @param array $expect
 	 * @param callback $expect_callback
+	 * @group complex
 	 */
 	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
 	    $classname = 'Sunhill\\Test\\'.$classname;
@@ -345,6 +346,112 @@ class ObjectReReadTest extends ObjectCommon
 	                ($object->parentsarray[count($object->parentsarray)-1] == 'EDC');
 	            },
 	            ],
+	            [ //Einfacher Test für geerbte Felder beide modifiziert
+	                'ts_testchild',
+	                [   'parentchar'=>'ABC',
+	                    'parentint'=>123,
+	                    'parentfloat'=>1.23,
+	                    'parenttext'=>'ABC DEF',
+	                    'parentdatetime'=>'2001-01-01 01:01:01',
+	                    'parentdate'=>'2011-01-01',
+	                    'parenttime'=>'11:11:11',
+	                    'parentenum'=>'testA',
+	                    'childchar'=>'CCC',
+	                    'childint'=>666,
+	                    'childfloat'=>3.33,
+	                    'childtext'=>'Lorem ipsum',
+	                    'childdatetime'=>'2001-02-22 22:01:22',
+	                    'childdate'=>'2011-02-02',
+	                    'childtime'=>'12:12:12',
+	                    'childenum'=>'testB'
+	                ],
+	                function($object) {
+	                    $add1 = new \Sunhill\Test\ts_dummy();
+	                    $add2 = new \Sunhill\Test\ts_dummy();
+	                    $add3 = new \Sunhill\Test\ts_dummy();
+	                    $add4 = new \Sunhill\Test\ts_dummy();
+	                    $add5 = new \Sunhill\Test\ts_dummy();
+	                    $add6 = new \Sunhill\Test\ts_dummy();
+	                    $add1->dummyint = 1234;
+	                    $add2->dummyint = 2345;
+	                    $add3->dummyint = 3456;
+	                    $add4->dummyint = 4567;
+	                    $add5->dummyint = 5678;
+	                    $add6->dummyint = 6789;
+	                    $object->parentobject = $add1;
+	                    $object->parentoarray[] = $add2;
+	                    $object->parentoarray[] = $add3;
+	                    $object->childobject = $add4;
+	                    $object->childoarray[] = $add5;
+	                    $object->childoarray[] = $add6;
+	                    $object->parentsarray[] = 'CBA';
+	                    $object->parentsarray[] = 'DCB';
+	                    $object->childsarray[] = 'EDC';
+	                    $object->childsarray[] = 'FED';
+	                    return ($object->parentobject->dummyint == 1234) &&
+	                    ($object->parentoarray[0]->dummyint == 2345) &&
+	                    ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 3456) &&
+	                    ($object->parentsarray[0] == 'CBA') &&
+	                    ($object->parentsarray[count($object->parentsarray)-1] == 'DCB') && 
+	                    ($object->childobject->dummyint == 4567) &&
+	                    ($object->childoarray[0]->dummyint == 5678) &&
+	                    ($object->childoarray[count($object->childoarray)-1]->dummyint == 6789) &&
+	                    ($object->childsarray[0] == 'EDC') &&
+	                    ($object->childsarray[count($object->childsarray)-1] == 'FED');
+	                },
+	                function($object) {
+	                    return ($object->parentobject->dummyint == 1234) &&
+	                    ($object->parentoarray[0]->dummyint == 2345) &&
+	                    ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 3456) &&
+	                    ($object->parentsarray[0] == 'CBA') &&
+	                    ($object->parentsarray[count($object->parentsarray)-1] == 'DCB') &&
+	                    ($object->childobject->dummyint == 4567) &&
+	                    ($object->childoarray[0]->dummyint == 5678) &&
+	                    ($object->childoarray[count($object->childoarray)-1]->dummyint == 6789) &&
+	                    ($object->childsarray[0] == 'EDC') &&
+	                    ($object->childsarray[count($object->childsarray)-1] == 'FED');
+	                },
+	                function($object) {
+	                    $add1 = new \Sunhill\Test\ts_dummy();
+	                    $add2 = new \Sunhill\Test\ts_dummy();
+	                    $add3 = new \Sunhill\Test\ts_dummy();
+	                    $add4 = new \Sunhill\Test\ts_dummy();
+	                    $add1->dummyint = 4321;
+	                    $add2->dummyint = 5432;
+	                    $add3->dummyint = 6543;
+	                    $add4->dummyint = 7654;
+	                    $object->parentobject = $add1;
+	                    $object->parentoarray[] = $add2;
+	                    $object->parentsarray[] = 'PQR';
+	                    $object->childobject = $add3;
+	                    $object->childoarray[] = $add4;
+	                    $object->childsarray[] = 'QRS';
+	                    
+	                    
+	                    return ($object->parentobject->dummyint == 4321) &&
+	                    ($object->parentoarray[0]->dummyint == 2345) &&
+	                    ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 5432) &&
+	                    ($object->parentsarray[0] == 'CBA') &&
+	                    ($object->parentsarray[count($object->parentsarray)-1] == 'PQR') &&
+	                    ($object->childobject->dummyint == 6543) &&
+	                    ($object->childoarray[0]->dummyint == 5678) &&
+	                    ($object->childoarray[count($object->parentoarray)-1]->dummyint == 7654) &&
+	                    ($object->childsarray[0] == 'EDC') &&
+	                    ($object->childsarray[count($object->parentsarray)-1] == 'QRS');
+	                },
+	                function($object) { // Expect-Callback
+	                    return ($object->parentobject->dummyint == 4321) &&
+	                    ($object->parentoarray[0]->dummyint == 2345) &&
+	                    ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 5432) &&
+	                    ($object->parentsarray[0] == 'CBA') &&
+	                    ($object->parentsarray[count($object->parentsarray)-1] == 'PQR') &&
+	                    ($object->childobject->dummyint == 6543) &&
+	                    ($object->childoarray[0]->dummyint == 5678) &&
+	                    ($object->childoarray[count($object->parentoarray)-1]->dummyint == 7654) &&
+	                    ($object->childsarray[0] == 'EDC') &&
+	                    ($object->childsarray[count($object->parentsarray)-1] == 'QRS');
+	                },
+	                ]
 	            ];
 	}
 	
