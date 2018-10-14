@@ -14,10 +14,10 @@ class sunhill_testcase extends TestCase {
         DB::statement("create table testchildren (id int primary key,childint int,childchar ".
             "varchar(255), childfloat float, childtext text,childdatetime datetime, childdate date, childtime time,".
             "childenum ENUM('testA','testB','testC'))");
-        DB::statement("create table passthrus (id int primary key)");
-        DB::statement("create table secondlevelchildren (id int primary key,childint int)");        
-        DB::statement("create table dummies (id int primary key,dummyint int)");
-        DB::statement("create table referenceonlies (id int primary key,testint int)");
+        DB::statement("create table passthrus (id int primary key) ENGINE = MEMORY");
+        DB::statement("create table secondlevelchildren (id int primary key,childint int) ENGINE = MEMORY");        
+        DB::statement("create table dummies (id int primary key,dummyint int) ENGINE = MEMORY");
+        DB::statement("create table referenceonlies (id int primary key,testint int) ENGINE = MEMORY");
     }
     
     protected function DropTestClasses() {

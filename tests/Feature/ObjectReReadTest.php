@@ -500,7 +500,29 @@ class ObjectReReadTest extends ObjectCommon
 	                        ($object->testobject->testobject->testint == 1234);
 	                    }
 	                    
-	                    ]
+	                    ],
+	                    [ // Löschen einer Referenz
+	                        'ts_referenceonly',
+	                        ['testint'=>1234],
+	                        function($object) {
+	                            $add1 = new \Sunhill\Test\ts_dummy();
+	                            $add1->dummyint = 4321;
+	                            $object->testobject = $add1;
+	                            return true;
+	                        },
+	                        function($object) { // Read-Callback
+	                            return true;
+	                        },
+	                        function($object) { // Modify Callback
+	                            $object->testobject  = null;
+	                            return true;
+	                        },
+	                        function($object) { // Expect Callback
+	                            return (is_null($object->testobject));
+	                        }
+	                        
+	                        ]
+	                        
 	                    
 	            ];
 	}
