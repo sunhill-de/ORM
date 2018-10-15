@@ -527,4 +527,25 @@ class ObjectReReadTest extends ObjectCommon
 	            ];
 	}
 	
+	/**
+	 * @group many
+	 */
+	public function testManyObjects() {
+	    \Sunhill\Objects\oo_object::flush_cache();
+	    $sub = array();
+	    $main = array();
+	    for ($i=0;$i<100;$i++) {
+	        $sub[$i] = new \Sunhill\Test\ts_dummy();
+	        $sub[$i]->dummyint = $i;
+	        $main[$i] = new \Sunhill\Test\ts_referenceonly();
+	        $main[$i]->testobject = $sub[$i];
+	        $main[$i]->testint = $i+100;
+	        $main[$i]->commit();
+	        if ($i==50) {
+	            $id = $main[$i]->get_id();
+	        }
+	    }
+        $obj = \Sunhill\Objects\oo_object::load_object_of($id);
+        $this->assertEquals(50,$obj->testobject->testint);
+	}
 }
