@@ -70,8 +70,11 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 			throw new PropertyException("Die Property ist read-only.");
 		}
 		if ($value !== $this->value || !$this->initialized) {
-			$this->value = (is_null($value)?null:$this->validate($value));
-			$this->dirty = true;
+		    if (!$this->dirty) {
+		        $this->shadow = $this->value;
+		        $this->dirty = true;
+		    }
+		    $this->value = (is_null($value)?null:$this->validate($value));
 			$this->initialized = true;
 		}
 		return $this;

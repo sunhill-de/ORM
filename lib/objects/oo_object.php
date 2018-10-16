@@ -11,6 +11,8 @@ class oo_object extends \Sunhill\base {
 
 	private $id;
 	
+	private $readonly=false;
+	
 	/**
 	 * Speichert die Tags, die mit diesem Objekt assoziiert sind
 	 * @var array of oo_tags
@@ -214,17 +216,19 @@ class oo_object extends \Sunhill\base {
 	 * Wird nach einem Datenbank update aufgerufen. Hier erfolgen die Verarbeitung von Triggern etc. 
 	 */
 	protected function post_update() {
-		$changed_fields = $this->get_changed_fields();
+		$this->readonly = true;
+	    $changed_fields = $this->get_changed_fields();
 		foreach ($changed_fields as $model=>$fields) {
 		  foreach($fields as $field) {	
 			$property = $this->get_property($field);
-			$method_name = 'field_'.$field.'_updated';
+			$method_name = $field.'_changed';
 			if (method_exists($this, $method_name)) {
 				$this->$method_name($property->get_old_value(),$property->get_value());
 			}
 			$this->field_updated($field,$property->get_old_value(),$property->get_value());
 		  }
 		}
+		$this->readonly = false;
 	}
 	
 	protected function post_update_tags() {
@@ -243,7 +247,17 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	protected function pre_update() {
-		
+	    $changed_fields = $this->get_changed_fields();
+	    foreach ($changed_fields as $model=>$fields) {
+	        foreach($fields as $field) {
+	            $property = $this->get_property($field);
+	            $method_name = $field.'_changing';
+	            if (method_exists($this, $method_name)) {
+	                $this->$method_name($property->get_old_value(),$property->get_value());
+	            }
+	            $this->field_updated($field,$property->get_old_value(),$property->get_value());
+	        }
+	    }	    
 	}
 	
 	public function create_empty() {
@@ -310,7 +324,11 @@ class oo_object extends \Sunhill\base {
 	
 	public function __set($name,$value) {
 		if (isset($this->properties[$name])) {
-			return $this->properties[$name]->set_value($value);
+		    if ($this->readonly) {
+		        throw new \Exception("Property '$name' in der Readonly Phase verändert.");
+		    } else {
+		          return $this->properties[$name]->set_value($value);
+		    }
 		} else {
 			return parent::__set($name,$value);
 		}		
