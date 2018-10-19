@@ -521,10 +521,46 @@ class ObjectReReadTest extends ObjectCommon
 	                            return (is_null($object->testobject));
 	                        }
 	                        
-	                        ]
-	                        
+	                        ],
+	                        [ // Einfaches Ändern eines untergeordneten Objektes
+	                            'ts_referenceonly',
+	                            ['testint'=>1234],
+	                            function($object) {
+	                                $add1 = new \Sunhill\Test\ts_dummy();
+	                                $add1->dummyint = 4321;
+	                                $object->testobject = $add1;
+	                                return true;
+	                            },
+	                            function($object) { // Read-Callback
+	                                return true;
+	                            },
+	                            function($object) { // Modify Callback
+	                                $object->testobject->dummyint = 5432;
+	                                return true;
+	                            },
+	                            function($object) { // Expect Callback
+	                                return ($object->testobject->dummyint == 5432);
+	                            }
+	                            
+	                            ]
+	                            
 	                    
 	            ];
+	}
+	
+	public function testChildChange() {
+	       \Sunhill\Objects\oo_object::flush_cache();
+	       $object = new \Sunhill\Test\ts_referenceonly();
+	       $child  = new \Sunhill\Test\ts_dummy();
+	       $object->testint = 123;
+	       $child->dummyint = 234;
+	       $object->testobject = $child;
+	       $object->commit();
+	       $child->dummyint = 666;
+	       $child->commit();
+	       $read = \Sunhill\Objects\oo_object::load_object_of($object->get_id());
+	       $this->assertEquals(666,$read->testobject->dummyint);
+	       
 	}
 	
 	/**
@@ -545,7 +581,7 @@ class ObjectReReadTest extends ObjectCommon
 	            $id = $main[$i]->get_id();
 	        }
 	    }
-        $obj = \Sunhill\Objects\oo_object::load_object_of($id);
-        $this->assertEquals(50,$obj->testobject->testint);
+	    $obj = \Sunhill\Objects\oo_object::load_object_of($id);
+        $this->assertEquals(50,$obj->testobject->dummyint);
 	}
 }
