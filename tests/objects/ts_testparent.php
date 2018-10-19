@@ -6,7 +6,7 @@ use Sunhill\Objects;
 
 class ts_testparent extends \Sunhill\Objects\oo_object {
 	
-    public $flag = '';
+    public static $flag = '';
     
     public $trigger_exception = false;
     
@@ -26,66 +26,67 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	}
 	
 	public function parentint_changing($from,$to) {
-	   $this->flag .= "BINT(".$from."=>$to)";    
+	   self::$flag .= "BINT(".$from."=>$to)";    
 	}
 	
 	public function parentint_changed($from,$to) {
-	    $this->flag .= "AINT($from=>$to)";	    
+	    self::$flag .= "AINT($from=>$to)";	    
 	}
 	
 	public function parentchar_changing($from,$to) {
-	    $this->flag .= "BCHAR($from=>$to)";
+	    self::$flag .= "BCHAR($from=>$to)";
 	    $this->parentint++;
 	}
 	
 	public function parentchar_changed($from,$to) {
-	    $this->flag .= "ACHAR($from=>$to)";
+	    self::$flag .= "ACHAR($from=>$to)";
 	}
 
 	public function parentfloat_changing($from,$to) {
-	    $this->flag .= "BFLOAT($from=>$to)";
+	    self::$flag .= "BFLOAT($from=>$to)";
 	    $this->parentint--;
 	}
 	
 	public function parentfloat_changed($from,$to) {
-	    $this->flag .= "AFLOAT($from=>$to)";
+	    self::$flag .= "AFLOAT($from=>$to)";
 	    if ($this->trigger_exception) {
 	       $this->parentint--; // Exception
 	    }
 	}
 	
-	public function parentobject_changed($changed_fields) {
+	public function parentobject_content_changed($changed_fields) {
+	    die();
 	    if (is_array($changed_fields)) {
     	    foreach ($changed_fields as $field => list($from,$to)) {
-    	        $this->flag .= "AOBJECT($field:$from=>$to)";
+    	        self::$flag .= "AOBJECT($field:$from=>$to)";
     	    }
 	    }
 	}
 	
 	public function parentsarray_changed($new,$deleted) {
-	    $this->flag .= "SARRAY(NEW:";
+	    self::$flag .= "SARRAY(NEW:";
         foreach ($new as $entry) {
-	        $this->flag .= "$entry ";
+            self::$flag .= "$entry ";
 	    }
-	    $this->flag .= "REMOVED:";
+	    self::$flag .= "REMOVED:";
 	    foreach ($deleted as $entry) {
-	        $this->flag .= "$entry ";
+	        self::$flag .= "$entry ";
 	    }
 	}
 	
 	public function parentoarray_changed($new,$deleted,$changed) {
-	    $this->flag .= "OARRAY(NEW:";
+	    self::$flag .= "OARRAY(NEW:";
 	    foreach ($new as $entry) {
-	        $this->flag .= $entry->dummyint." ";
+	        self::$flag .= $entry->dummyint." ";
 	    }
-	    $this->flag .= "REMOVED:";
+	    self::$flag .= "REMOVED:";
 	    foreach ($deleted as $entry) {
-	        $this->flag .= $entry->dummyint." ";
+	        self::$flag .= $entry->dummyint." ";
 	    }
-	    $this->flag .= "CHANGED:";
+	    self::$flag .= "CHANGED:";
 	    foreach ($changed as $entry => $changes) {
 	        foreach ($changes as $field => list($from,$to)) {
-	            $this->flag .= $field."[$from=>$to]";	            
+	            self::$flag .= $field."[$from=>$to]";	            
 	        }
 	    }
 	}

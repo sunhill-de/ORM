@@ -10,14 +10,15 @@ use Sunhill\Test;
 class ObjectTriggerTest extends ObjectCommon
 {
     /**
-     * @dataProvider TriggerProvider
+     * @dataProvider SimpleTriggerProvider
      * @param unknown $init
      * @param unknown $change
      * @param unknown $expect
      */
-    public function testTriggers($class,$init,$change,$expect) {
+    public function testSimpleTriggers($class,$init,$change,$expect) {
         $object = new $class;
         $object->trigger_exception = true;
+        $object::$flag = '';
         foreach ($init as $key => $value) {
             $object->$key = $value;
         }
@@ -35,11 +36,11 @@ class ObjectTriggerTest extends ObjectCommon
             $this->fail();
         } else {
             $object->commit();
-            $this->assertEquals($expect,$object->flag);
+            $this->assertEquals($expect,$object::$flag);
         }
     }
     
-    public function TriggerProvider() {
+    public function SimpleTriggerProvider() {
         return [
           [ 'Sunhill\\Test\\ts_testparent',
             [   'parentchar'=>'ABC',
@@ -100,6 +101,59 @@ class ObjectTriggerTest extends ObjectCommon
                     'parentfloat'=>2.34
                 ],
                 'EXCEPTION'
+            ]
+            
+        ];
+    }
+    
+    /**
+     * @dataProvider ComplexTriggerProvider
+     * @param unknown $init
+     * @param unknown $change
+     * @param unknown $expect
+     * @group complex
+     */
+    public function testComplexTriggers($class,$init,$change,$expect) {
+        $object = new $class;
+        $object->trigger_exception = true;
+        $object::$flag = '';
+        $init($object);
+        $object->commit(); 
+        $change($object);
+        if ($expect == 'EXCEPTION') {
+            try {
+                $object->commit();
+            } catch (\exception $e) {
+                $this->assertTrue(true);
+                return;
+            }
+            $this->fail();
+        } else {
+            $object->commit();
+            $this->assertEquals($expect,$object::$flag);
+        }
+    }
+    
+    public function ComplexTriggerProvider() {
+        return [
+            [ 'Sunhill\\Test\\ts_testparent',
+                function($object) {
+                    $object->parentchar='ABC';
+                    $object->parentint=123;
+                    $object->parentfloat=1.23;
+                    $object->parenttext='ABC DEF';
+                    $object->parentdatetime='2001-01-01 01:01:01';
+                    $object->parentdate='2011-01-01';
+                    $object->parenttime='11:11:11';
+                    $object->parentenum='testA';
+                    $add = new \Sunhill\Test\ts_dummy();
+                    $add->dummyint = 666;
+                    $object->parentobject = $add;
+                },
+                function($object) {
+                    $object->parentobject->dummyint = 777;
+                },
+                'AOBJECT(dummyint:666=>777'
             ]
             
         ];

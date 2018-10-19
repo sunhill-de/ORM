@@ -74,7 +74,7 @@ class oo_object extends \Sunhill\base {
 	    if (!$this->comitting) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
 	        $this->comitting = true;
 	        if ($this->get_id()) {
-    			$this->pre_update();
+    			$this->pre_update(); 
     			$this->update();
     			$this->post_update();
     			$this->post_update_tags();
@@ -218,6 +218,7 @@ class oo_object extends \Sunhill\base {
 	protected function post_update() {
 		$this->readonly = true;
 	    $changed_fields = $this->get_changed_fields();
+	    $broadcast = array();
 		foreach ($changed_fields as $model=>$fields) {
 		  foreach($fields as $field) {	
 			$property = $this->get_property($field);
@@ -225,10 +226,25 @@ class oo_object extends \Sunhill\base {
 			if (method_exists($this, $method_name)) {
 				$this->$method_name($property->get_old_value(),$property->get_value());
 			}
+			$broadcast[$field] = array($property->get_old_value(),$property->get_value());
 			$this->field_updated($field,$property->get_old_value(),$property->get_value());
 		  }
 		}
+		if (!empty($broadcast)) {
+		    $this->broadcast_parents($broadcast,'content_changed');
+		}
 		$this->readonly = false;
+	}
+	
+	private function broadcast_parents($broadcast,$phase) {
+	    $parents = \App\objectobjectassign::where('element_id','=',$this->get_id())->get();
+	    foreach ($parents as $parent) {
+	        $parent_object = self::load_object_of($parent->container_id);
+	        $method_name = $parent->field.'_'.$phase;
+	        if (method_exists($parent_object,$method_name)) {
+	           $parent_object->$method_name();           
+	        }
+	    }	    
 	}
 	
 	protected function post_update_tags() {
