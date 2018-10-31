@@ -29,20 +29,12 @@ class oo_object extends \Sunhill\base {
 	private $tags_shadow;
 	
 	private $comitting = false;
-	
-	private static $objectcache = array();
-	
+		
 	public function __construct() {
 		//parent::__construct();
 		$this->tags = array();
 		$this->tags_shadow = array();
 		$this->setup_properties();
-	}
-	
-	protected function setup_properties() {
-		$this->properties = array();
-		$this->timestamp('created_at')->set_model('coreobject');
-		$this->timestamp('updated_at')->set_model('coreobject');
 	}
 	
 	public function get_id() {
@@ -108,54 +100,6 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	/**
-	 * Ermittelt, welche Tags hinzugefügt und welche gelöscht worden sind
-	 * @return array[]
-	 */
-	public function get_changed_tags() {
-		$result = array('added'=>array(),'deleted'=>array());
-		$oldtags = $this->get_old_tags();
-		$newtags = $this->get_new_tags();
-		foreach ($this->tags as $tag) {
-			if (!in_array($tag->get_fullpath(),$oldtags)) {
-				$result['added'][] = $tag;
-			}
-		}
-		foreach ($oldtags as $tag) {
-			if (!in_array($tag->get_fullpath(),$newtags)) {
-				$result['deleted'][] = $tag;
-			}
-		}
-		return $result;
-	}
-
-	private function get_tags_only($source) {
-		$result = array();
-		foreach ($source as $tag) {
-			$result[] = $tag->get_fullpath();
-		}
-		return $result;		
-	}
-	
-	private function get_old_tags() {
-		return $this->get_tags_only($this->tags_shadow);
-	}
-	
-	private function get_new_tags() {
-		return $this->get_tags_only($this->tags);		
-	}
-	/**
-	 * Liefert das Property-Objekt der Property $name zurück
-	 * @param string $name Name der Property
-	 * @return oo_property
-	 */
-	public function get_property($name) {
-		if (!isset($this->properties[$name])) {
-			throw new UnknownPropertyException("Unbekannter Property '$property'");
-		}
-		return $this->properties[$name];	
-	}
-	
-	/**
 	 * Wird aufgerufen, wenn der commit ausgeführt wurde (egal ob create oder update)
 	 */
 	private function comitted() {
@@ -174,32 +118,6 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	protected function post_create() {
-		
-	}
-	
-	/**
-	 * Diese Methode wird aufgrufen, um das Tag-Handling zu bewerkstelligen
-	 * Sie speichert die Tag assoziationen in der Datenbank und ruft für jedes Tag tag_added auf
-	 */
-	private function post_create_tags() {
-		foreach ($this->tags as $tag) {
-			$this->tag_added($tag);
-		}
-	}
-	
-	/**
-	 * Diese Methode wird immer dann aufgerufen, wenn im Rahmen eines commit ein neues Tag mit dem Objekt assoziiert wurde
-	 * @param oo_tag $tag Das Tag, welches assoziert wurde
-	 */
-	protected function tag_added(oo_tag $tag) {
-		
-	}
-	
-	/**
-	 * Diese Methode wird immer dann aufgerufen, wenn im Rahmen eines commit ein Tag vom Objekt entfernt wurde
-	 * @param oo_tag $tag Das Tag, welches assoziert wurde
-	 */
-	protected function tag_removed(oo_tag $tag) {
 		
 	}
 	
@@ -247,21 +165,6 @@ class oo_object extends \Sunhill\base {
 	    }	    
 	}
 	
-	protected function post_update_tags() {
-		if (!empty($this->tags)) {
-			$added_tags = array_diff($this->tags,$this->tags_shadow);
-			foreach ($added_tags as $tag) {
-				$this->tag_added($tag);
-			}
-		}
-		if (!empty($this->tags_shadow)) {
-		 $removed_tags = array_diff($this->tags_shadow,$this->tags);
-		 foreach ($added_tags as $tag) {
-	 		$this->tag_removed($tag);
- 	 	 }
-		}
-	}
-	
 	protected function pre_update() {
 	    $changed_fields = $this->get_changed_fields();
 	    foreach ($changed_fields as $model=>$fields) {
@@ -276,17 +179,66 @@ class oo_object extends \Sunhill\base {
 	    }	    
 	}
 	
+	/**
+	 * Erzeugt ein leeres neues Objekt
+	 */
 	public function create_empty() {
 		
 	}
 	
-	protected function tags_added($tags) {
+	// ***************************** Tag Handling **************************************
+	
+	/**
+	 * Wird nach einem update aufgerufen, um die neuen und gelöschten Tags zu finden
+	 */
+	protected function post_update_tags() {
+	    if (!empty($this->tags)) {
+	        $added_tags = array_diff($this->tags,$this->tags_shadow);
+	        foreach ($added_tags as $tag) {
+	            $this->tag_added($tag);
+	        }
+	    }
+	    if (!empty($this->tags_shadow)) {
+	        $removed_tags = array_diff($this->tags_shadow,$this->tags);
+	        foreach ($added_tags as $tag) {
+	            $this->tag_removed($tag);
+	        }
+	    }
+	}
+		
+	/**
+	 * Diese Methode wird aufgrufen, um das Tag-Handling zu bewerkstelligen
+	 * Sie speichert die Tag assoziationen in der Datenbank und ruft für jedes Tag tag_added auf
+	 */
+	private function post_create_tags() {
+	    foreach ($this->tags as $tag) {
+	        $this->tag_added($tag);
+	    }
+	}
+	
+	/**
+	 * Diese Methode wird immer dann aufgerufen, wenn im Rahmen eines commit ein neues Tag mit dem Objekt assoziiert wurde
+	 * @param oo_tag $tag Das Tag, welches assoziert wurde
+	 */
+	protected function tag_added(oo_tag $tag) {
+	    
+	}
+	
+	/**
+	 * Diese Methode wird immer dann aufgerufen, wenn im Rahmen eines commit ein Tag vom Objekt entfernt wurde
+	 * @param oo_tag $tag Das Tag, welches assoziert wurde
+	 */
+	protected function tag_removed(oo_tag $tag) {
+	    
+	}
+	
+/**	protected function tags_added($tags) {
 		
 	}
 	
 	protected function tags_deleted($tags) {
 		
-	}
+	}*/
 	
 	/**
 	 * Fügt ein neues Tag hinzu oder ignoriert es, wenn es bereits hinzugefügt wurde
@@ -329,6 +281,54 @@ class oo_object extends \Sunhill\base {
 	public function get_tag($index) {
 		return $this->tags[$index];	
 	}
+
+	/**
+	 * Ermittelt, welche Tags hinzugefügt und welche gelöscht worden sind
+	 * @return array[]
+	 */
+	public function get_changed_tags() {
+	    $result = array('added'=>array(),'deleted'=>array());
+	    $oldtags = $this->get_old_tags();
+	    $newtags = $this->get_new_tags();
+	    foreach ($this->tags as $tag) {
+	        if (!in_array($tag->get_fullpath(),$oldtags)) {
+	            $result['added'][] = $tag;
+	        }
+	    }
+	    foreach ($oldtags as $tag) {
+	        if (!in_array($tag->get_fullpath(),$newtags)) {
+	            $result['deleted'][] = $tag;
+	        }
+	    }
+	    return $result;
+	}
+	
+	private function get_tags_only($source) {
+	    $result = array();
+	    foreach ($source as $tag) {
+	        $result[] = $tag->get_fullpath();
+	    }
+	    return $result;
+	}
+	
+	private function get_old_tags() {
+	    return $this->get_tags_only($this->tags_shadow);
+	}
+	
+	private function get_new_tags() {
+	    return $this->get_tags_only($this->tags);
+	}
+	// ********************* Property Handling *************************************	
+	
+	/**
+	 * Wird vom Constructor aufgerufen, um die Properties zu initialisieren.
+	 * Abgeleitete Objekte müssen immer die Elternmethoden mit aufrufen.
+	 */
+	protected function setup_properties() {
+	    $this->properties = array();
+	    $this->timestamp('created_at')->set_model('coreobject');
+	    $this->timestamp('updated_at')->set_model('coreobject');
+	}
 	
 	public function __get($name) {
 		if (isset($this->properties[$name])) {
@@ -348,6 +348,18 @@ class oo_object extends \Sunhill\base {
 		} else {
 			return parent::__set($name,$value);
 		}		
+	}
+	
+	/**
+	 * Liefert das Property-Objekt der Property $name zurück
+	 * @param string $name Name der Property
+	 * @return oo_property
+	 */
+	public function get_property($name) {
+	    if (!isset($this->properties[$name])) {
+	        throw new UnknownPropertyException("Unbekannter Property '$property'");
+	    }
+	    return $this->properties[$name];
 	}
 	
 	private function add_property($name,$type) {
@@ -449,6 +461,10 @@ class oo_object extends \Sunhill\base {
 	    }
 	    return $result;
 	}
+
+// ***************** Statische Methoden ***************************	
+	
+	private static $objectcache = array();
 	
 	/**
 	 * Ermittelt den Klassennamen von dem Object mit der ID $id
