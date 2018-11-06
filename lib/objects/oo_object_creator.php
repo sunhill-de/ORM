@@ -16,8 +16,8 @@ class oo_object_creator extends oo_object_storage {
 	    }
 	    if ($model_name == $this->object->default_ns."\coreobject") {
 	        $model->classname = get_class($this->object);
-	        $model->save();
-	        $this->object->set_id($model->id);
+	        $model->save(); 
+	        $this->object->set_id($model->id); 
 	    } else { 
 	        $model->id = $this->object->get_id();
 	        $model->save();

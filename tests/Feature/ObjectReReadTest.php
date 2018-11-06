@@ -479,7 +479,7 @@ class ObjectReReadTest extends ObjectCommon
 	                ],
 	                [ // Zirkuläre Referenzen
 	                    'ts_referenceonly',
-	                    ['testint'=>123466],
+	                    ['testint'=>1234],
 	                    function($object) {
 	                        $add1 = new \Sunhill\Test\ts_referenceonly();
 	                        $add1->testint = 4321;

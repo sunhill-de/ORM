@@ -62,7 +62,11 @@ abstract class oo_object_storage extends oo_object_worker {
                 if (!$reference->get_id()) {
                     $reference->commit();
                 }
-                $this->store_object_reference($fieldname, $reference->get_id(), 0);
+                if ($reference->get_id()) {
+                    $this->store_object_reference($fieldname, $reference->get_id(), 0);
+                } else {
+                    var_dump($reference);
+                }
             } 
         }
     }

@@ -37,10 +37,18 @@ class oo_object extends \Sunhill\base {
 		$this->setup_properties();
 	}
 	
+	/**
+	 * Liefert die Aktuelle ID des Objektes zurück (oder null, wenn das Objekt noch nicht in der Datenbank ist)
+	 * @return Integer oder null
+	 */
 	public function get_id() {
 		return $this->id;
 	}
 	
+	/**
+	 * Legt die ID für das aktuelle Objekt fest
+	 * @param Integer $id
+	 */
 	public function set_id($id) {
 		$this->id = $id;
 	}
@@ -66,12 +74,12 @@ class oo_object extends \Sunhill\base {
 	    if (!$this->comitting) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
 	        $this->comitting = true;
 	        if ($this->get_id()) {
-    			$this->pre_update(); 
+	            $this->pre_update(); 
     			$this->update();
     			$this->post_update(); 
     			$this->post_update_tags();
     		} else {
-    			$this->pre_create(); 
+    		    $this->pre_create(); 
     			$this->create();
     			$this->post_create();
     			$this->post_create_tags();
@@ -111,6 +119,7 @@ class oo_object extends \Sunhill\base {
 		$creator = new oo_object_creator($this);
 		$id = $creator->store();
 		$this->set_id($id);
+		$this->update_children();
 	}
 	
 	/**
@@ -137,7 +146,6 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	protected function pre_create() {
-	   $this->update_children();  
 	}
 	
 	protected function post_create() {
