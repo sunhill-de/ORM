@@ -31,6 +31,7 @@ class oo_object_updater extends oo_object_storage {
 	}
 	
 	protected function work_complex_fields() {
+	    //$this->object->update_children();
 	    $this->delete_references(); 
 	    $this->store_references();
 	}

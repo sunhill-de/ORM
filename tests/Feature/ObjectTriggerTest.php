@@ -129,7 +129,7 @@ class ObjectTriggerTest extends ObjectCommon
             }
             $this->fail();
         } else {
-            $object->commit();
+            $object->commit(); 
             $this->assertEquals($expect,$object::$flag);
         }
     }
@@ -153,7 +153,7 @@ class ObjectTriggerTest extends ObjectCommon
                 function($object) {
                     $object->parentobject->dummyint = 777;
                 },
-                'AOBJECT(dummyint:666=>777'
+                'AOBJECT(dummyint:666=>777)'
             ]
             
         ];

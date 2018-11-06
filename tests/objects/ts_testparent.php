@@ -54,8 +54,7 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	    }
 	}
 	
-	public function parentobject_content_changed($changed_fields) {
-	    die();
+	public function child_parentobject_updated($changed_fields) {
 	    if (is_array($changed_fields)) {
     	    foreach ($changed_fields as $field => list($from,$to)) {
     	        self::$flag .= "AOBJECT($field:$from=>$to)";

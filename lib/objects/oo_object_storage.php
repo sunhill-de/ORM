@@ -4,13 +4,12 @@ namespace Sunhill\Objects;
 
 use Illuminate\Support\Facades\DB;
 
-
 abstract class oo_object_storage extends oo_object_worker {
 	
 
     protected function delete_references() {
-        DB::table('objectobjectassigns')->where('container_id','=',$this->object->get_id())->delete();
-        DB::table('stringobjectassigns')->where('container_id','=',$this->object->get_id())->delete();
+       //DB::table('objectobjectassigns')->where('container_id','=',$this->object->get_id())->delete();
+       // DB::table('stringobjectassigns')->where('container_id','=',$this->object->get_id())->delete();
     }
     
     protected function store_references() {
@@ -32,6 +31,9 @@ abstract class oo_object_storage extends oo_object_worker {
     }
     
     private function store_object_reference($fieldname,$element,$index) {
+        DB::table('objectobjectassigns')->where([['container_id','=',$this->object->get_id()],
+                                                 ['field','=',$fieldname],
+                                                 ['index','=',$index]])->delete();
         $model = new \App\objectobjectassign();
         $model->container_id = $this->object->get_id();
         $model->element_id = $element;
@@ -41,6 +43,9 @@ abstract class oo_object_storage extends oo_object_worker {
     }
     
     private function store_string_reference($fieldname,$element,$index) {
+        DB::table('stringobjectassigns')->where([['container_id','=',$this->object->get_id()],
+        ['field','=',$fieldname],
+        ['index','=',$index]])->delete();
         $model = new \App\stringobjectassign();
         $model->container_id = $this->object->get_id();
         $model->element_id = $element;
@@ -51,14 +56,23 @@ abstract class oo_object_storage extends oo_object_worker {
     
     private function store_object_field($fieldname) {
         if (!is_null($this->object->$fieldname)) {
-            $this->object->$fieldname->commit();
-            $this->store_object_reference($fieldname, $this->object->$fieldname->get_id(), 0);
+//            $this->object->$fieldname->commit();
+            $reference = $this->object->$fieldname;
+            if (!is_null($reference)) {
+                if (!$reference->get_id()) {
+                    $reference->commit();
+                }
+                $this->store_object_reference($fieldname, $reference->get_id(), 0);
+            } 
         }
     }
     
     private function store_oarray_field($fieldname) {
         for ($i=0;$i<count($this->object->$fieldname);$i++) {
-            $this->object->$fieldname[$i]->commit();
+            if (!$this->object->$fieldname[$i]->get_id()) {
+                $this->object->$fieldname[$i]->commit();
+            }
+            //            $this->object->$fieldname[$i]->commit();
             $this->store_object_reference($fieldname, $this->object->$fieldname[$i]->get_id(), $i);
         }
     }

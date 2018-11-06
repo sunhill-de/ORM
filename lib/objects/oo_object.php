@@ -68,17 +68,17 @@ class oo_object extends \Sunhill\base {
 	        if ($this->get_id()) {
     			$this->pre_update(); 
     			$this->update();
-    			$this->post_update();
+    			$this->post_update(); 
     			$this->post_update_tags();
     		} else {
-    			$this->pre_create();
+    			$this->pre_create(); 
     			$this->create();
     			$this->post_create();
     			$this->post_create_tags();
     		}
     		$this->comitted();
-	        $this->comitting = false;
-	    }
+    		$this->comitting = false;
+	    } 
 	}
 	
 	/**
@@ -113,8 +113,31 @@ class oo_object extends \Sunhill\base {
 		$this->set_id($id);
 	}
 	
+	/**
+	 * @todo unschöner Hack, update_children sollte privat bleiben und vom Objekt selber aufgerufen werden
+	 */
+	public function update_children() {
+	    $fields = $this->get_complex_fields();
+	    foreach ($fields as $fieldname) {
+	        $property = $this->get_property($fieldname);
+	        switch ($property->type) {
+	            case 'object':
+	                $object = $this->$fieldname;
+	                if (!is_null($object)) {
+	                    $object->commit();
+	                }	                
+	                break;
+	            case 'array_of_objects':
+	                foreach ($this->$fieldname as $object) {
+	                    $object->commit();
+	                }
+	                break;
+	        }
+	    }	    
+	}
+	
 	protected function pre_create() {
-		
+	   $this->update_children();  
 	}
 	
 	protected function post_create() {
@@ -144,28 +167,35 @@ class oo_object extends \Sunhill\base {
 			if (method_exists($this, $method_name)) {
 				$this->$method_name($property->get_old_value(),$property->get_value());
 			}
-			$broadcast[$field] = array($property->get_old_value(),$property->get_value());
+			$broadcast[$field] = array($property->get_old_value(),$property->get_value()); 
 			$this->field_updated($field,$property->get_old_value(),$property->get_value());
 		  }
 		}
-		if (!empty($broadcast)) {
-		    $this->broadcast_parents($broadcast,'content_changed');
+		if (!empty($broadcast)) { 
+		    $this->broadcast_parents($broadcast,'update');
 		}
 		$this->readonly = false;
 	}
 	
-	private function broadcast_parents($broadcast,$phase) {
+	/**
+	 * Ruft die Elternobjekte auf und teilt ihnen mit, dass sich ein Kind geändert hat
+	 * @param array $broadcast
+	 * @param 'update' oder 'delete' $action
+	 */
+	private function broadcast_parents($broadcast,$action) {
 	    $parents = \App\objectobjectassign::where('element_id','=',$this->get_id())->get();
 	    foreach ($parents as $parent) {
 	        $parent_object = self::load_object_of($parent->container_id);
-	        $method_name = $parent->field.'_'.$phase;
-	        if (method_exists($parent_object,$method_name)) {
-	           $parent_object->$method_name();           
-	        }
+	        $parent_object->child_changed($parent->field,$this,'update',$broadcast);
 	    }	    
 	}
 	
+	private function commit_child() {
+	       
+	}
+	
 	protected function pre_update() {
+	    $this->update_children();
 	    $changed_fields = $this->get_changed_fields();
 	    foreach ($changed_fields as $model=>$fields) {
 	        foreach($fields as $field) {
@@ -462,6 +492,21 @@ class oo_object extends \Sunhill\base {
 	    return $result;
 	}
 
+	/**
+	 * Wird von untergebenen Objekte aufgerufen, wenn diese sich ändern, um die
+	 * Eltern darüber zu informieren, dass sie verändert wurden
+	 * @param $fieldname string Name des Feldes, dass sich geändert hat
+	 * @param $childobject oo_object Das Objekt, welches sich ändert
+	 * @param $action (update,delete), was mit diesem Objekt passiert
+	 * @param $payload void, zusätzliche Parameter als Array
+	 */
+	public function child_changed($fieldname,$childobject,$action,$payload) {
+	   $method_name = 'child_'.$fieldname.'_'.$action.'d';
+	   if (method_exists($this, $method_name)) {
+	       $this->$method_name($payload);
+	   }
+	}
+	
 // ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();
