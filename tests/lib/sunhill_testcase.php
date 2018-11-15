@@ -36,6 +36,7 @@ class sunhill_testcase extends TestCase {
         DB::statement("truncate tagcache");
         DB::statement("truncate objectobjectassigns");
         DB::statement("truncate stringobjectassigns");
+        DB::statement("truncate tagobjectassigns");
     }
     
     protected function seed() {

@@ -46,7 +46,7 @@ class oo_object_creator extends oo_object_storage {
 	 * @param oo_tag $tag
 	 */
 	private function store_tag(oo_tag $tag,$id) {
-		$test = \App\tagobjectassign::firstOrCreate(['object_id'=>$id,
+		$test = \App\tagobjectassign::firstOrCreate(['container_id'=>$id,
 				'tag_id'=>$tag->get_id()]);
 	}
 	
