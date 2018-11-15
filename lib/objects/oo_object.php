@@ -61,6 +61,7 @@ class oo_object extends \Sunhill\base {
 		$loader = new oo_object_loader($this);
 		$result = $loader->load($id); 
 		$this->clean_properties();
+		$this->tags_shadow = $this->tags;
 		return $result;
 	}
 	
@@ -230,18 +231,6 @@ class oo_object extends \Sunhill\base {
 	 * Wird nach einem update aufgerufen, um die neuen und gelöschten Tags zu finden
 	 */
 	protected function post_update_tags() {
-	    if (!empty($this->tags)) {
-	        $added_tags = array_diff($this->tags,$this->tags_shadow);
-	        foreach ($added_tags as $tag) {
-	            $this->tag_added($tag);
-	        }
-	    }
-	    if (!empty($this->tags_shadow)) {
-	        $removed_tags = array_diff($this->tags_shadow,$this->tags);
-	        foreach ($added_tags as $tag) {
-	            $this->tag_removed($tag);
-	        }
-	    }
 	}
 		
 	/**
@@ -249,16 +238,13 @@ class oo_object extends \Sunhill\base {
 	 * Sie speichert die Tag assoziationen in der Datenbank und ruft für jedes Tag tag_added auf
 	 */
 	private function post_create_tags() {
-	    foreach ($this->tags as $tag) {
-	        $this->tag_added($tag);
-	    }
 	}
 	
 	/**
 	 * Diese Methode wird immer dann aufgerufen, wenn im Rahmen eines commit ein neues Tag mit dem Objekt assoziiert wurde
 	 * @param oo_tag $tag Das Tag, welches assoziert wurde
 	 */
-	protected function tag_added(oo_tag $tag) {
+	public function tag_added(oo_tag $tag) {
 	    
 	}
 	
@@ -266,18 +252,10 @@ class oo_object extends \Sunhill\base {
 	 * Diese Methode wird immer dann aufgerufen, wenn im Rahmen eines commit ein Tag vom Objekt entfernt wurde
 	 * @param oo_tag $tag Das Tag, welches assoziert wurde
 	 */
-	protected function tag_removed(oo_tag $tag) {
+	public function tag_removed(oo_tag $tag) {
 	    
 	}
-	
-/**	protected function tags_added($tags) {
 		
-	}
-	
-	protected function tags_deleted($tags) {
-		
-	}*/
-	
 	/**
 	 * Fügt ein neues Tag hinzu oder ignoriert es, wenn es bereits hinzugefügt wurde
 	 * @param oo_tag $tag
@@ -285,11 +263,21 @@ class oo_object extends \Sunhill\base {
 	public function add_tag(oo_tag $tag) {
 		foreach ($this->tags as $listed) {
 			if ($listed->get_fullpath() === $tag->get_fullpath()) {
-				return $this; // Gibt es schon
+			    return $this; // Gibt es schon
 			}
 		}
 		$this->tags[] = $tag;
 		return $this;
+	}
+	
+	public function delete_tag(oo_tag $tag) {
+	    for ($i=0;$i<count($this->tags);$i++) {
+	        if ($this->tags[$i]->get_fullpath() === $tag->get_fullpath()) {
+	            array_splice($this->tags,$i,1);
+	            return $this; // Ende an dieser Stelle
+	        }
+	    }
+        throw new ObjectException("Das zu löschende Tag '".$tag->get_fullpath()."' ist gar nicht gesetzt");
 	}
 	
 	/**
@@ -326,16 +314,27 @@ class oo_object extends \Sunhill\base {
 	 */
 	public function get_changed_tags() {
 	    $result = array('added'=>array(),'deleted'=>array());
-	    $oldtags = $this->get_old_tags();
-	    $newtags = $this->get_new_tags();
-	    foreach ($this->tags as $tag) {
-	        if (!in_array($tag->get_fullpath(),$oldtags)) {
-	            $result['added'][] = $tag;
+	    for ($i=0;$i<count($this->tags);$i++) {
+	        $found = false;
+	        for ($j=0;($j<count($this->tags_shadow));$j++) {
+	            if ($this->tags[$i]->get_fullpath() == $this->tags_shadow[$j]->get_fullpath()) {
+	                $found = true;
+	            }
+	        }	        
+	        if (!$found) {
+	            $result['added'][] = $this->tags[$i];
 	        }
 	    }
-	    foreach ($oldtags as $tag) {
-	        if (!in_array($tag->get_fullpath(),$newtags)) {
-	            $result['deleted'][] = $tag;
+	    
+	    for ($i=0;$i<count($this->tags_shadow);$i++) {
+	        $found = false;
+	        for ($j=0;($j<count($this->tags)) && (!$found);$j++) {
+	            if ($this->tags_shadow[$i]->get_fullpath() === $this->tags[$j]->get_fullpath()) {
+	                $found = true;
+	            }
+	        }
+	        if (!$found) {
+	            $result['deleted'][] = $this->tags_shadow[$i];
 	        }
 	    }
 	    return $result;

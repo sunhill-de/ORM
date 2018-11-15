@@ -37,6 +37,15 @@ class oo_object_updater extends oo_object_storage {
 	}
 	
 	protected function work_tags() {
+        $change = $this->object->get_changed_tags(); 
+        foreach ($change['added'] as $added) {
+            $this->store_tag($added);
+            $this->object->tag_added($added);
+        }
+        foreach ($change['deleted'] as $deleted) {
+            $this->remove_tag($deleted);
+            $this->object->tag_deleted($deleted);
+        }
 	}
 
 	/**
@@ -45,8 +54,20 @@ class oo_object_updater extends oo_object_storage {
 	 * @param oo_tag $tag
 	 */
 	private function store_tag(oo_tag $tag) {
-		$test = \App\tagobjectassign::firstOrCreate(['container_id'=>$this->object->get_id(),
-				'tag_id'=>$tag->get_id()]);
+	    $tagid = $tag->get_id();
+	    $id = $this->object->get_id();
+	    DB::statement("insert ignore into tagobjectassigns (container_id,tag_id) values ($id,$tagid)");
+	}
+	
+	/**
+	 * Speichert eine einzelne Referenz eines Tags in der Datenbank ab
+	 * @todo Hier besteht Optimierungpotential für zusammengefassten Datenbankanfragen
+	 * @param oo_tag $tag
+	 */
+	private function remove_tag(oo_tag $tag) {
+	    $tagid = $tag->get_id();
+	    $id = $this->object->get_id();
+	    DB::statement("delete from tagobjectassigns where container_id = $id and tag_id = $tagid");
 	}
 	
 	

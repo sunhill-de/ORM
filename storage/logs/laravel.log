@@ -6424,3 +6424,7 @@ Did you mean one of these?
 [stacktrace]
 #0 {main}
 "} 
+[2018-11-15 12:29:58] development.ERROR: Object of class Sunhill\Objects\oo_tag could not be converted to string {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 1): Object of class Sunhill\\Objects\\oo_tag could not be converted to string at /home/lokal/projekte/sunhill/lib/objects/oo_object.php:235)
+[stacktrace]
+#0 {main}
+"} 
