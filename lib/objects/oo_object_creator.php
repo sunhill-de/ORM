@@ -1,6 +1,7 @@
 <?php
 
 namespace Sunhill\Objects;
+use Illuminate\Support\Facades\DB;
 
 class oo_object_creator extends oo_object_storage {
 	
@@ -46,8 +47,8 @@ class oo_object_creator extends oo_object_storage {
 	 * @param oo_tag $tag
 	 */
 	private function store_tag(oo_tag $tag,$id) {
-		$test = \App\tagobjectassign::firstOrCreate(['container_id'=>$id,
-				'tag_id'=>$tag->get_id()]);
+	    $tagid = $tag->get_id();
+	    DB::statement("insert ignore into tagobjectassigns (container_id,tag_id) values ($id,$tagid)");	    
 	}
 	
 	

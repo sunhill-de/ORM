@@ -18,28 +18,38 @@ class ObjectTagTest extends ObjectCommon
         $this->clear_system_tables();
         $this->seed();
         $test = new \Sunhill\Test\ts_dummy();
-        if ($expect=='except') {
-            try {
-                $tag = new \Sunhill\Objects\oo_tag($set,$create);
-            } catch (\Exception $e) {
-                $this->assertTrue(true);
-                return;
+        
+        for ($i=0;$i<count($set);$i++) {
+            if ($expect[$i]=='except') {
+                try {
+                    $tag = new \Sunhill\Objects\oo_tag($set[$i],$create);
+                } catch (\Exception $e) {
+                    $this->assertTrue(true);
+                    return;
+                }
+                $this->fail();
+            } else {
+                $tag = new \Sunhill\Objects\oo_tag($set[$i],$create);
             }
-            $this->fail();
-        } else {
-            $tag = new \Sunhill\Objects\oo_tag($set,$create);
+            $test->add_tag($tag);
         }
-        $test->add_tag($tag);
         $test->dummyint = 1;
         $test->commit();
-        $this->assertEquals($expect,$test->get_tag(0)->get_fullpath());
+        for ($i=0;$i<count($expect);$i++) {
+            $this->assertEquals($expect[$i],$test->get_tag($i)->get_fullpath());
+        }
+        $reread =  new \Sunhill\Test\ts_dummy();
+        $reread->load($test->get_id());
+        for ($i=0;$i<count($expect);$i++) {
+            $this->assertEquals($expect[$i],$reread->get_tag($i)->get_fullpath());
+        }
     }
 
     public function TagProvider() {
-        return [['TagA','TagA',false],
-                ['TagA.TagChildA','TagA.TagChildA',false],
-                ['NewTag','NewTag',true],
-                ['NewTag','except',false]
+        return [[['TagA'],['TagA'],false],
+                [['TagA.TagChildA'],['TagA.TagChildA'],false],
+                [['NewTag'],['NewTag'],true],
+                [['NewTag'],['except'],false]
         ];
     }
     
