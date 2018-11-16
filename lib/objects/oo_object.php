@@ -643,6 +643,24 @@ class oo_object extends \Sunhill\base {
 	     return $parent_class_names;
 	}
 	
+	public function delete() {
+	       $this->pre_delete();
+	       $this->delete_object_tables();
+	       $this->delete_reference_tables();
+	       $this->post_delete();
+	}
+	
+	protected function pre_delete() {
+	    
+	}
+	
+	protected function deletion() {
+	    
+	}
+	
+	protected function post_delete() {
+	    
+	}
 // ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();
