@@ -572,28 +572,60 @@ class oo_object extends \Sunhill\base {
 	    }
 	}
 	
-	protected function copy_from(oo_object $source) {
-	    $this->set_id($source->get_id());
-	    foreach ($this->properties as $property) {
-	        $name = $property->get_name();
-	        switch ($property->get_type()) {
-	            case 'array_of_objects':
-	                break;
-	            case 'array_of_strings':
-	                break;
-	            case 'object':
-	                break;
-	            default:
-	                $this->$name = $source->$name;
-	        }
-	    }	    
-	}
-	
 	/**
 	 * Wird aufgerufen, nachdem das Objekt promoviert wurde
 	 * @param oo_object $newobject
 	 */
 	public function post_promotion(oo_object $from) {
+	    
+	}
+	
+	public function degrade(String $newclass) {
+	    if (!class_exists($newclass)) {
+	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");
+	    }
+	    if (!is_subclass_of(get_class($this), $newclass)) {
+	        throw new ObjectException("'".get_class($this)."' ist keine Unterklasse von '$newclass'");
+	    }
+	    $this->pre_degration($newclass);
+	    $newobject = $this->degration($newclass);
+	    $newobject->post_degration($this);
+	    return $newobject;
+	}
+	
+	protected function pre_degration(String $newclass) {
+	       return true;    
+	}
+	
+	protected function degration(String $newclass) {
+	    $newobject = new $newclass; // Neues Objekt erzeugen
+	    $newobject->copy_from($this); // Die Werte bis zu dieser Hirarchie können kopiert werden
+	    $model = \App\coreobject::where('id','=',$this->get_id())->first();
+	    $model->classname = $newclass;
+	    $model->save();
+	    
+	    return $newobject;
+	    
+	}
+	
+	public function copy_from(oo_object $source) {
+	    $this->set_id($source->get_id());
+	    foreach ($this->properties as $property) {
+	        $name = $property->get_name();
+	        switch ($property->get_type()) {
+	            case 'array_of_objects':
+	            case 'array_of_strings':
+	                for ($i=0;$i<count($source->$name);$i++) {
+	                    $this->$name[] = $source->$name[$i];
+	                }
+	                break;
+	            default:
+	                $this->$name = $source->$name;
+	        }
+	    }
+	}
+	
+	public function post_degration(oo_object $from) {
 	    
 	}
 	
