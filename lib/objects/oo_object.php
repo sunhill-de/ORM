@@ -514,6 +514,86 @@ class oo_object extends \Sunhill\base {
 	   }
 	}
 	
+	/**
+	 * Hebt das momentane Objekt auf eine abgeleitete Klasse an
+	 * @param String $newclass
+	 * @throws ObjectException
+	 * @return oo_object
+	 */
+	public function promote(String $newclass) {
+	    if (!class_exists($newclass)) {
+	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");    
+	    }
+	    if (!is_subclass_of($newclass, get_class($this))) {
+	        throw new ObjectException("'$newclass' ist keine Unterklassen von '".get_class($this)."'");
+	    }
+	    $this->pre_promotion($newclass);
+	    $newobject = $this->promotion($newclass);
+	    $newobject->post_promotion($this);
+	    return $newobject;
+	}
+	
+	/**
+	 * Wird aufgerufen, bevor die Promovierung stattfindet
+	 * @param String $newclass
+	 */
+	protected function pre_promotion(String $newclass) {
+	   return true; // Mach in der urspünglichen Variante nix
+	}
+	
+	/**
+	 * Die eigentliche Promovierung
+	 * @param String $newclass
+	 */
+	private function promotion(String $newclass) {
+	    $newobject = new $newclass; // Neues Objekt erzeugen
+	    $this->copy_to($newobject); // Die Werte bis zu dieser Hirarchie können kopiert werden
+	    $model = \App\coreobject::where('id','=',$this->get_id())->first();
+	    $model->classname = $newclass;
+	    $model->save();
+	    
+	    return $newobject;
+	}
+	
+	protected function copy_to(oo_object $newobject) {
+	    $newobject->set_id($this->get_id());
+	    foreach ($this->properties as $property) {
+	        $name = $property->get_name();
+	        switch ($property->get_type()) {
+	            case 'array_of_objects':
+	                break;
+	            case 'array_of_strings':
+	                break;
+	            case 'object':
+	                break;
+	            default:
+	                $newobject->$name = $this->$name;
+	        }
+	    }
+	}
+	
+	/**
+	 * Wird aufgerufen, nachdem das Objekt promoviert wurde
+	 * @param oo_object $newobject
+	 */
+	public function post_promotion(oo_object $from) {
+	    
+	}
+	
+	public function get_inheritance() {
+	     $parent_class_names = array();
+	     $parent_class_name = get_class($this);
+	     do {
+	         if ($parent_class_name == 'Sunhill\\Objects\\oo_object') {
+	             array_shift($parent_class_names);
+	             return $parent_class_names;
+	         }
+	         $parent_class_names[] = $parent_class_name;
+	         //array_unshift($parent_class_names,$parent_class_name);
+	     } while ($parent_class_name = get_parent_class($parent_class_name));
+	     return $parent_class_names;
+	}
+	
 // ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();

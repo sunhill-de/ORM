@@ -19,6 +19,8 @@ class oo_object_creator extends oo_object_storage {
 	        $model->classname = get_class($this->object);
 	        $model->save(); 
 	        $this->object->set_id($model->id); 
+	        $this->object->updated_at = $model->updated_at;
+	        $this->object->created_at = $model->created_at;
 	    } else { 
 	        $model->id = $this->object->get_id();
 	        $model->save();

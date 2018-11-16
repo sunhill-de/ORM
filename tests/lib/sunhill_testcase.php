@@ -16,6 +16,7 @@ class sunhill_testcase extends TestCase {
             "childenum ENUM('testA','testB','testC'))");
         DB::statement("create table passthrus (id int primary key) ENGINE = MEMORY");
         DB::statement("create table secondlevelchildren (id int primary key,childint int) ENGINE = MEMORY");        
+        DB::statement("create table thirdlevelchildren (id int primary key,childchildint int) ENGINE = MEMORY");
         DB::statement("create table dummies (id int primary key,dummyint int) ENGINE = MEMORY");
         DB::statement("create table referenceonlies (id int primary key,testint int) ENGINE = MEMORY");
     }
@@ -25,6 +26,7 @@ class sunhill_testcase extends TestCase {
         DB::statement("drop table if exists testchildren");
         DB::statement("drop table if exists passthrus");
         DB::statement("drop table if exists secondlevelchildren");        
+        DB::statement("drop table if exists thirdlevelchildren");
         DB::statement("drop table if exists dummies");
         DB::statement("drop table if exists referenceonlies");
     }

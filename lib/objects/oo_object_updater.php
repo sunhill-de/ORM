@@ -17,6 +17,10 @@ class oo_object_updater extends oo_object_storage {
 		foreach ($fields as $model_name=>$fields) {
 			$model_name = $this->object->default_ns.'\\'.$model_name;
 			$model = $model_name::where('id','=',$this->object->get_id())->first();
+			if (empty($model)) {
+			    $model = new $model_name;
+			    $model->id = $this->object->get_id();
+			}
 			$model_changed = false;
 			foreach ($fields as $field) {
 				if ($this->object->get_property($field)->is_simple()) {
