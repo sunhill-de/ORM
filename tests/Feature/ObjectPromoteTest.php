@@ -38,6 +38,10 @@ class ObjectPromoteTest extends ObjectCommon
         $test->parentdate='2011-01-01';
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
+        $add = new \Sunhill\Test\ts_dummy();
+        $add->dummyint = 123;
+        $test->parentobject = $add;
+        $test->parentoarray[] = $add;
         $test->childint = 1;
         $test->commit();
         $id = $test->get_id();
@@ -47,6 +51,7 @@ class ObjectPromoteTest extends ObjectCommon
         $read->load($id);
         $this->assertEquals(1,$read->childint);
         $this->assertEquals(2,$read->childchildint);
+        $this->assertEquals(123,$read->parentoarray[0]->dummyint);
     }
     
     public function testTwoStepPromotion() {
@@ -59,6 +64,10 @@ class ObjectPromoteTest extends ObjectCommon
         $test->parentdate='2011-01-01';
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
+        $add = new \Sunhill\Test\ts_dummy();
+        $add->dummyint = 123;
+        $test->parentobject = $add;
+        $test->parentoarray[] = $add;
         $test->commit();
         $id = $test->get_id();
         $new = $test->promote('\\Sunhill\\Test\\ts_thirdlevelchild');
@@ -67,6 +76,7 @@ class ObjectPromoteTest extends ObjectCommon
         $read->load($id);
         $this->assertEquals(2,$read->childint);
         $this->assertEquals(4,$read->childchildint);
+        $this->assertEquals(123,$read->parentoarray[0]->dummyint);
     }
     
     /**

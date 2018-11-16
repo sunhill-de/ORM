@@ -561,15 +561,32 @@ class oo_object extends \Sunhill\base {
 	        $name = $property->get_name();
 	        switch ($property->get_type()) {
 	            case 'array_of_objects':
+	            case 'array_of_strings':
+	                for ($i=0;$i<count($this->$name);$i++) {
+	                    $newobject->$name[] = $this->$name[$i];
+	                }
+	                break;
+	            default:
+	                $newobject->$name = $this->$name;
+	        }
+	    }
+	}
+	
+	protected function copy_from(oo_object $source) {
+	    $this->set_id($source->get_id());
+	    foreach ($this->properties as $property) {
+	        $name = $property->get_name();
+	        switch ($property->get_type()) {
+	            case 'array_of_objects':
 	                break;
 	            case 'array_of_strings':
 	                break;
 	            case 'object':
 	                break;
 	            default:
-	                $newobject->$name = $this->$name;
+	                $this->$name = $source->$name;
 	        }
-	    }
+	    }	    
 	}
 	
 	/**
