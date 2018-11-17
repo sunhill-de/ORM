@@ -643,10 +643,11 @@ class oo_object extends \Sunhill\base {
 	     return $parent_class_names;
 	}
 	
+// ================================= Löschen =============================================	
 	public function delete() {
 	       $this->pre_delete();
-	       $this->delete_object_tables();
-	       $this->delete_reference_tables();
+           $this->deletion();
+           unset(self::$objectcache[$this->get_id()]); // Cache-Eintrag löschen
 	       $this->post_delete();
 	}
 	
@@ -655,12 +656,14 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	protected function deletion() {
-	    
+	    $eraser = new oo_object_eraser($this);
+	    return $eraser->erase();	    
 	}
 	
 	protected function post_delete() {
 	    
 	}
+	
 // ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();
@@ -672,6 +675,9 @@ class oo_object extends \Sunhill\base {
 	 */
 	public static function get_class_name_of($id) {
 	    $object = \App\coreobject::where('id','=',$id)->first();
+	    if (empty($object)) {
+	        return false;
+	    }
 	    return $object->classname;
 	}
 	
@@ -682,10 +688,11 @@ class oo_object extends \Sunhill\base {
 	 */
 	public static function load_object_of($id) {
 	    if (isset(self::$objectcache[$id])) {
-//	        echo "Cache!";
 	        return self::$objectcache[$id];
 	    } else {
-	        $classname = self::get_class_name_of($id);
+	        if (($classname = self::get_class_name_of($id)) === false) {
+	            return false;
+	        }
 	        $object = new $classname();
 	        self::$objectcache[$id] = $object;
 	        $object->load($id);
