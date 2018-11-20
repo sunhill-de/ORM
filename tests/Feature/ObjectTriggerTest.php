@@ -154,8 +154,62 @@ class ObjectTriggerTest extends ObjectCommon
                     $object->parentobject->dummyint = 777;
                 },
                 'AOBJECT(dummyint:666=>777)'
-            ]
-            
+            ],
+            [ 'Sunhill\\Test\\ts_testparent',
+                function($object) {
+                    $object->parentchar='ABC';
+                    $object->parentint=123;
+                    $object->parentfloat=1.23;
+                    $object->parenttext='ABC DEF';
+                    $object->parentdatetime='2001-01-01 01:01:01';
+                    $object->parentdate='2011-01-01';
+                    $object->parenttime='11:11:11';
+                    $object->parentenum='testA';
+                    $object->parentsarray[] = 'DDD';
+                },
+                function($object) {
+                    $object->parentsarray[] = 'EEE';
+                },
+                'SARRAY(NEW:EEE)'
+            ],
+            [ 'Sunhill\\Test\\ts_testparent',
+                function($object) {
+                    $object->parentchar='ABC';
+                    $object->parentint=123;
+                    $object->parentfloat=1.23;
+                    $object->parenttext='ABC DEF';
+                    $object->parentdatetime='2001-01-01 01:01:01';
+                    $object->parentdate='2011-01-01';
+                    $object->parenttime='11:11:11';
+                    $object->parentenum='testA';
+                    $object->parentsarray[] = 'DDD';
+                },
+                function($object) {
+                    unset($object->parentsarray[0]);
+                },
+                'SARRAY(REMOVED:DDD)'
+            ],
+            [ 'Sunhill\\Test\\ts_testparent',
+                function($object) {
+                    $object->parentchar='ABC';
+                    $object->parentint=123;
+                    $object->parentfloat=1.23;
+                    $object->parenttext='ABC DEF';
+                    $object->parentdatetime='2001-01-01 01:01:01';
+                    $object->parentdate='2011-01-01';
+                    $object->parenttime='11:11:11';
+                    $object->parentenum='testA';
+                    $add = new \Sunhill\Test\ts_dummy();
+                    $add->dummyint = 666;
+                    $object->parentobject = $add;
+                },
+                function($object) {
+                    $add = new \Sunhill\Test\ts_dummy();
+                    $add->dummyint = 234;
+                    $object->parentobject = $add;
+                },
+                'AOBJECT(666=>234)'
+            ],
         ];
     }
     

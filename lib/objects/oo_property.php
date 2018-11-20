@@ -194,6 +194,10 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	
 	public function offsetSet($offset, $value) {
 	    $this->check_array();
+	    if (!$this->dirty) {
+	        $this->shadow = $this->value;
+	        $this->dirty = true;
+	    }
 	    if (isset($offset)) {
 			$this->value[$offset] = $this->validate($value);
 		} else {
@@ -203,11 +207,33 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	
 	public function offsetUnset($offset) {
 	    $this->check_array();
-	    unsset($this->value[$offset]);
+	    if (!$this->dirty) {
+	        $this->shadow = $this->value;
+	        $this->dirty = true;
+	    }
+	    unset($this->value[$offset]);
 	}
 	
 	public function count() {
 	    $this->check_array();
 	    return count($this->value);
 	}
+	
+	public function get_array_diff() {
+	    $this->check_array();
+	    $result = ['NEW'=>array(),'REMOVED'=>array()];
+	    foreach ($this->shadow as $oldentry) {
+	        if (array_search($oldentry,$this->value)===false) {
+	            $result['REMOVED'][] = $oldentry;
+	        }
+	    }
+	    foreach ($this->value as $newentry) {
+	        if (array_search($newentry,$this->shadow)===false) {
+	            $result['NEW'][] = $newentry;
+	        }
+	    }
+	    return $result;
+	}
+	
+	
 }

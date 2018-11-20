@@ -174,7 +174,12 @@ class oo_object extends \Sunhill\base {
 			$property = $this->get_property($field);
 			$method_name = $field.'_changed';
 			if (method_exists($this, $method_name)) {
-				$this->$method_name($property->get_old_value(),$property->get_value());
+			    if ($property->is_array()) {
+			        $diff = $this->$field->get_array_diff();
+			        $this->$method_name($diff['NEW'],$diff['REMOVED']);
+			    } else {
+			        $this->$method_name($property->get_old_value(),$property->get_value());
+			    }
 			}
 			$broadcast[$field] = array($property->get_old_value(),$property->get_value()); 
 			$this->field_updated($field,$property->get_old_value(),$property->get_value());

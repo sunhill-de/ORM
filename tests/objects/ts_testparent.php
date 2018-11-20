@@ -54,6 +54,20 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	    }
 	}
 	
+	public function parentobject_changed($from,$to) {
+	    if (is_null($from)) {
+	        $fromstr = 'NULL';
+	    } else {
+	        $fromstr = $from->dummyint;
+	    }
+	    if (is_null($to)) {
+	        $tostr = 'NULL';
+	    } else {
+	        $tostr = $to->dummyint;
+	    }
+	    self::$flag .= "AOBJECT($fromstr=>$tostr)";
+	}
+	
 	public function child_parentobject_updated($changed_fields) {
 	    if (is_array($changed_fields)) {
     	    foreach ($changed_fields as $field => list($from,$to)) {
@@ -63,31 +77,24 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	}
 	
 	public function parentsarray_changed($new,$deleted) {
-	    self::$flag .= "SARRAY(NEW:";
-        foreach ($new as $entry) {
-            self::$flag .= "$entry ";
+	    self::$flag .= "SARRAY(";
+        if (!empty($new)) {
+    	    self::$flag .= "NEW:";
+            foreach ($new as $entry) {
+                self::$flag .= "$entry";
+    	    }
+    	    self::$flag .= ")";
 	    }
-	    self::$flag .= "REMOVED:";
-	    foreach ($deleted as $entry) {
-	        self::$flag .= "$entry ";
+	    if (!empty($deleted)) {
+    	    self::$flag .= "REMOVED:";
+    	    foreach ($deleted as $entry) {
+    	        self::$flag .= "$entry";
+    	    }
+    	    self::$flag .= ")";
 	    }
 	}
 	
-	public function parentoarray_changed($new,$deleted,$changed) {
-	    self::$flag .= "OARRAY(NEW:";
-	    foreach ($new as $entry) {
-	        self::$flag .= $entry->dummyint." ";
-	    }
-	    self::$flag .= "REMOVED:";
-	    foreach ($deleted as $entry) {
-	        self::$flag .= $entry->dummyint." ";
-	    }
-	    self::$flag .= "CHANGED:";
-	    foreach ($changed as $entry => $changes) {
-	        foreach ($changes as $field => list($from,$to)) {
-	            self::$flag .= $field."[$from=>$to]";	            
-	        }
-	    }
+	public function parentoarray_changed($new,$deleted) {
 	}
 	
 }
