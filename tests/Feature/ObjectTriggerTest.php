@@ -210,7 +210,47 @@ class ObjectTriggerTest extends ObjectCommon
                 },
                 'AOBJECT(666=>234)'
             ],
-        ];
+            [ 'Sunhill\\Test\\ts_testparent',
+                function($object) {
+                    $object->parentchar='ABC';
+                    $object->parentint=123;
+                    $object->parentfloat=1.23;
+                    $object->parenttext='ABC DEF';
+                    $object->parentdatetime='2001-01-01 01:01:01';
+                    $object->parentdate='2011-01-01';
+                    $object->parenttime='11:11:11';
+                    $object->parentenum='testA';
+                    $add = new \Sunhill\Test\ts_dummy();
+                    $add->dummyint = 666;
+                    $object->parentoarray[] = $add;
+                },
+                function($object) {
+                    $add = new \Sunhill\Test\ts_dummy();
+                    $add->dummyint = 234;
+                    $object->parentoarray[] = $add;
+                },
+                'OARRAY(NEW:234)'
+            ],
+            [ 'Sunhill\\Test\\ts_testparent',
+                function($object) {
+                    $object->parentchar='ABC';
+                    $object->parentint=123;
+                    $object->parentfloat=1.23;
+                    $object->parenttext='ABC DEF';
+                    $object->parentdatetime='2001-01-01 01:01:01';
+                    $object->parentdate='2011-01-01';
+                    $object->parenttime='11:11:11';
+                    $object->parentenum='testA';
+                    $add = new \Sunhill\Test\ts_dummy();
+                    $add->dummyint = 666;
+                    $object->parentoarray[] = $add;
+                },
+                function($object) {
+                    unset($object->parentoarray[0]);
+                },
+                'OARRAY(REMOVED:666)'
+                    ],
+              ];
     }
     
 }

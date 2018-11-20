@@ -95,6 +95,25 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	}
 	
 	public function parentoarray_changed($new,$deleted) {
+	    self::$flag .= "OARRAY(";
+	    if (!empty($new)) {
+	        self::$flag .= "NEW:";
+	        foreach ($new as $entry) {
+	            if (!is_null($entry)) {
+	               self::$flag .= $entry->dummyint;
+	            }
+	        }
+	        self::$flag .= ")";
+	    }
+	    if (!empty($deleted)) {
+	        self::$flag .= "REMOVED:";
+	        foreach ($deleted as $entry) {
+	            if (!is_null($entry)) {
+	                self::$flag .= $entry->dummyint;
+	            }
+	        }
+	        self::$flag .= ")";
+	    }	    
 	}
 	
 }
