@@ -15,22 +15,24 @@ class oo_object_updater extends oo_object_storage {
 	protected function work_simple_fields() {
 		$fields = $this->object->get_changed_fields();
 		foreach ($fields as $model_name=>$fields) {
-			$model_name = $this->object->default_ns.'\\'.$model_name;
-			$model = $model_name::where('id','=',$this->object->get_id())->first();
-			if (empty($model)) {
-			    $model = new $model_name;
-			    $model->id = $this->object->get_id();
-			}
-			$model_changed = false;
-			foreach ($fields as $field) {
-				if ($this->object->get_property($field)->is_simple()) {
-					$model->$field = $this->object->$field;
-					$model_changed = true;
-				}
-			}
-			if ($model_changed) {
-				$model->save();
-			}
+		    if (!empty($model_name)) {
+    		    $model_name = $this->object->default_ns.'\\'.$model_name;
+    			$model = $model_name::where('id','=',$this->object->get_id())->first();
+    			if (empty($model)) {
+    			    $model = new $model_name;
+    			    $model->id = $this->object->get_id();
+    			}
+    			$model_changed = false;
+    			foreach ($fields as $field) {
+    				if ($this->object->get_property($field)->is_simple()) {
+    					$model->$field = $this->object->$field;
+    					$model_changed = true;
+    				}
+    			}
+    			if ($model_changed) {
+    				$model->save();
+    			}
+		    }
 		}
 	}
 	
