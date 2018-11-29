@@ -115,5 +115,4 @@ class ObjectPromoteTest extends ObjectCommon
         $new = $test->promote('\\Sunhill\\Test\\notexisting');
     }
     
-    
 }

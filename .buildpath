@@ -156,7 +156,7 @@
 			<attribute name="composer" value="vendor"/>
 		</attributes>
 	</buildpathentry>
-	<buildpathentry kind="src" path="vendor/nesbot/carbon/src">
+	<buildpathentry kind="src" path="vendor/nesbot/carbon/src/Carbon">
 		<attributes>
 			<attribute name="composer" value="vendor"/>
 		</attributes>

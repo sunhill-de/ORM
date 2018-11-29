@@ -30,8 +30,15 @@ class oo_object_loader extends oo_object_worker {
 	}
 	
 	protected function work_complex_fields() {
+	    $this->load_timestamps();
 	    $this->load_object_fields();
 	    $this->load_string_fields();
+	}
+	
+	private function load_timestamps() {
+	   $model = \App\coreobject::where('id','=',$this->object->get_id())->first();
+	   $this->object->created_at = $model->created_at;
+	   $this->object->updated_at = $model->updated_at;
 	}
 	
 	private function load_object_fields() {

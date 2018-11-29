@@ -57,8 +57,5 @@
 		"post-create-project-cmd" : "@php application app:rename"
 	},
 	"minimum-stability" : "dev",
-	"prefer-stable" : true,
-	"bin" : [
-		"crawler"
-	]
+	"prefer-stable" : true
 }
