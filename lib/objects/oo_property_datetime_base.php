@@ -50,8 +50,8 @@ class oo_property_datetime_base extends oo_property {
 	    } elseif (strpos($test,'-') !== false) {
 	        $parts = explode('-',$test);
 	    } else {
-	        if (is_int($test)) {
-                $parts = array($test);
+	        if (is_numeric($test)) {
+ 	            $parts = array($test);
 	        } else {
 	            return null;
 	        }

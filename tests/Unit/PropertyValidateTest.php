@@ -51,7 +51,8 @@ class PropertyValidateTest extends TestCase
     			['date',23.3,true,null],
     			['date','2018-2',false,'2018-02-00'],
     			['date','2.3.',false,'0000-03-02'],
-    			['date',null,false,null],
+    	        ['date','2018',false,'2018-00-00'],
+    	        ['date',null,false,null],
     			
     			['time','20:33:43',false,'20:33:43'],
     			['time','20:33',false,'20:33:00'],
