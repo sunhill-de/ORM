@@ -49,9 +49,10 @@ class PropertyValidateTest extends TestCase
     			['date','1.2.2018',false,'2018-02-01'],
     			['date','2018-2-1',false,'2018-02-01'],
     			['date',23.3,true,null],
-    			['date','2018-2',true,null],
-    			['date','2.3.',true,null],
-    			['date',null,false,null],
+    			['date','2018-2',false,'2018-02-00'],
+    			['date','2.3.',false,'0000-03-02'],
+    	        ['date','2018',false,'2018-00-00'],
+    	        ['date',null,false,null],
     			
     			['time','20:33:43',false,'20:33:43'],
     			['time','20:33',false,'20:33:00'],
@@ -64,7 +65,8 @@ class PropertyValidateTest extends TestCase
     			
     			['datetime','2018-01-01 01:01:01',false,'2018-01-01 01:01:01'],
     			['datetime','2018-1-1 1:1:1',false,'2018-01-01 01:01:01'],
-    			['datetime','2018-01-01',true,null],
+    	        ['datetime','2018-01-01',true,null],
+    	        ['datetime','2018-01 01:01:01',true,null],
     			['datetime','abc',true,null],
     			['datetime',1530791223,false,'2018-07-05 11:47:03'],
     			['datetime',null,false,null]
