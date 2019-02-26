@@ -18,9 +18,8 @@ class oo_object_eraser extends oo_object_worker {
 	
 	protected function work_simple_fields() {
 		$fields = $this->object->get_simple_fields();
-		foreach ($fields as $model=>$fields) {
-		    if (!empty($model)) {
-    		         $model_name = $this->object->default_ns.'\\'.$model;			
+		foreach ($fields as $model_name=>$fields) {
+		    if (!empty($model_name)) {
     		         $model_name::destroy($this->object->get_id());
 		    }
 		}

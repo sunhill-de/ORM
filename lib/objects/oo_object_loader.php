@@ -17,9 +17,8 @@ class oo_object_loader extends oo_object_worker {
 	
 	protected function work_simple_fields() {
 		$fields = $this->object->get_simple_fields();
-		foreach ($fields as $model=>$fields) {
-    		    if (!empty($model)) {
-    		         $model_name = $this->object->default_ns.'\\'.$model;			
+		foreach ($fields as $model_name=>$fields) {
+    		    if (!empty($model_name)) {
     			     $model = $model_name::where('id','=',$this->object->get_id())->first();
     			     foreach ($fields as $field) {
     				        $this->object->$field = $model->$field;
