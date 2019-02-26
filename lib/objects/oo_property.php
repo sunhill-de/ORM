@@ -131,8 +131,12 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	}
 	
 	public function set_model($name) {
-		$this->model_name = $name;
-		return $this;
+	    if (strpos($name,'\\') === false) {
+	        $this->model_name = $this->owner->default_ns.'\\'.$name;
+	    } else {
+	        $this->model_name = $name;
+	    }
+	    return $this;
 	}
 	
 	public function get_model() {
