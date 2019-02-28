@@ -6,3 +6,4 @@
 /database/database.sqlite
 /storage
 composer.lock
+.buildpath
