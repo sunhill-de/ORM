@@ -49,11 +49,11 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     }
     
     protected function int_changed($from,$to) {
-        $this->state .= "($from=>$to)";    
+        $this->state = "($from=>$to)";    
     }
     
     protected function hooked_changed($from,$to) {
-        $this->state .= "[$from=>$to]";
+        $this->state = "[$from=>$to]";
     }
     
 }

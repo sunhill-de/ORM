@@ -34,6 +34,7 @@ class ObjectNamespaceTest extends ObjectCommon
 {
     
     public function testSetNamespace() {
+        \Sunhill\Objects\oo_object::flush_cache();
         DB::statement("drop table if exists tests");
         DB::statement("create table tests (id int primary key,testint int)");
         $test = new TestObject();
