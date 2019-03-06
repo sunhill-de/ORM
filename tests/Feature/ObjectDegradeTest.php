@@ -56,7 +56,7 @@ class ObjectDegradeTest extends ObjectCommon
         $new = $test->degrade('Sunhill\\Test\\ts_testparent');
         $new->commit();
         $read = new \Sunhill\Test\ts_testparent;
-        $read->load($id);
+        $read = $read->load($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
         $this->assertEquals('Sunhill\\Test\ts_testparent',\Sunhill\Objects\oo_object::get_class_name_of($id));
     }
