@@ -44,16 +44,26 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     
     protected function setup_hooks() {
         parent::setup_hooks();
-        $this->set_hook('hooking_int','int_changed');
-        $this->set_hook('hooked_object.hooked_int','hooked_changed');
+        $this->set_hook('FIELDCHANGE','int_changed','hooking_int');
+        $this->set_hook('FIELDCHANGE','hooked_changed','hooked_object.hooked_int');
+        $this->set_hook('FIELDCOMMIT','int_comitted','hooking_int');
+        $this->set_hook('FIELDCOMMIT','hooked_comitted','hooked_object.hooked_int');
     }
     
-    protected function int_changed($from,$to) {
-        $this->state = "($from=>$to)";    
+    protected function int_changed($params) {
+        $this->state = "(".$params['from']."=>".$params['to'].")";    
     }
     
     protected function hooked_changed($from,$to) {
+        $this->state = "(Hooked:$from=>$to)";
+    }
+    
+    protected function int_comitted($from,$to) {
         $this->state = "[$from=>$to]";
+    }
+    
+    protected function hooked_comitted($from,$to) {
+        $this->state = "[Hooked:$from=>$to]";
     }
     
 }
@@ -74,34 +84,12 @@ class ObjectHookTest extends ObjectCommon
         $hooking = new HookingObject();
         $hooking->hooking_int = 222;
         $hooking->hooked_object = $hooked;
-        $hooking->hooking_int = 333;
-        $this->assertEquals('(222=>333)',$hooking->state);
-    }
-    
-    public function testSimpleHookPersistant() {
-        $this->setupHookTables();
-        $hooked = new HookedObject();
-        $hooked->hooked_int = 123;
-        $hooking = new HookingObject();
-        $hooking->hooking_int = 222;
-        $hooking->hooked_object = $hooked;
         $hooking->commit();
         
         \Sunhill\Objects\oo_object::flush_cache();
         $readhooking = \Sunhill\Objects\oo_object::load_object_of($hooking->get_id());
         $readhooking->hooking_int = 333;
         $this->assertEquals('(222=>333)',$readhooking->state);       
-    }
-    
-    public function testComplexHook() {
-        $this->setupHookTables();
-        $hooked = new HookedObject();
-        $hooked->hooked_int = 123;
-        $hooking = new HookingObject();
-        $hooking->hooking_int = 222;
-        $hooking->hooked_object = $hooked;
-        $hooked->hooked_int = 234;
-        $this->assertEquals('[123=>234]',$hooking->state);
     }
     
     public function testComplexHookPersistantDirect() {

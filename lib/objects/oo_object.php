@@ -7,7 +7,7 @@ use App;
 class ObjectException extends \Exception {}
 class UnknownPropertyException extends ObjectException {}
 
-class oo_object extends \Sunhill\base {
+class oo_object extends \Sunhill\hookable {
 
 	private $id;
 	
@@ -20,8 +20,6 @@ class oo_object extends \Sunhill\base {
 	protected $tags;
 	
 	protected $properties;
-	
-	protected $hooks = array();
 	
 	public $default_ns = '\\App';
 	
@@ -37,7 +35,7 @@ class oo_object extends \Sunhill\base {
 		$this->tags = array();
 		$this->tags_shadow = array();
 		$this->setup_properties();
-		$this->setup_hooks();
+		$this->check_for_hook('CONSTRUCTED', array());
 	}
 	
 	/**
@@ -65,6 +63,7 @@ class oo_object extends \Sunhill\base {
 		$result = $loader->load($id); 
 		$this->clean_properties();
 		$this->tags_shadow = $this->tags;
+		$this->check_for_hook('LOADED',array());
 		return $result;
 	}
 	
@@ -77,18 +76,24 @@ class oo_object extends \Sunhill\base {
 	public function commit() {
 	    if (!$this->comitting) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
 	        $this->comitting = true;
+	        $this->check_for_hook('COMITTING', array());
 	        if ($this->get_id()) {
-	            $this->pre_update(); 
+	            $this->pre_update();
+	            $this->check_for_hook('PREUPDATE', array());
     			$this->update();
     			$this->post_update(); 
+    			$this->check_for_hook('POSTUPDATE', array());
     			$this->post_update_tags();
     		} else {
     		    $this->pre_create(); 
+    		    $this->check_for_hook('PRECREATE', array());    		    
     			$this->create();
     			$this->post_create();
+    			$this->check_for_hook('POSTCREATE', array());
     			$this->post_create_tags();
     		}
     		$this->comitted();
+    		$this->check_for_hook('COMITTED', array());    		
     		$this->comitting = false;
 	    } 
 	}
@@ -169,20 +174,25 @@ class oo_object extends \Sunhill\base {
 	 * Wird nach einem Datenbank update aufgerufen. Hier erfolgen die Verarbeitung von Triggern etc. 
 	 */
 	protected function post_update() {
-		$this->readonly = true;
+	    $this->readonly = true;
 	    $changed_fields = $this->get_changed_fields();
 	    $broadcast = array();
 		foreach ($changed_fields as $model=>$fields) {
 		  foreach($fields as $field) {	
-			$property = $this->get_property($field);
+		    $property = $this->get_property($field);
 			$method_name = $field.'_changed';
-			if (method_exists($this, $method_name)) {
-			    if ($property->is_array()) {
-			        $diff = $this->$field->get_array_diff();
-			        $this->$method_name($diff['NEW'],$diff['REMOVED']);
-			    } else {
+			if ($property->is_array()) {
+			   $diff = $this->$field->get_array_diff();
+			   if (method_exists($this, $method_name)) {
+			      $this->$method_name($diff['NEW'],$diff['REMOVED']);
+			   }
+			   $this->check_for_hook('FIELDCOMMIT', array('fieldname'=>$field,'arraychange'=>$diff));
+			} else {
+			    if (method_exists($this, $method_name)) {
 			        $this->$method_name($property->get_old_value(),$property->get_value());
 			    }
+			    $this->check_for_hook('FIELDCOMMIT',array('from'=>$property->get_old_value(),
+			                           'to'=>$property->get_value(),'fieldname'=>$field));
 			}
 			$broadcast[$field] = array($property->get_old_value(),$property->get_value()); 
 			$this->field_updated($field,$property->get_old_value(),$property->get_value());
@@ -376,7 +386,9 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function __get($name) {
-		if (isset($this->properties[$name])) {
+	    $this->check_for_hook('GET',array('fieldname'=>$name,
+	        'value'=>$this->properties[$name]->get_value()));
+	    if (isset($this->properties[$name])) {
 			return $this->properties[$name]->get_value();
 		} else {
 			return parent::__get($name);
@@ -384,15 +396,21 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function __set($name,$value) {
-		if (isset($this->properties[$name])) {
+	    if (isset($this->properties[$name])) {
 		    if ($this->readonly) {
 		        throw new \Exception("Property '$name' in der Readonly Phase verändert.");
 		    } else {
 		          $this->properties[$name]->set_value($value);
-		          if ($this->properties[$name]->get_dirty()) {
-		              $this->check_for_hooks($name,
-		                                     $this->properties[$name]->get_old_value(),
-		                                     $this->properties[$name]->get_value());
+		          $this->check_for_hook('SET',array('fieldname'=>$name,
+		              'from'=>$this->properties[$name]->get_old_value(),
+		              'to'=>$value));
+		          if (!$this->properties[$name]->is_simple()) {
+		              $this->check_for_external_hooks($name,$value,$this->properties[$name]->get_old_value());
+		          }
+		          if ($this->properties[$name]->get_dirty()) {		              
+		              $this->check_for_hook('FIELDCHANGE',array('fieldname'=>$name,
+		                                                 'from'=>$this->properties[$name]->get_old_value(),
+		                                                 'to'=>$this->properties[$name]->get_value()));
 		          }
 		    }
 		} else {
@@ -676,79 +694,34 @@ class oo_object extends \Sunhill\base {
 	protected function post_delete() {
 	    
 	}
-
-// =========================== Hooks =====================================
 	
 	/**
-	 * Wird aufgerufen, um Hooks für dieses Objekt zu setzen
+	 * Wird für komplexe Aufgabe aufgerufen
+	 * @param string $action
+	 * @param string $hook
+	 * @param string $subaction
+	 * @param unknown $destination
 	 */
-	protected function setup_hooks() {
-	    // Macht in der Ursprungsvariante nichts
-	}
-	
-	protected function set_hook(string $field,string $hook) {
-	    if (strpos($field,'.')) {
-	        list($mainfield,$subfield) = explode('.',$field);
-	        $this->set_complex_hook($mainfield,$subfield,$hook);
+	protected function set_complex_hook(string $action,string $hook,string $subaction,$destination) {
+	    $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook);
+	    
+	    $parts = explode('.',$subaction);
+	    $field = array_shift($parts);
+	    $restaction = implode('.',$parts);
+	    if (!isset($this->hooks['EXTERNAL'][$field])) {
+	        $this->hooks['EXTERNAL'][$field] = array(array('destination'=>$this,'hook'=>'set_external_hook'));
 	    } else {
-	        $this->set_simple_hook($field,$hook);
+	        $this->hooks['EXTERNAL'][$field][] = array('destination'=>$this,'hook'=>'set_external_hook'); 
 	    }
 	}
 	
-	private function set_simple_hook(string $field,string $hook) {
-	    $this->append_hook($field,0,'',$hook);
-	}
-	
-	private function set_complex_hook(string $field,string $subfield,string $hook) {
-        $this->append_hook($field,0,$subfield,$hook);
-	}
-	
-	public function set_external_hook($object,string $field,string $hook) {
-        $this->append_hook($field,$object->get_id(),'',$hook);
-	}
-	
-	private function append_hook($field,$id,$subfield,$hook) {
-	    if (isset($this->hooks[$field])) {
-	        $this->hooks[$field][] = array('id'=>$id,'subfield'=>$subfield,'hook'=>$hook);
-	    } else {
-	        $this->hooks[$field] = array(array('id'=>$id,'subfield'=>$subfield,'hook'=>$hook));
-	    }
-	}
-	
-	protected function check_for_hooks($varname,$oldvalue,$newvalue) {
-	    if (isset($this->hooks[$varname])) {
-	        var_dump($this->hooks);  
-	        foreach ($this->hooks[$varname] as $key => $values) {
-                $this->call_hook($varname,$values['id'],$values['subfield'],$values['hook'],$oldvalue,$newvalue);	            
-	        }
-	    }
-	}
-
-	protected function call_hook($varname,$id,$subfield,$hook,$oldvalue,$newvalue) {
-	    if ($id) {
-	        $this->call_external_hook($varname,$id,$hook,$oldvalue,$newvalue);
-	    } else if (!empty($subfield)) {
-	        $this->call_complex_hook($varname,$subfield,$hook,$oldvalue,$newvalue);
-	    } else {
-	        $this->call_simple_hook($varname,$hook,$oldvalue,$newvalue);
-	    }
-	}
-	
-	private function call_external_hook($varname,$id,$hook,$oldvalue,$newvalue) {
+	protected function set_external_hook() {
 	    
 	}
 	
-	private function call_complex_hook($varname,$subfield,$hook,$oldvalue,$newvalue) {
+	protected function check_for_external_hooks($name,$old,$new){
 	    
 	}
-	
-	private function call_simple_hook($varname,$hook,$oldvalue,$newvalue) {
-	    if (!method_exists($this,$hook)) {
-	        throw new ObjectException("Hook '$hook' existiert nicht.");
-	    }
-	    $this->$hook($oldvalue,$newvalue);
-	}
-	
 // ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();
