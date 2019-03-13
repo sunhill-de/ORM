@@ -35,7 +35,7 @@ class oo_object extends \Sunhill\hookable {
 		$this->tags = array();
 		$this->tags_shadow = array();
 		$this->setup_properties();
-		$this->check_for_hook('CONSTRUCTED', array());
+		$this->check_for_hook('CONSTRUCTED');
 	}
 	
 	/**
@@ -63,7 +63,7 @@ class oo_object extends \Sunhill\hookable {
 		$result = $loader->load($id); 
 		$this->clean_properties();
 		$this->tags_shadow = $this->tags;
-		$this->check_for_hook('LOADED',array());
+		$this->check_for_hook('LOADED');
 		return $result;
 	}
 	
@@ -76,24 +76,24 @@ class oo_object extends \Sunhill\hookable {
 	public function commit() {
 	    if (!$this->comitting) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
 	        $this->comitting = true;
-	        $this->check_for_hook('COMITTING', array());
+	        $this->check_for_hook('COMITTING');
 	        if ($this->get_id()) {
 	            $this->pre_update();
-	            $this->check_for_hook('PREUPDATE', array());
+	            $this->check_for_hook('PREUPDATE');
     			$this->update();
     			$this->post_update(); 
-    			$this->check_for_hook('POSTUPDATE', array());
+    			$this->check_for_hook('POSTUPDATE');
     			$this->post_update_tags();
     		} else {
     		    $this->pre_create(); 
-    		    $this->check_for_hook('PRECREATE', array());    		    
+    		    $this->check_for_hook('PRECREATE');    		    
     			$this->create();
     			$this->post_create();
-    			$this->check_for_hook('POSTCREATE', array());
+    			$this->check_for_hook('POSTCREATE');
     			$this->post_create_tags();
     		}
     		$this->comitted();
-    		$this->check_for_hook('COMITTED', array());    		
+    		$this->check_for_hook('COMITTED');    		
     		$this->comitting = false;
 	    } 
 	}
@@ -186,13 +186,13 @@ class oo_object extends \Sunhill\hookable {
 			   if (method_exists($this, $method_name)) {
 			      $this->$method_name($diff['NEW'],$diff['REMOVED']);
 			   }
-			   $this->check_for_hook('FIELDCOMMIT', array('fieldname'=>$field,'arraychange'=>$diff));
+			   $this->check_for_hook('FIELDCOMMIT', $field, array('arraychange'=>$diff));
 			} else {
 			    if (method_exists($this, $method_name)) {
 			        $this->$method_name($property->get_old_value(),$property->get_value());
 			    }
-			    $this->check_for_hook('FIELDCOMMIT',array('from'=>$property->get_old_value(),
-			                           'to'=>$property->get_value(),'fieldname'=>$field));
+			    $this->check_for_hook('FIELDCOMMIT',$field,array('from'=>$property->get_old_value(),
+			                           'to'=>$property->get_value()));
 			}
 			$broadcast[$field] = array($property->get_old_value(),$property->get_value()); 
 			$this->field_updated($field,$property->get_old_value(),$property->get_value());
@@ -386,7 +386,7 @@ class oo_object extends \Sunhill\hookable {
 	}
 	
 	public function __get($name) {
-	    $this->check_for_hook('GET',array('fieldname'=>$name,
+	    $this->check_for_hook('GET',$name,array(
 	        'value'=>$this->properties[$name]->get_value()));
 	    if (isset($this->properties[$name])) {
 			return $this->properties[$name]->get_value();
@@ -401,14 +401,14 @@ class oo_object extends \Sunhill\hookable {
 		        throw new \Exception("Property '$name' in der Readonly Phase verändert.");
 		    } else {
 		          $this->properties[$name]->set_value($value);
-		          $this->check_for_hook('SET',array('fieldname'=>$name,
+		          $this->check_for_hook('SET',$name,array(
 		              'from'=>$this->properties[$name]->get_old_value(),
 		              'to'=>$value));
 		          if (!$this->properties[$name]->is_simple()) {
 		              $this->check_for_external_hooks($name,$value,$this->properties[$name]->get_old_value());
 		          }
 		          if ($this->properties[$name]->get_dirty()) {		              
-		              $this->check_for_hook('FIELDCHANGE',array('fieldname'=>$name,
+		              $this->check_for_hook('FIELDCHANGE',$name,array(
 		                                                 'from'=>$this->properties[$name]->get_old_value(),
 		                                                 'to'=>$this->properties[$name]->get_value()));
 		          }

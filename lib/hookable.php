@@ -60,6 +60,7 @@ class hookable extends base {
 	 * @param array $params
 	 */
 	protected function check_for_hook(string $action,$subaction='default',array $params=null) {
+	    var_dump($this->hooks);
 	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
 	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
                 $destination = $descriptor['destination'];
