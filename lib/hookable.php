@@ -60,7 +60,6 @@ class hookable extends base {
 	 * @param array $params
 	 */
 	protected function check_for_hook(string $action,$subaction='default',array $params=null) {
-	    var_dump($this->hooks);
 	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
 	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
                 $destination = $descriptor['destination'];
@@ -68,7 +67,12 @@ class hookable extends base {
 	            if (is_int($destination)) {
 	                $destination = \Sunhill\Objects\oo_object::load_object_of($descriptor['destination']);
 	            }
-                $destination->$hook($params);
+	            if (!isset($params)) {
+	                $params = array();
+	            }
+	            $params['action']    = $action;
+	            $params['subaction'] = $subaction;
+	            $destination->$hook($params);
 	        }
 	    }
 	}

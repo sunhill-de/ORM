@@ -13,6 +13,8 @@ class testhookable extends \Sunhill\hookable {
     
     public $flag = '';
     
+    public $params='';
+    
     protected function setup_hooks() {
         $this->add_hook('hook1','call_hook1');
         $this->add_hook('hook2','call_hook2','test');
@@ -40,7 +42,8 @@ class testhookable extends \Sunhill\hookable {
     }
     
     protected function call_hook3($params) {
-        $this->flag = $params[0];        
+        $this->flag = $params[0];
+        $this->params = 'action='.$params['action'].",subaction=".$params['subaction'];
     }
 }
 
@@ -76,5 +79,6 @@ class HookableTest extends TestCase
             $test->hooked_method3('test');
             $this->assertEquals('test',$test->flag);
             $this->assertEquals('flag',$this->flag);
+            $this->assertEquals('action=hook3,subaction=test',$test->params);
         }
 }
