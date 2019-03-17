@@ -48,7 +48,7 @@ class ObjectPromoteTest extends ObjectCommon
         $new = $test->promote('\\Sunhill\\Test\\ts_thirdlevelchild');
         $new->commit(); 
         $read = new \Sunhill\Test\ts_thirdlevelchild;
-        $read->load($id);
+        $read = $read->load($id);
         $this->assertEquals(1,$read->childint);
         $this->assertEquals(2,$read->childchildint);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
@@ -73,7 +73,7 @@ class ObjectPromoteTest extends ObjectCommon
         $new = $test->promote('\\Sunhill\\Test\\ts_thirdlevelchild');
         $new->commit();
         $read = new \Sunhill\Test\ts_thirdlevelchild;
-        $read->load($id);
+        $read = $read->load($id);
         $this->assertEquals(2,$read->childint);
         $this->assertEquals(4,$read->childchildint);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);

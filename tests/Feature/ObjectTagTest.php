@@ -39,7 +39,7 @@ class ObjectTagTest extends ObjectCommon
             $this->assertEquals($expect[$i],$test->get_tag($i)->get_fullpath());
         }
         $reread =  new \Sunhill\Test\ts_dummy();
-        $reread->load($test->get_id());
+        $reread = $reread->load($test->get_id());
         for ($i=0;$i<count($expect);$i++) {
             $this->assertEquals($expect[$i],$reread->get_tag($i)->get_fullpath());
         }
@@ -71,7 +71,7 @@ class ObjectTagTest extends ObjectCommon
         $test->commit();
         
         $read =  new \Sunhill\Test\ts_dummy();
-        $read->load($test->get_id());
+        $read = $read->load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($add[$i],true);
             $read->add_tag($tag);            
@@ -83,7 +83,7 @@ class ObjectTagTest extends ObjectCommon
         $read->commit();
         
         $reread =  new \Sunhill\Test\ts_dummy();
-        $reread->load($test->get_id());
+        $reread = $reread->load($test->get_id());
         
         $given_tags = array();
         for ($i=0;$i<$reread->get_tag_count();$i++) {
@@ -110,7 +110,7 @@ class ObjectTagTest extends ObjectCommon
         $test->commit();
         
         $read =  new \Sunhill\Test\ts_dummy();
-        $read->load($test->get_id());
+        $read = $read->load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($add[$i],true);
             $read->add_tag($tag);

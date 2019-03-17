@@ -13,6 +13,8 @@ class oo_object extends \Sunhill\base {
 	
 	private $readonly=false;
 	
+	private $state = 'normal';
+	
 	/**
 	 * Speichert die Tags, die mit diesem Objekt assoziiert sind
 	 * @var array of oo_tags
@@ -28,13 +30,19 @@ class oo_object extends \Sunhill\base {
 	 */
 	private $tags_shadow;
 	
-	private $comitting = false;
-		
 	public function __construct() {
 		//parent::__construct();
 		$this->tags = array();
 		$this->tags_shadow = array();
 		$this->setup_properties();
+	}
+
+	protected function is_commiting() {
+	    return $this->state == 'commiting';
+	}
+	
+	protected function is_loading() {
+	   return $this->state == 'loading';    
 	}
 	
 	/**
@@ -42,7 +50,14 @@ class oo_object extends \Sunhill\base {
 	 * @return Integer oder null
 	 */
 	public function get_id() {
-		return $this->id;
+        $this->check_validity();
+	    return $this->id;
+	}
+
+	protected function check_validity() {
+	    if ($this->state == 'invalid') {
+	        throw new ObjectException('Invalides Objekt benutzt.');
+	    }
 	}
 	
 	/**
@@ -50,7 +65,8 @@ class oo_object extends \Sunhill\base {
 	 * @param Integer $id
 	 */
 	public function set_id($id) {
-		$this->id = $id;
+	    $this->check_validity();
+	    $this->id = $id;
 	}
 	
 	/**
@@ -58,11 +74,22 @@ class oo_object extends \Sunhill\base {
 	 * @param integer $id
 	 */
 	public function load($id) {
-		$loader = new oo_object_loader($this);
-		$result = $loader->load($id); 
-		$this->clean_properties();
-		$this->tags_shadow = $this->tags;
-		return $result;
+	        $this->check_validity();
+	        if (self::is_cached($id)) {
+    	        $this->state = 'invalid'; 
+	            return self::load_object_of($id);
+    	    } else {
+    	        self::load_id_called($id,$this);
+    	        $loader = new oo_object_loader($this);
+    	        if (!$this->is_loading()) {
+        	        $this->state = 'loading';    	        
+        	        $loader->load($id); 
+        	        $this->state = 'normal';
+    	        }
+    	        $this->clean_properties();
+        		$this->tags_shadow = $this->tags;
+        		return $this;
+    	    }	       
 	}
 	
 	private function clean_properties() {
@@ -72,8 +99,8 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function commit() {
-	    if (!$this->comitting) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
-	        $this->comitting = true;
+	    if (!$this->is_commiting()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
+	        $this->state = 'commiting';
 	        if ($this->get_id()) {
 	            $this->pre_update(); 
     			$this->update();
@@ -86,7 +113,7 @@ class oo_object extends \Sunhill\base {
     			$this->post_create_tags();
     		}
     		$this->comitted();
-    		$this->comitting = false;
+    		$this->state = 'normal';
 	    } 
 	}
 	
@@ -95,7 +122,8 @@ class oo_object extends \Sunhill\base {
 	 * @return array of String
 	 */
 	public function get_changed_fields() {
-		$result = array();
+	    $this->check_validity();
+	    $result = array();
 		foreach ($this->properties as $property) {
 			if ($property->get_dirty()) {
 				if (!isset($result[$property->get_model()])) {
@@ -127,6 +155,7 @@ class oo_object extends \Sunhill\base {
 	 * @todo unschöner Hack, update_children sollte privat bleiben und vom Objekt selber aufgerufen werden
 	 */
 	public function update_children() {
+	    $this->check_validity();
 	    $fields = $this->get_complex_fields();
 	    foreach ($fields as $fieldname) {
 	        $property = $this->get_property($fieldname);
@@ -266,7 +295,8 @@ class oo_object extends \Sunhill\base {
 	 * @param oo_tag $tag
 	 */
 	public function add_tag(oo_tag $tag) {
-		foreach ($this->tags as $listed) {
+	    $this->check_validity();
+	    foreach ($this->tags as $listed) {
 			if ($listed->get_fullpath() === $tag->get_fullpath()) {
 			    return $this; // Gibt es schon
 			}
@@ -276,6 +306,7 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function delete_tag(oo_tag $tag) {
+	    $this->check_validity();
 	    for ($i=0;$i<count($this->tags);$i++) {
 	        if ($this->tags[$i]->get_fullpath() === $tag->get_fullpath()) {
 	            array_splice($this->tags,$i,1);
@@ -289,7 +320,8 @@ class oo_object extends \Sunhill\base {
 	 * Fügt ein Autotag hinzu
 	 */
 	public function add_auto_tag($tagstr) {
-		$tagstr = 'autotag.'.$tagstr;
+	    $this->check_validity();
+	    $tagstr = 'autotag.'.$tagstr;
 		$tag = new oo_tag($tagstr,true);
 		$tag->commit();
 		$this->add_tag($tag);
@@ -318,6 +350,7 @@ class oo_object extends \Sunhill\base {
 	 * @return array[]
 	 */
 	public function get_changed_tags() {
+	    $this->check_validity();
 	    $result = array('added'=>array(),'deleted'=>array());
 	    for ($i=0;$i<count($this->tags);$i++) {
 	        $found = false;
@@ -373,7 +406,8 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function __get($name) {
-		if (isset($this->properties[$name])) {
+	    $this->check_validity();
+	    if (isset($this->properties[$name])) {
 			return $this->properties[$name]->get_value();
 		} else {
 			return parent::__get($name);
@@ -381,7 +415,8 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function __set($name,$value) {
-		if (isset($this->properties[$name])) {
+	    $this->check_validity();
+	    if (isset($this->properties[$name])) {
 		    if ($this->readonly) {
 		        throw new \Exception("Property '$name' in der Readonly Phase verändert.");
 		    } else {
@@ -398,6 +433,7 @@ class oo_object extends \Sunhill\base {
 	 * @return oo_property
 	 */
 	public function get_property($name) {
+	    $this->check_validity();
 	    if (!isset($this->properties[$name])) {
 	        throw new UnknownPropertyException("Unbekannter Property '$property'");
 	    }
@@ -478,7 +514,8 @@ class oo_object extends \Sunhill\base {
 	 * @return array[]
 	 */
 	public function get_simple_fields() {
-		$models = array();
+	    $this->check_validity();
+	    $models = array();
 		foreach ($this->properties as $property) {
 			if (!isset($models[$property->get_model()])) {
 				$models[$property->get_model()] = array();
@@ -513,7 +550,8 @@ class oo_object extends \Sunhill\base {
 	 * @param $payload void, zusätzliche Parameter als Array
 	 */
 	public function child_changed($fieldname,$childobject,$action,$payload) {
-	   $method_name = 'child_'.$fieldname.'_'.$action.'d';
+	    $this->check_validity();
+	    $method_name = 'child_'.$fieldname.'_'.$action.'d';
 	   if (method_exists($this, $method_name)) {
 	       $this->$method_name($payload);
 	   }
@@ -526,6 +564,7 @@ class oo_object extends \Sunhill\base {
 	 * @return oo_object
 	 */
 	public function promote(String $newclass) {
+	    $this->check_validity();
 	    if (!class_exists($newclass)) {
 	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");    
 	    }
@@ -586,6 +625,7 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function degrade(String $newclass) {
+	    $this->check_validity();
 	    if (!class_exists($newclass)) {
 	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");
 	    }
@@ -614,6 +654,7 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function copy_from(oo_object $source) {
+	    $this->check_validity();
 	    $this->set_id($source->get_id());
 	    foreach ($this->properties as $property) {
 	        $name = $property->get_name();
@@ -635,7 +676,8 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	public function get_inheritance() {
-	     $parent_class_names = array();
+	    $this->check_validity();
+	    $parent_class_names = array();
 	     $parent_class_name = get_class($this);
 	     do {
 	         if ($parent_class_name == 'Sunhill\\Objects\\oo_object') {
@@ -650,7 +692,8 @@ class oo_object extends \Sunhill\base {
 	
 // ================================= Löschen =============================================	
 	public function delete() {
-	       $this->pre_delete();
+	    $this->check_validity();
+	    $this->pre_delete();
            $this->deletion();
            unset(self::$objectcache[$this->get_id()]); // Cache-Eintrag löschen
 	       $this->post_delete();
@@ -687,6 +730,14 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	/**
+     * Diese Methode wird von $this->load() aufgerufen, wenn ein Objekt über den lader geladen wurde. Sie soll das Objekt in den Cache eintragen
+	 * @param int $id
+	 */
+	protected static function load_id_called(int $id,oo_object $object) {
+	    self::$objectcache[$id] = $object;
+	}
+	
+	/**
 	 * Erzeugt ein passendes Objekt zur übergebenen ID
 	 * @param int $id ID des Objektes von dem ein Objekt erzeugt werden soll
 	 * @return oo_object oder Abkömmling
@@ -699,13 +750,21 @@ class oo_object extends \Sunhill\base {
 	            return false;
 	        }
 	        $object = new $classname();
-	        self::$objectcache[$id] = $object;
-	        $object->load($id);
+	        $object = $object->load($id);
 	        return $object;
 	    }
 	}
 	
 	public static function flush_cache() {
 	    self::$objectcache = array();
+	}
+	
+	/**
+	 * Liefert zurück, ob sich ein Objekt mit der ID $id im Cache befindet
+	 * @param int $id
+	 * @return bool, true, wenn im Cache sonst false
+	 */
+	public static function is_cached(int $id) {
+        return isset(self::$objectcache[$id]);	    
 	}
 }
