@@ -30,8 +30,10 @@ class oo_object extends \Sunhill\hookable {
 	
 	private $comitting = false;
 		
+	private $external_references = array();
+	
 	public function __construct() {
-		//parent::__construct();
+		parent::__construct();
 		$this->tags = array();
 		$this->tags_shadow = array();
 		$this->setup_properties();
@@ -186,12 +188,12 @@ class oo_object extends \Sunhill\hookable {
 			   if (method_exists($this, $method_name)) {
 			      $this->$method_name($diff['NEW'],$diff['REMOVED']);
 			   }
-			   $this->check_for_hook('FIELDCOMMIT', $field, array('arraychange'=>$diff));
+			   $this->check_for_hook('FIELDCOMMITTED', $field, array('arraychange'=>$diff));
 			} else {
 			    if (method_exists($this, $method_name)) {
 			        $this->$method_name($property->get_old_value(),$property->get_value());
 			    }
-			    $this->check_for_hook('FIELDCOMMIT',$field,array('from'=>$property->get_old_value(),
+			    $this->check_for_hook('FIELDCOMMITTED',$field,array('from'=>$property->get_old_value(),
 			                           'to'=>$property->get_value()));
 			}
 			$broadcast[$field] = array($property->get_old_value(),$property->get_value()); 
@@ -231,6 +233,8 @@ class oo_object extends \Sunhill\hookable {
 	            if (method_exists($this, $method_name)) {
 	                $this->$method_name($property->get_old_value(),$property->get_value());
 	            }
+	            $this->check_for_hook('FIELDCOMMITTING',$field,array('from'=>$property->get_old_value(),
+	                'to'=>$property->get_value()));
 	            $this->field_updated($field,$property->get_old_value(),$property->get_value());
 	        }
 	    }	    
@@ -405,7 +409,7 @@ class oo_object extends \Sunhill\hookable {
 		              'from'=>$this->properties[$name]->get_old_value(),
 		              'to'=>$value));
 		          if (!$this->properties[$name]->is_simple()) {
-		              $this->check_for_external_hooks($name,$value,$this->properties[$name]->get_old_value());
+		              $this->check_for_hook('EXTERNAL',$name,array('to'=>$value,'from'=>$this->properties[$name]->get_old_value()));
 		          }
 		          if ($this->properties[$name]->get_dirty()) {		              
 		              $this->check_for_hook('FIELDCHANGE',$name,array(
@@ -708,20 +712,28 @@ class oo_object extends \Sunhill\hookable {
 	    $parts = explode('.',$subaction);
 	    $field = array_shift($parts);
 	    $restaction = implode('.',$parts);
-	    if (!isset($this->hooks['EXTERNAL'][$field])) {
-	        $this->hooks['EXTERNAL'][$field] = array(array('destination'=>$this,'hook'=>'set_external_hook'));
-	    } else {
-	        $this->hooks['EXTERNAL'][$field][] = array('destination'=>$this,'hook'=>'set_external_hook'); 
+	    $this->add_hook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
+	}
+	
+	protected function complex_changed($params) {
+        $target = $params['subaction'];
+        if (isset($target)) {
+            $fieldname = $params['payload']['field'];
+            $hookname  = $params['payload']['hook'];
+            $this->$target->add_hook($params['payload']['action'],$hookname,$fieldname,$this);
+        }
+	}
+	
+	protected function target_equal($test1,$test2) {
+	    if ($test1 instanceof oo_object) {
+	        $test1 = $test1->get_id();
 	    }
+	    if ($test2 instanceof oo_object) {
+	        $test2 = $test2->get_id();
+	    }
+	    return ($test1 === $test2);
 	}
 	
-	protected function set_external_hook() {
-	    
-	}
-	
-	protected function check_for_external_hooks($name,$old,$new){
-	    
-	}
 // ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();

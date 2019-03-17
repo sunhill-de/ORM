@@ -6,6 +6,7 @@ class hookable extends base {
 
 	
 	protected $hooks = array();
+	protected $external_hooks = array();
 	
 	public function __construct() {
 		//parent::__construct();
@@ -26,8 +27,14 @@ class hookable extends base {
 	 * @param string $subaction
 	 * @param hookable $destination
 	 */
-	public function add_hook(string $action,string $hook,string $subaction='default',$destination=null) {
+	public function add_hook(string $action,string $hook,string $subaction='default',$destination=null,$payload=null) {
 	    if (is_null($destination)) { $destination = $this; }
+	    if ($this->hook_already_installed($action,$hook,$subaction,$destination,$payload)) {
+	        return;
+	    }
+	    if ($destination !== $this) {
+	        $this->external_hooks[] = array('action'=>$action,'subaction'=>$subaction,'destination'=>$destination,'payload'=>$payload);
+	    }
 	    if (!isset($this->hooks[$action])) {
 	        $this->hooks[$action] = array();
 	    }
@@ -38,10 +45,24 @@ class hookable extends base {
 	        // Es handelt sich um einen komplexen hook
 	        $this->set_complex_hook($action,$hook,$subaction,$destination);
 	    } else {	    
-	       $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook);
+	       $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook,'payload'=>$payload);
 	    }
 	}
 	
+	private function hook_already_installed($action,$hook,$subaction,$destination,$payload) {
+	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
+	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
+	            if (($hook == $descriptor['hook']) && ($this->target_equal($destination,$descriptor['destination']))) {
+	                return true;
+	            }
+	        }
+	    }
+	    return false;
+	}
+	
+	protected function target_equal($test1,$test2) {
+	    return ($test1 === $test2);
+	}
 	/**
 	 * Wird für komplexe Aufgabe aufgerufen
 	 * @param string $action
@@ -72,6 +93,7 @@ class hookable extends base {
 	            }
 	            $params['action']    = $action;
 	            $params['subaction'] = $subaction;
+	            $params['payload'] = $descriptor['payload'];
 	            $destination->$hook($params);
 	        }
 	    }

@@ -44,26 +44,16 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     
     protected function setup_hooks() {
         parent::setup_hooks();
-        $this->set_hook('FIELDCHANGE','int_changed','hooking_int');
-        $this->set_hook('FIELDCHANGE','hooked_changed','hooked_object.hooked_int');
-        $this->set_hook('FIELDCOMMIT','int_comitted','hooking_int');
-        $this->set_hook('FIELDCOMMIT','hooked_comitted','hooked_object.hooked_int');
+        $this->add_hook('FIELDCOMMITTING','int_comitted','hooking_int');
+        $this->add_hook('FIELDCOMMITTING','hooked_comitted','hooked_object.hooked_int');
     }
     
-    protected function int_changed($params) {
-        $this->state = "(".$params['from']."=>".$params['to'].")";    
+    protected function int_comitted($params) {
+        $this->state = "(".$params['from']."=>".$params['to'].")";
     }
     
-    protected function hooked_changed($from,$to) {
-        $this->state = "(Hooked:$from=>$to)";
-    }
-    
-    protected function int_comitted($from,$to) {
-        $this->state = "[$from=>$to]";
-    }
-    
-    protected function hooked_comitted($from,$to) {
-        $this->state = "[Hooked:$from=>$to]";
+    protected function hooked_comitted($params) {
+        $this->state = "(Hooked:".$params['from']."=>".$params['to'].")";
     }
     
 }
@@ -89,6 +79,7 @@ class ObjectHookTest extends ObjectCommon
         \Sunhill\Objects\oo_object::flush_cache();
         $readhooking = \Sunhill\Objects\oo_object::load_object_of($hooking->get_id());
         $readhooking->hooking_int = 333;
+        $readhooking->commit();
         $this->assertEquals('(222=>333)',$readhooking->state);       
     }
     
@@ -104,7 +95,8 @@ class ObjectHookTest extends ObjectCommon
         \Sunhill\Objects\oo_object::flush_cache();
         $readhooking = \Sunhill\Objects\oo_object::load_object_of($hooking->get_id());
         $readhooking->hooked_object->hooked_int = 234;
-        $this->assertEquals('[123=>234]',$readhooking->state);
+        $readhooking->commit();
+        $this->assertEquals('(Hooked:123=>234)',$readhooking->state);
     }
     
     public function testComplexHookPersistantInDirect() {
