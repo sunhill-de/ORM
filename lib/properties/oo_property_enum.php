@@ -6,6 +6,8 @@ class oo_property_enum extends oo_property {
 	
 	protected $type = 'enum';
 	
+	protected $features = ['object','simple'];
+	
 	private $allowed;
 	
 	protected function validate($value) {

@@ -6,9 +6,7 @@ class oo_property_array_of_objects extends oo_property_object_base {
 
 	protected $type = 'array_of_objects';
 	
-	protected $is_simple = false;
-	
-	protected $is_array = true;
+	protected $features = ['object','complex','array'];
 	
 	protected $initialized = true;
 	

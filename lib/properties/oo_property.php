@@ -8,6 +8,8 @@ class InvalidValueException extends PropertyException {}
 
 class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	
+    protected $features = array();
+    
 	protected $owner;
 	
 	protected $name;
@@ -17,10 +19,6 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	protected $shadow;
 	
 	protected $type;
-	
-	protected $is_simple = true;
-	
-	protected $is_array = false;
 	
 	protected $default;
 	
@@ -40,7 +38,7 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 		$this->initialized = false;
 		$this->defaults_null = false;
 		$this->read_only = false;
-		if ($this->is_array) {
+		if ($this->is_array()) {
 			$this->value = array();
 		}
 		$this->initialize();
@@ -90,7 +88,7 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 				throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
 			}
 		}
-		if ($this->is_array) {
+		if ($this->is_array()) {
 			return $this;
 		} else {
 		    return $this->value;
@@ -174,11 +172,11 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	}	
 	
 	public function is_array() {
-		return $this->is_array;
+		return $this->has_feature('array');
 	}
 	
 	public function is_simple() {
-		return $this->is_simple;
+		return $this->has_feature('simple');
 	}
 	
 	private function check_array() {
@@ -248,5 +246,7 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	    return $result;
 	}
 	
-	
+	public function has_feature(string $test) {
+	    return in_array($test,$this->features);
+	}
 }

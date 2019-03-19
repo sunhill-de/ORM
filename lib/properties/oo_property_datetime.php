@@ -6,6 +6,8 @@ class oo_property_datetime extends oo_property_datetime_base {
 
 	protected $type = 'datetime';
 	
+	protected $features = ['object','simple'];
+	
 	public static function is_valid_datetime($test) {
 		if (is_numeric($test)) {
 			$date = new \DateTime('@'.$test);
