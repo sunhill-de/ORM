@@ -91,7 +91,7 @@ class PropertyValidateTest extends TestCase
     }
     
     /**
-     * @expectedException \Sunhill\Properties\InvalidValueException
+     * @expectedException \Sunhill\Validators\ValidatorException
      */
     public function testObjectsFail() {
     	$test = new \Sunhill\Properties\oo_property_object(null);
@@ -119,7 +119,7 @@ class PropertyValidateTest extends TestCase
     }
     
     /**
-     * @expectedException \Sunhill\Properties\InvalidValueException
+     * @expectedException \Sunhill\Validators\ValidatorException
      */
     public function testArrayOfObjectsFail() {
     	$test = new \Sunhill\Properties\oo_property_array_of_objects(null);
