@@ -16,7 +16,7 @@ class PropertyValidateTest extends TestCase
      */
     public function testValidate($property,$testvalue,$exception,$expected)
     {
-		$property_name = '\Sunhill\Objects\oo_property_'.$property;
+		$property_name = '\Sunhill\Properties\oo_property_'.$property;
     	$property_class = new $property_name(null);
     	$result = 0;
 		try {
@@ -74,7 +74,7 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testObjectsPropertyPass() {
-    	$test = new oo_property_object(null);
+    	$test = new \Sunhill\Properties\oo_property_object(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
     	$object = new \Sunhill\Test\ts_testparent();
     	$object->parentint = 22;
@@ -83,7 +83,7 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testObjectsPropertyPassWithChild() {
-    	$test = new oo_property_object(null);
+    	$test = new \Sunhill\Properties\oo_property_object(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
     	$object = new \Sunhill\Test\ts_testchild();
     	$test->set_value($object);
@@ -91,17 +91,17 @@ class PropertyValidateTest extends TestCase
     }
     
     /**
-     * @expectedException \Sunhill\Objects\InvalidValueException
+     * @expectedException \Sunhill\Properties\InvalidValueException
      */
     public function testObjectsFail() {
-    	$test = new oo_property_object(null);
+    	$test = new \Sunhill\Properties\oo_property_object(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testchild']);
     	$object = new \Sunhill\Test\ts_testparent();
     	$test->set_value($object);
     }
     
     public function testArrayOfObjectsPropertyPass() {
-    	$test = new \Sunhill\Objects\oo_property_array_of_objects(null);
+    	$test = new \Sunhill\Properties\oo_property_array_of_objects(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
     	$object = new \Sunhill\Test\ts_testparent();
     	$object->parentint = 22;
@@ -110,7 +110,7 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testArrayOfObjectsPropertyPassWithChild() {
-    	$test = new \Sunhill\Objects\oo_property_array_of_objects(null);
+    	$test = new \Sunhill\Properties\oo_property_array_of_objects(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
     	$object = new \Sunhill\Test\ts_testchild();
     	$object->parentint = 23;
@@ -119,17 +119,17 @@ class PropertyValidateTest extends TestCase
     }
     
     /**
-     * @expectedException \Sunhill\Objects\InvalidValueException
+     * @expectedException \Sunhill\Properties\InvalidValueException
      */
     public function testArrayOfObjectsFail() {
-    	$test = new \Sunhill\Objects\oo_property_array_of_objects(null);
+    	$test = new \Sunhill\Properties\oo_property_array_of_objects(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testchild']);
     	$object = new \Sunhill\Test\ts_testparent();
     	$test->get_value()[] = $object;
     }
     
     public function testArrayOfString() {
-    	$test = new \Sunhill\Objects\oo_property_array_of_strings(null);
+    	$test = new \Sunhill\Properties\oo_property_array_of_strings(null);
     	$test->get_value()[] = 'ABC';
     	$test->get_value()[] = 'DEF';
     	$hilf = $test->get_value();
@@ -142,7 +142,7 @@ class PropertyValidateTest extends TestCase
      * @param unknown $raise_exception
      */
     public function testEnum($test_value,$exception) {
-    	$test = new \Sunhill\Objects\oo_property_enum(null);
+    	$test = new \Sunhill\Properties\oo_property_enum(null);
     	$test->set_enum_values(['A','B']);
     	$result = 0;
     	try {

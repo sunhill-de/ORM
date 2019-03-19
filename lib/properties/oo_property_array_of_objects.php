@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Objects;
+namespace Sunhill\Properties;
 
 class oo_property_array_of_objects extends oo_property_object_base {
 

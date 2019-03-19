@@ -15,7 +15,7 @@ class PropertyTest extends TestCase
 	 */
 	public function testPropertyConstructor()
 	{
-		$test = new \Sunhill\Objects\oo_property(null);
+		$test = new \Sunhill\Properties\oo_property(null);
 		$this->assertFalse(is_null($test));
 		return $test;
 	}
@@ -131,7 +131,7 @@ class PropertyTest extends TestCase
 	public function testDirtyIfNoChangeWithObjects() {
 //		$object = new \Sunhill\Objects\oo_object();
 		$value = new \Sunhill\Objects\oo_object();
-		$test = new \Sunhill\Objects\oo_property(null);
+		$test = new \Sunhill\Properties\oo_property(null);
 		$test->set_value($value);
 		$test->commit();
 		$test->set_value($value);
@@ -142,7 +142,7 @@ class PropertyTest extends TestCase
 	 * Testet, ob commit mit Default korrekt ist
 	 */
 	public function testCommitUninitialiedWithDefault() {
-		$test = new \Sunhill\Objects\oo_property(null);
+		$test = new \Sunhill\Properties\oo_property(null);
 		$test->set_default('ERF');
 		$test->commit();
 		$this->assertEquals('ERF',$test->get_value());
@@ -153,7 +153,7 @@ class PropertyTest extends TestCase
 	 * @expectedException \Exception
 	 */
 	public function testCommitUninitialiedWithoutDefault() {
-		$test = new \Sunhill\Objects\oo_property(null);
+		$test = new \Sunhill\Properties\oo_property(null);
 		$test->commit();
 	}
 	
@@ -162,7 +162,7 @@ class PropertyTest extends TestCase
 	 * @expectedException \Exception
 	 */
 	public function testExceptionUninitialized() {
-		$test = new \Sunhill\Objects\oo_property(null);
+		$test = new \Sunhill\Properties\oo_property(null);
 		$wert = $test->get_value();
 	}
 	
@@ -170,7 +170,7 @@ class PropertyTest extends TestCase
 	 * Testet, ob das setzen von Null Werten korrekt gehandelt wird
 	 */
 	public function testSetNullDirty() {
-		$test = new \Sunhill\Objects\oo_property(null);
+		$test = new \Sunhill\Properties\oo_property(null);
 		$test->set_value(null);
 		$this->assertTrue($test->get_dirty());
 		return $test;
@@ -190,7 +190,7 @@ class PropertyTest extends TestCase
 	 * Testet, ob das setzen von Null Werten korrekt gehandelt wird
 	 */
 	public function testSetToNullAgain() {
-		$test = new \Sunhill\Objects\oo_property(null);
+		$test = new \Sunhill\Properties\oo_property(null);
 		$test->set_value('ABC');
 		$test->commit();
 		$test->set_value(null);
@@ -199,7 +199,7 @@ class PropertyTest extends TestCase
 	}
 	
 	public function testDefaultsNull() {
-		$test = new \Sunhill\Objects\oo_property(null);
+		$test = new \Sunhill\Properties\oo_property(null);
 		$test->set_default(null);
 		$this->assertTrue(is_null($test->value));
 	}

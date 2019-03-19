@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Objects;
+namespace Sunhill\Properties;
 
 class oo_property_integer extends oo_property {
 	

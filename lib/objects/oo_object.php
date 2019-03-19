@@ -7,12 +7,10 @@ use App;
 class ObjectException extends \Exception {}
 class UnknownPropertyException extends ObjectException {}
 
-class oo_object extends \Sunhill\hookable {
+class oo_object extends \Sunhill\propertieshaving {
 
 	private $id;
-	
-	private $readonly=false;
-	
+		
 	/**
 	 * Speichert die Tags, die mit diesem Objekt assoziiert sind
 	 * @var array of oo_tags
@@ -28,15 +26,12 @@ class oo_object extends \Sunhill\hookable {
 	 */
 	private $tags_shadow;
 	
-	private $comitting = false;
-		
 	private $external_references = array();
 	
 	public function __construct() {
 		parent::__construct();
 		$this->tags = array();
 		$this->tags_shadow = array();
-		$this->setup_properties();
 		$this->check_for_hook('CONSTRUCTED');
 	}
 	
@@ -76,8 +71,8 @@ class oo_object extends \Sunhill\hookable {
 	}
 	
 	public function commit() {
-	    if (!$this->comitting) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
-	        $this->comitting = true;
+	    if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
+	        $this->set_state('committing');
 	        $this->check_for_hook('COMITTING');
 	        if ($this->get_id()) {
 	            $this->pre_update();
@@ -96,7 +91,7 @@ class oo_object extends \Sunhill\hookable {
     		}
     		$this->comitted();
     		$this->check_for_hook('COMITTED');    		
-    		$this->comitting = false;
+    		$this->set_state('normal');
 	    } 
 	}
 	
@@ -176,7 +171,8 @@ class oo_object extends \Sunhill\hookable {
 	 * Wird nach einem Datenbank update aufgerufen. Hier erfolgen die Verarbeitung von Triggern etc. 
 	 */
 	protected function post_update() {
-	    $this->readonly = true;
+	    $readonly = $this->get_readonly();
+	    $this->set_readonly(true);
 	    $changed_fields = $this->get_changed_fields();
 	    $broadcast = array();
 		foreach ($changed_fields as $model=>$fields) {
@@ -203,7 +199,7 @@ class oo_object extends \Sunhill\hookable {
 		if (!empty($broadcast)) { 
 		    $this->broadcast_parents($broadcast,'update');
 		}
-		$this->readonly = false;
+		$this->set_readonly($readonly);
 	}
 	
 	/**
@@ -379,16 +375,11 @@ class oo_object extends \Sunhill\hookable {
 	}
 	// ********************* Property Handling *************************************	
 	
-	/**
-	 * Wird vom Constructor aufgerufen, um die Properties zu initialisieren.
-	 * Abgeleitete Objekte müssen immer die Elternmethoden mit aufrufen.
-	 */
 	protected function setup_properties() {
-	    $this->properties = array();
+	    parent::setup_properties();
 	    $this->timestamp('created_at')->set_model('coreobject');
 	    $this->timestamp('updated_at')->set_model('coreobject');
 	}
-	
 	public function __get($name) {
 	    $this->check_for_hook('GET',$name,array(
 	        'value'=>$this->properties[$name]->get_value()));
@@ -401,7 +392,7 @@ class oo_object extends \Sunhill\hookable {
 	
 	public function __set($name,$value) {
 	    if (isset($this->properties[$name])) {
-		    if ($this->readonly) {
+		    if ($this->get_readonly()) {
 		        throw new \Exception("Property '$name' in der Readonly Phase verändert.");
 		    } else {
 		          $this->properties[$name]->set_value($value);
@@ -435,7 +426,7 @@ class oo_object extends \Sunhill\hookable {
 	}
 	
 	private function add_property($name,$type) {
-		$property_name = '\Sunhill\Objects\oo_property_'.$type;
+		$property_name = '\Sunhill\Properties\oo_property_'.$type;
 		$property = new $property_name($this);
 		$property->set_name($name);
 		$property->set_type($type);
