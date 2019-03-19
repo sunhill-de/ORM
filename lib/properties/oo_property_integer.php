@@ -8,10 +8,6 @@ class oo_property_integer extends oo_property {
 
 	protected $features = ['object','simple'];
 	
-	protected function validate($value) {
-		if (!ctype_digit($value) && !is_int($value)) {
-			throw new InvalidValueException("$value ist kein gültiger Integer.");
-		}
-		return $value;
-	}
+	protected $validator_name = 'int_validator';
+
 }

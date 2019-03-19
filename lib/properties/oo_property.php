@@ -32,6 +32,10 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	
 	protected $read_only;
 	
+	protected $validator_name = 'validator_base';
+	
+	protected $validator;
+	
 	public function __construct($owner) {
 		$this->owner = $owner;
 		$this->dirty = false;
@@ -42,10 +46,16 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 			$this->value = array();
 		}
 		$this->initialize();
+		$this->init_validator();
 	}
 	
 	protected function initialize() {
 		
+	}
+	
+	protected function init_validator() {
+	    $validator_name = "\\Sunhill\\Validators\\".$this->validator_name;
+	    $this->validator = new $validator_name();    
 	}
 	
 	public function set_name($name) {
@@ -159,7 +169,7 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	}
 	
 	protected function validate($value) {
-		return $value;
+		return $this->validator->validate($value);
 	}
 	
 	public function set_readonly($value) {
