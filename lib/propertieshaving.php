@@ -8,6 +8,8 @@ class propertieshaving extends hookable {
     
     private $readonly = false;
     
+    protected $properties;
+    
     /**
      * Konstruktur, ruft nur zusätzlich setup_properties auf
      */

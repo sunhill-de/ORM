@@ -223,16 +223,25 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	    return count($this->value);
 	}
 	
+	private function array_search($needle,$haystack) {
+	    foreach ($haystack as $entry) {
+	        if ($needle === $entry) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
 	public function get_array_diff() {
 	    $this->check_array();
 	    $result = ['NEW'=>array(),'REMOVED'=>array()];
 	    foreach ($this->shadow as $oldentry) {
-	        if (array_search($oldentry,$this->value)===false) {
+	        if ($this->array_search($oldentry,$this->value)===false) {
 	            $result['REMOVED'][] = $oldentry;
 	        }
 	    }
 	    foreach ($this->value as $newentry) {
-	        if (array_search($newentry,$this->shadow)===false) {
+	        if ($this->array_search($newentry,$this->shadow)===false) {
 	            $result['NEW'][] = $newentry;
 	        }
 	    }

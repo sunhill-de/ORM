@@ -17,8 +17,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	 */
 	protected $tags;
 	
-	protected $properties;
-	
 	public $default_ns = '\\App';
 	
 	/**
