@@ -2,7 +2,7 @@
 
 namespace Sunhill\Properties;
 
-class oo_property_integer extends oo_property {
+class oo_property_integer extends oo_property_field {
 	
 	protected $type = 'integer';
 

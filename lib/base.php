@@ -9,7 +9,10 @@ namespace Sunhill;
  */
 class base {
 	
-	public function __get($varname) {
+    public function __construct() {
+    }
+    
+    public function __get($varname) {
 		$method = "get_$varname";
 		if (method_exists($this,$method)) {
 			return $this->$method();

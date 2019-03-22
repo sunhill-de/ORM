@@ -9,46 +9,12 @@ class UnknownPropertyException extends ObjectException {}
 
 class oo_object extends \Sunhill\propertieshaving {
 
-	private $id;
-		
-	/**
-	 * Speichert die Tags, die mit diesem Objekt assoziiert sind
-	 * @var array of oo_tags
-	 */
-	protected $tags;
-	
 	public $default_ns = '\\App';
-	
-	/**
-	 * Schattenspeicher für Tags, um im Falles eines rollbacks die Tags wiederherzustellen und die veränderten Tags zu ermitteln
-	 */
-	private $tags_shadow;
 	
 	private $external_references = array();
 	
-	public function __construct() {
-		parent::__construct();
-		$this->tags = array();
-		$this->tags_shadow = array();
-		$this->check_for_hook('CONSTRUCTED');
-	}
 	
-	/**
-	 * Liefert die Aktuelle ID des Objektes zurück (oder null, wenn das Objekt noch nicht in der Datenbank ist)
-	 * @return Integer oder null
-	 */
-	public function get_id() {
-		return $this->id;
-	}
-	
-	/**
-	 * Legt die ID für das aktuelle Objekt fest
-	 * @param Integer $id
-	 */
-	public function set_id($id) {
-		$this->id = $id;
-	}
-	
+// ================================ Laden ========================================	
 	/**
 	 * Läd das Objekt mit der ID $id aus der Datenbank
 	 * @param integer $id
@@ -57,181 +23,55 @@ class oo_object extends \Sunhill\propertieshaving {
 		$loader = new oo_object_loader($this);
 		$result = $loader->load($id); 
 		$this->clean_properties();
-		$this->tags_shadow = $this->tags;
 		$this->check_for_hook('LOADED');
 		return $result;
 	}
-	
-	private function clean_properties() {
-		foreach ($this->properties as $property) {
-			$property->set_dirty(false);
-		}
+
+// ========================= Einfügen =============================	
+	protected function do_insert() {
+        $this->insert_core_object();
+	    $simple_fields = $this->get_properties_with_feature('simple',null,'model');
+        foreach ($simple_fields as $model_name => $fields_of_model) {
+            $model = new $model_name();
+            foreach ($fields_of_model as $field_name => $field) {
+                $model->$field_name = $field->get_value();
+            }
+            if ($model_name == $this->default_ns."\coreobject") {
+                continue; // Wurde schon gespeichert
+            } else {
+                $model->id = $this->get_id();
+                $model->save();
+            }
+        }
 	}
 	
-	public function commit() {
-	    if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
-	        $this->set_state('committing');
-	        $this->check_for_hook('COMITTING');
-	        if ($this->get_id()) {
-	            $this->pre_update();
-	            $this->check_for_hook('PREUPDATE');
-    			$this->update();
-    			$this->post_update(); 
-    			$this->check_for_hook('POSTUPDATE');
-    			$this->post_update_tags();
-    		} else {
-    		    $this->pre_create(); 
-    		    $this->check_for_hook('PRECREATE');    		    
-    			$this->create();
-    			$this->post_create();
-    			$this->check_for_hook('POSTCREATE');
-    			$this->post_create_tags();
-    		}
-    		$this->comitted();
-    		$this->check_for_hook('COMITTED');    		
-    		$this->set_state('normal');
-	    } 
+	private function insert_core_object() {
+	       $model_name = $this->default_ns."\coreobject";
+	       $model = new $model_name;
+	       $model->classname = get_class($this);
+	       $model->save();
+	       $this->updated_at = $model->updated_at;
+	       $this->created_at = $model->created_at;
+	       $this->set_id($model->id);
 	}
-	
-	/**
-	 * Ermittelt, welche Properties verändert wurden
-	 * @return array of String
-	 */
-	public function get_changed_fields() {
-		$result = array();
-		foreach ($this->properties as $property) {
-			if ($property->get_dirty()) {
-				if (!isset($result[$property->get_model()])) {
-					$result[$property->get_model()] = array($property->get_name());
-				} else {
-					$result[$property->get_model()][] = $property->get_name();
-				}
-			}
-		}
-		return $result;
-	}
-	
-	/**
-	 * Wird aufgerufen, wenn der commit ausgeführt wurde (egal ob create oder update)
-	 */
-	private function comitted() {
-		$this->clean_properties();
-		$this->tags_shadow = $this->tags; // Schattenverzeichnis überspielen
-	}
-	
-	private function create() {
-		$creator = new oo_object_creator($this);
-		$id = $creator->store();
-		$this->set_id($id);
-		$this->update_children();
-	}
-	
-	/**
-	 * @todo unschöner Hack, update_children sollte privat bleiben und vom Objekt selber aufgerufen werden
-	 */
-	public function update_children() {
-	    $fields = $this->get_complex_fields();
-	    foreach ($fields as $fieldname) {
-	        $property = $this->get_property($fieldname);
-	        switch ($property->type) {
-	            case 'object':
-	                $object = $this->$fieldname;
-	                if (!is_null($object)) {
-	                    $object->commit();
-	                }	                
-	                break;
-	            case 'array_of_objects':
-	                foreach ($this->$fieldname as $object) {
-	                    $object->commit();
-	                }
-	                break;
+
+// ========================== Aktualisieren ===================================	
+	protected function do_update() {
+	    $this->update_core_object();
+	    $simple_fields = $this->get_properties_with_feature('simple',true,'model');
+	    foreach ($simple_fields as $model_name => $fields_of_model) {
+	        $model = $model_name::where('id','=',$this->get_id())->first();
+	        foreach ($fields_of_model as $field_name => $field) {
+	            $model->$field_name = $field->get_value();
 	        }
-	    }	    
+	        $model->save();
+	    }
 	}
 	
-	protected function pre_create() {
-	}
-	
-	protected function post_create() {
-		
-	}
-	
-	private function update() {
-	    $updater = new oo_object_updater($this);
-		$updater->update();
-	}
-	
-	protected function field_updated($fieldname,$oldvalue,$newvalue) {
-		
-	}
-	
-	/**
-	 * Wird nach einem Datenbank update aufgerufen. Hier erfolgen die Verarbeitung von Triggern etc. 
-	 */
-	protected function post_update() {
-	    $readonly = $this->get_readonly();
-	    $this->set_readonly(true);
-	    $changed_fields = $this->get_changed_fields();
-	    $broadcast = array();
-		foreach ($changed_fields as $model=>$fields) {
-		  foreach($fields as $field) {	
-		    $property = $this->get_property($field);
-			$method_name = $field.'_changed';
-			if ($property->is_array()) {
-			   $diff = $this->$field->get_array_diff();
-			   if (method_exists($this, $method_name)) {
-			      $this->$method_name($diff['NEW'],$diff['REMOVED']);
-			   }
-			   $this->check_for_hook('FIELDCOMMITTED', $field, array('arraychange'=>$diff));
-			} else {
-			    if (method_exists($this, $method_name)) {
-			        $this->$method_name($property->get_old_value(),$property->get_value());
-			    }
-			    $this->check_for_hook('FIELDCOMMITTED',$field,array('from'=>$property->get_old_value(),
-			                           'to'=>$property->get_value()));
-			}
-			$broadcast[$field] = array($property->get_old_value(),$property->get_value()); 
-			$this->field_updated($field,$property->get_old_value(),$property->get_value());
-		  }
-		}
-		if (!empty($broadcast)) { 
-		    $this->broadcast_parents($broadcast,'update');
-		}
-		$this->set_readonly($readonly);
-	}
-	
-	/**
-	 * Ruft die Elternobjekte auf und teilt ihnen mit, dass sich ein Kind geändert hat
-	 * @param array $broadcast
-	 * @param 'update' oder 'delete' $action
-	 */
-	private function broadcast_parents($broadcast,$action) {
-	    $parents = \App\objectobjectassign::where('element_id','=',$this->get_id())->get();
-	    foreach ($parents as $parent) {
-	        $parent_object = self::load_object_of($parent->container_id);
-	        $parent_object->child_changed($parent->field,$this,'update',$broadcast);
-	    }	    
-	}
-	
-	private function commit_child() {
-	       
-	}
-	
-	protected function pre_update() {
-	    $this->update_children();
-	    $changed_fields = $this->get_changed_fields();
-	    foreach ($changed_fields as $model=>$fields) {
-	        foreach($fields as $field) {
-	            $property = $this->get_property($field);
-	            $method_name = $field.'_changing';
-	            if (method_exists($this, $method_name)) {
-	                $this->$method_name($property->get_old_value(),$property->get_value());
-	            }
-	            $this->check_for_hook('FIELDCOMMITTING',$field,array('from'=>$property->get_old_value(),
-	                'to'=>$property->get_value()));
-	            $this->field_updated($field,$property->get_old_value(),$property->get_value());
-	        }
-	    }	    
+	private function update_core_object() {
+	    $model_name = $this->default_ns."\coreobject";
+	    $model = $model_name::where('id','=',$this->get_id())->first();
+	    $model->save();	    
 	}
 	
 	/**
@@ -253,7 +93,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * Diese Methode wird aufgrufen, um das Tag-Handling zu bewerkstelligen
 	 * Sie speichert die Tag assoziationen in der Datenbank und ruft für jedes Tag tag_added auf
 	 */
-	private function post_create_tags() {
+	protected function post_create_tags() {
 	}
 	
 	/**
@@ -271,18 +111,17 @@ class oo_object extends \Sunhill\propertieshaving {
 	public function tag_removed(oo_tag $tag) {
 	    
 	}
-		
+	
+	protected function get_tags() {
+	    return $this->get_property('tags');
+	}
+	
 	/**
 	 * Fügt ein neues Tag hinzu oder ignoriert es, wenn es bereits hinzugefügt wurde
 	 * @param oo_tag $tag
 	 */
 	public function add_tag(oo_tag $tag) {
-		foreach ($this->tags as $listed) {
-			if ($listed->get_fullpath() === $tag->get_fullpath()) {
-			    return $this; // Gibt es schon
-			}
-		}
-		$this->tags[] = $tag;
+		$this->get_tags()->add($tag);
 		return $this;
 	}
 	
@@ -329,31 +168,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * @return array[]
 	 */
 	public function get_changed_tags() {
-	    $result = array('added'=>array(),'deleted'=>array());
-	    for ($i=0;$i<count($this->tags);$i++) {
-	        $found = false;
-	        for ($j=0;($j<count($this->tags_shadow));$j++) {
-	            if ($this->tags[$i]->get_fullpath() == $this->tags_shadow[$j]->get_fullpath()) {
-	                $found = true;
-	            }
-	        }	        
-	        if (!$found) {
-	            $result['added'][] = $this->tags[$i];
-	        }
-	    }
-	    
-	    for ($i=0;$i<count($this->tags_shadow);$i++) {
-	        $found = false;
-	        for ($j=0;($j<count($this->tags)) && (!$found);$j++) {
-	            if ($this->tags_shadow[$i]->get_fullpath() === $this->tags[$j]->get_fullpath()) {
-	                $found = true;
-	            }
-	        }
-	        if (!$found) {
-	            $result['deleted'][] = $this->tags_shadow[$i];
-	        }
-	    }
-	    return $result;
+	    return $this->get_property('tags')->get_array_diff();
 	}
 	
 	private function get_tags_only($source) {
@@ -377,6 +192,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    parent::setup_properties();
 	    $this->timestamp('created_at')->set_model('coreobject');
 	    $this->timestamp('updated_at')->set_model('coreobject');
+	    $this->add_property('tags','tags');
 	}
 	protected function timestamp($name) {
 		$property = $this->add_property($name, 'timestamp');
@@ -705,6 +521,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	    }
 	}
 	
+	/**
+	 * Leert den Klassen-Cache
+	 */
 	public static function flush_cache() {
 	    self::$objectcache = array();
 	}

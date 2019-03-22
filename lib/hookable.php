@@ -2,15 +2,16 @@
 
 namespace Sunhill;
 
-class hookable extends base {
+class hookable extends loggable {
 
 	
 	protected $hooks = array();
 	protected $external_hooks = array();
 	
 	public function __construct() {
-		//parent::__construct();
+		parent::__construct();
 		$this->setup_hooks();
+		$this->check_for_hook('CONSTRUCTED');		
 	}
 		
 	/**

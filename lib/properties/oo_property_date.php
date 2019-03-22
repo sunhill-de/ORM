@@ -2,7 +2,7 @@
 
 namespace Sunhill\Properties;
 
-class oo_property_date extends oo_property {
+class oo_property_date extends oo_property_field {
 	
 	protected $type = 'date';
 	

@@ -2,25 +2,20 @@
 
 namespace Sunhill\Properties;
 
-class oo_property_array_of_strings extends oo_property_arraybase {
-	
-	protected $type = 'array_of_strings';
+
+class oo_property_field extends oo_property {
+		
+	protected $type;
 	
 	protected $model_name;
 	
-	protected $features = ['object','complex','array'];
-	
-	protected function initialize() {
-		$this->initialized = true;
-	}
-	
 	public function set_type($type) {
-	    $this->type = $type;
-	    return $this;
+		$this->type = $type;
+		return $this;
 	}
 	
 	public function get_type() {
-	    return $this->type;
+		return $this->type;
 	}
 	
 	public function set_model($name) {
@@ -33,7 +28,7 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	}
 	
 	public function get_model() {
-	    return $this->model_name;
+		return $this->model_name;
 	}
 	
 }

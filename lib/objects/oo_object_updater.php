@@ -13,7 +13,7 @@ class oo_object_updater extends oo_object_storage {
 	}
 	
 	protected function work_simple_fields() {
-		$fields = $this->object->get_changed_fields();
+		$fields = $this->object->get_properties_with_feature('simple',true,'model');
 		foreach ($fields as $model_name=>$fields) {
 		    if (!empty($model_name)) {
     			$model = $model_name::where('id','=',$this->object->get_id())->first();
@@ -23,10 +23,9 @@ class oo_object_updater extends oo_object_storage {
     			}
     			$model_changed = false;
     			foreach ($fields as $field) {
-    				if ($this->object->get_property($field)->is_simple()) {
-    					$model->$field = $this->object->$field;
-    					$model_changed = true;
-    				}
+    				$current = $this->object->get_property($field->get_name());    			    
+    				$model->$field = $current->get_value();
+    				$model_changed = true;
     			}
     			if ($model_changed) {
     				$model->save();
@@ -43,11 +42,11 @@ class oo_object_updater extends oo_object_storage {
 	
 	protected function work_tags() {
         $change = $this->object->get_changed_tags(); 
-        foreach ($change['added'] as $added) {
+        foreach ($change['NEW'] as $added) {
             $this->store_tag($added);
             $this->object->tag_added($added);
         }
-        foreach ($change['deleted'] as $deleted) {
+        foreach ($change['REMOVED'] as $deleted) {
             $this->remove_tag($deleted);
             $this->object->tag_deleted($deleted);
         }
