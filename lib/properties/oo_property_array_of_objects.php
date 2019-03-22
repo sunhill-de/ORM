@@ -44,5 +44,14 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	public function get_model() {
 	    return $this->model_name;
 	}
-		
+	
+	public function load(int $id) {
+	    $references = \App\objectobjectassign::where('container_id','=',$id)
+	                                           ->where('field','=',$this->get_name())->get();
+	    foreach ($references as $reference) {
+	        $object = \Sunhill\Objects\oo_object::load_object_of($reference->element_id);
+	        $this->value[$reference->index] = $object;
+	    }
+	    
+	}
 }

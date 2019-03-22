@@ -16,17 +16,61 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 // ================================ Laden ========================================	
 	/**
-	 * Läd das Objekt mit der ID $id aus der Datenbank
+	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
 	 * @param integer $id
 	 */
-	public function load($id) {
-		$loader = new oo_object_loader($this);
-		$result = $loader->load($id); 
-		$this->clean_properties();
-		$this->check_for_hook('LOADED');
-		return $result;
+	protected function check_cache(int $id) {
+	    if (self::is_cached($id)) {
+	        return self::load_object_of($id);
+	    }
+	    return false;
 	}
-
+	
+	/**
+	 * Trägt sich selbst im Cache ein
+	 * @param Int $id
+	 */
+	protected function insert_cache(int $id) {
+	    self::load_id_called($id,$this);	    
+	}
+	
+	protected function do_load() {
+	    if (!$this->is_loading()) {
+	        $this->state = 'loading';
+            $this->load_core_object();
+	        $this->load_simple_fields();
+            $this->load_other_properties();
+	        $this->state = 'normal';
+	    }
+	}
+	
+	private function load_core_object() {
+	    $model_name = $this->default_ns."\coreobject";
+	    $model = $model_name::where('id','=',$this->get_id())->first();
+	    $this->updated_at = $model->updated_at;
+	    $this->created_at = $model->created_at;
+	}
+	
+	private function load_simple_fields() {
+	    $properties = $this->get_properties_with_feature('simple',null,'model');
+	    foreach ($properties as $model_name => $fields_of_model) {
+    	        if ($model_name == $this->default_ns."\coreobject") {
+    	            continue; // Wurde schon geladen
+    	        } 	           
+    	        $model = $model_name::where('id','=',$this->get_id())->first();
+    	        foreach ($fields_of_model as $field_name => $field) {
+    	            $this->$field_name = $model->$field_name;
+    	        }
+	    }
+	}
+	
+	private function load_other_properties() {
+	   $properties = $this->get_properties_with_feature('');
+	   foreach ($properties as $name => $property) {
+	      $property->load($this->get_id()); 
+	   }
+	}
+	
 // ========================= Einfügen =============================	
 	protected function do_insert() {
         $this->insert_core_object();
@@ -491,7 +535,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	/**
 	 * Ermittelt den Klassennamen von dem Object mit der ID $id
-	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll 
+	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll
 	 * @return string Der Klassenname
 	 */
 	public static function get_class_name_of($id) {
@@ -500,6 +544,14 @@ class oo_object extends \Sunhill\propertieshaving {
 	        return false;
 	    }
 	    return $object->classname;
+	}
+	
+	/**
+	 * Diese Methode wird von $this->load() aufgerufen, wenn ein Objekt über den lader geladen wurde. Sie soll das Objekt in den Cache eintragen
+	 * @param int $id
+	 */
+	protected static function load_id_called(int $id,oo_object $object) {
+	    self::$objectcache[$id] = $object;
 	}
 	
 	/**
@@ -515,16 +567,21 @@ class oo_object extends \Sunhill\propertieshaving {
 	            return false;
 	        }
 	        $object = new $classname();
-	        self::$objectcache[$id] = $object;
-	        $object->load($id);
+	        $object = $object->load($id);
 	        return $object;
 	    }
 	}
 	
-	/**
-	 * Leert den Klassen-Cache
-	 */
 	public static function flush_cache() {
 	    self::$objectcache = array();
+	}
+	
+	/**
+	 * Liefert zurück, ob sich ein Objekt mit der ID $id im Cache befindet
+	 * @param int $id
+	 * @return bool, true, wenn im Cache sonst false
+	 */
+	public static function is_cached(int $id) {
+	    return isset(self::$objectcache[$id]);
 	}
 }

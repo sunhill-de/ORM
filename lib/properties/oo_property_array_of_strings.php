@@ -36,4 +36,11 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	    return $this->model_name;
 	}
 	
+	public function load($id) {
+	    $references = \App\stringobjectassign::where('container_id','=',$id)
+	                  ->where('field','=',$this->get_name())->get();
+	    foreach ($references as $reference) {
+	        $this->value[$reference->index] = $reference->element_id;
+	    }	    
+	}
 }

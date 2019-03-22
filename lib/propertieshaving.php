@@ -80,15 +80,53 @@ class propertieshaving extends hookable {
 	    return $this->get_state() == 'invalid';
 	}
 	
-	protected function check_invalid() {
-	    if ($this->is_invalid) {
+	protected function is_loading() {
+	   return $this->get_state() == 'loading';    
+	}
+	
+	protected function check_validity() {
+	    if ($this->is_invalid()) {
 	        throw new PropertiesHavingException('Invalides Objekt aufgerufen.');
 	    }
+	}
+// ==================================== Loading =========================================
+	
+	public function load($id) {
+	    $this->check_validity();
+	    if ($result = $this->check_cache($id)) {
+	        $this->set_state('invalid');
+	        return $result;
+	    }
+	    $this->insert_cache($id);
+	    $this->set_id($id);
+	    $this->check_for_hook('LOADING','default',array($id));
+	    $this->do_load();
+	    $this->clean_properties();
+	    $this->check_for_hook('LOADED','default',array($id));
+	    return $this;
+	}
+	
+	/**
+	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
+	 * @param integer $id
+	 */
+	protected function check_cache(int $id) {
+	    return false;
+	}
+	
+	/**
+	 * Trägt sich selbst im Cache ein
+	 * @param Int $id
+	 */
+	protected function insert_cache(int $id) {
+	}
+	
+	protected function do_load() {
 	}
 	
 // ===================================== Committing =======================================
 	public function commit() {
-	    $this->check_invalid();
+	    $this->check_validity();
 	    if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
 	        $this->set_state('committing');
 	        $this->check_for_hook('COMMITTING');

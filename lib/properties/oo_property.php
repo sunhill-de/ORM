@@ -225,4 +225,9 @@ class oo_property extends \Sunhill\base {
 	    return array('FROM'=>$this->get_old_value(),
 	                 'TO'=>$this->get_value());
 	}
+	
+	public function load(int $id) {
+	    
+	}
+	
 }
