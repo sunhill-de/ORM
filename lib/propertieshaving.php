@@ -210,10 +210,8 @@ class propertieshaving extends hookable {
 	    $dirty_properties = $this->get_properties_with_feature('');
 	    foreach ($dirty_properties as $property) {
 	        $property->inserting();
-	        if ($property->get_dirty()) {
-	            $this->check_for_hook('INSERTING_PROPERTY',
+	        $this->check_for_hook('INSERTING_PROPERTY',
 	                $property->get_name());
-	        }
 	    }
 	}
 	
@@ -231,6 +229,36 @@ class propertieshaving extends hookable {
 	            $property->get_name());
 	    }
 	    $this->set_readonly($readonly);
+	}
+	
+	// ====================================== Deleting ==========================================
+	public function delete() {
+	    $this->deleting_properties();
+	    $this->check_for_hook('PREDELETE');
+	    $this->do_delete();
+	    $this->deleted_properties();
+	    $this->check_for_hook('POSTDELETE');
+	    $this->clear_cache_entry();
+	}
+	
+	private function deleting_properties() {
+	    $dirty_properties = $this->get_properties_with_feature('');
+	    foreach ($dirty_properties as $property) {
+	        $property->deleting();
+	        $this->check_for_hook('DELETING_PROPERTY',$property->get_name());
+	    }	    
+	}
+	
+	private function deleted_properties() {
+	    $dirty_properties = $this->get_properties_with_feature('');
+	    foreach ($dirty_properties as $property) {
+	        $property->deleting();
+	        $this->check_for_hook('DELETED_PROPERTY',$property->get_name());
+	    }	    
+	}
+	
+	protected function clear_cache_entry() {
+	    
 	}
 	
 	// ===================================== Property-Handling ========================================	

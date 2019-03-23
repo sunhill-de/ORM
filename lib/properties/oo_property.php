@@ -221,13 +221,21 @@ class oo_property extends \Sunhill\base {
 	    $this->commit();	    
 	}
 	
+	public function deleting() {
+	    
+	}
+	
+	public function deleted() {
+	    
+	}
+	
 	public function get_diff_array() {
 	    return array('FROM'=>$this->get_old_value(),
 	                 'TO'=>$this->get_value());
 	}
 	
 	public function load(int $id) {
-	    
+	    $this->initialized = true; 
 	}
 	
 }

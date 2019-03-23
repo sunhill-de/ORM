@@ -22,6 +22,16 @@ class oo_property_tags extends oo_property_arraybase {
 	            return $this; // Gibt es schon
 	        }
 	    }
-	    $this->value[] = $tag;	    
+	    $this->value[] = $tag;
+	    $this->set_dirty(true);
 	}
+	
+	public function load(int $id) {
+	    $assigns = \App\tagobjectassign::where('container_id','=',$id)->get();
+	    foreach ($assigns as $assign) {
+	        $tag = new \Sunhill\Objects\oo_tag($assign->tag_id);
+	        $this->add_tag($tag);
+	    }	    
+	}
+	
 }

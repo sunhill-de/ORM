@@ -125,6 +125,31 @@ class oo_object extends \Sunhill\propertieshaving {
 		
 	}
 	
+	// ================================= Löschen =============================================
+	protected function do_delete() {
+	    $this->set_state('deleting');
+	    $this->delete_core_object();
+	    $this->delete_simple_fields();
+	    $this->set_state('invalid');
+	}
+	
+	private function delete_core_object() {
+	    \App\coreobject::destroy($this->get_id());
+	}
+	
+	private function  delete_simple_fields() {
+	    $fields = $this->get_properties_with_feature('simple');
+	    foreach ($fields as $model_name=>$fields) {
+	        if (!empty($model_name)) {
+	            $model_name::destroy($this->get_id());
+	        }
+	    }
+	}
+	
+	protected function clear_cache_entry() {
+	    unset(self::$objectcache[$this->get_id()]); // Cache-Eintrag löschen
+	}
+	
 	// ***************************** Tag Handling **************************************
 	
 	/**
@@ -471,27 +496,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	         //array_unshift($parent_class_names,$parent_class_name);
 	     } while ($parent_class_name = get_parent_class($parent_class_name));
 	     return $parent_class_names;
-	}
-	
-// ================================= Löschen =============================================	
-	public function delete() {
-	       $this->pre_delete();
-           $this->deletion();
-           unset(self::$objectcache[$this->get_id()]); // Cache-Eintrag löschen
-	       $this->post_delete();
-	}
-	
-	protected function pre_delete() {
-	    
-	}
-	
-	protected function deletion() {
-	    $eraser = new oo_object_eraser($this);
-	    return $eraser->erase();	    
-	}
-	
-	protected function post_delete() {
-	    
 	}
 	
 	/**
