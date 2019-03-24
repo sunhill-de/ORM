@@ -34,6 +34,12 @@ class oo_property_object extends oo_property_field {
 	    }
 	}
 	
+	public function updating(int $id) {
+	    if (!empty($this->value)) {
+	        $this->value->commit();	        
+	    }
+	}
+	
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt geupdated wurde
 	 * {@inheritDoc}
@@ -47,16 +53,11 @@ class oo_property_object extends oo_property_field {
 	            ['index','=',0]])->delete();
 	    } else {
     	    $this->value->commit();
-	        $model = \App\objectobjectassign::where('container_id','=',$id)
-    	    ->where('field','=',$this->get_name())->first();
-    	    if (empty($model)) {
-    	        $model = new \App\objectobjectassign();
-    	    }
-    	    $model->container_id = $id;
-    	    $model->element_id = $this->value->get_id();
-    	    $model->field = $this->get_name();
-    	    $model->index = 0;
-    	    $model->save();
+    	    DB::table('stringobjectassigns')->updateOrInsert(
+    	            ['container_id'=>$id,
+    	             'element_id'=>$this->value->get_id(),
+    	             'field'=>$this->get_name(),
+    	             'index'=>0]); 
 	    }
 	}
 	

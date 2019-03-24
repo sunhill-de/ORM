@@ -105,6 +105,10 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $simple_fields = $this->get_properties_with_feature('simple',true,'model');
 	    foreach ($simple_fields as $model_name => $fields_of_model) {
 	        $model = $model_name::where('id','=',$this->get_id())->first();
+	        if (empty($model)) {
+	            $model = new $model_name();
+	            $model->id = $this->get_id();
+	        }
 	        foreach ($fields_of_model as $field_name => $field) {
 	            $model->$field_name = $field->get_value();
 	        }
@@ -138,7 +142,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function  delete_simple_fields() {
-	    $fields = $this->get_properties_with_feature('simple');
+	    $fields = $this->get_properties_with_feature('simple',null,'model');
 	    foreach ($fields as $model_name=>$fields) {
 	        if (!empty($model_name)) {
 	            $model_name::destroy($this->get_id());
@@ -563,7 +567,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * @param int $id ID des Objektes von dem ein Objekt erzeugt werden soll
 	 * @return oo_object oder Abkömmling
 	 */
-	public static function &load_object_of($id) {
+	public static function load_object_of($id) {
 	    if (isset(self::$objectcache[$id])) {
 	        return self::$objectcache[$id];
 	    } else {
