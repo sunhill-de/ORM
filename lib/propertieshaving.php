@@ -156,8 +156,8 @@ class propertieshaving extends hookable {
 	private function updating_properties() {
 	    $dirty_properties = $this->get_properties_with_feature('');
 	    foreach ($dirty_properties as $property) {
-	        $property->updating();
-	        if ($property->get_dirty()) {
+	        $property->updating($this->get_id());
+	        if ($property->get_dirty($this->get_id())) {
     	        $this->check_for_hook('UPDATING_PROPERTY',
     	                              $property->get_name(),
     	                              $property->get_diff_array());
@@ -174,7 +174,7 @@ class propertieshaving extends hookable {
 	    $this->set_readonly(true);
 	    $dirty_properties = $this->get_properties_with_feature('',true);
 	    foreach ($dirty_properties as $property) {
-	        $property->updated();
+	        $property->updated($this->get_id());
 	        $this->check_for_hook('UPDATED_PROPERTY',
 	                              $property->get_name(),
 	                              $property->get_diff_array());
@@ -224,7 +224,7 @@ class propertieshaving extends hookable {
 	    $this->set_readonly(true);
 	    $dirty_properties = $this->get_properties_with_feature('');
 	    foreach ($dirty_properties as $property) {
-	        $property->inserted();
+	        $property->inserted($this->get_id());
 	        $this->check_for_hook('INSERTED_PROPERTY',
 	            $property->get_name());
 	    }
@@ -244,7 +244,7 @@ class propertieshaving extends hookable {
 	private function deleting_properties() {
 	    $dirty_properties = $this->get_properties_with_feature('');
 	    foreach ($dirty_properties as $property) {
-	        $property->deleting();
+	        $property->deleting($this->get_id());
 	        $this->check_for_hook('DELETING_PROPERTY',$property->get_name());
 	    }	    
 	}
@@ -252,7 +252,7 @@ class propertieshaving extends hookable {
 	private function deleted_properties() {
 	    $dirty_properties = $this->get_properties_with_feature('');
 	    foreach ($dirty_properties as $property) {
-	        $property->deleting();
+	        $property->deleting($this->get_id());
 	        $this->check_for_hook('DELETED_PROPERTY',$property->get_name());
 	    }	    
 	}

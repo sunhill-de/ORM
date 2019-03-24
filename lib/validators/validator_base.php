@@ -10,7 +10,7 @@ class validator_base {
         return true;    
     }
     
-    protected function prepare($test) {
+    protected function prepare(&$test) {
         return $test;
     }
     

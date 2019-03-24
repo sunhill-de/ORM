@@ -101,7 +101,9 @@ class oo_property extends \Sunhill\base {
 		if ($this->is_array()) {
 		    return $this;
 		} else {
-		    return $this->value;
+		    $temp = $this->value;
+		    var_dump($temp);
+		    return $temp;
 		}
 	}
 	
@@ -196,14 +198,14 @@ class oo_property extends \Sunhill\base {
 	/**
 	 * Wird aufgerufen, bevor das Elternobjekt ein update erhält
 	 */
-	public function updating() {
+	public function updating(int $id) {
 	    
 	}
 	
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt ein update erhalten hat
 	 */
-	public function updated() {
+	public function updated(int $id) {
 	    $this->commit();
 	}
 	
@@ -217,15 +219,15 @@ class oo_property extends \Sunhill\base {
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
 	 */
-	public function inserted() {
+	public function inserted(int $id) {
 	    $this->commit();	    
 	}
 	
-	public function deleting() {
+	public function deleting(int $id) {
 	    
 	}
 	
-	public function deleted() {
+	public function deleted(int $id) {
 	    
 	}
 	

@@ -17,6 +17,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @param array $expect
 	 */
 	public function testSimpleFields($classname,$init,$modify,$expect) {
+	    \Sunhill\Objects\oo_object::flush_cache();
 	    $classname = 'Sunhill\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -36,6 +37,7 @@ class ObjectReReadTest extends ObjectCommon
 	        }
 	    }
 	    $init_object->commit();
+	    \Sunhill\Objects\oo_object::flush_cache();
 	    
 // Read
 	    $read_object = new $classname;
@@ -58,8 +60,9 @@ class ObjectReReadTest extends ObjectCommon
 	    }
 	    $read_object->commit();
 
+	    \Sunhill\Objects\oo_object::flush_cache();
 	    $reread_object = new $classname;
-	    $reread_object->load($init_object->get_id());
+	    $reread_object->load($init_object->get_id()); 
 	    if (!is_null($expect)) {
 	        foreach ($expect as $key => $value) {
 	            $this->assertEquals($value,$reread_object->$key,"Wiederauslesen nach Modify von Feld '$key' fehlgeschlagen.");
@@ -260,6 +263,7 @@ class ObjectReReadTest extends ObjectCommon
 	    }
 	    $init_object->commit(); 
 	    $id = $init_object->get_id();
+	    \Sunhill\Objects\oo_object::flush_cache();
 	    // Read
 	    $read_object = \Sunhill\Objects\oo_object::load_object_of($id);
 	    if (!is_null($read_callback)) {
@@ -275,6 +279,7 @@ class ObjectReReadTest extends ObjectCommon
 	    }
 	    $read_object->commit();
 
+	    \Sunhill\Objects\oo_object::flush_cache();
 	    $reread_object = new $classname;
 	    $reread_object->load($init_object->get_id());
 	    if (!is_null($expect_callback)) {

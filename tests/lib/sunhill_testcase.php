@@ -29,6 +29,7 @@ class sunhill_testcase extends TestCase {
         DB::statement("drop table if exists thirdlevelchildren");
         DB::statement("drop table if exists dummies");
         DB::statement("drop table if exists referenceonlies");
+        \Sunhill\Objects\oo_object::flush_cache();
     }
     
     protected function clear_system_tables() {

@@ -2,6 +2,8 @@
 
 namespace Sunhill\Properties;
 
+use Illuminate\Support\Facades\DB;
+
 class oo_property_array_of_objects extends oo_property_arraybase {
 
 	protected $type = 'array_of_objects';
@@ -54,4 +56,33 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    }
 	    
 	}
+	
+	/**
+	 * Wird aufgerufen, nachdem das Elternobjekt geupdated wurde
+	 * {@inheritDoc}
+	 * @see \Sunhill\Properties\oo_property::updated()
+	 */
+	public function updated(int $id) {
+	    DB::table('stringobjectassigns')->where([['container_id','=',$id],
+	        ['field','=',$this->get_name()]])->delete();
+	    $this->inserted($id);
+	}
+	
+	/**
+	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
+	 * {@inheritDoc}
+	 * @see \Sunhill\Properties\oo_property::inserted()
+	 */
+	public function inserted(int $id) {
+	    foreach ($this->value as $index => $object) {
+    	        $object->commit();
+	            $model = new \App\objectobjectassign();
+    	        $model->container_id = $id;
+    	        $model->element_id = $object->get_id();
+    	        $model->field = $this->get_name();
+    	        $model->index = $index;
+    	        $model->save();
+	    }
+	}
+	
 }
