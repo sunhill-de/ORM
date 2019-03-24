@@ -29,8 +29,9 @@ class ObjectDegradeTest extends ObjectCommon
         $id = $test->get_id();
         $new = $test->degrade('Sunhill\\Test\\ts_secondlevelchild');
         $new->commit();
-        $read = new \Sunhill\Test\ts_secondlevelchild;
-        $read->load($id);
+        
+        \Sunhill\Objects\oo_object::flush_cache();
+        $read = \Sunhill\Objects\oo_object::load_object_of($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
         $this->assertEquals('Sunhill\\Test\ts_secondlevelchild',\Sunhill\Objects\oo_object::get_class_name_of($id));
     }
@@ -55,8 +56,8 @@ class ObjectDegradeTest extends ObjectCommon
         $id = $test->get_id();
         $new = $test->degrade('Sunhill\\Test\\ts_testparent');
         $new->commit();
-        $read = new \Sunhill\Test\ts_testparent;
-        $read->load($id);
+        \Sunhill\Objects\oo_object::flush_cache();
+        $read = \Sunhill\Objects\oo_object::load_object_of($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
         $this->assertEquals('Sunhill\\Test\ts_testparent',\Sunhill\Objects\oo_object::get_class_name_of($id));
     }

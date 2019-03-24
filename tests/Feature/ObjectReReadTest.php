@@ -40,8 +40,7 @@ class ObjectReReadTest extends ObjectCommon
 	    \Sunhill\Objects\oo_object::flush_cache();
 	    
 // Read
-	    $read_object = new $classname;
-	    $read_object->load($init_object->get_id());
+	    $read_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
 	            $this->assertEquals($value,$read_object->$key,"Wiederauslesen von Feld '$key' fehlgeschlagen.");
@@ -61,8 +60,7 @@ class ObjectReReadTest extends ObjectCommon
 	    $read_object->commit();
 
 	    \Sunhill\Objects\oo_object::flush_cache();
-	    $reread_object = new $classname;
-	    $reread_object->load($init_object->get_id()); 
+	    $reread_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
 	    if (!is_null($expect)) {
 	        foreach ($expect as $key => $value) {
 	            $this->assertEquals($value,$reread_object->$key,"Wiederauslesen nach Modify von Feld '$key' fehlgeschlagen.");
@@ -280,8 +278,7 @@ class ObjectReReadTest extends ObjectCommon
 	    $read_object->commit();
 
 	    \Sunhill\Objects\oo_object::flush_cache();
-	    $reread_object = new $classname;
-	    $reread_object->load($init_object->get_id());
+	    $reread_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
 	    if (!is_null($expect_callback)) {
 	        if (!$expect_callback($read_object)) {
 	            $this->fail("Expect_Callback fehlgeschlagen.");
