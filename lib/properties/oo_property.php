@@ -73,7 +73,7 @@ class oo_property extends \Sunhill\base {
 		return $this;		
 	}
 	
-	public function set_value($value) {
+	public function set_value(&$value) {
 		if ($this->read_only) {
 			throw new PropertyException("Die Property ist read-only.");
 		}
@@ -88,7 +88,7 @@ class oo_property extends \Sunhill\base {
 		return $this;
 	}
 	
-	public function get_value() {
+	public function &get_value() {
 		if (!$this->initialized) {
 			if (isset($this->default) || $this->defaults_null) {
 				$this->value = $this->default;
@@ -101,9 +101,7 @@ class oo_property extends \Sunhill\base {
 		if ($this->is_array()) {
 		    return $this;
 		} else {
-		    $temp = $this->value;
-		    var_dump($temp);
-		    return $temp;
+		    return $this->value;
 		}
 	}
 	

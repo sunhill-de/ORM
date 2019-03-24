@@ -276,7 +276,7 @@ class propertieshaving extends hookable {
 	    }
 	}
 	
-	public function __get($name) {
+	public function &__get($name) {
 	    $this->check_for_hook('GET',$name,array(
 	        'value'=>$this->properties[$name]->get_value()));
 	    if (isset($this->properties[$name])) {

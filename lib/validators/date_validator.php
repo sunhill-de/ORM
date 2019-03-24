@@ -11,7 +11,7 @@ class date_validator extends datetime_validator {
         return true;    
     }
     
-    protected function prepare($test) {
+    protected function prepare(&$test) {
         return $this->is_valid_date($test,true);
     }
 }

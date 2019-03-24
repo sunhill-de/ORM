@@ -563,7 +563,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * @param int $id ID des Objektes von dem ein Objekt erzeugt werden soll
 	 * @return oo_object oder Abkömmling
 	 */
-	public static function load_object_of($id) {
+	public static function &load_object_of($id) {
 	    if (isset(self::$objectcache[$id])) {
 	        return self::$objectcache[$id];
 	    } else {

@@ -30,6 +30,7 @@ class oo_property_object extends oo_property_field {
 	    if (!empty($reference)) {
     	    $object = \Sunhill\Objects\oo_object::load_object_of($reference->element_id);
     	    $this->value = $object;
+    	    $this->initialized = true;
 	    }
 	}
 	

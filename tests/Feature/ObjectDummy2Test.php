@@ -22,17 +22,18 @@ class ObjectDummy2Test extends ObjectCommon
 	   $test->testoarray[] = $obj3;
 	   $test->testint = 666;
 	   $test->commit();
-
+       
+	   \Sunhill\Objects\oo_object::flush_cache();
 	   $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
-	   var_dump($read->testobject);
 	   $read->testobject->dummyint = 11;
 	   $read->testoarray[0]->dummyint = 22;
 	   $read->testoarray[1]->dummyint = 33;
 	   $obj4 = new \Sunhill\Test\ts_dummy();
-	   $obj4->dummint = 44;
+	   $obj4->dummyint = 44;
 	   $read->testoarray[] = $obj4;
 	   $read->commit();
 	   
+	   \Sunhill\Objects\oo_object::flush_cache();	   
 	   $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());	   
 	   $this->assertEquals([11,22,33,44],
 	       [$reread->testobject->dummyint,

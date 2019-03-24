@@ -63,7 +63,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	 * @see \Sunhill\Properties\oo_property::updated()
 	 */
 	public function updated(int $id) {
-	    DB::table('stringobjectassigns')->where([['container_id','=',$id],
+	    DB::table('objectobjectassigns')->where([['container_id','=',$id],
 	        ['field','=',$this->get_name()]])->delete();
 	    $this->inserted($id);
 	}

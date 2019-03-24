@@ -127,7 +127,7 @@ class datetime_validator extends validator_base {
     }
     
     
-    protected function prepare($test) {
+    protected function prepare(&$test) {
         return $this->is_valid_datetime($test);
     }
     
