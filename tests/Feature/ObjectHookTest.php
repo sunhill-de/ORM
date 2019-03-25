@@ -38,22 +38,22 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     protected function setup_properties() {
         parent::setup_properties();
         $this->integer('hooking_int')->set_model('\Tests\Feature\Hooking');
-        $this->varchar('state')->set_model('\Tests\Feature\Hooking')->set_default('');
+        $this->varchar('hookstate')->set_model('\Tests\Feature\Hooking')->set_default('');
         $this->object('hooked_object')->set_allowed_objects(['\\Tests\\Feature\\HookedObject']);
     }
     
     protected function setup_hooks() {
         parent::setup_hooks();
-        $this->add_hook('FIELDCOMMITTING','int_comitted','hooking_int');
-        $this->add_hook('FIELDCOMMITTING','hooked_comitted','hooked_object.hooked_int');
+        $this->add_hook('UPDATING_PROPERTY','int_comitted','hooking_int');
+        $this->add_hook('UPDATING_PROPERTY','hooked_comitted','hooked_object.hooked_int');
     }
     
     protected function int_comitted($params) {
-        $this->state = "(".$params['from']."=>".$params['to'].")";
+        $this->hookstate = "(".$params['FROM']."=>".$params['TO'].")";
     }
     
     protected function hooked_comitted($params) {
-        $this->state = "(Hooked:".$params['from']."=>".$params['to'].")";
+        $this->hookstate = "(Hooked:".$params['FROM']."=>".$params['TO'].")";
     }
     
 }
@@ -64,7 +64,7 @@ class ObjectHookTest extends ObjectCommon
         DB::statement("drop table if exists hookeds ");
         DB::statement("drop table if exists hookings ");
         DB::statement("create table hookeds (id int primary key,hooked_int int)");
-        DB::statement("create table hookings (id int primary key,hooking_int int,state varchar(100))");       
+        DB::statement("create table hookings (id int primary key,hooking_int int,hookstate varchar(100))");       
     }
     
     public function testSimpleHook() {
@@ -80,7 +80,7 @@ class ObjectHookTest extends ObjectCommon
         $readhooking = \Sunhill\Objects\oo_object::load_object_of($hooking->get_id());
         $readhooking->hooking_int = 333;
         $readhooking->commit();
-        $this->assertEquals('(222=>333)',$readhooking->state);       
+        $this->assertEquals('(222=>333)',$readhooking->hookstate);       
     }
     
     public function testComplexHookPersistantDirect() {
@@ -96,7 +96,7 @@ class ObjectHookTest extends ObjectCommon
         $readhooking = \Sunhill\Objects\oo_object::load_object_of($hooking->get_id());
         $readhooking->hooked_object->hooked_int = 234;
         $readhooking->commit();
-        $this->assertEquals('(Hooked:123=>234)',$readhooking->state);
+        $this->assertEquals('(Hooked:123=>234)',$readhooking->hookstate);
     }
     
     public function testComplexHookPersistantInDirect() {
@@ -115,7 +115,7 @@ class ObjectHookTest extends ObjectCommon
         
         \Sunhill\Objects\oo_object::flush_cache();
         $readhooking = \Sunhill\Objects\oo_object::load_object_of($hooking->get_id());
-        $this->assertEquals('[123=>234]',$readhooking->state);
+        $this->assertEquals('[123=>234]',$readhooking->hookstate);
     }
     
     
