@@ -25,8 +25,18 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 		$this->arrayofobjects('parentoarray')->set_model('testparent')->set_allowed_objects(['\Sunhill\Test\ts_dummy']);
 	}
 	
+	protected function setup_hooks() {
+	    $this->add_hook('UPDATING_PROPERTY','parentint','parentint_changing');
+	    $this->add_hook('UPDATED_PROPERTY','parentint','parentint_changed');
+	    $this->add_hook('UPDATING_PROPERTY','parentchar','parentchar_changing');
+	    $this->add_hook('UPDATED_PROPERTY','parentchar','parentchar_changed');
+	    $this->add_hook('UPDATING_PROPERTY','parentfloat','parentfloat_changing');
+	    $this->add_hook('UPDATED_PROPERTY','parentfloat','parentfloat_changed');
+	    
+	}
+	
 	public function parentint_changing($from,$to) {
-	   self::$flag .= "BINT(".$from."=>$to)";    
+	    self::$flag .= "BINT(".$from."=>$to)";    
 	}
 	
 	public function parentint_changed($from,$to) {
