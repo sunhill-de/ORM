@@ -26,39 +26,39 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	}
 	
 	protected function setup_hooks() {
-	    $this->add_hook('UPDATING_PROPERTY','parentint','parentint_changing');
-	    $this->add_hook('UPDATED_PROPERTY','parentint','parentint_changed');
-	    $this->add_hook('UPDATING_PROPERTY','parentchar','parentchar_changing');
-	    $this->add_hook('UPDATED_PROPERTY','parentchar','parentchar_changed');
-	    $this->add_hook('UPDATING_PROPERTY','parentfloat','parentfloat_changing');
-	    $this->add_hook('UPDATED_PROPERTY','parentfloat','parentfloat_changed');
+	    $this->add_hook('UPDATING_PROPERTY','parentint_changing','parentint');
+	    $this->add_hook('UPDATED_PROPERTY','parentint_changed','parentint');
+	    $this->add_hook('UPDATING_PROPERTY','parentchar_changing','parentchar');
+	    $this->add_hook('UPDATED_PROPERTY','parentchar_changed','parentchar');
+	    $this->add_hook('UPDATING_PROPERTY','parentfloat_changing','parentfloat');
+	    $this->add_hook('UPDATED_PROPERTY','parentfloat_changed','parentfloat');
 	    
 	}
 	
-	public function parentint_changing($from,$to) {
-	    self::$flag .= "BINT(".$from."=>$to)";    
+	public function parentint_changing($change) {
+	    self::$flag .= "BINT(".$change['FROM']."=>".$change['TO'].")";    
 	}
 	
-	public function parentint_changed($from,$to) {
-	    self::$flag .= "AINT($from=>$to)";	    
+	public function parentint_changed($change) {
+	    self::$flag .= "AINT(".$change['FROM']."=>".$change['TO'].")";
 	}
 	
-	public function parentchar_changing($from,$to) {
-	    self::$flag .= "BCHAR($from=>$to)";
+	public function parentchar_changing($change) {
+	    self::$flag .= "BCHAR(".$change['FROM']."=>".$change['TO'].")";
 	    $this->parentint++;
 	}
 	
-	public function parentchar_changed($from,$to) {
-	    self::$flag .= "ACHAR($from=>$to)";
+	public function parentchar_changed($change) {
+	    self::$flag .= "ACHAR(".$change['FROM']."=>".$change['TO'].")";
 	}
 
-	public function parentfloat_changing($from,$to) {
-	    self::$flag .= "BFLOAT($from=>$to)";
+	public function parentfloat_changing($change) {
+	    self::$flag .= "BFLOAT(".$change['FROM']."=>".$change['TO'].")";
 	    $this->parentint--;
 	}
 	
-	public function parentfloat_changed($from,$to) {
-	    self::$flag .= "AFLOAT($from=>$to)";
+	public function parentfloat_changed($change) {
+	    self::$flag .= "AFLOAT(".$change['FROM']."=>".$change['TO'].")";
 	    if ($this->trigger_exception) {
 	       $this->parentint--; // Exception
 	    }

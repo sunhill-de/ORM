@@ -174,10 +174,11 @@ class propertieshaving extends hookable {
 	    $this->set_readonly(true);
 	    $dirty_properties = $this->get_properties_with_feature('',true);
 	    foreach ($dirty_properties as $property) {
+	        $diff = $property->get_diff_array();
 	        $property->updated($this->get_id());
 	        $this->check_for_hook('UPDATED_PROPERTY',
 	                              $property->get_name(),
-	                              $property->get_diff_array());
+	                              $diff);
 	    }	    
 	    $this->set_readonly($readonly);
 	}
