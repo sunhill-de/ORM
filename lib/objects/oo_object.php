@@ -223,52 +223,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	/**
-	 * Liefert die einfachen Felder sortiert nach Klassen (Models) zurück
-	 * @return array[]
-	 */
-	public function get_simple_fields() {
-		$models = array();
-		foreach ($this->properties as $property) {
-			if (!isset($models[$property->get_model()])) {
-				$models[$property->get_model()] = array();
-			}
-			if ($property->is_simple()) {
-				$models[$property->get_model()][] = $property->get_name();
-			}
-		}
-		return $models;
-	}
-	
-	/**
-	 * Liefert die complexen Felder zurück
-	 * @return array[]
-	 */
-	public function get_complex_fields() {
-	    $result = array();
-	    foreach ($this->properties as $property) {
-	        if (!$property->is_simple()) {
-	            $result[] = $property->get_name();
-	        }
-	    }
-	    return $result;
-	}
-
-	/**
-	 * Wird von untergebenen Objekte aufgerufen, wenn diese sich ändern, um die
-	 * Eltern darüber zu informieren, dass sie verändert wurden
-	 * @param $fieldname string Name des Feldes, dass sich geändert hat
-	 * @param $childobject oo_object Das Objekt, welches sich ändert
-	 * @param $action (update,delete), was mit diesem Objekt passiert
-	 * @param $payload void, zusätzliche Parameter als Array
-	 */
-	public function child_changed($fieldname,$childobject,$action,$payload) {
-	   $method_name = 'child_'.$fieldname.'_'.$action.'d';
-	   if (method_exists($this, $method_name)) {
-	       $this->$method_name($payload);
-	   }
-	}
-	
-	/**
 	 * Hebt das momentane Objekt auf eine abgeleitete Klasse an
 	 * @param String $newclass
 	 * @throws ObjectException
