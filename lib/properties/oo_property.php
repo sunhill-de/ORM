@@ -73,7 +73,7 @@ class oo_property extends \Sunhill\base {
 		return $this;		
 	}
 	
-	public function set_value(&$value) {
+	public function set_value($value) {
 		if ($this->read_only) {
 			throw new PropertyException("Die Property ist read-only.");
 		}

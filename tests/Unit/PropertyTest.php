@@ -35,7 +35,7 @@ class PropertyTest extends TestCase
 	 * @depends testPropertyDefault
 	 */
 	public function testPropertySetValue($test) {
-		$test->set_value('DEF');
+	    $test->set_value('DEF');
 		$this->assertEquals('DEF',$test->get_value());
 		return $test;
 	}
