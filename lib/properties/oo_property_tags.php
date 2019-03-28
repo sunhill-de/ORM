@@ -40,7 +40,10 @@ class oo_property_tags extends oo_property_arraybase {
 	    foreach ($assigns as $assign) {
 	        $tag = new \Sunhill\Objects\oo_tag($assign->tag_id);
 	        $this->stick($tag);
-	    }	    
+	    }
+	    $this->set_dirty(false);
+	    $this->initialized = true;
+	    $this->shadow = $this->value;
 	}
 
 	/**

@@ -98,6 +98,7 @@ class ObjectTagTest extends ObjectCommon
     
     /**
      * @dataProvider ChangeTagProvider
+     * @group Trigger
      */
     public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
         $this->BuildTestClasses();
@@ -111,6 +112,7 @@ class ObjectTagTest extends ObjectCommon
         $test->dummyint = 1;
         $test->commit();
         
+        \Sunhill\Objects\oo_object::flush_cache();
         $read =  new \Sunhill\Test\ts_dummy();
         $read->load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
@@ -128,8 +130,8 @@ class ObjectTagTest extends ObjectCommon
     public function ChangeTagProvider() {
         return [
             [['TagA','TagB'],['TagChildA'],[],['TagA','TagB','TagA.TagChildA'],'ADD:TagA.TagChildA'],
-            [['TagA','TagB'],[],['TagA'],['TagB'],'DELETE:TagA'],
-            [['TagA','TagB'],['TagChildA'],['TagA'],['TagB','TagA.TagChildA'],'ADD:TagA.TagChildADELETE:TagA']
+            [['TagA','TagB'],[],['TagA'],['TagB'],'REMOVED:TagA'],
+            [['TagA','TagB'],['TagChildA'],['TagA'],['TagB','TagA.TagChildA'],'ADD:TagA.TagChildAREMOVED:TagA']
         ];
     }
 }
