@@ -32,7 +32,8 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	    $this->add_hook('UPDATED_PROPERTY','parentchar_changed','parentchar');
 	    $this->add_hook('UPDATING_PROPERTY','parentfloat_changing','parentfloat');
 	    $this->add_hook('UPDATED_PROPERTY','parentfloat_changed','parentfloat');
-	    
+	    $this->add_hook('UPDATED_PROPERTY','parentobject_changed','parentobject.dummyint');
+	    $this->add_hook('UPDATED_PROPERTY','parentsarray_changed','parentsarray');
 	}
 	
 	public function parentint_changing($change) {
@@ -64,18 +65,20 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	    }
 	}
 	
-	public function parentobject_changed($from,$to) {
+	public function parentobject_changed($change) {
+	    $from = $change['FROM'];
+	    $to = $change['TO'];
 	    if (is_null($from)) {
 	        $fromstr = 'NULL';
 	    } else {
-	        $fromstr = $from->dummyint;
+	        $fromstr = $from;
 	    }
 	    if (is_null($to)) {
 	        $tostr = 'NULL';
 	    } else {
-	        $tostr = $to->dummyint;
+	        $tostr = $to;
 	    }
-	    self::$flag .= "AOBJECT($fromstr=>$tostr)";
+	    self::$flag .= "AOBJECT(dummyint:$fromstr=>$tostr)";
 	}
 	
 	public function child_parentobject_updated($changed_fields) {
@@ -86,7 +89,9 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 	    }
 	}
 	
-	public function parentsarray_changed($new,$deleted) {
+	public function parentsarray_changed($change) {
+	   $new = $change['NEW'];
+	   $deleted = $change['REMOVED'];
 	    self::$flag .= "SARRAY(";
         if (!empty($new)) {
     	    self::$flag .= "NEW:";

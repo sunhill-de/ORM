@@ -30,6 +30,7 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    if (!$this->dirty) {
 	        $this->shadow = $this->value;
 	        $this->dirty = true;
+	        $this->initialized = true;
 	    }
 	    if (isset($offset)) {
 	        $this->value[$offset] = $this->validate($value);
@@ -53,6 +54,9 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	}
 	
 	private function array_search($needle,$haystack) {
+	    if (!is_array($haystack)) {
+	        return false;
+	    }
 	    foreach ($haystack as $entry) {
 	        if ($needle === $entry) {
 	            return true;
@@ -79,5 +83,7 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    return $result;
 	}
 	
-	
+	public function get_diff_array() {
+	    return $this->get_array_diff();
+	}
 }

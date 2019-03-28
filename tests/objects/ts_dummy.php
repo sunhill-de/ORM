@@ -13,12 +13,24 @@ class ts_dummy extends \Sunhill\Objects\oo_object {
 		$this->integer('dummyint')->set_model('dummy');
 	}
 	
-	public function tag_added($tag) {
-	    $this->changestr .= 'ADD:'.$tag->get_fullpath();
+	protected function setup_hooks() {
+	    parent::setup_hooks();
+	    $this->add_hook('UPDATED_PROPERTY','tag_changed','tags');
+	}
+	public function tag_changed($change) {
+	    if (!empty($change['NEW'])) {
+	        $this->changestr .= 'ADD:';
+	        foreach ($change['NEW'] as $tag) {
+    	       $this->changestr .= $tag->get_fullpath();       
+    	    }
+	    }
+	    if (!empty($change['REMOVED'])) {
+	        $this->changestr .= 'REMOVED:';
+	        foreach ($change['REMOVED'] as $tag) {
+	            $this->changestr .= $tag->get_fullpath();
+	        }
+	    }
 	}
 	
-	public function tag_deleted($tag) {
-	    $this->changestr .= 'DELETE:'.$tag->get_fullpath();	    
-	}
 }
 

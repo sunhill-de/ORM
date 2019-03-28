@@ -28,6 +28,8 @@ class oo_property_tags extends oo_property_arraybase {
 	    for ($i=0;$i<count($this->value);$i++) {
 	        if ($this->value[$i]->get_fullpath() === $tag->get_fullpath()) {
 	            array_splice($this->value,$i,1);
+	            $this->set_dirty(true);
+	            return $this;
 	        }	        
 	    }	    
 	    throw new PropertyException("Das zu löschende Tag '".$tag->get_fullpath()."' ist gar nicht gesetzt");
@@ -53,6 +55,25 @@ class oo_property_tags extends oo_property_arraybase {
 	    }
 	}
 
+	/**
+	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
+	 * {@inheritDoc}
+	 * @see \Sunhill\Properties\oo_property::inserted()
+	 */
+	public function updated(int $id) {
+	    $this->deleted($id);
+	    if (count($this->value) > 0) {
+    	    foreach ($this->value as $tag) {
+    	        $tagid = $tag->get_id();
+    	        DB::statement("insert ignore into tagobjectassigns (container_id,tag_id) values ($id,$tagid)");
+    	    }
+	    }
+	}
+
+	public function deleted(int $id) {
+	    DB::statement("delete from tagobjectassigns where container_id = $id");
+	    
+	}
 	/**
 	 * Speichert eine einzelne Referenz eines Tags in der Datenbank ab
 	 * @todo Hier besteht Optimierungpotential für zusammengefassten Datenbankanfragen

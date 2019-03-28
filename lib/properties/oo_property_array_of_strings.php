@@ -52,6 +52,7 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	 * @see \Sunhill\Properties\oo_property::updated()
 	 */
 	public function updated(int $id) {
+	    $this->set_dirty(false);
 	    DB::table('stringobjectassigns')->where([['container_id','=',$id],
 	        ['field','=',$this->get_name()]])->delete();
 	        $this->inserted($id);

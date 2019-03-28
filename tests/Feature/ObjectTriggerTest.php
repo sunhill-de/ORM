@@ -119,7 +119,7 @@ class ObjectTriggerTest extends ObjectCommon
         $object::$flag = '';
         $init($object);
         $object->commit(); 
-        $change($object);
+        $change($object); 
         if ($expect == 'EXCEPTION') {
             try {
                 $object->commit();
