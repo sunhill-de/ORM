@@ -10,13 +10,6 @@ use Sunhill\Test;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Hooked extends Model {
-    protected $table = 'hookeds';
-    
-    public $timestamps = false;
-    
-}
-
 class Hooking extends Model {
     protected $table = 'hookings';
     
@@ -24,16 +17,6 @@ class Hooking extends Model {
     
 }
     
-class HookedObject extends \Sunhill\Objects\oo_object {
-    
-    
-    protected function setup_properties() {
-        parent::setup_properties();
-        $this->integer('hooked_int')->set_model('\Tests\Feature\Hooked');
-    }
-    
-}
-
 class HookingObject extends \Sunhill\Objects\oo_object  {
 
     protected static $hook_str = '';
@@ -42,7 +25,7 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         parent::setup_properties();
         $this->integer('hooking_int')->set_model('\Tests\Feature\Hooking')->set_default(0);
         $this->varchar('hookstate')->set_model('\Tests\Feature\Hooking')->set_default('');
-        $this->object('hooked_object')->set_allowed_objects(['\\Tests\\Feature\\HookedObject']);
+        $this->object('ofield')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
         $this->arrayofstrings('strarray');
     }
     
@@ -51,7 +34,13 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     }
     
     protected function field_changed($params) {
-        $this->hookstate = '('.$params['subaction'].':'.$params['FROM']."=>".$params['TO'].")";
+        if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
+            $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
+            $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
+            $this->hookstate = '(ofield:'.$from.'=>'.$to.')';
+        } else {
+            $this->hookstate = '('.$params['subaction'].':'.$params['FROM']."=>".$params['TO'].")";
+        }
     }
     
     protected function sarray_changed($diff) {
@@ -75,9 +64,7 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
 class ObjectHookTest extends ObjectCommon
 {
     protected function setupHookTables() {
-        DB::statement("drop table if exists hookeds ");
         DB::statement("drop table if exists hookings ");
-        DB::statement("create table hookeds (id int primary key,hooked_int int)");
         DB::statement("create table hookings (id int primary key,hooking_int int,hookstate varchar(100))");       
     }
     
@@ -102,7 +89,7 @@ class ObjectHookTest extends ObjectCommon
     
     public function HooksProvider() {
         return [
-            [function() {
+            [function() { // Einfacher Test bei simple-Field
                 $result = new HookingObject();
                 $result->hooking_int = 222;
                  return $result;
@@ -112,54 +99,50 @@ class ObjectHookTest extends ObjectCommon
                 $change->hooking_int = 333;
             },'(hooking_int:222=>333)'],
             
-            [function() {
+            [function() {// Test bei String-Array, Eintrag hinzugefügt
+                $result = new HookingObject();
+                $result->strarray[] = 'ABC';
+                return $result;
+            },
+            function($change) { 
+                $change->add_hook('UPDATING_PROPERTY','sarray_changed','strarray');
+                $change->strarray[] = 'DEF';
+            },'(sarray:NEW:DEF REMOVED:)'],
+            
+            [function() { // Test bei String-Array, Eintrag entfernt
                 $result = new HookingObject();
                 $result->strarray[] = 'ABC';
                 return $result;
             },
             function($change) {
                 $change->add_hook('UPDATING_PROPERTY','sarray_changed','strarray');
-                $change->strarray[] = 'DEF';
-            },'(sarray:NEW:DEF REMOVED:)'],
+                unset($change->strarray[0]);
+            },'(sarray:NEW: REMOVED:ABC)'],
+
+            [function() { // Test bei Objekt-Feldner
+                $result = new HookingObject();
+                return $result;
+            },
+            function($change) {
+                $change->add_hook('UPDATING_PROPERTY','field_changed','ofield');
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 123;
+                $change->ofield = $dummy;
+            },'(ofield:NULL=>123)'],
+            
+            [function() { // Test bei Objekt-Feldner
+                $result = new HookingObject();
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 123;
+                $result->ofield = $dummy;
+                return $result;
+            },
+            function($change) {
+                $change->add_hook('UPDATING_PROPERTY','field_changed','ofield');
+                $change->ofield = null;
+            },'(ofield:123=>NULL)'],            
+
             ];
-    }
-    
-    /**
-     * @group complex
-     */
-    public function testComplexHookPersistantDirect() {
-        $this->setupHookTables();
-        $hooked = new HookedObject();
-        $hooked->hooked_int = 123;
-        $hooking = new HookingObject();
-        $hooking->hooking_int = 222;
-        $hooking->hooked_object = $hooked;
-        $hooking->commit();
-        
-        \Sunhill\Objects\oo_object::flush_cache();
-        $readhooking = \Sunhill\Objects\oo_object::load_object_of($hooking->get_id());
-        $readhooking->hooked_object->hooked_int = 234;
-        $readhooking->commit();
-        $this->assertEquals('(Hooked:123=>234)',$readhooking->hookstate);
-    }
-    
-    public function testComplexHookPersistantInDirect() {
-        $this->setupHookTables();
-        $hooked = new HookedObject();
-        $hooked->hooked_int = 123;
-        $hooking = new HookingObject();
-        $hooking->hooking_int = 222;
-        $hooking->hooked_object = $hooked;
-        $hooking->commit();
-        
-        \Sunhill\Objects\oo_object::flush_cache();
-        $readhooked = \Sunhill\Objects\oo_object::load_object_of($hooking->hooked_object->get_id());
-        $readhooked->hooked_int = 234;
-        $readhooked->commit();
-        
-        \Sunhill\Objects\oo_object::flush_cache();
-        $readhooking = \Sunhill\Objects\oo_object::load_object_of($hooking->get_id());
-        $this->assertEquals('[123=>234]',$readhooking->hookstate);
     }
     
     
