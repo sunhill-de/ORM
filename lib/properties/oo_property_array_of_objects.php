@@ -54,6 +54,9 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	        $object = \Sunhill\Objects\oo_object::load_object_of($reference->element_id);
 	        $this->value[$reference->index] = $object;
 	    }
+	    $this->set_dirty(false);
+	    $this->initialized = true;
+	    $this->shadow = $this->value;
 	    
 	}
 	

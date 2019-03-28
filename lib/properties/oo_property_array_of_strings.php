@@ -44,6 +44,9 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	    foreach ($references as $reference) {
 	        $this->value[$reference->index] = $reference->element_id;
 	    }	    
+	    $this->set_dirty(false);
+	    $this->initialized = true;
+	    $this->shadow = $this->value;
 	}
 	
 	/**

@@ -368,7 +368,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	protected function complex_changed($params) {
-        $target = $params['subaction'];
+	    $target = $params['subaction'];
         if (isset($target)) {
             $fieldname = $params['payload']['field'];
             $hookname  = $params['payload']['hook'];
