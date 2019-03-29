@@ -68,6 +68,10 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         $this->hookstate = $hilf.')';        
     }
     
+    protected function child_changed($diff) {
+        
+    }
+    
     public function get_hook_str() {
         return $this->hookstate;
     }
@@ -184,5 +188,85 @@ class ObjectHookTest extends ObjectCommon
             ];
     }
     
+    private function prepare_object_test() {
+        $this->setupHookTables();
+        $dummy = new \Sunhill\Test\ts_dummy();
+        $dummy->dummyint = 123;
+        $test = new HookingObject();
+        $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'ofield');
+        $test->ofield = $dummy;
+        $test->commit();
+        return [$dummy,$test];
+    }
     
+    public function testChildChangeObjectDirect() {
+        list($dummy,$test) = $this->prepare_object_test();
+        $dummy->dummyint = 234;
+        $dummy->commit();
+        $this->assertEquals('(Cofield:123->234)',$test->get_hook_str());
+    }
+    
+    public function testChildChangeObjectIndirect() {
+        list($dummy,$test) = $this->prepare_object_test();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy->get_id());
+        $readdummy->dummyint = 234;
+        $readdummy->commit();
+        $this->assertEquals('(Cofield:123->234)',$test->get_hook_str());
+        
+    }
+    
+    public function testChildChangeObjectBothIndirect() {
+        list($dummy,$test) = $this->prepare_object_test();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy->get_id());
+        $readdummy->dummyint = 234;
+        $readdummy->commit();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $readtest = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $this->assertEquals('(Cofield:123->234)',$readtest->get_hook_str());
+        
+    }
+    
+    private function prepare_array_test() {
+        $this->setupHookTables();
+        $dummy1 = new \Sunhill\Test\ts_dummy();
+        $dummy1->dummyint = 123;
+        $dummy2 = new \Sunhill\Test\ts_dummy();
+        $dummy2->dummyint = 666;
+        $test = new HookingObject();
+        $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'ofield');
+        $test->objarray[] = $dummy1;
+        $test->objarray[] = $dummy2;
+        $test->commit();
+        return [$dummy1,$dummy2,$test];
+    }
+    
+    public function testChildChangeArrayDirect() {
+        list($dummy1,$dummy2,$test) = $this->prepare_array_test();
+        $dummy1->dummyint = 234;
+        $dummy1->commit();
+        $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());
+        
+    }
+    
+    public function testChildChangeArrayIndirect() {
+        list($dummy1,$dummy2,$test) = $this->prepare_array_test();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy1->get_id());
+        $readdummy->dummyint = 234;
+        $readdummy->commit();
+        $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());        
+    }
+    
+    public function testChildChangeArrayBothIndirect() {
+        list($dummy1,$dummy2,$test) = $this->prepare_array_test();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy1->get_id());
+        $readdummy->dummyint = 234;
+        $readdummy->commit();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $readtest = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());
+    }
 }
