@@ -68,8 +68,9 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         $this->hookstate = $hilf.')';        
     }
     
-    protected function child_changed($diff) {
-        
+    protected function child_changed($params) {
+        $this->hookstate = '(Cofield:'.$params['FROM']."->".$params['TO'].")";
+        $this->commit();
     }
     
     public function get_hook_str() {
@@ -193,12 +194,15 @@ class ObjectHookTest extends ObjectCommon
         $dummy = new \Sunhill\Test\ts_dummy();
         $dummy->dummyint = 123;
         $test = new HookingObject();
-        $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'ofield');
+        $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'ofield.dummyint');
         $test->ofield = $dummy;
         $test->commit();
         return [$dummy,$test];
     }
     
+    /**
+     * @group complex
+     */
     public function testChildChangeObjectDirect() {
         list($dummy,$test) = $this->prepare_object_test();
         $dummy->dummyint = 234;
@@ -235,7 +239,7 @@ class ObjectHookTest extends ObjectCommon
         $dummy2 = new \Sunhill\Test\ts_dummy();
         $dummy2->dummyint = 666;
         $test = new HookingObject();
-        $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'ofield');
+        $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'objarray.dummyfield');
         $test->objarray[] = $dummy1;
         $test->objarray[] = $dummy2;
         $test->commit();
