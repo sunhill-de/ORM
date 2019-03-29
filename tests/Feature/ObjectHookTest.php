@@ -27,6 +27,7 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         $this->varchar('hookstate')->set_model('\Tests\Feature\Hooking')->set_default('');
         $this->object('ofield')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
         $this->arrayofstrings('strarray');
+        $this->arrayofobjects('objarray')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
     }
     
     protected function setup_hooks() {
@@ -53,6 +54,18 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
             $hilf .= $new;
         }
         $this->hookstate = $hilf.')';
+    }
+    
+    protected function oarray_changed($diff) {
+        $hilf = '(oarray:NEW:';
+        foreach ($diff['NEW'] as $new) {
+            $hilf .= $new->dummyint;
+        }
+        $hilf .= ' REMOVED:';
+        foreach ($diff['REMOVED'] as $new) {
+            $hilf .= $new->dummyint;
+        }
+        $this->hookstate = $hilf.')';        
     }
     
     public function get_hook_str() {
@@ -119,7 +132,7 @@ class ObjectHookTest extends ObjectCommon
                 unset($change->strarray[0]);
             },'(sarray:NEW: REMOVED:ABC)'],
 
-            [function() { // Test bei Objekt-Feldner
+            [function() { // Test bei Objekt-Felder
                 $result = new HookingObject();
                 return $result;
             },
@@ -130,18 +143,44 @@ class ObjectHookTest extends ObjectCommon
                 $change->ofield = $dummy;
             },'(ofield:NULL=>123)'],
             
-            [function() { // Test bei Objekt-Feldner
+            [function() { // Test bei Objekt-Felder
                 $result = new HookingObject();
                 $dummy = new \Sunhill\Test\ts_dummy();
                 $dummy->dummyint = 123;
                 $result->ofield = $dummy;
                 return $result;
-            },
+            },            
             function($change) {
                 $change->add_hook('UPDATING_PROPERTY','field_changed','ofield');
                 $change->ofield = null;
             },'(ofield:123=>NULL)'],            
 
+            [function() {// Test bei Objekt-Array, Eintrag hinzugefügt
+                $result = new HookingObject();
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 123;
+                $result->objarray[] = $dummy;
+                return $result;
+            },
+            function($change) {
+                $change->add_hook('UPDATING_PROPERTY','oarray_changed','objarray');
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 345;
+                $change->objarray[] = $dummy;
+            },'(oarray:NEW:345 REMOVED:)'],
+            
+            [function() { // Test bei String-Array, Eintrag entfernt
+                $result = new HookingObject();
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 345;
+                $result->objarray[] = $dummy;
+                return $result;
+            },
+            function($change) {
+                $change->add_hook('UPDATING_PROPERTY','oarray_changed','objarray');
+                unset($change->objarray[0]);
+            },'(oarray:NEW: REMOVED:345)'],
+            
             ];
     }
     
