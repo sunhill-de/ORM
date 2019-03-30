@@ -213,6 +213,8 @@ class ObjectHookTest extends ObjectCommon
     public function testChildChangeObjectIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
         \Sunhill\Objects\oo_object::flush_cache();
+        // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
+        \Sunhill\Objects\oo_object::load_id_called($test->get_id(), $test);
         $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();

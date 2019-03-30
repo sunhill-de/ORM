@@ -161,7 +161,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $this->timestamp('created_at')->set_model('coreobject');
 	    $this->timestamp('updated_at')->set_model('coreobject');
 	    $this->add_property('tags','tags');
+	    $this->add_property('externalhooks','externalhooks');
 	}
+	
 	protected function timestamp($name) {
 		$property = $this->add_property($name, 'timestamp');
 		return $property;
@@ -407,7 +409,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * Diese Methode wird von $this->load() aufgerufen, wenn ein Objekt über den lader geladen wurde. Sie soll das Objekt in den Cache eintragen
 	 * @param int $id
 	 */
-	protected static function load_id_called(int $id,oo_object $object) {
+	public static function load_id_called(int $id,oo_object $object) {
 	    self::$objectcache[$id] = $object;
 	}
 	

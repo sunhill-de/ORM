@@ -99,5 +99,21 @@ class hookable extends loggable {
 	        }
 	    }
 	}
-	
+
+	public function get_external_hooks() {
+	    $result = [];
+	    foreach ($this->hooks as $actionname=>$actions) {
+	        foreach ($actions as $subactionname=>$subactions) {
+	            foreach ($subactions as $hook) {
+	                if (is_int($hook['destination']) || ($hook['destination'] !== $this)) {
+	                    $hook['action'] = $actionname;
+	                    $hook['subaction'] = $subactionname;
+	                    $result[] = $hook;
+	                }
+	            }
+	        }
+	    }
+	    return $result;
+	}
+		
 }
