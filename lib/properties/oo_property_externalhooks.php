@@ -9,6 +9,7 @@ class oo_property_externalhooks extends oo_property_field {
 	protected $features = ['hooks','complex'];
 	
 	protected $initialized = true;
+	protected $defaults_null = true;
 	
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt geladen wurde
@@ -58,4 +59,7 @@ class oo_property_externalhooks extends oo_property_field {
 	    $this->set_dirty(false);
 	}
 	
+	public function &get_value() {
+	    return $this->value;
+	}
 }

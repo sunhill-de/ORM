@@ -95,7 +95,7 @@ class oo_property extends \Sunhill\base {
 				$this->shadow = $this->default;
 				$this->initialized = true;
 			} else {
-				throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
+			    throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
 			}
 		}
 		if ($this->is_array()) {
