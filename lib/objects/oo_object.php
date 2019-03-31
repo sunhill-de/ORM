@@ -7,249 +7,119 @@ use App;
 class ObjectException extends \Exception {}
 class UnknownPropertyException extends ObjectException {}
 
-class oo_object extends \Sunhill\base {
+class oo_object extends \Sunhill\propertieshaving {
 
-	private $id;
-	
-	private $readonly=false;
-	
-	private $state = 'normal';
-	
-	/**
-	 * Speichert die Tags, die mit diesem Objekt assoziiert sind
-	 * @var array of oo_tags
-	 */
-	protected $tags;
-	
-	protected $properties;
-	
 	public $default_ns = '\\App';
 	
+	private $external_references = array();
+	
+	
+// ================================ Laden ========================================	
 	/**
-	 * Schattenspeicher für Tags, um im Falles eines rollbacks die Tags wiederherzustellen und die veränderten Tags zu ermitteln
+	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
+	 * @param integer $id
 	 */
-	private $tags_shadow;
-	
-	public function __construct() {
-		//parent::__construct();
-		$this->tags = array();
-		$this->tags_shadow = array();
-		$this->setup_properties();
-	}
-
-	protected function is_commiting() {
-	    return $this->state == 'commiting';
-	}
-	
-	protected function is_loading() {
-	   return $this->state == 'loading';    
+	protected function check_cache(int $id) {
+	    if (self::is_cached($id)) {
+	        return self::load_object_of($id);
+	    }
+	    return false;
 	}
 	
 	/**
-	 * Liefert die Aktuelle ID des Objektes zurück (oder null, wenn das Objekt noch nicht in der Datenbank ist)
-	 * @return Integer oder null
+	 * Trägt sich selbst im Cache ein
+	 * @param Int $id
 	 */
-	public function get_id() {
-        $this->check_validity();
-	    return $this->id;
+	protected function insert_cache(int $id) {
+	    self::load_id_called($id,$this);	    
 	}
-
-	protected function check_validity() {
-	    if ($this->state == 'invalid') {
-	        throw new ObjectException('Invalides Objekt benutzt.');
+	
+	protected function do_load() {
+	    if (!$this->is_loading()) {
+	        $this->state = 'loading';
+            $this->load_core_object();
+	        $this->load_simple_fields();
+            $this->load_other_properties();
+	        $this->state = 'normal';
 	    }
 	}
 	
-	/**
-	 * Legt die ID für das aktuelle Objekt fest
-	 * @param Integer $id
-	 */
-	public function set_id($id) {
-	    $this->check_validity();
-	    $this->id = $id;
+	private function load_core_object() {
+	    $model_name = $this->default_ns."\coreobject";
+	    $model = $model_name::where('id','=',$this->get_id())->first();
+	    $this->updated_at = $model->updated_at;
+	    $this->created_at = $model->created_at;
 	}
 	
-	/**
-	 * Läd das Objekt mit der ID $id aus der Datenbank
-	 * @param integer $id
-	 */
-	public function load($id) {
-	        $this->check_validity();
-	        if (self::is_cached($id)) {
-    	        $this->state = 'invalid'; 
-	            return self::load_object_of($id);
-    	    } else {
-    	        self::load_id_called($id,$this);
-    	        $loader = new oo_object_loader($this);
-    	        if (!$this->is_loading()) {
-        	        $this->state = 'loading';    	        
-        	        $loader->load($id); 
-        	        $this->state = 'normal';
+	private function load_simple_fields() {
+	    $properties = $this->get_properties_with_feature('simple',null,'model');
+	    foreach ($properties as $model_name => $fields_of_model) {
+    	        if ($model_name == $this->default_ns."\coreobject") {
+    	            continue; // Wurde schon geladen
+    	        } 	           
+    	        $model = $model_name::where('id','=',$this->get_id())->first();
+    	        foreach ($fields_of_model as $field_name => $field) {
+    	            $this->$field_name = $model->$field_name;
     	        }
-    	        $this->clean_properties();
-        		$this->tags_shadow = $this->tags;
-        		return $this;
-    	    }	       
+	    }
 	}
 	
-	private function clean_properties() {
-		foreach ($this->properties as $property) {
-			$property->set_dirty(false);
-		}
+	private function load_other_properties() {
+	   $properties = $this->get_properties_with_feature('');
+	   foreach ($properties as $name => $property) {
+	      $property->load($this->get_id()); 
+	   }
 	}
 	
-	public function commit() {
-	    if (!$this->is_commiting()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
-	        $this->state = 'commiting';
-	        if ($this->get_id()) {
-	            $this->pre_update(); 
-    			$this->update();
-    			$this->post_update(); 
-    			$this->post_update_tags();
-    		} else {
-    		    $this->pre_create(); 
-    			$this->create();
-    			$this->post_create();
-    			$this->post_create_tags();
-    		}
-    		$this->comitted();
-    		$this->state = 'normal';
-	    } 
+// ========================= Einfügen =============================	
+	protected function do_insert() {
+        $this->insert_core_object();
+	    $simple_fields = $this->get_properties_with_feature('simple',null,'model');
+        foreach ($simple_fields as $model_name => $fields_of_model) {
+            $model = new $model_name();
+            foreach ($fields_of_model as $field_name => $field) {
+                $model->$field_name = $field->get_value();
+            }
+            if ($model_name == $this->default_ns."\coreobject") {
+                continue; // Wurde schon gespeichert
+            } else {
+                $model->id = $this->get_id();
+                $model->save();
+            }
+        }
 	}
 	
-	/**
-	 * Ermittelt, welche Properties verändert wurden
-	 * @return array of String
-	 */
-	public function get_changed_fields() {
-	    $this->check_validity();
-	    $result = array();
-		foreach ($this->properties as $property) {
-			if ($property->get_dirty()) {
-				if (!isset($result[$property->get_model()])) {
-					$result[$property->get_model()] = array($property->get_name());
-				} else {
-					$result[$property->get_model()][] = $property->get_name();
-				}
-			}
-		}
-		return $result;
+	private function insert_core_object() {
+	       $model_name = $this->default_ns."\coreobject";
+	       $model = new $model_name;
+	       $model->classname = get_class($this);
+	       $model->save();
+	       $this->updated_at = $model->updated_at;
+	       $this->created_at = $model->created_at;
+	       $this->set_id($model->id);
 	}
-	
-	/**
-	 * Wird aufgerufen, wenn der commit ausgeführt wurde (egal ob create oder update)
-	 */
-	private function comitted() {
-		$this->clean_properties();
-		$this->tags_shadow = $this->tags; // Schattenverzeichnis überspielen
-	}
-	
-	private function create() {
-		$creator = new oo_object_creator($this);
-		$id = $creator->store();
-		$this->set_id($id);
-		$this->update_children();
-	}
-	
-	/**
-	 * @todo unschöner Hack, update_children sollte privat bleiben und vom Objekt selber aufgerufen werden
-	 */
-	public function update_children() {
-	    $this->check_validity();
-	    $fields = $this->get_complex_fields();
-	    foreach ($fields as $fieldname) {
-	        $property = $this->get_property($fieldname);
-	        switch ($property->type) {
-	            case 'object':
-	                $object = $this->$fieldname;
-	                if (!is_null($object)) {
-	                    $object->commit();
-	                }	                
-	                break;
-	            case 'array_of_objects':
-	                foreach ($this->$fieldname as $object) {
-	                    $object->commit();
-	                }
-	                break;
+
+// ========================== Aktualisieren ===================================	
+	protected function do_update() {
+	    $this->update_core_object();
+	    $simple_fields = $this->get_properties_with_feature('simple',true,'model');
+	    foreach ($simple_fields as $model_name => $fields_of_model) {
+	        $model = $model_name::where('id','=',$this->get_id())->first();
+	        if (empty($model)) {
+	            $model = new $model_name();
+	            $model->id = $this->get_id();
 	        }
-	    }	    
-	}
-	
-	protected function pre_create() {
-	}
-	
-	protected function post_create() {
-		
-	}
-	
-	private function update() {
-	    $updater = new oo_object_updater($this);
-		$updater->update();
-	}
-	
-	protected function field_updated($fieldname,$oldvalue,$newvalue) {
-		
-	}
-	
-	/**
-	 * Wird nach einem Datenbank update aufgerufen. Hier erfolgen die Verarbeitung von Triggern etc. 
-	 */
-	protected function post_update() {
-		$this->readonly = true;
-	    $changed_fields = $this->get_changed_fields();
-	    $broadcast = array();
-		foreach ($changed_fields as $model=>$fields) {
-		  foreach($fields as $field) {	
-			$property = $this->get_property($field);
-			$method_name = $field.'_changed';
-			if (method_exists($this, $method_name)) {
-			    if ($property->is_array()) {
-			        $diff = $this->$field->get_array_diff();
-			        $this->$method_name($diff['NEW'],$diff['REMOVED']);
-			    } else {
-			        $this->$method_name($property->get_old_value(),$property->get_value());
-			    }
-			}
-			$broadcast[$field] = array($property->get_old_value(),$property->get_value()); 
-			$this->field_updated($field,$property->get_old_value(),$property->get_value());
-		  }
-		}
-		if (!empty($broadcast)) { 
-		    $this->broadcast_parents($broadcast,'update');
-		}
-		$this->readonly = false;
-	}
-	
-	/**
-	 * Ruft die Elternobjekte auf und teilt ihnen mit, dass sich ein Kind geändert hat
-	 * @param array $broadcast
-	 * @param 'update' oder 'delete' $action
-	 */
-	private function broadcast_parents($broadcast,$action) {
-	    $parents = \App\objectobjectassign::where('element_id','=',$this->get_id())->get();
-	    foreach ($parents as $parent) {
-	        $parent_object = self::load_object_of($parent->container_id);
-	        $parent_object->child_changed($parent->field,$this,'update',$broadcast);
-	    }	    
-	}
-	
-	private function commit_child() {
-	       
-	}
-	
-	protected function pre_update() {
-	    $this->update_children();
-	    $changed_fields = $this->get_changed_fields();
-	    foreach ($changed_fields as $model=>$fields) {
-	        foreach($fields as $field) {
-	            $property = $this->get_property($field);
-	            $method_name = $field.'_changing';
-	            if (method_exists($this, $method_name)) {
-	                $this->$method_name($property->get_old_value(),$property->get_value());
-	            }
-	            $this->field_updated($field,$property->get_old_value(),$property->get_value());
+	        foreach ($fields_of_model as $field_name => $field) {
+	            $model->$field_name = $field->get_value();
 	        }
-	    }	    
+	        $model->save();
+	    }
+	}
+	
+	private function update_core_object() {
+	    $model_name = $this->default_ns."\coreobject";
+	    $model = $model_name::where('id','=',$this->get_id())->first();
+	    $model->save();	    
 	}
 	
 	/**
@@ -259,194 +129,39 @@ class oo_object extends \Sunhill\base {
 		
 	}
 	
-	// ***************************** Tag Handling **************************************
-	
-	/**
-	 * Wird nach einem update aufgerufen, um die neuen und gelöschten Tags zu finden
-	 */
-	protected function post_update_tags() {
-	}
-		
-	/**
-	 * Diese Methode wird aufgrufen, um das Tag-Handling zu bewerkstelligen
-	 * Sie speichert die Tag assoziationen in der Datenbank und ruft für jedes Tag tag_added auf
-	 */
-	private function post_create_tags() {
+	// ================================= Löschen =============================================
+	protected function do_delete() {
+	    $this->set_state('deleting');
+	    $this->delete_core_object();
+	    $this->delete_simple_fields();
+	    $this->set_state('invalid');
 	}
 	
-	/**
-	 * Diese Methode wird immer dann aufgerufen, wenn im Rahmen eines commit ein neues Tag mit dem Objekt assoziiert wurde
-	 * @param oo_tag $tag Das Tag, welches assoziert wurde
-	 */
-	public function tag_added(oo_tag $tag) {
-	    
+	private function delete_core_object() {
+	    \App\coreobject::destroy($this->get_id());
 	}
 	
-	/**
-	 * Diese Methode wird immer dann aufgerufen, wenn im Rahmen eines commit ein Tag vom Objekt entfernt wurde
-	 * @param oo_tag $tag Das Tag, welches assoziert wurde
-	 */
-	public function tag_removed(oo_tag $tag) {
-	    
-	}
-		
-	/**
-	 * Fügt ein neues Tag hinzu oder ignoriert es, wenn es bereits hinzugefügt wurde
-	 * @param oo_tag $tag
-	 */
-	public function add_tag(oo_tag $tag) {
-	    $this->check_validity();
-	    foreach ($this->tags as $listed) {
-			if ($listed->get_fullpath() === $tag->get_fullpath()) {
-			    return $this; // Gibt es schon
-			}
-		}
-		$this->tags[] = $tag;
-		return $this;
-	}
-	
-	public function delete_tag(oo_tag $tag) {
-	    $this->check_validity();
-	    for ($i=0;$i<count($this->tags);$i++) {
-	        if ($this->tags[$i]->get_fullpath() === $tag->get_fullpath()) {
-	            array_splice($this->tags,$i,1);
-	            return $this; // Ende an dieser Stelle
+	private function  delete_simple_fields() {
+	    $fields = $this->get_properties_with_feature('simple',null,'model');
+	    foreach ($fields as $model_name=>$fields) {
+	        if (!empty($model_name)) {
+	            $model_name::destroy($this->get_id());
 	        }
 	    }
-        throw new ObjectException("Das zu löschende Tag '".$tag->get_fullpath()."' ist gar nicht gesetzt");
 	}
 	
-	/**
-	 * Fügt ein Autotag hinzu
-	 */
-	public function add_auto_tag($tagstr) {
-	    $this->check_validity();
-	    $tagstr = 'autotag.'.$tagstr;
-		$tag = new oo_tag($tagstr,true);
-		$tag->commit();
-		$this->add_tag($tag);
-		return $this;
+	protected function clear_cache_entry() {
+	    unset(self::$objectcache[$this->get_id()]); // Cache-Eintrag löschen
 	}
 	
-	/**
-	 * Ermittelt die Anzahl der assoziierten Tags
-	 * @return integer
-	 */
-	public function get_tag_count() {
-		return count($this->tags);
-	}
-	
-	/**
-	 * Ermittelt das $index-te Tag (Zählung beginnt bei 0)
-	 * @param $index integer
-	 * @return oo_tag
-	 */
-	public function get_tag($index) {
-		return $this->tags[$index];	
-	}
-
-	/**
-	 * Ermittelt, welche Tags hinzugefügt und welche gelöscht worden sind
-	 * @return array[]
-	 */
-	public function get_changed_tags() {
-	    $this->check_validity();
-	    $result = array('added'=>array(),'deleted'=>array());
-	    for ($i=0;$i<count($this->tags);$i++) {
-	        $found = false;
-	        for ($j=0;($j<count($this->tags_shadow));$j++) {
-	            if ($this->tags[$i]->get_fullpath() == $this->tags_shadow[$j]->get_fullpath()) {
-	                $found = true;
-	            }
-	        }	        
-	        if (!$found) {
-	            $result['added'][] = $this->tags[$i];
-	        }
-	    }
-	    
-	    for ($i=0;$i<count($this->tags_shadow);$i++) {
-	        $found = false;
-	        for ($j=0;($j<count($this->tags)) && (!$found);$j++) {
-	            if ($this->tags_shadow[$i]->get_fullpath() === $this->tags[$j]->get_fullpath()) {
-	                $found = true;
-	            }
-	        }
-	        if (!$found) {
-	            $result['deleted'][] = $this->tags_shadow[$i];
-	        }
-	    }
-	    return $result;
-	}
-	
-	private function get_tags_only($source) {
-	    $result = array();
-	    foreach ($source as $tag) {
-	        $result[] = $tag->get_fullpath();
-	    }
-	    return $result;
-	}
-	
-	private function get_old_tags() {
-	    return $this->get_tags_only($this->tags_shadow);
-	}
-	
-	private function get_new_tags() {
-	    return $this->get_tags_only($this->tags);
-	}
 	// ********************* Property Handling *************************************	
 	
-	/**
-	 * Wird vom Constructor aufgerufen, um die Properties zu initialisieren.
-	 * Abgeleitete Objekte müssen immer die Elternmethoden mit aufrufen.
-	 */
 	protected function setup_properties() {
-	    $this->properties = array();
+	    parent::setup_properties();
 	    $this->timestamp('created_at')->set_model('coreobject');
 	    $this->timestamp('updated_at')->set_model('coreobject');
-	}
-	
-	public function __get($name) {
-	    $this->check_validity();
-	    if (isset($this->properties[$name])) {
-			return $this->properties[$name]->get_value();
-		} else {
-			return parent::__get($name);
-		}
-	}
-	
-	public function __set($name,$value) {
-	    $this->check_validity();
-	    if (isset($this->properties[$name])) {
-		    if ($this->readonly) {
-		        throw new \Exception("Property '$name' in der Readonly Phase verändert.");
-		    } else {
-		          return $this->properties[$name]->set_value($value);
-		    }
-		} else {
-			return parent::__set($name,$value);
-		}		
-	}
-	
-	/**
-	 * Liefert das Property-Objekt der Property $name zurück
-	 * @param string $name Name der Property
-	 * @return oo_property
-	 */
-	public function get_property($name) {
-	    $this->check_validity();
-	    if (!isset($this->properties[$name])) {
-	        throw new UnknownPropertyException("Unbekannter Property '$property'");
-	    }
-	    return $this->properties[$name];
-	}
-	
-	private function add_property($name,$type) {
-		$property_name = '\Sunhill\Objects\oo_property_'.$type;
-		$property = new $property_name($this);
-		$property->set_name($name);
-		$property->set_type($type);
-		$this->properties[$name] = $property;
-		return $property;
+	    $this->add_property('tags','tags');
+	    $this->add_property('externalhooks','externalhooks');
 	}
 	
 	protected function timestamp($name) {
@@ -507,54 +222,6 @@ class oo_object extends \Sunhill\base {
 	protected function arrayofobjects($name) {
 		$property = $this->add_property($name, 'array_of_objects');
 		return $property;
-	}
-	
-	/**
-	 * Liefert die einfachen Felder sortiert nach Klassen (Models) zurück
-	 * @return array[]
-	 */
-	public function get_simple_fields() {
-	    $this->check_validity();
-	    $models = array();
-		foreach ($this->properties as $property) {
-			if (!isset($models[$property->get_model()])) {
-				$models[$property->get_model()] = array();
-			}
-			if ($property->is_simple()) {
-				$models[$property->get_model()][] = $property->get_name();
-			}
-		}
-		return $models;
-	}
-	
-	/**
-	 * Liefert die complexen Felder zurück
-	 * @return array[]
-	 */
-	public function get_complex_fields() {
-	    $result = array();
-	    foreach ($this->properties as $property) {
-	        if (!$property->is_simple()) {
-	            $result[] = $property->get_name();
-	        }
-	    }
-	    return $result;
-	}
-
-	/**
-	 * Wird von untergebenen Objekte aufgerufen, wenn diese sich ändern, um die
-	 * Eltern darüber zu informieren, dass sie verändert wurden
-	 * @param $fieldname string Name des Feldes, dass sich geändert hat
-	 * @param $childobject oo_object Das Objekt, welches sich ändert
-	 * @param $action (update,delete), was mit diesem Objekt passiert
-	 * @param $payload void, zusätzliche Parameter als Array
-	 */
-	public function child_changed($fieldname,$childobject,$action,$payload) {
-	    $this->check_validity();
-	    $method_name = 'child_'.$fieldname.'_'.$action.'d';
-	   if (method_exists($this, $method_name)) {
-	       $this->$method_name($payload);
-	   }
 	}
 	
 	/**
@@ -690,26 +357,49 @@ class oo_object extends \Sunhill\base {
 	     return $parent_class_names;
 	}
 	
-// ================================= Löschen =============================================	
-	public function delete() {
-	    $this->check_validity();
-	    $this->pre_delete();
-           $this->deletion();
-           unset(self::$objectcache[$this->get_id()]); // Cache-Eintrag löschen
-	       $this->post_delete();
-	}
-	
-	protected function pre_delete() {
+	/**
+	 * Wird für komplexe Aufgabe aufgerufen
+	 * @param string $action
+	 * @param string $hook
+	 * @param string $subaction
+	 * @param unknown $destination
+	 */
+	protected function set_complex_hook(string $action,string $hook,string $subaction,$destination) {
+	    $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook);
 	    
+	    $parts = explode('.',$subaction);
+	    $field = array_shift($parts);
+	    $restaction = implode('.',$parts);
+	    $property = $this->get_property($field);
+	    $property->add_hook($action,$hook,$restaction,$destination);
+	//    $this->add_hook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
 	}
 	
-	protected function deletion() {
-	    $eraser = new oo_object_eraser($this);
-	    return $eraser->erase();	    
+	protected function complex_changed($params) {
+	    $target = $params['subaction'];
+        if (isset($target)) {
+            $fieldname = $params['payload']['field'];
+            $hookname  = $params['payload']['hook'];
+            $this->$target->add_hook($params['payload']['action'],$hookname,$fieldname,$this);
+        }
 	}
 	
-	protected function post_delete() {
-	    
+	protected function target_equal($test1,$test2) {
+	    if ($test1 instanceof oo_object) {
+	        $test1 = $test1->get_id();
+	    }
+	    if ($test2 instanceof oo_object) {
+	        $test2 = $test2->get_id();
+	    }
+	    return ($test1 === $test2);
+	}
+	
+	public function array_field_new_entry($name,$index,$value) {
+	    $this->check_for_hook('PROPERTY_ARRAY_NEW',$name,[$value]); 
+	}
+	
+	public function array_field_removed_entry($name,$index,$value) {
+	    $this->check_for_hook('PROPERTY_ARRAY_REMOVED',$name,[$value]);	    
 	}
 	
 // ***************** Statische Methoden ***************************	
@@ -718,7 +408,7 @@ class oo_object extends \Sunhill\base {
 	
 	/**
 	 * Ermittelt den Klassennamen von dem Object mit der ID $id
-	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll 
+	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll
 	 * @return string Der Klassenname
 	 */
 	public static function get_class_name_of($id) {
@@ -730,10 +420,10 @@ class oo_object extends \Sunhill\base {
 	}
 	
 	/**
-     * Diese Methode wird von $this->load() aufgerufen, wenn ein Objekt über den lader geladen wurde. Sie soll das Objekt in den Cache eintragen
+	 * Diese Methode wird von $this->load() aufgerufen, wenn ein Objekt über den lader geladen wurde. Sie soll das Objekt in den Cache eintragen
 	 * @param int $id
 	 */
-	protected static function load_id_called(int $id,oo_object $object) {
+	public static function load_id_called(int $id,oo_object $object) {
 	    self::$objectcache[$id] = $object;
 	}
 	
@@ -765,6 +455,6 @@ class oo_object extends \Sunhill\base {
 	 * @return bool, true, wenn im Cache sonst false
 	 */
 	public static function is_cached(int $id) {
-        return isset(self::$objectcache[$id]);	    
+	    return isset(self::$objectcache[$id]);
 	}
 }

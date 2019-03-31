@@ -19,14 +19,14 @@ class ObjectSkipclassTest extends ObjectCommon
         $init_object->dummyint = 1243;
         $init_object->commit();
 
-        $read_object = new SkipClass;
-        $read_object = $read_object->load($init_object->get_id());
+        \Sunhill\Objects\oo_object::flush_cache();
+        $read_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
         $this->assertEquals(1243,$read_object->dummyint);
         $read_object->dummyint = 4312;
         $read_object->commit();
         
-        $reread_object = new SkipClass;
-        $reread_object = $reread_object->load($init_object->get_id());
+        \Sunhill\Objects\oo_object::flush_cache();
+        $reread_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
         $this->assertEquals(4312,$reread_object->dummyint);
         
 	}

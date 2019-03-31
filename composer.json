@@ -37,7 +37,9 @@
 			],
 			"Sunhill\\Objects\\" : "lib/objects",
 			"Sunhill\\" : "lib",
-			"Tests\\" : "tests/lib"
+			"Tests\\" : "tests/lib",
+			"Sunhill\\Properties\\" : "lib/properties",
+			"Sunhill\\Validators\\" : "lib/validators"
 		}
 	},
 	"autoload-dev" : {

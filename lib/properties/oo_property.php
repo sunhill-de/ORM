@@ -1,13 +1,15 @@
 <?php
 
-namespace Sunhill\Objects;
+namespace Sunhill\Properties;
 
 class PropertyException extends \Exception {}
 
 class InvalidValueException extends PropertyException {}
 
-class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
+class oo_property extends \Sunhill\base {
 	
+    protected $features = array();
+    
 	protected $owner;
 	
 	protected $name;
@@ -17,10 +19,6 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	protected $shadow;
 	
 	protected $type;
-	
-	protected $is_simple = true;
-	
-	protected $is_array = false;
 	
 	protected $default;
 	
@@ -34,20 +32,32 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	
 	protected $read_only;
 	
+	protected $validator_name = 'validator_base';
+	
+	protected $validator;
+	
+	protected $hooks = array();
+	
 	public function __construct($owner) {
 		$this->owner = $owner;
 		$this->dirty = false;
 		$this->initialized = false;
 		$this->defaults_null = false;
 		$this->read_only = false;
-		if ($this->is_array) {
+		if ($this->is_array()) {
 			$this->value = array();
 		}
 		$this->initialize();
+		$this->init_validator();
 	}
 	
 	protected function initialize() {
 		
+	}
+	
+	protected function init_validator() {
+	    $validator_name = "\\Sunhill\\Validators\\".$this->validator_name;
+	    $this->validator = new $validator_name();    
 	}
 	
 	public function set_name($name) {
@@ -70,28 +80,34 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 			throw new PropertyException("Die Property ist read-only.");
 		}
 		if ($value !== $this->value || !$this->initialized) {
+		    $oldvalue = $this->value;
 		    if (!$this->dirty) {
 		        $this->shadow = $this->value;
 		        $this->dirty = true;
 		    }
 		    $this->value = (is_null($value)?null:$this->validate($value));
 			$this->initialized = true;
+			$this->value_changed($oldvalue,$this->value);
 		}
 		return $this;
 	}
 	
-	public function get_value() {
+	protected function value_changed($from,$to) {
+	    
+	}
+	
+	public function &get_value() {
 		if (!$this->initialized) {
 			if (isset($this->default) || $this->defaults_null) {
 				$this->value = $this->default;
 				$this->shadow = $this->default;
 				$this->initialized = true;
 			} else {
-				throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
+			    throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
 			}
 		}
-		if ($this->is_array) {
-			return $this;
+		if ($this->is_array()) {
+		    return $this;
 		} else {
 		    return $this->value;
 		}
@@ -161,7 +177,7 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	}
 	
 	protected function validate($value) {
-		return $value;
+		return $this->validator->validate($value);
 	}
 	
 	public function set_readonly($value) {
@@ -174,70 +190,63 @@ class oo_property extends \Sunhill\base implements \ArrayAccess,\Countable {
 	}	
 	
 	public function is_array() {
-		return $this->is_array;
+		return $this->has_feature('array');
 	}
 	
 	public function is_simple() {
-		return $this->is_simple;
+		return $this->has_feature('simple');
 	}
 	
-	private function check_array() {
-	    if (!$this->is_array()) {
-	        throw new \Exception('Die Property "'.$this->name.'" wurde mit array Funktionen aufgerufen obwohl vom Typ "'.$this->type.'"');
-	    }
-	}
-	public function offsetExists($offset) {
-	    $this->check_array();
-	    return isset($this->value[$offset]);
-	}
-
-	public function offsetGet($offset) {
-	    $this->check_array();
-	    return $this->value[$offset];
+	public function has_feature(string $test) {
+	    return in_array($test,$this->features);
 	}
 	
-	public function offsetSet($offset, $value) {
-	    $this->check_array();
-	    if (!$this->dirty) {
-	        $this->shadow = $this->value;
-	        $this->dirty = true;
-	    }
-	    if (isset($offset)) {
-			$this->value[$offset] = $this->validate($value);
-		} else {
-			$this->value[] = $this->validate($value);
-		}
+	/**
+	 * Wird aufgerufen, bevor das Elternobjekt ein update erhält
+	 */
+	public function updating(int $id) {
+	    
 	}
 	
-	public function offsetUnset($offset) {
-	    $this->check_array();
-	    if (!$this->dirty) {
-	        $this->shadow = $this->value;
-	        $this->dirty = true;
-	    }
-	    unset($this->value[$offset]);
+	/**
+	 * Wird aufgerufen, nachdem das Elternobjekt ein update erhalten hat
+	 */
+	public function updated(int $id) {
+	    $this->commit();
 	}
 	
-	public function count() {
-	    $this->check_array();
-	    return count($this->value);
+	/**
+	 * Wird aufgerufen, bevor das Elternobjekt eingefügt wurde
+	 */
+	public function inserting() {
+	    
 	}
 	
-	public function get_array_diff() {
-	    $this->check_array();
-	    $result = ['NEW'=>array(),'REMOVED'=>array()];
-	    foreach ($this->shadow as $oldentry) {
-	        if (array_search($oldentry,$this->value)===false) {
-	            $result['REMOVED'][] = $oldentry;
-	        }
-	    }
-	    foreach ($this->value as $newentry) {
-	        if (array_search($newentry,$this->shadow)===false) {
-	            $result['NEW'][] = $newentry;
-	        }
-	    }
-	    return $result;
+	/**
+	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
+	 */
+	public function inserted(int $id) {
+	    $this->commit();	    
 	}
 	
+	public function deleting(int $id) {
+	    
+	}
 	
+	public function deleted(int $id) {
+	    
+	}
+	
+	public function get_diff_array() {
+	    return array('FROM'=>$this->get_old_value(),
+	                 'TO'=>$this->get_value());
+	}
+	
+	public function load(int $id) {
+	    $this->initialized = true; 
+	}
+	
+	public function add_hook($action,$hook,$subaction,$target) {
+	   $this->hooks[] = ['action'=>$action,'hook'=>$hook,'subaction'=>$subaction,'target'=>$target];    
+	}
 }

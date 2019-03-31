@@ -14,8 +14,8 @@ class ObjectReReadStampsTest extends ObjectCommon
         $add = new \Sunhill\Test\ts_dummy();
         $add->dummyint = 123;
         $add->commit();
-        $read = new \Sunhill\Test\ts_dummy;
-        $read->load($add->get_id());
+        \Sunhill\Objects\oo_object::flush_cache();
+        $read = \Sunhill\Objects\oo_object::load_object_of($add->get_id());
         $this->assertFalse(is_null($read->created_at));
     }
 }

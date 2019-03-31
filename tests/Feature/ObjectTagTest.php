@@ -31,17 +31,17 @@ class ObjectTagTest extends ObjectCommon
             } else {
                 $tag = new \Sunhill\Objects\oo_tag($set[$i],$create);
             }
-            $test->add_tag($tag);
+            $test->tags->stick($tag);
         }
         $test->dummyint = 1;
         $test->commit();
         for ($i=0;$i<count($expect);$i++) {
-            $this->assertEquals($expect[$i],$test->get_tag($i)->get_fullpath());
+            $this->assertEquals($expect[$i],$test->tags[$i]->get_fullpath());
         }
         $reread =  new \Sunhill\Test\ts_dummy();
         $reread = $reread->load($test->get_id());
         for ($i=0;$i<count($expect);$i++) {
-            $this->assertEquals($expect[$i],$reread->get_tag($i)->get_fullpath());
+            $this->assertEquals($expect[$i],$reread->tags[$i]->get_fullpath());
         }
     }
 
@@ -65,29 +65,31 @@ class ObjectTagTest extends ObjectCommon
         $test = new \Sunhill\Test\ts_dummy();        
         for ($i=0;$i<count($init);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($init[$i],true);
-            $test->add_tag($tag);
+            $test->tags->stick($tag);
         }
         $test->dummyint = 1;
         $test->commit();
         
+        \Sunhill\Objects\oo_object::flush_cache();
         $read =  new \Sunhill\Test\ts_dummy();
         $read = $read->load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($add[$i],true);
-            $read->add_tag($tag);            
+            $read->tags->stick($tag);            
         }
         for ($i=0;$i<count($delete);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($delete[$i],true);
-            $read->delete_tag($tag);            
+            $read->tags->remove($tag);            
         }
         $read->commit();
         
+        \Sunhill\Objects\oo_object::flush_cache();
         $reread =  new \Sunhill\Test\ts_dummy();
         $reread = $reread->load($test->get_id());
         
         $given_tags = array();
-        for ($i=0;$i<$reread->get_tag_count();$i++) {
-            $given_tags[] = $reread->get_tag($i)->get_fullpath();
+        for ($i=0;$i<count($reread->tags);$i++) {
+            $given_tags[] = $reread->tags[$i]->get_fullpath();
         }
         sort($expect);
         sort($given_tags);
@@ -96,6 +98,7 @@ class ObjectTagTest extends ObjectCommon
     
     /**
      * @dataProvider ChangeTagProvider
+     * @group Trigger
      */
     public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
         $this->BuildTestClasses();
@@ -104,20 +107,21 @@ class ObjectTagTest extends ObjectCommon
         $test = new \Sunhill\Test\ts_dummy();
         for ($i=0;$i<count($init);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($init[$i],true);
-            $test->add_tag($tag);
+            $test->tags->stick($tag);
         }
         $test->dummyint = 1;
         $test->commit();
         
+        \Sunhill\Objects\oo_object::flush_cache();
         $read =  new \Sunhill\Test\ts_dummy();
         $read = $read->load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($add[$i],true);
-            $read->add_tag($tag);
+            $read->tags->stick($tag);
         }
         for ($i=0;$i<count($delete);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($delete[$i],true);
-            $read->delete_tag($tag);
+            $read->tags->remove($tag);
         }
         $read->commit();
         $this->assertEquals($changestr,$read->changestr);                
@@ -126,8 +130,8 @@ class ObjectTagTest extends ObjectCommon
     public function ChangeTagProvider() {
         return [
             [['TagA','TagB'],['TagChildA'],[],['TagA','TagB','TagA.TagChildA'],'ADD:TagA.TagChildA'],
-            [['TagA','TagB'],[],['TagA'],['TagB'],'DELETE:TagA'],
-            [['TagA','TagB'],['TagChildA'],['TagA'],['TagB','TagA.TagChildA'],'ADD:TagA.TagChildADELETE:TagA']
+            [['TagA','TagB'],[],['TagA'],['TagB'],'REMOVED:TagA'],
+            [['TagA','TagB'],['TagChildA'],['TagA'],['TagB','TagA.TagChildA'],'ADD:TagA.TagChildAREMOVED:TagA']
         ];
     }
 }
