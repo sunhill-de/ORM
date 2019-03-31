@@ -73,6 +73,11 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         $this->commit();
     }
     
+    protected function arraychild_changed($params) {
+        $this->hookstate = '(Cobjarray:'.$params['FROM']."->".$params['TO'].")";
+        $this->commit();        
+    }
+    
     public function get_hook_str() {
         return $this->hookstate;
     }
@@ -241,7 +246,7 @@ class ObjectHookTest extends ObjectCommon
         $dummy2 = new \Sunhill\Test\ts_dummy();
         $dummy2->dummyint = 666;
         $test = new HookingObject();
-        $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'objarray.dummyfield');
+        $test->add_hook('UPDATED_PROPERTY', 'arraychild_changed', 'objarray.dummyint');
         $test->objarray[] = $dummy1;
         $test->objarray[] = $dummy2;
         $test->commit();
@@ -278,6 +283,6 @@ class ObjectHookTest extends ObjectCommon
         $readdummy->commit();
         \Sunhill\Objects\oo_object::flush_cache();
         $readtest = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
-        $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());
+        $this->assertEquals('(Cobjarray:123->234)',$readtest->get_hook_str());
     }
 }
