@@ -36,6 +36,8 @@ class oo_property extends \Sunhill\base {
 	
 	protected $validator;
 	
+	protected $hooks = array();
+	
 	public function __construct($owner) {
 		$this->owner = $owner;
 		$this->dirty = false;
@@ -78,14 +80,20 @@ class oo_property extends \Sunhill\base {
 			throw new PropertyException("Die Property ist read-only.");
 		}
 		if ($value !== $this->value || !$this->initialized) {
+		    $oldvalue = $this->value;
 		    if (!$this->dirty) {
 		        $this->shadow = $this->value;
 		        $this->dirty = true;
 		    }
 		    $this->value = (is_null($value)?null:$this->validate($value));
 			$this->initialized = true;
+			$this->value_changed($oldvalue,$this->value);
 		}
 		return $this;
+	}
+	
+	protected function value_changed($from,$to) {
+	    
 	}
 	
 	public function &get_value() {
@@ -238,4 +246,7 @@ class oo_property extends \Sunhill\base {
 	    $this->initialized = true; 
 	}
 	
+	public function add_hook($action,$hook,$subaction,$target) {
+	   $this->hooks[] = ['action'=>$action,'hook'=>$hook,'subaction'=>$subaction,'target'=>$target];    
+	}
 }

@@ -366,7 +366,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $parts = explode('.',$subaction);
 	    $field = array_shift($parts);
 	    $restaction = implode('.',$parts);
-	    $this->add_hook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
+	    $property = $this->get_property($field);
+	    $property->add_hook($action,$hook,$restaction,$destination);
+	//    $this->add_hook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
 	}
 	
 	protected function complex_changed($params) {
@@ -386,6 +388,14 @@ class oo_object extends \Sunhill\propertieshaving {
 	        $test2 = $test2->get_id();
 	    }
 	    return ($test1 === $test2);
+	}
+	
+	public function array_field_new_entry($name,$index,$value) {
+	    $this->check_for_hook('PROPERTY_ARRAY_NEW',$name,[$value]); 
+	}
+	
+	public function array_field_removed_entry($name,$index,$value) {
+	    $this->check_for_hook('PROPERTY_ARRAY_REMOVED',$name,[$value]);	    
 	}
 	
 // ***************** Statische Methoden ***************************	

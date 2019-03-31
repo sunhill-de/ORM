@@ -77,4 +77,11 @@ class oo_property_object extends oo_property_field {
     	    $model->save();
 	    }
 	}
+	
+	protected function value_changed($from,$to) {
+	    foreach ($this->hooks as $hook) {
+	        $to->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
+	    }
+	}
+	
 }

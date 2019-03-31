@@ -248,6 +248,9 @@ class ObjectHookTest extends ObjectCommon
         return [$dummy1,$dummy2,$test];
     }
     
+    /**
+     * @group array
+     */
     public function testChildChangeArrayDirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
         $dummy1->dummyint = 234;
@@ -259,6 +262,8 @@ class ObjectHookTest extends ObjectCommon
     public function testChildChangeArrayIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
         \Sunhill\Objects\oo_object::flush_cache();
+        // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
+        \Sunhill\Objects\oo_object::load_id_called($test->get_id(), $test);
         $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy1->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();

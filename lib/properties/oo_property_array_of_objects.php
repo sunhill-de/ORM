@@ -88,5 +88,10 @@ class oo_property_array_of_objects extends oo_property_arraybase {
     	        $model->save();
 	    }
 	}
-	
+	protected function value_added($value) {
+	    foreach ($this->hooks as $hook) {
+	        $value->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
+	    }	    
+	}
+		
 }

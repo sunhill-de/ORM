@@ -32,10 +32,15 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	        $this->dirty = true;
 	        $this->initialized = true;
 	    }
+	    $value = $this->validate($value);
 	    if (isset($offset)) {
-	        $this->value[$offset] = $this->validate($value);
+	        $this->value[$offset] = $value;
 	    } else {
-	        $this->value[] = $this->validate($value);
+	        $this->value[] = $value;
+	    }
+	    $this->value_added($value);
+	    if (!empty($this->owner)) {
+	       $this->owner->array_field_new_entry($this->get_name(),$offset,$value);
 	    }
 	}
 	
@@ -45,7 +50,19 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	        $this->shadow = $this->value;
 	        $this->dirty = true;
 	    }
+	    if (!empty($this->owner)) {
+	        $this->owner->array_field_removed_entry($this->get_name(),$offset,$this->value[$offset]);
+	    }
+	    $this->value_removed($this->value[$offset]);
 	    unset($this->value[$offset]);
+	}
+	
+	protected function value_added($value) {
+	       
+	}
+	
+	protected function value_removed($value) {
+	    
 	}
 	
 	public function count() {
