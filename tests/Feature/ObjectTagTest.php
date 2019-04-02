@@ -39,7 +39,8 @@ class ObjectTagTest extends ObjectCommon
             $this->assertEquals($expect[$i],$test->tags[$i]->get_fullpath());
         }
         $reread =  new \Sunhill\Test\ts_dummy();
-        $reread = $reread->load($test->get_id());
+        \Sunhill\Objects\oo_object::flush_cache();
+        $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         for ($i=0;$i<count($expect);$i++) {
             $this->assertEquals($expect[$i],$reread->tags[$i]->get_fullpath());
         }
@@ -72,7 +73,7 @@ class ObjectTagTest extends ObjectCommon
         
         \Sunhill\Objects\oo_object::flush_cache();
         $read =  new \Sunhill\Test\ts_dummy();
-        $read = $read->load($test->get_id());
+        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($add[$i],true);
             $read->tags->stick($tag);            
@@ -85,7 +86,7 @@ class ObjectTagTest extends ObjectCommon
         
         \Sunhill\Objects\oo_object::flush_cache();
         $reread =  new \Sunhill\Test\ts_dummy();
-        $reread = $reread->load($test->get_id());
+        $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         
         $given_tags = array();
         for ($i=0;$i<count($reread->tags);$i++) {
@@ -114,7 +115,7 @@ class ObjectTagTest extends ObjectCommon
         
         \Sunhill\Objects\oo_object::flush_cache();
         $read =  new \Sunhill\Test\ts_dummy();
-        $read = $read->load($test->get_id());
+        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($add[$i],true);
             $read->tags->stick($tag);

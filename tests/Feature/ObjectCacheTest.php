@@ -70,7 +70,7 @@ class ObjectCacheTest extends ObjectCommon
         \Sunhill\Objects\oo_object::flush_cache();
         $first  = \Sunhill\Objects\oo_object::load_object_of(1);
         $second = new \Sunhill\Test\ts_dummy();
-        $second = $second->load(1);
+        $second = \Sunhill\Objects\oo_object::load_object_of(1);
         $second->dummyint = 2;
         $this->assertEquals($first->dummyint,$second->dummyint);
     }
@@ -82,7 +82,7 @@ class ObjectCacheTest extends ObjectCommon
         $this->fill_test_database();
         \Sunhill\Objects\oo_object::flush_cache();
         $second = new \Sunhill\Test\ts_dummy();
-        $second->load(1);
+        $second = \Sunhill\Objects\oo_object::load_object_of(1);
         $this->assertTrue(\Sunhill\Objects\oo_object::is_cached(1));
     }
 
@@ -93,7 +93,7 @@ class ObjectCacheTest extends ObjectCommon
         $this->fill_test_database();
         \Sunhill\Objects\oo_object::flush_cache();
         $first = new \Sunhill\Test\ts_dummy();
-        $first->load(1);
+        $first = \Sunhill\Objects\oo_object::load_object_of(1);
         $second = \Sunhill\Objects\oo_object::load_object_of(1);
         $second->dummyint = 2;
         $this->assertEquals($first->dummyint,$second->dummyint);
@@ -106,23 +106,11 @@ class ObjectCacheTest extends ObjectCommon
         $this->fill_test_database();
         \Sunhill\Objects\oo_object::flush_cache();
         $first = new \Sunhill\Test\ts_dummy();
-        $first->load(1);
+        $first = \Sunhill\Objects\oo_object::load_object_of(1);
         $second = new \Sunhill\Test\ts_dummy();
-        $second = $second->load(1);
+        $second = \Sunhill\Objects\oo_object::load_object_of(1);
         $second->dummyint = 2;
         $this->assertEquals($first->dummyint,$second->dummyint);
     }
    
-    /**
-     * @expectedException \Sunhill\Objects\ObjectException
-     */
-    public function testInvalidate() {
-        $this->fill_test_database();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $first = new \Sunhill\Test\ts_dummy();
-        $first->load(1);
-        $second = new \Sunhill\Test\ts_dummy();
-        $second->load(1);
-        $second->dummyint = 2;        
-    }
 }
