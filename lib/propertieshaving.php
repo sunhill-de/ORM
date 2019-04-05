@@ -305,9 +305,19 @@ class propertieshaving extends hookable {
 	                    'to'=>$this->properties[$name]->get_value()));
 	            }
 	        }
-	    } else {
+	    } else if (!$this->handle_unknown_property($name,$value)){
 	        return parent::__set($name,$value);
 	    }
+	}
+	
+	/**
+	 * Behandelt unbekannte Properties. Wenn auch diese nicht behandelt werden können, wird false zurückgegeben
+	 * @param unknown $name
+	 * @param unknown $value
+	 * @return boolean
+	 */
+	protected function handle_unknown_property($name,$value) {
+	   return false;    
 	}
 	
 	/**

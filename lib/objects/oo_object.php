@@ -398,6 +398,44 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $this->check_for_hook('PROPERTY_ARRAY_REMOVED',$name,[$value]);	    
 	}
 	
+	protected function handle_unknown_property($name,$value) {
+	    if ($attribute = \Sunhill\Properties\oo_property_attribute::search($name)) {
+	        return $this->add_attribute($attribute,$value);
+	    } else {
+	        return false;
+	    }
+	}
+	
+	private function add_attribute($attribute,$value) {
+	   $this->check_allowed_class($attribute);
+	   // Es gibt das Attribut und es darf für dieses Objekt benutzt werden
+	   $this->check_for_hook('ATTRIBUTE_ADDING',$attribute->name,[$value]);
+	   if (!empty($attribute->property)) {
+	       $property_name = $attribute->property;
+	   } else {
+	       $property_name = 'attribute_'.$attribute->type;
+	   }
+	   $property = $this->add_property($attribute->name, $property_name);
+	   $property->set_value($value);
+	   $property->set_dirty(true);
+	   return true;
+	}
+	
+	private function check_allowed_class($attribute) {
+	    $allowed_classes = explode(',',$attribute->allowedobjects);
+	    if (!empty($allowed_classes)) {
+	        $allowed = false;
+	        foreach ($allowed_classes as $class) {
+	            if (is_a($this,$class)) {
+	                $allowed = true;
+	            }
+	        }
+	    }
+	    if (!$allowed) {
+	        throw new \Sunhill\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
+	    }	    
+	}
+	
 // ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();
