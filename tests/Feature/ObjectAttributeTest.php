@@ -39,12 +39,12 @@ class ObjectAttributeTest extends ObjectCommon
             $test = new \Sunhill\Test\ts_dummy();
             $test->$attributename = $init;
             $this->assertEquals($init,$test->$attributename);
-            $test->dummyint = 1;
+            $test->dummyint = 123;
             $test->commit();
             
             \Sunhill\Objects\oo_object::flush_cache();
             $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
-            $this->assertEquals(2,$read->$attributename);
+            $this->assertEquals($init,$read->$attributename);
             $read->$attributename = $change;
             $read->commit();
             

@@ -25,6 +25,12 @@ class oo_property_attribute extends oo_property {
 	 * @see \Sunhill\Properties\oo_property::inserted()
 	 */
 	public function inserted(int $id) {
+	    $attribute = \Sunhill\Properties\oo_property_attribute::search($this->get_name());
+	    $attributevalue = new \App\attributevalue();
+	    $attributevalue->attribute_id = $attribute->id;
+	    $attributevalue->object_id = $this->owner->get_id();
+	    $attributevalue->value = $this->get_value();
+	    $attributevalue->save();
 	}
 
 	/**
@@ -33,9 +39,14 @@ class oo_property_attribute extends oo_property {
 	 * @see \Sunhill\Properties\oo_property::inserted()
 	 */
 	public function updated(int $id) {
+	   $this->deleted($id);
+	   $this->inserted($id);
 	}
 
 	public function deleted(int $id) {
+	    $attribute = \Sunhill\Properties\oo_property_attribute::search($this->get_name());
+	    DB::table('attributevalues')->where('object_id','=',$this->owner->get_id())
+	                               ->where('attribute_id','=',$attribute->id)->delete();
 	}
 
 	// ============================ Statische Funktionen ===========================

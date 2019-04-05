@@ -162,6 +162,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $this->timestamp('updated_at')->set_model('coreobject');
 	    $this->add_property('tags','tags');
 	    $this->add_property('externalhooks','externalhooks');
+	    $this->add_property('attribute_loader','attribute_loader');
 	}
 	
 	protected function timestamp($name) {
