@@ -46,14 +46,12 @@ class oo_property_object extends oo_property_field {
 	 * @see \Sunhill\Properties\oo_property::updated()
 	 */
 	public function updated(int $id) {
-	    if (empty($this->value)) {
-	        // Falls es einen Eintrag gab, löschen
-	        DB::table('stringobjectassigns')->where([['container_id','=',$id],
-	            ['field','=',$this->get_name()],
-	            ['index','=',0]])->delete();
-	    } else {
-    	    $this->value->commit();
-    	    DB::table('stringobjectassigns')->updateOrInsert(
+	    DB::table('objectobjectassigns')->where([['container_id','=',$id],
+	        ['field','=',$this->get_name()],
+	        ['index','=',0]])->delete();
+	    if (!empty($this->value)) {
+	        $this->value->commit();
+    	    DB::table('objectobjectassigns')->insert(
     	            ['container_id'=>$id,
     	             'element_id'=>$this->value->get_id(),
     	             'field'=>$this->get_name(),
