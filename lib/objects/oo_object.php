@@ -9,10 +9,7 @@ class UnknownPropertyException extends ObjectException {}
 
 class oo_object extends \Sunhill\propertieshaving {
 
-	public $default_ns = '\\App';
-	
-	private $external_references = array();
-	
+	public $default_ns = '\\App';		
 	
 // ================================ Laden ========================================	
 	/**
@@ -273,6 +270,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	        switch ($property->get_type()) {
 	            case 'array_of_objects':
 	            case 'array_of_strings':
+	            case 'external_references':
+	            case 'tags':
 	                for ($i=0;$i<count($this->$name);$i++) {
 	                    $newobject->$name[] = $this->$name[$i];
 	                }
@@ -326,6 +325,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	        switch ($property->get_type()) {
 	            case 'array_of_objects':
 	            case 'array_of_strings':
+	            case 'external_references':
+	            case 'tags':
 	                for ($i=0;$i<count($source->$name);$i++) {
 	                    $this->$name[] = $source->$name[$i];
 	                }

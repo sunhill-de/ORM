@@ -43,6 +43,8 @@ class ObjectPromoteTest extends ObjectCommon
         $test->parentobject = $add;
         $test->parentoarray[] = $add;
         $test->childint = 1;
+        $tag = new \Sunhill\Objects\oo_tag('TestTag',true);
+        $test->tags->stick($tag);
         $test->commit();
         $id = $test->get_id();
         $new = $test->promote('\\Sunhill\\Test\\ts_thirdlevelchild');
@@ -68,6 +70,8 @@ class ObjectPromoteTest extends ObjectCommon
         $add->dummyint = 123;
         $test->parentobject = $add;
         $test->parentoarray[] = $add;
+        $tag = new \Sunhill\Objects\oo_tag('TestTag',true);
+        $test->tags->stick($tag);
         $test->commit();
         $id = $test->get_id();
         $new = $test->promote('\\Sunhill\\Test\\ts_thirdlevelchild');
