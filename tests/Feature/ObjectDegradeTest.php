@@ -25,6 +25,8 @@ class ObjectDegradeTest extends ObjectCommon
         $test->parentoarray[] = $add;
         $test->childint = 1;
         $test->childchildint = 2;
+        $tag = new \Sunhill\Objects\oo_tag('TestTag',true);
+        $test->tags->stick($tag);
         $test->commit();
         $id = $test->get_id();
         $new = $test->degrade('Sunhill\\Test\\ts_secondlevelchild');
@@ -52,6 +54,8 @@ class ObjectDegradeTest extends ObjectCommon
         $test->parentoarray[] = $add;
         $test->childint = 1;
         $test->childchildint = 2;
+        $tag = new \Sunhill\Objects\oo_tag('TestTag',true);
+        $test->tags->stick($tag);
         $test->commit();
         $id = $test->get_id();
         $new = $test->degrade('Sunhill\\Test\\ts_testparent');
