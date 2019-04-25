@@ -260,8 +260,6 @@ class ObjectReReadTest extends ObjectCommon
 	        }
 	    }
 	    $init_object->commit(); 
-	    \Sunhill\Objects\oo_object::flush_cache();
-	    
 	    $id = $init_object->get_id();
 	    \Sunhill\Objects\oo_object::flush_cache();
 	    // Read
@@ -282,7 +280,7 @@ class ObjectReReadTest extends ObjectCommon
 	    \Sunhill\Objects\oo_object::flush_cache();
 	    $reread_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
 	    if (!is_null($expect_callback)) {
-	        if (!$expect_callback($read_object)) {
+	        if (!$expect_callback($reread_object)) {
 	            $this->fail("Expect_Callback fehlgeschlagen.");
 	        }
 	    }
@@ -505,7 +503,32 @@ class ObjectReReadTest extends ObjectCommon
 	                    }
 	                    
 	                    ],
-	                    [ // Löschen einer Referenz
+	                    
+	                    [ // Austausch eines Objektes
+	                        'ts_referenceonly',
+	                        ['testint'=>1234],
+	                        function($object) {
+	                            $add1 = new \Sunhill\Test\ts_dummy();
+	                            $add1->dummyint = 4321;
+	                            $object->testobject = $add1;
+	                            return true;
+	                        },
+	                        function($object) { // Read-Callback
+	                            return ($object->testint == 1234) && ($object->testobject->dummyint == 4321);
+	                        },
+	                        function($object) { // Modify Callback
+	                            $add1 = new \Sunhill\Test\ts_dummy();
+	                            $add1->dummyint = 1111;
+	                            $object->testobject = $add1;
+	                            return true;
+	                        },
+	                        function($object) { // Expect Callback
+	                            return ($object->testint == 1234) && ($object->testobject->dummyint == 1111);
+	                        }
+	                        
+	                        ],
+	                        
+	                        [ // Löschen einer Referenz
 	                        'ts_referenceonly',
 	                        ['testint'=>1234],
 	                        function($object) {

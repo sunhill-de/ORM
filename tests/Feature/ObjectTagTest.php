@@ -85,7 +85,6 @@ class ObjectTagTest extends ObjectCommon
         $read->commit();
         
         \Sunhill\Objects\oo_object::flush_cache();
-        $reread =  new \Sunhill\Test\ts_dummy();
         $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         
         $given_tags = array();
@@ -114,7 +113,6 @@ class ObjectTagTest extends ObjectCommon
         $test->commit();
         
         \Sunhill\Objects\oo_object::flush_cache();
-        $read =  new \Sunhill\Test\ts_dummy();
         $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($add[$i],true);

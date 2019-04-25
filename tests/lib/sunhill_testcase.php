@@ -19,7 +19,6 @@ class sunhill_testcase extends TestCase {
         DB::statement("create table thirdlevelchildren (id int primary key,childchildint int) ENGINE = MEMORY");
         DB::statement("create table dummies (id int primary key,dummyint int) ENGINE = MEMORY");
         DB::statement("create table referenceonlies (id int primary key,testint int) ENGINE = MEMORY");
-        \Sunhill\Objects\oo_object::flush_cache();
     }
     
     protected function DropTestClasses() {

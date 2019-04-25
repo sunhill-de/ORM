@@ -9,10 +9,7 @@ class UnknownPropertyException extends ObjectException {}
 
 class oo_object extends \Sunhill\propertieshaving {
 
-	public $default_ns = '\\App';
-	
-	private $external_references = array();
-	
+	public $default_ns = '\\App';		
 	
 // ================================ Laden ========================================	
 	/**
@@ -162,6 +159,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $this->timestamp('updated_at')->set_model('coreobject');
 	    $this->add_property('tags','tags');
 	    $this->add_property('externalhooks','externalhooks');
+	    $this->add_property('attribute_loader','attribute_loader');
 	}
 	
 	protected function timestamp($name) {
@@ -231,7 +229,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * @return oo_object
 	 */
 	public function promote(String $newclass) {
-	    $this->check_validity();
 	    if (!class_exists($newclass)) {
 	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");    
 	    }
@@ -273,6 +270,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	        switch ($property->get_type()) {
 	            case 'array_of_objects':
 	            case 'array_of_strings':
+	            case 'external_references':
+	            case 'tags':
 	                for ($i=0;$i<count($this->$name);$i++) {
 	                    $newobject->$name[] = $this->$name[$i];
 	                }
@@ -292,7 +291,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	public function degrade(String $newclass) {
-	    $this->check_validity();
 	    if (!class_exists($newclass)) {
 	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");
 	    }
@@ -321,13 +319,14 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	public function copy_from(oo_object $source) {
-	    $this->check_validity();
 	    $this->set_id($source->get_id());
 	    foreach ($this->properties as $property) {
 	        $name = $property->get_name();
 	        switch ($property->get_type()) {
 	            case 'array_of_objects':
 	            case 'array_of_strings':
+	            case 'external_references':
+	            case 'tags':
 	                for ($i=0;$i<count($source->$name);$i++) {
 	                    $this->$name[] = $source->$name[$i];
 	                }
@@ -343,8 +342,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	public function get_inheritance() {
-	    $this->check_validity();
-	    $parent_class_names = array();
+	     $parent_class_names = array();
 	     $parent_class_name = get_class($this);
 	     do {
 	         if ($parent_class_name == 'Sunhill\\Objects\\oo_object') {
@@ -400,6 +398,44 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	public function array_field_removed_entry($name,$index,$value) {
 	    $this->check_for_hook('PROPERTY_ARRAY_REMOVED',$name,[$value]);	    
+	}
+	
+	protected function handle_unknown_property($name,$value) {
+	    if ($attribute = \Sunhill\Properties\oo_property_attribute::search($name)) {
+	        return $this->add_attribute($attribute,$value);
+	    } else {
+	        return false;
+	    }
+	}
+	
+	private function add_attribute($attribute,$value) {
+	   $this->check_allowed_class($attribute);
+	   // Es gibt das Attribut und es darf für dieses Objekt benutzt werden
+	   $this->check_for_hook('ATTRIBUTE_ADDING',$attribute->name,[$value]);
+	   if (!empty($attribute->property)) {
+	       $property_name = $attribute->property;
+	   } else {
+	       $property_name = 'attribute_'.$attribute->type;
+	   }
+	   $property = $this->add_property($attribute->name, $property_name);
+	   $property->set_value($value);
+	   $property->set_dirty(true);
+	   return true;
+	}
+	
+	private function check_allowed_class($attribute) {
+	    $allowed_classes = explode(',',$attribute->allowedobjects);
+	    if (!empty($allowed_classes)) {
+	        $allowed = false;
+	        foreach ($allowed_classes as $class) {
+	            if (is_a($this,$class)) {
+	                $allowed = true;
+	            }
+	        }
+	    }
+	    if (!$allowed) {
+	        throw new \Sunhill\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
+	    }	    
 	}
 	
 // ***************** Statische Methoden ***************************	
