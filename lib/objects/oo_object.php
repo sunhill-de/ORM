@@ -257,10 +257,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	private function promotion(String $newclass) {
 	    $newobject = new $newclass; // Neues Objekt erzeugen
 	    $this->copy_to($newobject); // Die Werte bis zu dieser Hirarchie können kopiert werden
-	    $model = \App\coreobject::where('id','=',$this->get_id())->first();
-	    $model->classname = $newclass;
-	    $model->save();
-	    
+	    DB::table('objects')->where('id','=',$this->get_id())->update(['classname'=>$newclass]);
 	    return $newobject;
 	}
 	
@@ -311,10 +308,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	protected function degration(String $newclass) {
 	    $newobject = new $newclass; // Neues Objekt erzeugen
 	    $newobject->copy_from($this); // Die Werte bis zu dieser Hirarchie können kopiert werden
-	    $model = \App\coreobject::where('id','=',$this->get_id())->first();
-	    $model->classname = $newclass;
-	    $model->save();
-	    
+	    DB::table('objects')->where('id','=',$this->get_id())->update(['classname'=>$newclass]);
 	    return $newobject;
 	    
 	}
@@ -449,7 +443,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * @return string Der Klassenname
 	 */
 	public static function get_class_name_of($id) {
-	    $object = \App\coreobject::where('id','=',$id)->first();
+	    $object = DB::table('objects')->where('id','=',$id)->first(); 
 	    if (empty($object)) {
 	        return false;
 	    }

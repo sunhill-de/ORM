@@ -13,10 +13,7 @@ class ObjectCacheTest extends ObjectCommon
 
     protected function fill_test_database() {
         $classname = '\\Sunhill\\Test\\ts_dummy';
-        $object = new \App\coreobject();
-        $object->id = 1;
-        $object->classname = $classname;
-        $object->save();
+        DB::table('objects')->insert(['id'=>1,'classname'=>$classname]);
         DB::statement("insert into dummies (id,dummyint) values (1,1)");
     }
     
