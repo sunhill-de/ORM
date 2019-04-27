@@ -14,7 +14,7 @@ class ObjectCacheTest extends ObjectCommon
     protected function fill_test_database() {
         $classname = '\\Sunhill\\Test\\ts_dummy';
         DB::table('objects')->insert(['id'=>1,'classname'=>$classname]);
-        DB::statement("insert into dummies (id,dummyint) values (1,1)");
+        DB::table('dummies')->insert(['id'=>1,'dummyint'=>1]);
     }
     
     public function testGetClassOf() {
