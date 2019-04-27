@@ -332,11 +332,17 @@ class propertieshaving extends hookable {
 	    return $this->properties[$name];
 	}
 	
+	private function get_calling_class() {
+	    $caller = debug_backtrace();
+	    return $caller[3]['class'];
+	}
+	
 	protected function add_property($name,$type) {
 	    $property_name = '\Sunhill\Properties\oo_property_'.$type;
 	    $property = new $property_name($this);
 	    $property->set_name($name);
 	    $property->set_type($type);
+	    $property->set_class($this->get_calling_class());
 	    $this->properties[$name] = $property;
 	    return $property;
 	}

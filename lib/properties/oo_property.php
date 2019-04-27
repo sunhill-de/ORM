@@ -38,6 +38,8 @@ class oo_property extends \Sunhill\base {
 	
 	protected $hooks = array();
 	
+	protected $class;
+	
 	public function __construct($owner) {
 		$this->owner = $owner;
 		$this->dirty = false;
@@ -157,6 +159,15 @@ class oo_property extends \Sunhill\base {
 	
 	public function get_model() {
 		return $this->model_name;
+	}
+	
+	public function set_class(string $class) {
+	   $this->class = $class;
+	   return $this;
+	}
+	
+	public function get_class() {
+	    return $this->class;
 	}
 	
 	public function commit() {

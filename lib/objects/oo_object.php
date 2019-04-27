@@ -3,6 +3,7 @@
 namespace Sunhill\Objects;
 
 use App;
+use Illuminate\Support\Facades\DB;
 
 class ObjectException extends \Exception {}
 class UnknownPropertyException extends ObjectException {}
@@ -42,10 +43,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function load_core_object() {
-	    $model_name = $this->default_ns."\coreobject";
-	    $model = $model_name::where('id','=',$this->get_id())->first();
-	    $this->updated_at = $model->updated_at;
-	    $this->created_at = $model->created_at;
+        $core = DB::table('objects')->select('updated_at','created_at')->where('id','=',$this->get_id())->first();
+	    $this->updated_at = $core->updated_at;
+	    $this->created_at = $core->created_at;
 	}
 	
 	private function load_simple_fields() {
