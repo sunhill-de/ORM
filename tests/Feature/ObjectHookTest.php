@@ -19,6 +19,8 @@ class Hooking extends Model {
     
 class HookingObject extends \Sunhill\Objects\oo_object  {
 
+    public static $table_name = 'hookings';
+    
     protected static $hook_str = '';
     
     protected function setup_properties() {

@@ -2,7 +2,8 @@
 namespace Sunhill\Test;
 
 class ts_testchild extends ts_testparent {
-	
+    public static $table_name = 'testchildren';
+    
 	protected function setup_properties() {
 		parent::setup_properties();
 		$this->integer('childint')->set_model('testchild');

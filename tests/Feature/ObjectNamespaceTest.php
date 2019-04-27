@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class TestModel extends Model {
     
-    protected $table = 'tests';
+    public $table = 'tests';
     
     public $timestamps = false;
     
@@ -21,6 +21,8 @@ class TestModel extends Model {
 
 
 class TestObject extends \Sunhill\Objects\oo_object {
+    
+    public static $table_name = 'tests';
     
     protected function setup_properties() {
         parent::setup_properties();

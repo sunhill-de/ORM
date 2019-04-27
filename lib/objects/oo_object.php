@@ -10,6 +10,8 @@ class UnknownPropertyException extends ObjectException {}
 
 class oo_object extends \Sunhill\propertieshaving {
 
+    public static $table_name = 'objects';
+    
 	public $default_ns = '\\App';		
 	
 // ================================ Laden ========================================	
@@ -49,14 +51,14 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function load_simple_fields() {
-	    $properties = $this->get_properties_with_feature('simple',null,'model');
-	    foreach ($properties as $model_name => $fields_of_model) {
-    	        if ($model_name == $this->default_ns."\coreobject") {
+	    $properties = $this->get_properties_with_feature('simple',null,'class');
+	    foreach ($properties as $class_name => $fields_of_class) {
+    	        if ($class_name == '\\Sunhill\Objects\oo_object') {
     	            continue; // Wurde schon geladen
     	        } 	           
-    	        $model = $model_name::where('id','=',$this->get_id())->first();
-    	        foreach ($fields_of_model as $field_name => $field) {
-    	            $this->$field_name = $model->$field_name;
+    	        $fields = DB::table($class_name::$table_name)->where('id','=',$this->get_id())->first();
+    	        foreach ($fields_of_class as $field_name => $field) {
+    	            $this->$field_name = $fields->$field_name;
     	        }
 	    }
 	}

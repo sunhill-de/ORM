@@ -2,7 +2,8 @@
 namespace Sunhill\Test;
 
 class ts_referenceonly extends \Sunhill\Objects\oo_object {
-	
+    public static $table_name = 'referenceonlies';
+    
 	protected function setup_properties() {
 		parent::setup_properties();
 		$this->integer('testint')->set_model('referenceonly');

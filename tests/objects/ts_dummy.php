@@ -6,6 +6,8 @@ use Sunhill\Objects;
 
 class ts_dummy extends \Sunhill\Objects\oo_object {
 	
+    public static $table_name = 'dummies';
+    
     public $changestr = '';
     
 	protected function setup_properties() {

@@ -5,7 +5,8 @@ namespace Sunhill\Test;
 use Sunhill\Objects;
 
 class ts_testparent extends \Sunhill\Objects\oo_object {
-	
+    public static $table_name = 'testparents';
+    
     public static $flag = '';
     
     public $trigger_exception = false;
