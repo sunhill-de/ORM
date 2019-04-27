@@ -89,13 +89,14 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function insert_core_object() {
-	       $model_name = $this->default_ns."\coreobject";
-	       $model = new $model_name;
-	       $model->classname = get_class($this);
-	       $model->save();
-	       $this->updated_at = $model->updated_at;
-	       $this->created_at = $model->created_at;
-	       $this->set_id($model->id);
+	    $id = DB::table('objects')->insertGetId(['classname'=>get_class($this),
+	                                             'created_at'=>DB::raw('now()'),
+	                                             'updated_at'=>DB::raw('now()')
+	    ]);
+	    $core = DB::table('objects')->where('id','=',$id)->first();
+	    $this->created_at = $core->created_at;
+	    $this->updated_at = $core->updated_at;
+	    $this->set_id($id);
 	}
 
 // ========================== Aktualisieren ===================================	
@@ -116,9 +117,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function update_core_object() {
-	    $model_name = $this->default_ns."\coreobject";
-	    $model = $model_name::where('id','=',$this->get_id())->first();
-	    $model->save();	    
+	    DB::table('objects')->where('id','=',$this->get_id())->update(['updated_at'=>DB::raw('now()')]);
 	}
 	
 	/**
@@ -137,7 +136,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function delete_core_object() {
-	    \App\coreobject::destroy($this->get_id());
+	    DB::table('objects')->where('id','=',$this->get_id())->delete();
 	}
 	
 	private function  delete_simple_fields() {
