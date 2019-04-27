@@ -73,17 +73,17 @@ class oo_object extends \Sunhill\propertieshaving {
 // ========================= Einfügen =============================	
 	protected function do_insert() {
         $this->insert_core_object();
-	    $simple_fields = $this->get_properties_with_feature('simple',null,'model');
-        foreach ($simple_fields as $model_name => $fields_of_model) {
-            $model = new $model_name();
-            foreach ($fields_of_model as $field_name => $field) {
-                $model->$field_name = $field->get_value();
-            }
-            if ($model_name == $this->default_ns."\coreobject") {
+	    $simple_fields = $this->get_properties_with_feature('simple',null,'class');
+        foreach ($simple_fields as $class_name => $fields_of_class) {
+            if ($class_name == '\\Sunhill\Objects\oo_object') {
                 continue; // Wurde schon gespeichert
             } else {
-                $model->id = $this->get_id();
-                $model->save();
+                $values = array();
+                foreach ($fields_of_class as $field_name => $field) {
+                    $values[$field_name] = $field->get_value();
+                }
+                $values['id'] = $this->get_id();
+                DB::table($class_name::$table_name)->insert($values);
             }
         }
 	}
@@ -102,17 +102,14 @@ class oo_object extends \Sunhill\propertieshaving {
 // ========================== Aktualisieren ===================================	
 	protected function do_update() {
 	    $this->update_core_object();
-	    $simple_fields = $this->get_properties_with_feature('simple',true,'model');
-	    foreach ($simple_fields as $model_name => $fields_of_model) {
-	        $model = $model_name::where('id','=',$this->get_id())->first();
-	        if (empty($model)) {
-	            $model = new $model_name();
-	            $model->id = $this->get_id();
+	    $simple_fields = $this->get_properties_with_feature('simple',true,'class');
+	    foreach ($simple_fields as $class_name => $fields_of_class) {
+            $values = array();
+	        foreach ($fields_of_class as $field_name => $field) {
+	            $values[$field_name] = $field->get_value();
 	        }
-	        foreach ($fields_of_model as $field_name => $field) {
-	            $model->$field_name = $field->get_value();
-	        }
-	        $model->save();
+            DB::table($class_name::$table_name)->
+                      updateOrInsert(['id'=>$this->get_id()],$values);
 	    }
 	}
 	
@@ -140,10 +137,10 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function  delete_simple_fields() {
-	    $fields = $this->get_properties_with_feature('simple',null,'model');
-	    foreach ($fields as $model_name=>$fields) {
-	        if (!empty($model_name)) {
-	            $model_name::destroy($this->get_id());
+	    $fields = $this->get_properties_with_feature('simple',null,'class');
+	    foreach ($fields as $class_name=>$fields) {
+	        if (!empty($class_name)) {
+	            DB::table($class_name::$table_name)->where('id','=',$this->get_id())->delete();
 	        }
 	    }
 	}
@@ -156,8 +153,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	protected function setup_properties() {
 	    parent::setup_properties();
-	    $this->timestamp('created_at')->set_model('coreobject');
-	    $this->timestamp('updated_at')->set_model('coreobject');
+	    $this->timestamp('created_at');
+	    $this->timestamp('updated_at');
 	    $this->add_property('tags','tags');
 	    $this->add_property('externalhooks','externalhooks');
 	    $this->add_property('attribute_loader','attribute_loader');
