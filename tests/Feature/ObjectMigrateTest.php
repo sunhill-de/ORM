@@ -43,15 +43,36 @@ class testC extends \Sunhill\Objects\oo_object {
     
 }
 
+class testD extends \Sunhill\Objects\oo_object {
+
+    public static $table_name = 'testD';
+    
+    protected $type;
+    
+    public function __construct($type='varchar') {
+        $this->type = $type;
+        parent::__construct();
+    }
+    
+    protected function setup_properties() {
+        $method = $this->type;
+        parent::setup_properties();
+        $this->$method('testfield');
+    }
+    
+}
+
 class ObjectMigrateTest extends ObjectCommon
 {
     protected function prepare_tables() {
         DB::statement("drop table if exists testA");
         DB::statement("drop table if exists testB");
         DB::statement("drop table if exists testC");
+        DB::statement("drop table if exists testD");
         DB::statement("create table testA (id int primary key,testint int,testchar varchar(255))");
         DB::statement("create table testB (id int primary key,testint int,testchar varchar(255))");
         DB::statement("create table testC (id int primary key,testfield int)");
+        DB::statement("create table testD (id int primary key)");
     }
     
     /**
@@ -112,5 +133,32 @@ class ObjectMigrateTest extends ObjectCommon
         
         $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         $this->assertEquals('ABC',$reread->testfield);        
+    }
+    
+    /**
+     * @dataProvider FieldTypeProvider
+     */
+    public function testFieldType($type,$init) {
+        $this->prepare_tables();
+        $test = new testD($type);
+        $test->migrate();
+        $test->testfield = $init;
+        $test->commit();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $this->assertEquals($read->testfield,$init);
+    }
+    
+    public function FieldTypeProvider() {
+        return [
+            ['integer',4],
+            ['varchar','ABC'],
+            ['float',3.2],
+            ['date','2012-02-02'],
+            ['time','11:11:11'],
+            ['datetime','2012-02-02 11:11:11'],
+            ['text','Lorem Ipsum']
+        ];
+        
     }
 }
