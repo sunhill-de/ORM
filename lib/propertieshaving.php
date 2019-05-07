@@ -10,7 +10,7 @@ class propertieshaving extends hookable {
 	
     private $id;
     
-    private $state = 'normal';
+    protected $state = 'normal';
     
     private $readonly = false;
     
@@ -306,7 +306,7 @@ class propertieshaving extends hookable {
 	            }
 	        }
 	    } else if (!$this->handle_unknown_property($name,$value)){
-	        return parent::__set($name,$value);
+	        throw new PropertiesHavingException("Unbekannte Property '$name'");
 	    }
 	}
 	
