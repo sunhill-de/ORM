@@ -482,7 +482,20 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function alter_colums($current,$database) {
+	    $object_mapping = ['integer'=>'int(11)',
+	                       'varchar'=>'varchar(255)'];
 	    
+	    foreach ($current as $name => $info) {
+	        if (array_key_exists($name,$database)) {
+	            if (array_key_exists($info['type'],$object_mapping)) {
+	                $info['type'] = $object_mapping[$info['type']];
+	            }
+	            if ($info['type'] !== $database[$name]['type']) {
+                    $statement = 'alter table '.$this::$table_name.' change column '.$name.' '.$name.' '.$info['type'];
+                    DB::statement($statement);
+	            }
+	        }
+	    }
 	}
 	
 	// ***************** Statische Methoden ***************************	

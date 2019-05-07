@@ -32,13 +32,26 @@ class testB extends \Sunhill\Objects\oo_object {
         
 }
 
+class testC extends \Sunhill\Objects\oo_object {
+    
+    public static $table_name = 'testC';
+    
+    protected function setup_properties() {
+        parent::setup_properties();
+        $this->varchar('testfield');
+    }
+    
+}
+
 class ObjectMigrateTest extends ObjectCommon
 {
     protected function prepare_tables() {
         DB::statement("drop table if exists testA");
         DB::statement("drop table if exists testB");
+        DB::statement("drop table if exists testC");
         DB::statement("create table testA (id int primary key,testint int,testchar varchar(255))");
         DB::statement("create table testB (id int primary key,testint int,testchar varchar(255))");
+        DB::statement("create table testC (id int primary key,testfield int)");
     }
     
     /**
@@ -88,5 +101,16 @@ class ObjectMigrateTest extends ObjectCommon
         $test->commit();
         DB::statement('select testchar from testB where id = '.$test->get_id());
         $this->fail('Fehler wurde nicht ausgelöst');
+    }
+    
+    public function testAlterType() {
+        $this->prepare_tables();
+        $test = new testC();
+        $test->migrate();
+        $test->testfield = 'ABC';
+        $test->commit();
+        
+        $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $this->assertEquals('ABC',$reread->testfield);        
     }
 }
