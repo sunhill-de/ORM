@@ -396,7 +396,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    if ($attribute = \Sunhill\Properties\oo_property_attribute::search($name)) {
 	        return $this->add_attribute($attribute,$value);
 	    } else {
-	        return false;
+	        return parent::handle_unknown_property($name, $value);
 	    }
 	}
 	
@@ -429,8 +429,63 @@ class oo_object extends \Sunhill\propertieshaving {
 	        throw new \Sunhill\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
 	    }	    
 	}
+// ****************** Migration **********************************
+	public function migrate() {
+	    $current = $this->get_current_properties();
+	    $database = $this->get_database_properties();
+	    $this->remove_columns($current,$database);
+	    $this->add_columns($current,$database);
+	    $this->alter_colums($current,$database);
+	}
 	
-// ***************** Statische Methoden ***************************	
+	private function get_current_properties() {
+	   $properties = $this->get_properties_with_feature('simple');
+	   $result = array();
+	   foreach ($properties as $property) {
+	       $result[$property->get_name()] = ['type'=>$property->get_type()];
+	   }
+	   return $result;
+	}
+	
+	private function get_database_properties() {
+	     $fields = DB::select(DB::raw("SHOW COLUMNS FROM ".$this::$table_name));
+         $result = array();
+         foreach ($fields as $field) {
+            $result[$field->Field] = ['type'=>$field->Type,'null'=>$field->Null];        
+         }
+	     return $result;
+	}
+	
+	private function remove_columns($current,$database) {
+	    foreach ($database as $name => $info) {
+	        if (!array_key_exists($name,$current) && ($name !== 'id')) {
+	            DB::statement("alter table ".$this::$table_name." drop column ".$name);
+	        }
+	    }
+	}
+	
+	private function add_columns($current,$database) {
+	    foreach ($current as $name => $info) {
+	        if (!array_key_exists($name,$database)) {
+                $statement = 'alter table '.$this::$table_name." add column ".$name." ";
+                switch ($info['type']) {
+                    case 'varchar':
+                        $statement .= 'varchar(255)'; break;
+                    case 'integer':
+                        $statement .= 'int'; break;
+                    default:
+                        $statement .= $info['type']; break;
+                }	            
+	            DB::statement($statement);
+	        }	        
+	    }
+	}
+	
+	private function alter_colums($current,$database) {
+	    
+	}
+	
+	// ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();
 	
