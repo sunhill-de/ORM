@@ -430,10 +430,11 @@ class oo_object extends \Sunhill\propertieshaving {
 	    }	    
 	}
 // ****************** Migration **********************************
-	static private $object_mapping = 
-	  ['integer'=>'int(11)',
-	   'varchar'=>'varchar(255)'];
-	
+	/**
+	 * Wird aufgerufen, um zu prüfen, ob die Datenbank auf dem gleichen Stand wie dieses
+	 * Objekt ist.
+	 * @todo Dies ist ein Kandidat für eine statische Methode
+	 */
 	public function migrate() {
 	    if ($this->table_exists()) {
     	    $current = $this->get_current_properties();
@@ -467,11 +468,16 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * @param string $type
 	 * @return string
 	 */
-	private function map_type(string $type) {
-	    if (array_key_exists($type,self::$object_mapping)) {
-	        return self::$object_mapping[$type];
-	    } else {
-	        return $type;
+	private function map_type($info) {
+	    switch ($info['type']) {
+	        case 'integer':
+	            return 'int(11)'; break;
+	        case 'varchar':
+	            return 'varchar('.$info['maxlen'].')'; break;
+	        case 'enum':
+	            return 'enum('.$info['enum'].')'; break;
+	        default:
+	            return $info['type'];
 	    }
 	}
 	
@@ -482,8 +488,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $statement = 'create table '.$this::$table_name.' (id int primary key';
 	    $simple = $this->get_current_properties();
 	    foreach ($simple as $field => $info) {
-	        $info['type'] = $this->map_type($info['type']);
-	        $statement .= ','.$field.' '.$info['type'];
+	        $statement .= ','.$field.' '.$this->map_type($info);
 	    }
 	    $statement .= ')';
 	    DB::statement($statement);
@@ -494,6 +499,23 @@ class oo_object extends \Sunhill\propertieshaving {
 	   $result = array();
 	   foreach ($properties as $property) {
 	       $result[$property->get_name()] = ['type'=>$property->get_type()];
+	       switch ($property->get_type()) {
+	           case 'varchar':
+	               $result[$property->get_name()]['maxlen'] = $property->get_maxlen();
+	               break;
+	           case 'enum':
+	               $first = true;
+	               $resultstr = '';
+	               foreach ($property->get_enum_values() as $value) {
+	                   if (!$first) {
+	                       $resultstr .= ',';	                       
+	                   }
+	                   $resultstr .= "'$value'";
+	                   $first = false;
+	               }
+	               $result[$property->get_name()]['enum'] = $resultstr;
+	               break;
+	       }
 	   }
 	   return $result;
 	}
@@ -519,14 +541,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    foreach ($current as $name => $info) {
 	        if (!array_key_exists($name,$database)) {
                 $statement = 'alter table '.$this::$table_name." add column ".$name." ";
-                switch ($info['type']) {
-                    case 'varchar':
-                        $statement .= 'varchar(255)'; break;
-                    case 'integer':
-                        $statement .= 'int'; break;
-                    default:
-                        $statement .= $info['type']; break;
-                }	            
+                $statement .= $this->map_type($info);
 	            DB::statement($statement);
 	        }	        
 	    }
@@ -536,9 +551,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	    
 	    foreach ($current as $name => $info) {
 	        if (array_key_exists($name,$database)) {
-	            $info['type'] = $this->map_type($info['type']);
-	            if ($info['type'] !== $database[$name]['type']) {
-                    $statement = 'alter table '.$this::$table_name.' change column '.$name.' '.$name.' '.$info['type'];
+	            $type = $this->map_type($info);
+	            if ($type !== $database[$name]['type']) {
+                    $statement = 'alter table '.$this::$table_name.' change column '.$name.' '.$name.' '.$type;
                     DB::statement($statement);
 	            }
 	        }

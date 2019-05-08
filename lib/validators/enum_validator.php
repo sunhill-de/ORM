@@ -22,5 +22,7 @@ class enum_validator extends validator_base {
         return $this;
     }
     
-    
+    public function get_enum_values() {
+        return $this->allowed;
+    }
 }

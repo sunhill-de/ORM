@@ -57,7 +57,11 @@ class testD extends \Sunhill\Objects\oo_object {
     protected function setup_properties() {
         $method = $this->type;
         parent::setup_properties();
-        $this->$method('testfield');
+        if ($method == 'enum') {
+           $this->enum('testfield')->set_enum_values(['A','B']);  
+        } else {
+            $this->$method('testfield');
+        }
     }
     
 }
@@ -148,7 +152,7 @@ class ObjectMigrateTest extends ObjectCommon
         $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         $this->assertEquals($read->testfield,$init);
     }
-    
+
     /**
      * @dataProvider FieldTypeProvider
      * @param unknown $type
@@ -174,7 +178,8 @@ class ObjectMigrateTest extends ObjectCommon
             ['date','2012-02-02'],
             ['time','11:11:11'],
             ['datetime','2012-02-02 11:11:11'],
-            ['text','Lorem Ipsum']
+            ['text','Lorem Ipsum'],
+            ['enum','A']
         ];
         
     }
