@@ -149,6 +149,23 @@ class ObjectMigrateTest extends ObjectCommon
         $this->assertEquals($read->testfield,$init);
     }
     
+    /**
+     * @dataProvider FieldTypeProvider
+     * @param unknown $type
+     * @param unknown $init
+     */
+    public function testNewTable($type,$init) {
+        $this->prepare_tables();
+        DB::statement('drop table testD');
+        $test = new testD($type);
+        $test->migrate();
+        $test->testfield = $init;
+        $test->commit();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $this->assertEquals($read->testfield,$init);        
+    }
+    
     public function FieldTypeProvider() {
         return [
             ['integer',4],

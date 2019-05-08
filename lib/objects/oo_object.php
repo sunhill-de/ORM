@@ -430,12 +430,63 @@ class oo_object extends \Sunhill\propertieshaving {
 	    }	    
 	}
 // ****************** Migration **********************************
+	static private $object_mapping = 
+	  ['integer'=>'int(11)',
+	   'varchar'=>'varchar(255)'];
+	
 	public function migrate() {
-	    $current = $this->get_current_properties();
-	    $database = $this->get_database_properties();
-	    $this->remove_columns($current,$database);
-	    $this->add_columns($current,$database);
-	    $this->alter_colums($current,$database);
+	    if ($this->table_exists()) {
+    	    $current = $this->get_current_properties();
+    	    $database = $this->get_database_properties();
+    	    $this->remove_columns($current,$database);
+    	    $this->add_columns($current,$database);
+    	    $this->alter_colums($current,$database);
+	    } else {
+	        $this->create_table();
+	    }
+	}
+	
+	/**
+	 * Prüft, ob die Zieltabelle überhaupt existiert. 
+	 * @return boolean
+	 */
+	private function table_exists() {
+	    $tables = DB::select(DB::raw("SHOW TABLES LIKE '".$this::$table_name."'"));
+	    foreach ($tables as $name => $table) {
+	        foreach ($table as $field) {
+    	        if ($field == $this::$table_name) {
+    	            return true;
+    	        } 
+	        }
+	    }	    
+	    return false;
+	}
+	
+	/**
+	 * Passt die unterschiedliche Benennung von Datentypen im Objekt und in der Datenbank an
+	 * @param string $type
+	 * @return string
+	 */
+	private function map_type(string $type) {
+	    if (array_key_exists($type,self::$object_mapping)) {
+	        return self::$object_mapping[$type];
+	    } else {
+	        return $type;
+	    }
+	}
+	
+	/**
+	 * Erzeugt eine neue Tabelle aus den vorhandenen Daten
+	 */
+	private function create_table() {
+	    $statement = 'create table '.$this::$table_name.' (id int primary key';
+	    $simple = $this->get_current_properties();
+	    foreach ($simple as $field => $info) {
+	        $info['type'] = $this->map_type($info['type']);
+	        $statement .= ','.$field.' '.$info['type'];
+	    }
+	    $statement .= ')';
+	    DB::statement($statement);
 	}
 	
 	private function get_current_properties() {
@@ -482,14 +533,10 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function alter_colums($current,$database) {
-	    $object_mapping = ['integer'=>'int(11)',
-	                       'varchar'=>'varchar(255)'];
 	    
 	    foreach ($current as $name => $info) {
 	        if (array_key_exists($name,$database)) {
-	            if (array_key_exists($info['type'],$object_mapping)) {
-	                $info['type'] = $object_mapping[$info['type']];
-	            }
+	            $info['type'] = $this->map_type($info['type']);
 	            if ($info['type'] !== $database[$name]['type']) {
                     $statement = 'alter table '.$this::$table_name.' change column '.$name.' '.$name.' '.$info['type'];
                     DB::statement($statement);
