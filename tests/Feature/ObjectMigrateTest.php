@@ -172,6 +172,20 @@ class ObjectMigrateTest extends ObjectCommon
         $this->assertEquals($read->testfield,$init);        
     }
     
+    /**
+     * @expectedException Illuminate\Database\QueryException
+     */
+    public function testNewInheritedFields() {
+        $this->prepare_tables();
+        DB::statement('drop table testD');
+        $test = new testD('varchar');
+        $test->migrate();
+        $test->dummyint = 1;
+        $test->testfield = 'abc';
+        $test->commit();
+        $test = DB::select(DB::raw('select dummyint from testD'));
+    }
+    
     public function FieldTypeProvider() {
         return [
             ['integer',4],

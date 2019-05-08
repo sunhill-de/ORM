@@ -495,9 +495,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	private function get_current_properties() {
-	   $properties = $this->get_properties_with_feature('simple');
+	   $properties = $this->get_properties_with_feature('simple',null,'class');
 	   $result = array();
-	   foreach ($properties as $property) {
+	   foreach ($properties[get_class($this)] as $property) {
 	       $result[$property->get_name()] = ['type'=>$property->get_type()];
 	       switch ($property->get_type()) {
 	           case 'varchar':
