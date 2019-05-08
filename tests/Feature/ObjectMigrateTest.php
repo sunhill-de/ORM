@@ -43,7 +43,7 @@ class testC extends \Sunhill\Objects\oo_object {
     
 }
 
-class testD extends \Sunhill\Objects\oo_object {
+class testD extends \Sunhill\Test\ts_dummy {
 
     public static $table_name = 'testD';
     
@@ -146,6 +146,7 @@ class ObjectMigrateTest extends ObjectCommon
         $this->prepare_tables();
         $test = new testD($type);
         $test->migrate();
+        $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
         \Sunhill\Objects\oo_object::flush_cache();
@@ -163,6 +164,7 @@ class ObjectMigrateTest extends ObjectCommon
         DB::statement('drop table testD');
         $test = new testD($type);
         $test->migrate();
+        $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
         \Sunhill\Objects\oo_object::flush_cache();
