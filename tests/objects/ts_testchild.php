@@ -4,19 +4,20 @@ namespace Sunhill\Test;
 class ts_testchild extends ts_testparent {
     public static $table_name = 'testchildren';
     
-	protected function setup_properties() {
-		parent::setup_properties();
-		$this->integer('childint')->set_model('testchild');
-		$this->varchar('childchar')->set_model('testchild');
-		$this->float('childfloat')->set_model('testchild');
-		$this->text('childtext')->set_model('testchild');
-		$this->datetime('childdatetime')->set_model('testchild');
-		$this->date('childdate')->set_model('testchild');
-		$this->time('childtime')->set_model('testchild');
-		$this->enum('childenum')->set_model('testchild')->set_values(['testA','testB','testC']);
-		$this->object('childobject')->set_model('testchild')->set_allowed_objects(['\Sunhill\test\ts_dummy'])->set_default(null);;
-		$this->arrayofstrings('childsarray')->set_model('testchild');
-		$this->arrayofobjects('childoarray')->set_model('testchild')->set_allowed_objects(['\Sunhill\test\ts_dummy']);
+    protected static $property_definitions;
+    protected static function setup_properties() {
+	    parent::setup_properties();
+	    self::integer('childint');
+	    self::varchar('childchar');
+	    self::float('childfloat');
+	    self::text('childtext');
+	    self::datetime('childdatetime');
+	    self::date('childdate');
+		self::time('childtime');
+		self::enum('childenum')->set_values(['testA','testB','testC']);
+		self::object('childobject')->set_allowed_objects(['\Sunhill\test\ts_dummy'])->set_default(null);;
+		self::arrayofstrings('childsarray');
+		self::arrayofobjects('childoarray')->set_allowed_objects(['\Sunhill\test\ts_dummy']);
 	}
 	
 }

@@ -40,8 +40,7 @@ class oo_property extends \Sunhill\base {
 	
 	protected $class;
 	
-	public function __construct($owner) {
-		$this->owner = $owner;
+	public function __construct() {
 		$this->dirty = false;
 		$this->initialized = false;
 		$this->defaults_null = false;
@@ -60,6 +59,11 @@ class oo_property extends \Sunhill\base {
 	protected function init_validator() {
 	    $validator_name = "\\Sunhill\\Validators\\".$this->validator_name;
 	    $this->validator = new $validator_name();    
+	}
+	
+	public function set_owner($owner) {
+	    $this->owner = $owner;
+	    return $this;	    
 	}
 	
 	public function set_name($name) {
@@ -149,11 +153,6 @@ class oo_property extends \Sunhill\base {
 	}
 	
 	public function set_model($name) {
-	    if (strpos($name,'\\') === false) {
-	        $this->model_name = $this->owner->default_ns.'\\'.$name;
-	    } else {
-	        $this->model_name = $name;
-	    }
 	    return $this;
 	}
 	

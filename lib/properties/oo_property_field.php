@@ -19,11 +19,6 @@ class oo_property_field extends oo_property {
 	}
 	
 	public function set_model($name) {
-	    if (strpos($name,'\\') === false) {
-	        $this->model_name = $this->owner->default_ns.'\\'.$name;
-	    } else {
-	        $this->model_name = $name;
-	    }
 	    return $this;
 	}
 	

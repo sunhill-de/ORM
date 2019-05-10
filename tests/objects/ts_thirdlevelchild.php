@@ -5,9 +5,10 @@ namespace Sunhill\Test;
 class ts_thirdlevelchild extends ts_secondlevelchild {
     public static $table_name = 'thirdlevelchildren';
     
-	protected function setup_properties() {
+    protected static $property_definitions;
+    protected static function setup_properties() {
 		parent::setup_properties();
-		$this->integer('childchildint')->set_model('thirdlevelchild');;
+		self::integer('childchildint');
 	}
 	
 	public function post_promotion($from) {

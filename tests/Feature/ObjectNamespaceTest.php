@@ -24,9 +24,9 @@ class TestObject extends \Sunhill\Objects\oo_object {
     
     public static $table_name = 'tests';
     
-    protected function setup_properties() {
+    protected static function setup_properties() {
         parent::setup_properties();
-        $this->integer('testint')->set_model('\\Tests\\Feature\\TestModel');
+        self::integer('testint')->set_model('\\Tests\\Feature\\TestModel');
     }
     
     

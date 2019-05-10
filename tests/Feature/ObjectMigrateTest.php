@@ -12,11 +12,11 @@ class testA extends \Sunhill\Objects\oo_object {
    
     public static $table_name = 'testA';
     
-    protected function setup_properties() {
+    protected static function setup_properties() {
         parent::setup_properties();
-        $this->integer('testint');
-        $this->varchar('testchar');
-        $this->varchar('newfield');
+        self::integer('testint');
+        self::varchar('testchar');
+        self::varchar('newfield');
     }
     
 }
@@ -25,9 +25,9 @@ class testB extends \Sunhill\Objects\oo_object {
 
     public static $table_name = 'testB';
     
-    protected function setup_properties() {
+    protected static function setup_properties() {
         parent::setup_properties();
-        $this->integer('testint');
+        self::integer('testint');
     }
         
 }
@@ -36,9 +36,9 @@ class testC extends \Sunhill\Objects\oo_object {
     
     public static $table_name = 'testC';
     
-    protected function setup_properties() {
+    protected static function setup_properties() {
         parent::setup_properties();
-        $this->varchar('testfield');
+        self::varchar('testfield');
     }
     
 }
@@ -47,20 +47,20 @@ class testD extends \Sunhill\Test\ts_dummy {
 
     public static $table_name = 'testD';
     
-    protected $type;
+    protected static $type;
     
     public function __construct($type='varchar') {
-        $this->type = $type;
+        self::$type = $type;
         parent::__construct();
     }
     
-    protected function setup_properties() {
-        $method = $this->type;
+    protected static function setup_properties() {
+        $method = self::$type;
         parent::setup_properties();
         if ($method == 'enum') {
-           $this->enum('testfield')->set_enum_values(['A','B']);  
+            self::enum('testfield')->set_enum_values(['A','B']);  
         } else {
-            $this->$method('testfield');
+            self::$method('testfield');
         }
     }
     

@@ -23,13 +23,13 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     
     protected static $hook_str = '';
     
-    protected function setup_properties() {
+    protected static function setup_properties() {
         parent::setup_properties();
-        $this->integer('hooking_int')->set_model('\Tests\Feature\Hooking')->set_default(0);
-        $this->varchar('hookstate')->set_model('\Tests\Feature\Hooking')->set_default('');
-        $this->object('ofield')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
-        $this->arrayofstrings('strarray');
-        $this->arrayofobjects('objarray')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
+        self::integer('hooking_int')->set_model('\Tests\Feature\Hooking')->set_default(0);
+        self::varchar('hookstate')->set_model('\Tests\Feature\Hooking')->set_default('');
+        self::object('ofield')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
+        self::arrayofstrings('strarray');
+        self::arrayofobjects('objarray')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
     }
     
     protected function setup_hooks() {

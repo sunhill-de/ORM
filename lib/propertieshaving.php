@@ -21,7 +21,8 @@ class propertieshaving extends hookable {
      */
 	public function __construct() {
 		parent::__construct();
-		$this->setup_properties();
+		self::initialize_properties();
+		$this->copy_properties();
 	}
 	
 	protected function setup_hooks() {
@@ -267,8 +268,13 @@ class propertieshaving extends hookable {
 	 * Wird vom Constructor aufgerufen, um die Properties zu initialisieren.
 	 * Abgeleitete Objekte müssen immer die Elternmethoden mit aufrufen.
 	 */
-	protected function setup_properties() {
+	protected function copy_properties() {
 	    $this->properties = array();
+	    foreach (static::$property_definitions as $name => $property) {
+	        $this->properties[$name] = clone $property;
+	        //$this->properties[$name]->set_class(get_class($this));
+	        $this->properties[$name]->set_owner($this);
+	    }
 	}
 
 	protected function clean_properties() {
@@ -332,21 +338,6 @@ class propertieshaving extends hookable {
 	    return $this->properties[$name];
 	}
 	
-	private function get_calling_class() {
-	    $caller = debug_backtrace();
-	    return $caller[3]['class'];
-	}
-	
-	protected function add_property($name,$type) {
-	    $property_name = '\Sunhill\Properties\oo_property_'.$type;
-	    $property = new $property_name($this);
-	    $property->set_name($name);
-	    $property->set_type($type);
-	    $property->set_class($this->get_calling_class());
-	    $this->properties[$name] = $property;
-	    return $property;
-	}
-	
 	/**
 	 * Liefert alle Properties zurück, die ein bestimmtes Feature haben
 	 * @param string $feature, wenn ungleich null, werden nur die Properties zurückgegeben, die ein bestimmtes Feature haben
@@ -395,6 +386,39 @@ class propertieshaving extends hookable {
 	        }
 	    }
 	    return $result;
+	}
+
+	// ========================== Statische Methoden ================================
+	
+	protected static $property_definitions;
+	
+	protected static function initialize_properties() {
+ 	       static::$property_definitions = array();
+	       static::setup_properties();
+	}
+	
+	protected static function setup_properties() {
+	    
+	}
+
+	private static function get_calling_class() {
+	    $caller = debug_backtrace();
+	    return $caller[4]['class'];
+	}
+	
+	protected static function create_property($name,$type) {
+	    $property_name = '\Sunhill\Properties\oo_property_'.$type;
+	    $property = new $property_name();
+	    $property->set_name($name);
+	    $property->set_type($type);
+	    $property->set_class(self::get_calling_class());
+	    return $property;
+	}
+	
+	protected static function add_property($name,$type) {
+	    $property = static::create_property($name, $type);
+	    static::$property_definitions[$name] = $property;
+	    return $property;
 	}
 	
 	

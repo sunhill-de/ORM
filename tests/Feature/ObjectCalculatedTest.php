@@ -16,9 +16,9 @@ class TestClass extends \Sunhill\Objects\oo_object {
     
     public $return = 'ABC';
     
-    protected function setup_properties() {
+    protected static function setup_properties() {
         parent::setup_properties();
-        $this->calculated('calcfield');
+        self::calculated('calcfield');
     }
     
     public function calculate_calcfield() {

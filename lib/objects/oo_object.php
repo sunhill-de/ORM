@@ -4,6 +4,7 @@ namespace Sunhill\Objects;
 
 use App;
 use Illuminate\Support\Facades\DB;
+use Sunhill\base;
 
 class ObjectException extends \Exception {}
 class UnknownPropertyException extends ObjectException {}
@@ -14,6 +15,13 @@ class oo_object extends \Sunhill\propertieshaving {
     
 	public $default_ns = '\\App';		
 	
+	public function __construct() {
+	    parent::__construct();
+	    $this->properties['tags'] = self::create_property('tags','tags')->set_owner($this);
+	    $this->properties['externalhooks'] = self::create_property('externalhooks','externalhooks')->set_owner($this);
+	    $this->properties['attribute_loader'] = self::create_property('attribute_loader','attribute_loader')->set_owner($this);
+	    
+	}
 // ================================ Laden ========================================	
 	/**
 	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
@@ -150,80 +158,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	// ********************* Property Handling *************************************	
-	
-	protected function setup_properties() {
-	    parent::setup_properties();
-	    $this->timestamp('created_at');
-	    $this->timestamp('updated_at');
-	    $this->add_property('tags','tags');
-	    $this->add_property('externalhooks','externalhooks');
-	    $this->add_property('attribute_loader','attribute_loader');
-	}
-	
-	protected function timestamp($name) {
-		$property = $this->add_property($name, 'timestamp');
-		return $property;
-	}
-	
-	protected function integer($name) {
-		$property = $this->add_property($name, 'integer');
-		return $property;
-	}
-	
-	protected function varchar($name) {
-		$property = $this->add_property($name, 'varchar');
-		return $property;		
-	}
-	
-	protected function object($name) {
-		$property = $this->add_property($name, 'object');
-		return $property;
-	}
-	
-	protected function text($name) {
-		$property = $this->add_property($name, 'text');
-		return $property;
-	}
-	
-	protected function enum($name) {
-		$property = $this->add_property($name, 'enum');
-		return $property;		
-	}
-	
-	protected function datetime($name) {
-		$property = $this->add_property($name, 'datetime');
-		return $property;
-	}
-	
-	protected function date($name) {
-		$property = $this->add_property($name, 'date');
-		return $property;
-	}
-	
-	protected function time($name) {
-		$property = $this->add_property($name, 'time');
-		return $property;
-	}
-	
-	protected function float($name) {
-		$property = $this->add_property($name, 'float');
-		return $property;
-	}
-	
-	protected function arrayofstrings($name) {
-		$property = $this->add_property($name, 'array_of_strings');
-		return $property;
-	}
-	
-	protected function arrayofobjects($name) {
-		$property = $this->add_property($name, 'array_of_objects');
-		return $property;
-	}
-	
-	protected function calculated($name) {
-	    $property = $this->add_property($name, 'calculated');
-	    return $property;	    
-	}
 	
 	/**
 	 * Hebt das momentane Objekt auf eine abgeleitete Klasse an
@@ -568,7 +502,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	// ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();
-	
+		
 	/**
 	 * Ermittelt den Klassennamen von dem Object mit der ID $id
 	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll
@@ -620,4 +554,77 @@ class oo_object extends \Sunhill\propertieshaving {
 	public static function is_cached(int $id) {
 	    return isset(self::$objectcache[$id]);
 	}
+	
+// ======================= Statisches Proprtyhandling =============================	
+	protected static function setup_properties() {
+	    parent::setup_properties(); 
+	    self::timestamp('created_at');
+	    self::timestamp('updated_at');
+	}
+
+	protected static function timestamp($name) {
+	    $property = self::add_property($name, 'timestamp');
+	    return $property;
+	}
+	
+	protected static function integer($name) {
+	    $property = self::add_property($name, 'integer');
+	    return $property;
+	}
+	
+	protected static function varchar($name) {
+	    $property = self::add_property($name, 'varchar');
+	    return $property;
+	}
+	
+	protected static function object($name) {
+	    $property = self::add_property($name, 'object');
+	    return $property;
+	}
+	
+	protected static function text($name) {
+	    $property = self::add_property($name, 'text');
+	    return $property;
+	}
+	
+	protected static function enum($name) {
+	    $property = self::add_property($name, 'enum');
+	    return $property;
+	}
+	
+	protected static function datetime($name) {
+	    $property = self::add_property($name, 'datetime');
+	    return $property;
+	}
+	
+	protected static function date($name) {
+	    $property = self::add_property($name, 'date');
+	    return $property;
+	}
+	
+	protected static function time($name) {
+	    $property = self::add_property($name, 'time');
+	    return $property;
+	}
+	
+	protected static function float($name) {
+	    $property = self::add_property($name, 'float');
+	    return $property;
+	}
+	
+	protected static function arrayofstrings($name) {
+	    $property = self::add_property($name, 'array_of_strings');
+	    return $property;
+	}
+	
+	protected static function arrayofobjects($name) {
+	    $property = self::add_property($name, 'array_of_objects');
+	    return $property;
+	}
+	
+	protected static function calculated($name) {
+	    $property = self::add_property($name, 'calculated');
+	    return $property;
+	}	
+	
 }

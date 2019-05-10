@@ -11,19 +11,20 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
     
     public $trigger_exception = false;
     
-	protected function setup_properties() {
+    protected static $property_definitions;
+    protected static function setup_properties() {
 		parent::setup_properties();
-		$this->integer('parentint')->set_model('testparent');
-		$this->varchar('parentchar')->set_model('testparent');
-		$this->float('parentfloat')->set_model('testparent');
-		$this->text('parenttext')->set_model('testparent');
-		$this->datetime('parentdatetime')->set_model('testparent');
-		$this->date('parentdate')->set_model('testparent');
-		$this->time('parenttime')->set_model('testparent');
-		$this->enum('parentenum')->set_model('testparent')->set_values(['testA','testB','testC']);
-		$this->object('parentobject')->set_model('testparent')->set_allowed_objects(['\Sunhill\test\ts_dummy'])->set_default(null);
-		$this->arrayofstrings('parentsarray')->set_model('testparent');
-		$this->arrayofobjects('parentoarray')->set_model('testparent')->set_allowed_objects(['\Sunhill\Test\ts_dummy']);
+		self::integer('parentint');
+		self::varchar('parentchar');
+		self::float('parentfloat');
+		self::text('parenttext');
+		self::datetime('parentdatetime');
+		self::date('parentdate');
+		self::time('parenttime');
+		self::enum('parentenum')->set_values(['testA','testB','testC']);
+		self::object('parentobject')->set_allowed_objects(['\Sunhill\test\ts_dummy'])->set_default(null);
+		self::arrayofstrings('parentsarray');
+		self::arrayofobjects('parentoarray')->set_allowed_objects(['\Sunhill\Test\ts_dummy']);
 	}
 	
 }

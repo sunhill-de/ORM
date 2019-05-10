@@ -10,9 +10,11 @@ class ts_dummy extends \Sunhill\Objects\oo_object {
     
     public $changestr = '';
     
-	protected function setup_properties() {
+    protected static $property_definitions;
+    
+    protected static function setup_properties() {
 		parent::setup_properties();
-		$this->integer('dummyint')->set_model('dummy');
+		self::integer('dummyint')->set_model('dummy');
 	}
 	
 	protected function setup_hooks() {
