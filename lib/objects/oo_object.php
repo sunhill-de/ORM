@@ -220,6 +220,11 @@ class oo_object extends \Sunhill\propertieshaving {
 		return $property;
 	}
 	
+	protected function calculated($name) {
+	    $property = $this->add_property($name, 'calculated');
+	    return $property;	    
+	}
+	
 	/**
 	 * Hebt das momentane Objekt auf eine abgeleitete Klasse an
 	 * @param String $newclass
