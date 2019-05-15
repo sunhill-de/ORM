@@ -500,7 +500,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	/**
 	 * Wird aufgerufen, um zu prüfen, ob die Datenbank auf dem gleichen Stand wie dieses
 	 * Objekt ist.
-	 * @todo Dies ist ein Kandidat für eine statische Methode
 	 */
 	public static function migrate() {
 	    static::initialize_properties();
