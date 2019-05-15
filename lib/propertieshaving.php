@@ -427,5 +427,50 @@ class propertieshaving extends hookable {
 	    return $property;
 	}
 	
+	/**
+	 * Liefert alle Properties zurück, die ein bestimmtes Feature haben
+	 * @param string $feature, wenn ungleich null, werden nur die Properties zurückgegeben, die ein bestimmtes Feature haben
+	 * @param bool $dirty, wenn true, dann nur dirty-Properties, wenn false dann nur undirty, wenn null dann alle
+	 * @param string $group, wenn nicht null, dann werden die Properties nach dem Ergebnis von get_$group gruppiert
+	 * @return unknown[]
+	 */
+	public static function static_get_properties_with_feature(string $feature='',$group=null) {
+	    $result = array();
+	    if (isset($group)) {
+	        $group = 'get_'.$group;
+	    }
+	    if (empty(static::$property_definitions)) {
+	        return $result;
+	    }
+	    foreach (static::$property_definitions as $name => $property) {
+	        if (empty($feature)) { // Gibt es Features zu berücksichgigen
+	            if (isset($group)) { // Soll gruppiert werden
+	                $group_value = $property->$group();
+	                if (isset($result[$group_value])) {
+	                    $result[$group_value][$name] = $property;
+	                } else {
+	                    $result[$group_value] = array($name=>$property);
+	                }
+	            } else {
+	                $result[$name] = $property;
+	            }
+	        } else {
+	            if ($property->has_feature($feature)) {
+	                if (isset($group)) { // Soll gruppiert werden
+	                    $group_value = $property->$group();
+	                    if (isset($result[$group_value])) {
+	                        $result[$group_value][$name] = $property;
+	                    } else {
+	                        $result[$group_value] = array($name=>$property);
+	                    }
+	                } else {
+	                    $result[$name] = $property;
+	                }
+	            }
+	        }
+	    }
+	    return $result;
+	}
+	
 	
 }

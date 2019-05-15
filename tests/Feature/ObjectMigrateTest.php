@@ -47,12 +47,7 @@ class testD extends \Sunhill\Test\ts_dummy {
 
     public static $table_name = 'testD';
     
-    protected static $type;
-    
-    public function __construct($type='varchar') {
-        self::$type = $type;
-        parent::__construct();
-    }
+    public static $type='varchar';
     
     protected static function setup_properties() {
         $method = self::$type;
@@ -93,8 +88,8 @@ class ObjectMigrateTest extends ObjectCommon
     
     public function testNewField() {
         $this->prepare_tables();
+        testA::migrate();
         $test = new testA();
-        $test->migrate();
         $test->testint = 123;
         $test->testchar = 'AAA';
         $test->newfield = 'ABC';
@@ -106,8 +101,8 @@ class ObjectMigrateTest extends ObjectCommon
 
     public function testRemovedField1() {
         $this->prepare_tables();
+        testB::migrate();
         $test = new testB();
-        $test->migrate();
         $test->testint = 123;
         $test->commit();
         
@@ -120,8 +115,8 @@ class ObjectMigrateTest extends ObjectCommon
      */
     public function testRemovedField2() {
         $this->prepare_tables();
+        testB::migrate();
         $test = new testB();
-        $test->migrate();
         $test->testint = 123;
         $test->commit();
         DB::statement('select testchar from testB where id = '.$test->get_id());
@@ -130,8 +125,8 @@ class ObjectMigrateTest extends ObjectCommon
     
     public function testAlterType() {
         $this->prepare_tables();
+        testC::migrate();
         $test = new testC();
-        $test->migrate();
         $test->testfield = 'ABC';
         $test->commit();
         
@@ -144,8 +139,9 @@ class ObjectMigrateTest extends ObjectCommon
      */
     public function testFieldType($type,$init) {
         $this->prepare_tables();
+        testD::$type = $type;
+        testD::migrate();
         $test = new testD($type);
-        $test->migrate();
         $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
@@ -161,9 +157,10 @@ class ObjectMigrateTest extends ObjectCommon
      */
     public function testNewTable($type,$init) {
         $this->prepare_tables();
+        testD::$type = $type;
         DB::statement('drop table testD');
+        testD::migrate();
         $test = new testD($type);
-        $test->migrate();
         $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
@@ -178,8 +175,9 @@ class ObjectMigrateTest extends ObjectCommon
     public function testNewInheritedFields() {
         $this->prepare_tables();
         DB::statement('drop table testD');
-        $test = new testD('varchar');
-        $test->migrate();
+        testD::$type = 'varchar';
+        testD::migrate();
+        $test = new testD();
         $test->dummyint = 1;
         $test->testfield = 'abc';
         $test->commit();

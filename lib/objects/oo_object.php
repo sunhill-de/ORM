@@ -368,137 +368,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	        throw new \Sunhill\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
 	    }	    
 	}
-// ****************** Migration **********************************
-	/**
-	 * Wird aufgerufen, um zu prüfen, ob die Datenbank auf dem gleichen Stand wie dieses
-	 * Objekt ist.
-	 * @todo Dies ist ein Kandidat für eine statische Methode
-	 */
-	public function migrate() {
-	    if ($this->table_exists()) {
-    	    $current = $this->get_current_properties();
-    	    $database = $this->get_database_properties();
-    	    $this->remove_columns($current,$database);
-    	    $this->add_columns($current,$database);
-    	    $this->alter_colums($current,$database);
-	    } else {
-	        $this->create_table();
-	    }
-	}
-	
-	/**
-	 * Prüft, ob die Zieltabelle überhaupt existiert. 
-	 * @return boolean
-	 */
-	private function table_exists() {
-	    $tables = DB::select(DB::raw("SHOW TABLES LIKE '".$this::$table_name."'"));
-	    foreach ($tables as $name => $table) {
-	        foreach ($table as $field) {
-    	        if ($field == $this::$table_name) {
-    	            return true;
-    	        } 
-	        }
-	    }	    
-	    return false;
-	}
-	
-	/**
-	 * Passt die unterschiedliche Benennung von Datentypen im Objekt und in der Datenbank an
-	 * @param string $type
-	 * @return string
-	 */
-	private function map_type($info) {
-	    switch ($info['type']) {
-	        case 'integer':
-	            return 'int(11)'; break;
-	        case 'varchar':
-	            return 'varchar('.$info['maxlen'].')'; break;
-	        case 'enum':
-	            return 'enum('.$info['enum'].')'; break;
-	        default:
-	            return $info['type'];
-	    }
-	}
-	
-	/**
-	 * Erzeugt eine neue Tabelle aus den vorhandenen Daten
-	 */
-	private function create_table() {
-	    $statement = 'create table '.$this::$table_name.' (id int primary key';
-	    $simple = $this->get_current_properties();
-	    foreach ($simple as $field => $info) {
-	        $statement .= ','.$field.' '.$this->map_type($info);
-	    }
-	    $statement .= ')';
-	    DB::statement($statement);
-	}
-	
-	private function get_current_properties() {
-	   $properties = $this->get_properties_with_feature('simple',null,'class');
-	   $result = array();
-	   foreach ($properties[get_class($this)] as $property) {
-	       $result[$property->get_name()] = ['type'=>$property->get_type()];
-	       switch ($property->get_type()) {
-	           case 'varchar':
-	               $result[$property->get_name()]['maxlen'] = $property->get_maxlen();
-	               break;
-	           case 'enum':
-	               $first = true;
-	               $resultstr = '';
-	               foreach ($property->get_enum_values() as $value) {
-	                   if (!$first) {
-	                       $resultstr .= ',';	                       
-	                   }
-	                   $resultstr .= "'$value'";
-	                   $first = false;
-	               }
-	               $result[$property->get_name()]['enum'] = $resultstr;
-	               break;
-	       }
-	   }
-	   return $result;
-	}
-	
-	private function get_database_properties() {
-	     $fields = DB::select(DB::raw("SHOW COLUMNS FROM ".$this::$table_name));
-         $result = array();
-         foreach ($fields as $field) {
-            $result[$field->Field] = ['type'=>$field->Type,'null'=>$field->Null];        
-         }
-	     return $result;
-	}
-	
-	private function remove_columns($current,$database) {
-	    foreach ($database as $name => $info) {
-	        if (!array_key_exists($name,$current) && ($name !== 'id')) {
-	            DB::statement("alter table ".$this::$table_name." drop column ".$name);
-	        }
-	    }
-	}
-	
-	private function add_columns($current,$database) {
-	    foreach ($current as $name => $info) {
-	        if (!array_key_exists($name,$database)) {
-                $statement = 'alter table '.$this::$table_name." add column ".$name." ";
-                $statement .= $this->map_type($info);
-	            DB::statement($statement);
-	        }	        
-	    }
-	}
-	
-	private function alter_colums($current,$database) {
-	    
-	    foreach ($current as $name => $info) {
-	        if (array_key_exists($name,$database)) {
-	            $type = $this->map_type($info);
-	            if ($type !== $database[$name]['type']) {
-                    $statement = 'alter table '.$this::$table_name.' change column '.$name.' '.$name.' '.$type;
-                    DB::statement($statement);
-	            }
-	        }
-	    }
-	}
-	
 	// ***************** Statische Methoden ***************************	
 	
 	private static $objectcache = array();
@@ -626,5 +495,138 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $property = self::add_property($name, 'calculated');
 	    return $property;
 	}	
+
+	// ****************** Migration **********************************
+	/**
+	 * Wird aufgerufen, um zu prüfen, ob die Datenbank auf dem gleichen Stand wie dieses
+	 * Objekt ist.
+	 * @todo Dies ist ein Kandidat für eine statische Methode
+	 */
+	public static function migrate() {
+	    static::initialize_properties();
+	    if (self::table_exists()) {
+	        $current = self::get_current_properties();
+	        $database = self::get_database_properties();
+	        self::remove_columns($current,$database);
+	        self::add_columns($current,$database);
+	        self::alter_colums($current,$database);
+	    } else {
+	        self::create_table();
+	    }
+	}
+	
+	/**
+	 * Prüft, ob die Zieltabelle überhaupt existiert.
+	 * @return boolean
+	 */
+	private static function table_exists() {
+	    $tables = DB::select(DB::raw("SHOW TABLES LIKE '".static::$table_name."'"));
+	    foreach ($tables as $name => $table) {
+	        foreach ($table as $field) {
+	            if ($field == static::$table_name) {
+	                return true;
+	            }
+	        }
+	    }
+	    return false;
+	}
+	
+	/**
+	 * Passt die unterschiedliche Benennung von Datentypen im Objekt und in der Datenbank an
+	 * @param string $type
+	 * @return string
+	 */
+	private static function map_type($info) {
+	    switch ($info['type']) {
+	        case 'integer':
+	            return 'int(11)'; break;
+	        case 'varchar':
+	            return 'varchar('.$info['maxlen'].')'; break;
+	        case 'enum':
+	            return 'enum('.$info['enum'].')'; break;
+	        default:
+	            return $info['type'];
+	    }
+	}
+	
+	/**
+	 * Erzeugt eine neue Tabelle aus den vorhandenen Daten
+	 */
+	private static function create_table() {
+	    $statement = 'create table '.static::$table_name.' (id int primary key';
+	    $simple = self::get_current_properties();
+	    foreach ($simple as $field => $info) {
+	        $statement .= ','.$field.' '.self::map_type($info);
+	    }
+	    $statement .= ')';
+	    DB::statement($statement);
+	}
+	
+	private static function get_current_properties() {
+	    $properties = self::static_get_properties_with_feature('simple','class');
+	    $result = array();
+	    foreach ($properties[get_called_class()] as $property) {
+	        $result[$property->get_name()] = ['type'=>$property->get_type()];
+	        switch ($property->get_type()) {
+	            case 'varchar':
+	                $result[$property->get_name()]['maxlen'] = $property->get_maxlen();
+	                break;
+	            case 'enum':
+	                $first = true;
+	                $resultstr = '';
+	                foreach ($property->get_enum_values() as $value) {
+	                    if (!$first) {
+	                        $resultstr .= ',';
+	                    }
+	                    $resultstr .= "'$value'";
+	                    $first = false;
+	                }
+	                $result[$property->get_name()]['enum'] = $resultstr;
+	                break;
+	        }
+	    }
+	    return $result;
+	}
+	
+	private static function get_database_properties() {
+	    $fields = DB::select(DB::raw("SHOW COLUMNS FROM ".static::$table_name));
+	    $result = array();
+	    foreach ($fields as $field) {
+	        $result[$field->Field] = ['type'=>$field->Type,'null'=>$field->Null];
+	    }
+	    return $result;
+	}
+	
+	private static function remove_columns($current,$database) {
+	    foreach ($database as $name => $info) {
+	        if (!array_key_exists($name,$current) && ($name !== 'id')) {
+	            DB::statement("alter table ".static::$table_name." drop column ".$name);
+	        }
+	    }
+	}
+	
+	private static function add_columns($current,$database) {
+	    foreach ($current as $name => $info) {
+	        if (!array_key_exists($name,$database)) {
+	            $statement = 'alter table '.static::$table_name." add column ".$name." ";
+	            $statement .= self::map_type($info);
+	            DB::statement($statement);
+	        }
+	    }
+	}
+	
+	private static function alter_colums($current,$database) {
+	    
+	    foreach ($current as $name => $info) {
+	        if (array_key_exists($name,$database)) {
+	            $type = self::map_type($info);
+	            if ($type !== $database[$name]['type']) {
+	                $statement = 'alter table '.static::$table_name.' change column '.$name.' '.$name.' '.$type;
+	                DB::statement($statement);
+	            }
+	        }
+	    }
+	}
+	
 	
 }
