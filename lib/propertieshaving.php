@@ -284,9 +284,9 @@ class propertieshaving extends hookable {
 	}
 	
 	public function &__get($name) {
-	    $this->check_for_hook('GET',$name,array(
-	        'value'=>$this->properties[$name]->get_value()));
 	    if (isset($this->properties[$name])) {
+	        $this->check_for_hook('GET',$name,array(
+	            'value'=>$this->properties[$name]->get_value()));
 	        return $this->properties[$name]->get_value();
 	    } else {
 	        return parent::__get($name);
@@ -388,6 +388,12 @@ class propertieshaving extends hookable {
 	    return $result;
 	}
 
+	protected function dynamic_add_property($name,$type) {
+	    $property = static::create_property($name, $type);
+	    $property->set_owner($this);
+	    $this->properties[$name] = $property;
+	    return $property;	    
+	}
 	// ========================== Statische Methoden ================================
 	
 	protected static $property_definitions;

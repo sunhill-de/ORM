@@ -348,7 +348,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	   } else {
 	       $property_name = 'attribute_'.$attribute->type;
 	   }
-	   $property = $this->add_property($attribute->name, $property_name);
+	   $property = $this->dynamic_add_property($attribute->name, $property_name);
 	   $property->set_value($value);
 	   $property->set_dirty(true);
 	   return true;
