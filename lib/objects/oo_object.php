@@ -564,6 +564,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	private static function get_current_properties() {
 	    $properties = self::static_get_properties_with_feature('simple','class');
 	    $result = array();
+	    if (!isset($properties[get_called_class()])) {
+	        return $result;
+	    }
 	    foreach ($properties[get_called_class()] as $property) {
 	        $result[$property->get_name()] = ['type'=>$property->get_type()];
 	        switch ($property->get_type()) {

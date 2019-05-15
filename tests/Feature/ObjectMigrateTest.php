@@ -61,6 +61,17 @@ class testD extends \Sunhill\Test\ts_dummy {
     
 }
 
+class testE extends \Sunhill\Objects\oo_object {
+
+    public static $table_name = 'testE';
+    
+    protected static function setup_properties() {
+        parent::setup_properties();
+        self::arrayofobjects('testfield')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"]);
+    }
+    
+}
+
 class ObjectMigrateTest extends ObjectCommon
 {
     protected function prepare_tables() {
@@ -196,5 +207,17 @@ class ObjectMigrateTest extends ObjectCommon
             ['enum','A']
         ];
         
+    }
+    
+    public function testPassthru() {
+        testE::migrate();
+        $test = new TestE();
+        $dummy = new \Sunhill\Test\ts_dummy;
+        $dummy->dummyint = 2;
+        $test->testfield[] = $dummy;
+        $test->commit();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $this->assertEquals($read->testfield[0]->dummyint,2);
     }
 }
