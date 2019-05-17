@@ -40,6 +40,8 @@ class oo_property extends \Sunhill\base {
 	
 	protected $class;
 	
+	protected $searchable=false;
+	
 	public function __construct() {
 		$this->dirty = false;
 		$this->initialized = false;
@@ -198,6 +200,15 @@ class oo_property extends \Sunhill\base {
 	public function get_readonly() {
 		return $this->read_only;
 	}	
+	
+	public function searchable() {
+	    $this->searchable = true;
+	    return $this;
+	}
+	
+	public function get_searchable() {
+	    return $this->searchable;
+	}
 	
 	public function is_array() {
 		return $this->has_feature('array');

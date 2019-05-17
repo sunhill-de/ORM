@@ -472,5 +472,14 @@ class propertieshaving extends hookable {
 	    return $result;
 	}
 	
+	public static function get_property_info($name) {
+	    static::initialize_properties();
+	    return static::$property_definitions[$name];
+	}
 	
+	public static function search() {
+	     $query = new query_builder();
+	     $query->set_calling_class(get_called_class());
+	     return $query;
+	}
 }
