@@ -2,15 +2,15 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use Tests\searchtestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\Test;
 use Illuminate\Support\Facades\DB;
 
-class testA extends \Sunhill\Objects\oo_object {
+class searchtestA extends \Sunhill\Objects\oo_object {
    
-    public static $table_name = 'testA';
+    public static $table_name = 'searchtestA';
     
     protected static function setup_properties() {
         parent::setup_properties();
@@ -27,9 +27,9 @@ class testA extends \Sunhill\Objects\oo_object {
     }
 }
 
-class testB extends testA {
+class searchtestB extends searchtestA {
 
-    public static $table_name = 'testB';
+    public static $table_name = 'searchtestB';
     
     protected static function setup_properties() {
         parent::setup_properties();
@@ -45,9 +45,9 @@ class testB extends testA {
     }
 }
 
-class testC extends testB {
+class searchtestC extends searchtestB {
     
-    public static $table_name = 'testC';
+    public static $table_name = 'searchtestC';
     
     protected static function setup_properties() {
         parent::setup_properties();
@@ -59,12 +59,12 @@ class testC extends testB {
 class ObjectSearchTest extends ObjectCommon
 {
     protected function prepare_tables() {
-        DB::statement("drop table if exists testA");
-        DB::statement("drop table if exists testB");
-        DB::statement("drop table if exists testC");
-        DB::statement("create table testA (id int primary key,Aint int,Anosearch int,Achar varchar(255))");
-        DB::statement("create table testB (id int primary key,Bint int,Bchar varchar(255))");
-        DB::statement("create table testC (id int primary key)");
+        DB::statement("drop table if exists searchtestA");
+        DB::statement("drop table if exists searchtestB");
+        DB::statement("drop table if exists searchtestC");
+        DB::statement("create table searchtestA (id int primary key,Aint int,Anosearch int,Achar varchar(255))");
+        DB::statement("create table searchtestB (id int primary key,Bint int,Bchar varchar(255))");
+        DB::statement("create table searchtestC (id int primary key)");
         $this->insert_into('objects',['id','classname','created_at','updated_at'],
             [
                 // 4 x Dummies für diverse Arrays
@@ -73,34 +73,34 @@ class ObjectSearchTest extends ObjectCommon
                 [3,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [4,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
 
-                [5,"\\Tests\\Feature\\testA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [6,"\\Tests\\Feature\\testA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [7,"\\Tests\\Feature\\testA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [8,"\\Tests\\Feature\\testA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [9,"\\Tests\\Feature\\testA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [5,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [6,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [7,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [8,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [9,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 
-                [10,"\\Tests\\Feature\\testB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [11,"\\Tests\\Feature\\testB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [12,"\\Tests\\Feature\\testB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [13,"\\Tests\\Feature\\testB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [14,"\\Tests\\Feature\\testB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [10,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [11,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [12,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [13,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [14,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 
-                [15,"\\Tests\\Feature\\testC",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [15,"\\Tests\\Feature\\searchtestC",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
             ]);
         $this->insert_into('dummies',['id','dummyint'],
             [[1,123],[2,234],[3,345],[4,456]]);
-        $this->insert_into('testA',['id','Aint','Anosearch','Achar'],
+        $this->insert_into('searchtestA',['id','Aint','Anosearch','Achar'],
             [
                 [5,111,1,'ABC'],[6,222,1,'ADE'],[7,333,1,'BCC'],[8,990,1,'XYZ'],[9,999,1,'XCX'],
                 [10,500,1,'GGG'],[11,501,1,'GGF'],[12,502,1,'GGT'],[13,502,1,'GGZ'],[14,503,1,'GTG'],
                 [15,503,1,'GGG']
             ]);
-        $this->insert_into('testB',['id','Bint','Bchar'],
+        $this->insert_into('searchtestB',['id','Bint','Bchar'],
             [
                 [10,600,'AAA'],[11,601,'BBB'],[12,602,'CCC'],[13,602,'DDC'],[14,603,'ADD'],
                 [15,603,'GGG']
             ]);
-        $this->insert_into('testC',['id'],[[15]]);
+        $this->insert_into('searchtestC',['id'],[[15]]);
         $this->insert_into('caching',['id','object_id','fieldname','value'],
             [
                 [1,5,'Acalc','111=ABC'], 
@@ -152,25 +152,25 @@ class ObjectSearchTest extends ObjectCommon
     
     public function testSearchWithNoConditionSingleResult() {
         $this->prepare_tables();
-        $result = \Tests\Feature\testC::search()->get();
+        $result = \Tests\Feature\searchtestC::search()->get();
         $this->assertEquals(15,$result);
     }
     
     public function testSearchWithNoConditionMultipleResult() {
         $this->prepare_tables();
-        $result = \Tests\Feature\testB::search()->get();
+        $result = \Tests\Feature\searchtestB::search()->get();
         $this->assertEquals([10,11,12,13,14,15],$result);
     }
     
-    public function testCountSingleResult() {
+    public function searchtestCountSingleResult() {
         $this->prepare_tables();
-        $result = \Tests\Feature\testC::search()->count();
+        $result = \Tests\Feature\searchtestC::search()->count();
         $this->assertEquals(1,$result);
     }
     
-    public function testCountMultipleResult() {
+    public function searchtestCountMultipleResult() {
         $this->prepare_tables();
-        $result = \Tests\Feature\testB::search()->count();
+        $result = \Tests\Feature\searchtestB::search()->count();
         $this->assertEquals(6,$result);
     }
     
@@ -179,7 +179,7 @@ class ObjectSearchTest extends ObjectCommon
      */
     public function testFailSearch() {
         $this->prepare_tables();
-        testA::search()->where('Anosearch','=',1)->get();
+        searchtestA::search()->where('Anosearch','=',1)->get();
     }
     /**
      * @dataProvider SimpleProvider
@@ -193,33 +193,33 @@ class ObjectSearchTest extends ObjectCommon
     
     public function SimpleProvider() {
         return [
-            ["testA",'Aint','=',111,5],
-            ["testA",'Aint','=',5,null],
-            ["testA",'Aint','<',300,[5,6]],
-            ["testA",'Aint','>',900,[8,9]],
-            ["testB",'Bint','<>',602,[10,11,14,15]],
-            ["testA",'Aint','<',502,[5,6,7,10,11]],
-            ["testC",'Bint','=',603,15],
+            ["searchtestA",'Aint','=',111,5],
+            ["searchtestA",'Aint','=',5,null],
+            ["searchtestA",'Aint','<',300,[5,6]],
+            ["searchtestA",'Aint','>',900,[8,9]],
+            ["searchtestB",'Bint','<>',602,[10,11,14,15]],
+            ["searchtestA",'Aint','<',502,[5,6,7,10,11]],
+            ["searchtestC",'Bint','=',603,15],
             
-            ["testA",'Achar','=','ADE',6],
-            ["testA",'Achar','=','NÜX',null],
-            ["testA",'Achar','<','B',[5,6]],
-            ["testA",'Achar','>','X',[8,9]],
-            ["testB",'Bchar','<>','CCC',[10,11,13,14,15]],
-            ["testA",'Achar','<','GGH',[5,6,7,10,11,15]],
-            ["testC",'Achar','=','GGG',15],
+            ["searchtestA",'Achar','=','ADE',6],
+            ["searchtestA",'Achar','=','NÜX',null],
+            ["searchtestA",'Achar','<','B',[5,6]],
+            ["searchtestA",'Achar','>','X',[8,9]],
+            ["searchtestB",'Bchar','<>','CCC',[10,11,13,14,15]],
+            ["searchtestA",'Achar','<','GGH',[5,6,7,10,11,15]],
+            ["searchtestC",'Achar','=','GGG',15],
             
-            ["testA",'Achar','begins with','A',[5,6]],
-            ["testA",'Achar','begins with','B',7],
-            ["testA",'Achar','begins with','2',null],
-            ["testA",'Achar','ends with','Z',[8,13]],
-            ["testA",'Achar','ends with','T',12],
-            ["testA",'Achar','ends with','2',null],
+            ["searchtestA",'Achar','begins with','A',[5,6]],
+            ["searchtestA",'Achar','begins with','B',7],
+            ["searchtestA",'Achar','begins with','2',null],
+            ["searchtestA",'Achar','ends with','Z',[8,13]],
+            ["searchtestA",'Achar','ends with','T',12],
+            ["searchtestA",'Achar','ends with','2',null],
             
-            ["testB",'Bchar','consists','D',[13,14]],
-            ["testB",'Bchar','consists','C',[12,13]],
-            ["testB",'Bchar','consists','B',11],
-            ["testB",'Bchar','consists','2',null],
+            ["searchtestB",'Bchar','consists','D',[13,14]],
+            ["searchtestB",'Bchar','consists','C',[12,13]],
+            ["searchtestB",'Bchar','consists','B',11],
+            ["searchtestB",'Bchar','consists','2',null],
             
         ];
     }
