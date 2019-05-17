@@ -97,7 +97,7 @@ class ObjectSearchTest extends ObjectCommon
             ]);
         $this->insert_into('searchtestB',['id','Bint','Bchar'],
             [
-                [10,600,'AAA'],[11,601,'BBB'],[12,602,'CCC'],[13,602,'DDC'],[14,603,'ADD'],
+                [10,111,'ABC'],[11,601,'BBB'],[12,602,'CCC'],[13,602,'DDC'],[14,603,'ADD'],
                 [15,603,'GGG']
             ]);
         $this->insert_into('searchtestC',['id'],[[15]]);
@@ -114,7 +114,7 @@ class ObjectSearchTest extends ObjectCommon
                 [9,13,'Acalc','502=GGZ'],
                 [10,14,'Acalc','503=GTG'],
                 [11,15,'Acalc','503=GGG'],
-                [12,10,'Bcalc','600=AAA'],
+                [12,10,'Bcalc','111=ABC'],
                 [13,11,'Bcalc','601=BBB'],
                 [14,12,'Bcalc','602=CCC'],
                 [15,13,'Bcalc','602=DDC'],
@@ -217,10 +217,15 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestA",'Achar','ends with','2',null],
             
             ["searchtestB",'Bchar','consists','D',[13,14]],
-            ["searchtestB",'Bchar','consists','C',[12,13]],
-            ["searchtestB",'Bchar','consists','B',11],
+            ["searchtestB",'Bchar','consists','C',[10,12,13]],
+            ["searchtestB",'Bchar','consists','G',15],
             ["searchtestB",'Bchar','consists','2',null],
             
+            ["searchtestA",'Acalc','=','222=ADE',6],
+            ["searchtestA",'Acalc','=','666=RRR',null],
+            ["searchtestA",'Acalc','begins with','503',[14,15]],
+            ["searchtestA",'Acalc','begins with','666',null],
+            ["searchtestA",'Acalc','begins with','222',6],
         ];
     }
 }

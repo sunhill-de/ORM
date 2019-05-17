@@ -31,6 +31,8 @@ class query_builder {
         }
         if ($property->has_feature('simple')) {
             $this->add_simple_where($property,$relation,$value);
+        } else if ($property->has_feature('calculated')) {
+            $this->add_calc_where($property,$relation,$value);
         }
         return $this;
     }
@@ -44,6 +46,25 @@ class query_builder {
         } else {
             $this->where['simple'] = [$result];
         }
+    }
+    
+    private function add_calc_where($property,$relation,$value,$connect='and') {
+        $result = array('connect'=>$connect,
+            'table'=>$this->get_calc_table(),
+            'where'=>$property->get_where($relation,$value));
+        if (isset($this->where['calc'])) {
+            $this->where['calc'][] = $result;
+        } else {
+            $this->where['calc'] = [$result];
+        }
+    }
+    
+    private function get_calc_table() {
+        if (!isset($this->used_tables['calc'])) {
+            $this->used_tables['caching'] = $this->next_table++;
+        }
+        return $this->used_tables['caching'];
+        
     }
     
     private function get_table($property) {
@@ -126,20 +147,66 @@ class query_builder {
     }
     
     private function get_where_querystr() {
-        $result = 'select '.$this->searchfor.' from ';
+        $result = 'select '.$this->searchfor.' from '.$this->get_used_tables().' where ';
         $first = true;
-        foreach ($this->used_tables as $table => $letter) {
+        if (isset($this->where['simple'])) {
+            $result .= $this->get_simple_where();
+            $first = false;
+        }
+        if (isset($this->where['calc'])) {
+            $result .= $this->get_calc_where($first);
+            $first = false;
+        }
+        return $result;
+    }
+    
+    private function get_calc_where($first) {
+        $result = '';
+        foreach ($this->where['calc'] as $where) {
             if (!$first) {
-                $result .= ' inner join '.$table.' as '.$letter.' on a.id = '.$letter.'.id';                
+                $result .= $where['connection'];
             } else {
-                $result .= $table.' as '.$letter;
                 $first = false;
             }
+            $result .= $where['table'].'.'.$where['where'];
         }
-        $result .= ' where ';
+        return $result;
+    }
+    
+    private function get_simple_where() {
+        $result = '';
         $first = true;
         foreach ($this->where['simple'] as $where) {
+            if (!$first) {
+                $result .= $where['connection'];
+            } else {
+                $first = false;
+            }
             $result .= $where['table'].'.'.$where['where'];
+        }
+        return $result;
+    }
+    
+    private function get_used_tables() {
+        $first = true;
+        $result = '';
+        foreach ($this->used_tables as $table => $letter) {            
+            switch ($table) {
+                case 'caching':
+                    if (!$first) {
+                        $result .= ' inner join caching as '.$letter.' on a.id = '.$letter.'.object_id';                        
+                    } else {
+                        $result .= 'caching as '.$letter;                        
+                    }
+                    break;
+                default:
+                    if (!$first) {
+                        $result .= ' inner join '.$table.' as '.$letter.' on a.id = '.$letter.'.id';
+                    } else {
+                        $result .= $table.' as '.$letter;
+                        $first = false;
+                    }
+            }
         }
         return $result;
     }

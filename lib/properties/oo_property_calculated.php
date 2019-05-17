@@ -49,5 +49,18 @@ class oo_property_calculated extends oo_property_field {
 	public function inserted(int $id) {
 	        DB::table('caching')->insert(['object_id'=>$id,'fieldname'=>$this->name,'value'=>$this->get_value()]);
 	}
+
+	public function get_where($relation,$value) {
+	    if ($relation == 'begins with') {
+	        return "value like '$value%'";
+	    } else if ($relation == 'ends with') {
+	        return "value like '%$value'";
+	    } else if ($relation == 'consists') {
+	        return "value like '%$value%'";
+	    } else {
+	        return "value ".$relation."'".$value."'";
+	    }
+	}
+	
 	
 }
