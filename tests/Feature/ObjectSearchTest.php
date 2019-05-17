@@ -209,6 +209,18 @@ class ObjectSearchTest extends ObjectCommon
             ["testA",'Achar','<','GGH',[5,6,7,10,11,15]],
             ["testC",'Achar','=','GGG',15],
             
+            ["testA",'Achar','begins with','A',[5,6]],
+            ["testA",'Achar','begins with','B',7],
+            ["testA",'Achar','begins with','2',null],
+            ["testA",'Achar','ends with','Z',[8,13]],
+            ["testA",'Achar','ends with','T',12],
+            ["testA",'Achar','ends with','2',null],
+            
+            ["testB",'Bchar','consists','D',[13,14]],
+            ["testB",'Bchar','consists','C',[12,13]],
+            ["testB",'Bchar','consists','B',11],
+            ["testB",'Bchar','consists','2',null],
+            
         ];
     }
 }

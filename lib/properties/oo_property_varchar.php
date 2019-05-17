@@ -18,4 +18,17 @@ class oo_property_varchar extends oo_property_field {
 	    $this->maxlen = $value;
 	    return $this;
 	}
+
+	public function get_where($relation,$value) {
+	    if ($relation == 'begins with') {
+	        return $this->get_name()." like '$value%'";
+	    } else if ($relation == 'ends with') {
+	        return $this->get_name()." like '%$value'";
+	    } else if ($relation == 'consists') {
+	        return $this->get_name()." like '%$value%'";
+	    } else {
+	        return parent::get_where($relation,$value);
+	    }
+	}
+
 }
