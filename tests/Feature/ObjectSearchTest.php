@@ -19,6 +19,7 @@ class searchtestA extends \Sunhill\Objects\oo_object {
         self::varchar('Achar')->searchable();
         self::calculated('Acalc')->searchable();
         self::object('Aobject')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
+        self::arrayofobjects('Aorray')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
         self::arrayofstrings('Asarray')->searchable();
     }
     
@@ -121,13 +122,55 @@ class ObjectSearchTest extends ObjectCommon
                 [16,14,'Bcalc','603=ADD'],
                 [17,15,'Bcalc','603=GGG'],
             ]);
+        $this->insert_into('tags',['id','created_at','updated_at','name','options','parent_id'],
+            [
+                [1,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagA',0,0], 
+                [2,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagB',0,0],
+                [3,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagC',0,2],
+                [4,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagD',0,0],
+            ]);
+        $this->insert_into('tagcache',['id','name','tag_id','created_at','updated_at'],
+            [
+                [1,'TagA',1,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [2,'TagB',2,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [3,'TagC',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [4,'TagC.TagB',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],                
+                [5,'TagD',4,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+            ]);
+        $this->insert_into('tagobjectassigns',['container_id','tag_id'],
+            [
+                [5,1],[5,2], // testA(5)->TagA,TagB
+                [6,1],[6,3]  // testA(6)->TagA,TagC.TagB
+            ]);
+        $this->insert_into('objectobjectassigns',['container_id','element_id','field','index'],
+            [
+                [7,1, 'Aobject',0],
+                [8,2, 'Aobject',0],
+                [13,1,'Aobject',0],
+                [13,1,'Bobject',0],
+                [9,3, 'Aoarray',0],
+                [9,4, 'Aoarray',1],
+            ]);
+        $this->insert_into('stringobjectassigns',['container_id','element_id','field','index'],
+            [
+                [7,'testA','Asarray',0],
+                [7,'testB','Asarray',1],
+                [8,'testA','Asarray',0],
+                [8,'testC','Asarray',1],
+                [13,'testA','Bsarray',0],
+                [13,'testC','Asarray',0],                
+            ]);
     }
     
     private function insert_into($name,$fields,$values) {
-        $querystr = 'insert into '.$name.' (id';
-        array_shift($fields);
+        $querystr = 'insert into '.$name.' (';
+        $first = true;
         foreach ($fields as $field) {
-            $querystr .= ','.$field;
+            if (!$first) {
+                $querystr .= ',';
+            }
+            $querystr .= "`".$field."`";
+            $first = false;
         }
         $querystr .= ') values ';
         $firstset = true;
