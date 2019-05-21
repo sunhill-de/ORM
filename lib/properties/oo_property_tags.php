@@ -85,4 +85,61 @@ class oo_property_tags extends oo_property_arraybase {
 	private function store_tag(oo_tag $tag,$id) {
 	}
 	
+	public function get_table_name($relation,$where) {
+	    return "tagcache";
+	}
+	
+	public function get_table_join($relation,$where,$letter) {
+	    return $this;
+	}
+	
+	public function get_special_join($letter) {
+	    return " inner join tagobjectassigns as zz on zz.container_id = a.id inner join tagcache as $letter on zz.tag_id = $letter.tag_id";     
+	}
+	
+	protected function get_individual_where($relation,$value,$letter) {
+	    switch ($relation) {
+	        case 'has':
+	            return "$letter.name = ".$this->escape($value); break; 
+	        case 'has not':
+	            return "$letter.name <> ".$this->escape($value); break;
+	        case 'one of':
+	            $first = true;
+	            $result = '';
+	            foreach ($value as $single_value) {
+	                $single_value = $this->escape($single_value);
+	                if (!$first) {
+	                    $result .= ' or ';
+	                }
+	                $first = false;
+	                $result .= "$letter.name = $single_value";
+	            }
+	            return $result; break;
+	        case 'all of':
+	            $first = true;
+	            $result = '';
+	            foreach ($value as $single_value) {
+	                $single_value = $this->escape($single_value);
+	                if (!$first) {
+	                    $result .= ' and ';
+	                }
+	                $first = false;
+	                $result .= "$letter.name = $single_value";
+	            }
+	            return $result; break;
+	        case 'none of':
+	            $first = true;
+	            $result = '';
+	            foreach ($value as $single_value) {
+	                $single_value = $this->escape($single_value);
+	                if (!$first) {
+	                    $result .= ' and ';
+	                }
+	                $first = false;
+                    $result .= "not $letter.name = $single_value";
+	            }
+	            return $result; break;
+	    }
+	}
+	
 }

@@ -19,7 +19,7 @@ class searchtestA extends \Sunhill\Objects\oo_object {
         self::varchar('Achar')->searchable();
         self::calculated('Acalc')->searchable();
         self::object('Aobject')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
-        self::arrayofobjects('Aorray')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
+        self::arrayofobjects('Aoarray')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
         self::arrayofstrings('Asarray')->searchable();
     }
     
@@ -260,7 +260,7 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestB",'Bchar','<>','CCC',[10,11,13,14,15]],
             ["searchtestA",'Achar','<','GGH',[5,6,7,10,11,15]],
             ["searchtestC",'Achar','=','GGG',15],
-            ["searchtestA",'Achar','in',['GGF','GGT'],[11,12]],
+            ["searchtestA",'Achar','in',['GGT','GGZ'],[12,13]],
             
             ["searchtestA",'Achar','begins with','A',[5,6,11]],
             ["searchtestA",'Achar','begins with','B',7],
@@ -279,7 +279,7 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestA",'Acalc','begins with','503',[14,15]],
             ["searchtestA",'Acalc','begins with','666',null],
             ["searchtestA",'Acalc','begins with','222',6],
-            ["searchtestA",'Acalc','ends with','ADE',6],
+            ["searchtestA",'Acalc','ends with','ADE',6], 
              
             ["searchtestA",'tags','has','TagA',[5,6]],
             ["searchtestA",'tags','has','TagC.TagB',6],
@@ -305,12 +305,12 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestA","Aobject","in",[1,2],[7,8,13]],
             ["searchtestA","Aobject","=",null,[5,6,9,10,11,12,14,15]],
             
-            ["searchtestA","Aoarray","has",[3],9],
-            ["searchtestA","Aoarray","has",[1],null],
+            ["searchtestA","Aoarray","has",3,9],
+            ["searchtestA","Aoarray","has",1,null],
             ["searchtestA","Aoarray","one of",[3,1],9],
             ["searchtestA","Aoarray","all of",[3,4],9],
             ["searchtestA","Aoarray","none of",[3,4],[5,6,7,8,10,11,12,13,14,15]],
-        ];
+           ];
     }
     
     public function testPassObject() {

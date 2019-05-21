@@ -26,7 +26,4 @@ class oo_property_field extends oo_property {
 		return $this->model_name;
 	}
 	
-	public function get_where($relation,$value) {
-        return $this->get_name().$relation."'".$value."'";
-	}
 }

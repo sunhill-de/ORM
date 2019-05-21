@@ -81,5 +81,50 @@ class oo_property_object extends oo_property_field {
 	        $to->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
 	    }
 	}
+
+	public function get_table_name($relation,$where) {
+        return 'objectobjectassigns';
+	}
+	
+	public function get_table_join($relation,$where,$letter) {
+	    return "on a.id = $letter.container_id";
+	}
+	
+	protected function get_individual_where($relation,$value,$letter) {
+	    switch ($relation) {
+	        case '=':
+	            if (is_null($value)) {
+	               $value = 'NULL'; 
+	            } else if (!is_int($value)) {
+	                $value = $value->get_id();
+	            }
+	            return "$letter.element_id = $value"; break;
+	        case 'in':
+	            $result = "$letter.element_id in (";
+	            $first = true;
+	            foreach ($value as $single_value) {
+	                if (!is_int($single_value)) {
+	                    $single_value = $single_value->get_id();
+	                }
+	                if (!$first) {
+	                    $result .= ',';
+	                }
+	                $result .= $single_value;
+	                $first = false;
+	            }
+	            return $result.')'; 
+	            break;
+	    }
+	}
+	
+	protected function is_allowed_relation(string $relation,$value) {
+	    switch ($relation) {
+	        case '=':
+	        case 'in':
+                return true;
+	        default:
+	            return false;
+	    }
+	}
 	
 }

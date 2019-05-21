@@ -29,49 +29,24 @@ class query_builder {
         if (!$property->get_searchable()) {
             throw new QueryException("Nach dem Feld '$field' kann nicht gesucht werden.");
         }
-        if ($property->has_feature('simple')) {
-            $this->add_simple_where($property,$relation,$value);
-        } else if ($property->has_feature('calculated')) {
-            $this->add_calc_where($property,$relation,$value);
-        }
+        $this->add_where($property,$relation,$value);
         return $this;
     }
-    
-    private function add_simple_where($property,$relation,$value,$connect='and') {
-        $result = array('connect'=>$connect,
-                        'table'=>$this->get_table($property),
-                        'where'=>$property->get_where($relation,$value));
-        if (isset($this->where['simple'])) {
-            $this->where['simple'][] = $result;
-        } else {
-            $this->where['simple'] = [$result];
-        }
+
+    private function add_where($property,$relation,$value,$connection='and') {
+        $letter = $this->request_table($property,$relation,$value);
+        $where = array('connect'=>$connection,'string'=>$property->get_where($relation,$value,$letter));
+        $this->where[] = $where;
     }
-    
-    private function add_calc_where($property,$relation,$value,$connect='and') {
-        $result = array('connect'=>$connect,
-            'table'=>$this->get_calc_table(),
-            'where'=>$property->get_where($relation,$value));
-        if (isset($this->where['calc'])) {
-            $this->where['calc'][] = $result;
-        } else {
-            $this->where['calc'] = [$result];
+
+    private function request_table($property,$relation,$value) {
+        $table_name = $property->get_table_name($relation,$value);
+        if (!isset($this->used_tables[$table_name])) {
+            $letter= $this->next_table++;
+            $table_join = $property->get_table_join($relation,$value,$letter);
+            $this->used_tables[$table_name] = array('letter'=>$letter,'join'=>$table_join);
         }
-    }
-    
-    private function get_calc_table() {
-        if (!isset($this->used_tables['calc'])) {
-            $this->used_tables['caching'] = $this->next_table++;
-        }
-        return $this->used_tables['caching'];
-        
-    }
-    
-    private function get_table($property) {
-        if (!isset($this->used_tables[($property->get_class())::$table_name])) {
-            $this->used_tables[($property->get_class())::$table_name] = $this->next_table++;
-        }
-        return $this->used_tables[($property->get_class())::$table_name];
+        return $this->used_tables[$table_name]['letter'];
     }
     
     public function limit($delta,$limit) {
@@ -108,7 +83,7 @@ class query_builder {
     
     public function set_calling_class($calling_class) {
         $this->calling_class = $calling_class;
-        $this->used_tables[$calling_class::$table_name] = 'a';
+        $this->used_tables[$calling_class::$table_name] = array('letter'=>'a');
         return $this;
     }
     
@@ -149,63 +124,25 @@ class query_builder {
     private function get_where_querystr() {
         $result = 'select '.$this->searchfor.' from '.$this->get_used_tables().' where ';
         $first = true;
-        if (isset($this->where['simple'])) {
-            $result .= $this->get_simple_where();
-            $first = false;
-        }
-        if (isset($this->where['calc'])) {
-            $result .= $this->get_calc_where($first);
-            $first = false;
-        }
-        return $result;
-    }
-    
-    private function get_calc_where($first) {
-        $result = '';
-        foreach ($this->where['calc'] as $where) {
+        foreach ($this->where as $where) {
             if (!$first) {
-                $result .= $where['connection'];
-            } else {
-                $first = false;
+                $result .= $where['connect'];
             }
-            $result .= $where['table'].'.'.$where['where'];
+            $first = false;
+            $result .= $where['string'];
         }
-        return $result;
-    }
-    
-    private function get_simple_where() {
-        $result = '';
-        $first = true;
-        foreach ($this->where['simple'] as $where) {
-            if (!$first) {
-                $result .= $where['connection'];
-            } else {
-                $first = false;
-            }
-            $result .= $where['table'].'.'.$where['where'];
-        }
-        return $result;
+        return $result.' group by a.id';
     }
     
     private function get_used_tables() {
-        $first = true;
-        $result = '';
-        foreach ($this->used_tables as $table => $letter) {            
-            switch ($table) {
-                case 'caching':
-                    if (!$first) {
-                        $result .= ' inner join caching as '.$letter.' on a.id = '.$letter.'.object_id';                        
-                    } else {
-                        $result .= 'caching as '.$letter;                        
-                    }
-                    break;
-                default:
-                    if (!$first) {
-                        $result .= ' inner join '.$table.' as '.$letter.' on a.id = '.$letter.'.id';
-                    } else {
-                        $result .= $table.' as '.$letter;
-                        $first = false;
-                    }
+        $result = $this->calling_class::$table_name." as a";
+        foreach ($this->used_tables as $table => $info) {            
+            if ($info['letter'] !== 'a') {
+                if (is_string($info['join'])) {
+                    $result .= ' inner join '.$table.' as '.$info['letter'].' '.$info['join'];                    
+                } else {
+                    $result .= $info['join']->get_special_join($info['letter']);
+                }
             }
         }
         return $result;

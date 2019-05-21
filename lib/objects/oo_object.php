@@ -427,6 +427,7 @@ class oo_object extends \Sunhill\propertieshaving {
 // ======================= Statisches Proprtyhandling =============================	
 	protected static function setup_properties() {
 	    parent::setup_properties(); 
+	    self::add_property('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
 	}

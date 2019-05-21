@@ -2,6 +2,8 @@
 
 namespace Sunhill\Properties;
 
+//use DeepCopy\Exception\PropertyException;
+use Illuminate\Support\Facades\DB;
 class PropertyException extends \Exception {}
 
 class InvalidValueException extends PropertyException {}
@@ -270,4 +272,58 @@ class oo_property extends \Sunhill\base {
 	public function add_hook($action,$hook,$subaction,$target) {
 	   $this->hooks[] = ['action'=>$action,'hook'=>$hook,'subaction'=>$subaction,'target'=>$target];    
 	}
+	
+	// **************************** Suchfunktionen **********************************
+	final public function get_where($relation,$value,$letter) {
+	    if (!$this->is_allowed_relation($relation, $value)) {
+	        throw new PropertyException("Nicht erlaubte Relation '$relation'");
+	    }
+	    return $this->get_individual_where($relation,$value,$letter);
+	}
+	
+	public function get_table_name($relation,$where) {
+	   $classname = $this->get_class();
+	   return $classname::$table_name;
+	}
+	
+	public function get_table_join($relation,$where,$letter) {
+	    return "on a.id = $letter.id";
+	}
+	
+	protected function get_individual_where($relation,$value,$letter) {
+	    if ($relation == 'in') {
+	        $result = $letter.'.'.$this->get_name()." in (";
+	        $first = true;
+	        foreach ($value as $single_value) {
+	            if (!$first) {
+	                $result .= ',';
+	            }
+	            $first = false;
+	           $result .= DB::connection()->getPdo()->quote($single_value);
+	        }
+	        return $result.')';
+	    }
+	    return $letter.'.'.$this->get_name().$relation."'".$value."'";	    
+	}
+	
+	protected function is_allowed_relation(string $relation,$value) {
+	    switch ($relation) {
+	        case '=':
+	        case '<':
+	        case '>':
+	        case '>=':
+	        case '<=':
+	        case '<>':
+                return is_scalar($value); break;
+	        case 'in':
+	            return is_array($value); break;
+	        default:
+	            return false;
+	    }
+	}
+	
+	protected function escape(string $value) {
+	    return DB::connection()->getPdo()->quote($value);	    
+	}
+	
 }

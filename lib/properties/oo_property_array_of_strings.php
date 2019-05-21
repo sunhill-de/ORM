@@ -77,5 +77,59 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	    }
 	}
 	
+	public function get_table_name($relation,$where) {
+	    return "stringobjectassigns";
+	}
+	
+	public function get_table_join($relation,$where,$letter) {
+	    return "on a.id = $letter.container_id";
+	}
+	
+	protected function get_individual_where($relation,$value,$letter) {
+	    switch ($relation) {
+	        case 'has':
+	            return "$letter.element_id = ".$this->escape($value); break;
+	        case 'has not':
+	            return "not $letter.element_id = ".$this->escape($value); break;
+	        case 'one of':
+	            $first = true;
+	            $result = '';
+	            foreach ($value as $single_value) {
+	                $single_value = $this->escape($single_value);
+	                if (!$first) {
+	                    $result .= ' or ';
+	                }
+	                $first = false;
+	                $result .= "$letter.element_id = $single_value";
+	            }
+	            return $result; break;
+	        case 'all of':
+	            $first = true;
+	            $result = '';
+	            foreach ($value as $single_value) {
+	                $single_value = $this->escape($single_value);
+	                if (!$first) {
+	                    $result .= ' and ';
+	                }
+	                $first = false;
+	                $result .= "$letter.element_id = $single_value";
+	            }
+	            return $result; break;
+	        case 'none of':
+	            $first = true;
+	            $result = '';
+	            foreach ($value as $single_value) {
+	                $single_value = $this->escape($single_value);
+	                if (!$first) {
+	                    $result .= ' and ';
+	                }
+	                $first = false;
+	                $result .= "not $letter.element_id = $single_value";
+	            }
+	            return $result; break;
+	    }
+	}
+	
+	
 	
 }

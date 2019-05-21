@@ -103,4 +103,19 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	public function get_diff_array() {
 	    return $this->get_array_diff();
 	}
+	
+	protected function is_allowed_relation(string $relation,$value) {
+	    switch ($relation) {
+	        case 'has':
+	        case 'has not':
+	            return is_scalar($value); break;	            
+	        case 'one of':
+	        case 'none of':
+	        case 'all of':
+	            return is_array($value); break;
+	        default:
+	            return false;
+	    }
+	}
+	
 }
