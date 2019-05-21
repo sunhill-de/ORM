@@ -66,10 +66,11 @@ class ObjectSearchTest extends ObjectCommon
         DB::statement("create table searchtestA (id int primary key,Aint int,Anosearch int,Achar varchar(255))");
         DB::statement("create table searchtestB (id int primary key,Bint int,Bchar varchar(255))");
         DB::statement("create table searchtestC (id int primary key)");
+        $dummy_str = '\Sunhill\Test\ts_dummy';
         $this->insert_into('objects',['id','classname','created_at','updated_at'],
             [
                 // 4 x Dummies für diverse Arrays
-                [1,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [1,$dummy_str,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [2,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [3,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [4,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
@@ -93,7 +94,7 @@ class ObjectSearchTest extends ObjectCommon
         $this->insert_into('searchtestA',['id','Aint','Anosearch','Achar'],
             [
                 [5,111,1,'ABC'],[6,222,1,'ADE'],[7,333,1,'BCC'],[8,990,1,'XYZ'],[9,999,1,'XCX'],
-                [10,500,1,'GGG'],[11,501,1,'GGF'],[12,502,1,'GGT'],[13,502,1,'GGZ'],[14,503,1,'GTG'],
+                [10,500,1,'GGG'],[11,501,1,'ABC'],[12,502,1,'GGT'],[13,502,1,'GGZ'],[14,503,1,'GTG'],
                 [15,503,1,'GGG']
             ]);
         $this->insert_into('searchtestB',['id','Bint','Bchar'],
@@ -128,6 +129,8 @@ class ObjectSearchTest extends ObjectCommon
                 [2,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagB',0,0],
                 [3,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagC',0,2],
                 [4,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagD',0,0],
+                [5,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagE',0,0],
+                [6,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagF',0,0],
             ]);
         $this->insert_into('tagcache',['id','name','tag_id','created_at','updated_at'],
             [
@@ -136,11 +139,13 @@ class ObjectSearchTest extends ObjectCommon
                 [3,'TagC',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [4,'TagC.TagB',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],                
                 [5,'TagD',4,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [6,'TagE',5,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [7,'TagF',6,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
             ]);
         $this->insert_into('tagobjectassigns',['container_id','tag_id'],
             [
-                [5,1],[5,2], // testA(5)->TagA,TagB
-                [6,1],[6,3]  // testA(6)->TagA,TagC.TagB
+                [5,1],[5,2],[5,5], // testA(5)->TagA,TagB,TagE
+                [6,1],[6,3],[6,6]  // testA(6)->TagA,TagC.TagB,TagF
             ]);
         $this->insert_into('objectobjectassigns',['container_id','element_id','field','index'],
             [
@@ -185,7 +190,8 @@ class ObjectSearchTest extends ObjectCommon
                 if (!$first) {
                     $querystr .= ',';
                 }
-                $querystr .= "'".$value."'";    
+                $value = DB::connection()->getPdo()->quote($value);
+                $querystr .= $value;    
                 $first = false;
             }
             $querystr .= ')';
@@ -243,16 +249,20 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestB",'Bint','<>',602,[10,11,14,15]],
             ["searchtestA",'Aint','<',502,[5,6,7,10,11]],
             ["searchtestC",'Bint','=',603,15],
+            ["searchtestA",'Aint','in',[111,222],[5,6]],
             
             ["searchtestA",'Achar','=','ADE',6],
+            ["searchtestA",'Achar','=','ABC',[5,11]],
+            ["searchtestB",'Achar','=','ABC',11],
             ["searchtestA",'Achar','=','NÜX',null],
-            ["searchtestA",'Achar','<','B',[5,6]],
+            ["searchtestA",'Achar','<','B',[5,6,11]],
             ["searchtestA",'Achar','>','X',[8,9]],
             ["searchtestB",'Bchar','<>','CCC',[10,11,13,14,15]],
             ["searchtestA",'Achar','<','GGH',[5,6,7,10,11,15]],
             ["searchtestC",'Achar','=','GGG',15],
+            ["searchtestA",'Achar','in',['GGF','GGT'],[11,12]],
             
-            ["searchtestA",'Achar','begins with','A',[5,6]],
+            ["searchtestA",'Achar','begins with','A',[5,6,11]],
             ["searchtestA",'Achar','begins with','B',7],
             ["searchtestA",'Achar','begins with','2',null],
             ["searchtestA",'Achar','ends with','Z',[8,13]],
@@ -269,6 +279,63 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestA",'Acalc','begins with','503',[14,15]],
             ["searchtestA",'Acalc','begins with','666',null],
             ["searchtestA",'Acalc','begins with','222',6],
+            ["searchtestA",'Acalc','ends with','ADE',6],
+             
+            ["searchtestA",'tags','has','TagA',[5,6]],
+            ["searchtestA",'tags','has','TagC.TagB',6],
+            ["searchtestA",'tags','has','TagD',null],
+            ["searchtestA",'tags','has not','TagA',[7,8,9,10,11,12,13,14,15]],
+            ["searchtestA",'tags','one of',['TagE','TagF'],[5,6]],
+            ["searchtestA",'tags','none of',['TagE'],[6,7,8,9,10,11,12,13,14,15]],
+            ["searchtestA",'tags','all of',['TagA','TagE'],5],
+
+            ["searchtestA",'Asarray','has','testA',[7,8]],
+            ["searchtestA",'Asarray','has','testC',[8,13]],
+            ["searchtestA",'Asarray','has','testC',[8,13]],
+            ["searchtestB",'Asarray','has','testC',13],
+            ["searchtestA",'Asarray','has','testD',null],
+            ["searchtestA",'Asarray','has not','testA',[5,6,9,10,11,12,13,14,15]],
+            ["searchtestA",'Asarray','one of',['testB','testC'],[7,8,13]],
+            ["searchtestA",'Asarray','none of',['testC','testA'],[5,6,9,10,11,12,14,15]],
+            ["searchtestA",'Asarray','all of',['testC','testA'],8],
+ 
+            ["searchtestA",'Aobject','=',1,[7,13]],
+            ["searchtestA","Aobject",'=',2,8],
+            ["searchtestB","Aobject","=",1,13],
+            ["searchtestA","Aobject","in",[1,2],[7,8,13]],
+            ["searchtestA","Aobject","=",null,[5,6,9,10,11,12,14,15]],
+            
+            ["searchtestA","Aoarray","has",[3],9],
+            ["searchtestA","Aoarray","has",[1],null],
+            ["searchtestA","Aoarray","one of",[3,1],9],
+            ["searchtestA","Aoarray","all of",[3,4],9],
+            ["searchtestA","Aoarray","none of",[3,4],[5,6,7,8,10,11,12,13,14,15]],
         ];
+    }
+    
+    public function testPassObject() {
+        $this->prepare_tables();
+        $test = \Sunhill\Objects\oo_object::load_object_of(1);
+        $result = \Tests\Feature\searchtestA::search()->where('Aobject','=',$test)->get();
+        $this->assertEquals([7,13],$result);
+        
+    }
+    
+    public function testGetFirst() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first();
+        $this->assertEquals(5,$result);        
+    }
+    
+    public function testGetFirstObject() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first_object();
+        $this->assertEquals(5,$result->get_id());
+    }
+    
+    public function testGetObjects() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->get_objects();
+        $this->assertEquals([5,11],[$result[0]->get_id(),$result[1]->get_id()]);
     }
 }
