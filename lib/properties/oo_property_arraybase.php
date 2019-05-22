@@ -113,6 +113,8 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	        case 'none of':
 	        case 'all of':
 	            return is_array($value); break;
+	        case 'empty':
+	            return true; break;
 	        default:
 	            return false;
 	    }

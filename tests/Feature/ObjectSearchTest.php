@@ -39,6 +39,7 @@ class searchtestB extends searchtestA {
         self::calculated('Bcalc')->searchable();
         self::object('Bobject')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
         self::arrayofstrings('Bsarray')->searchable();
+        self::arrayofobjects('Boarray')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
     }
     
     public function calculate_Bcalc() {
@@ -155,6 +156,7 @@ class ObjectSearchTest extends ObjectCommon
                 [13,1,'Bobject',0],
                 [9,3, 'Aoarray',0],
                 [9,4, 'Aoarray',1],
+                [13,4, 'Boarray',0],
             ]);
         $this->insert_into('stringobjectassigns',['container_id','element_id','field','index'],
             [
@@ -287,7 +289,7 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestA",'tags','has not','TagA',[7,8,9,10,11,12,13,14,15]],
             ["searchtestA",'tags','one of',['TagE','TagF'],[5,6]],
             ["searchtestA",'tags','none of',['TagE'],[6,7,8,9,10,11,12,13,14,15]],
-            ["searchtestA",'tags','all of',['TagA','TagE'],5],
+            ["searchtestA",'tags','all of',['TagA','TagE'],5], 
 
             ["searchtestA",'Asarray','has','testA',[7,8]],
             ["searchtestA",'Asarray','has','testC',[8,13]],
@@ -297,8 +299,9 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestA",'Asarray','has not','testA',[5,6,9,10,11,12,13,14,15]],
             ["searchtestA",'Asarray','one of',['testB','testC'],[7,8,13]],
             ["searchtestA",'Asarray','none of',['testC','testA'],[5,6,9,10,11,12,14,15]],
-            ["searchtestA",'Asarray','all of',['testC','testA'],8],
- 
+            ["searchtestA",'Asarray','all of',['testC','testA'],8], 
+            ["searchtestA",'Asarray','empty',null,[5,6,9,10,11,12,14,15]],
+            
             ["searchtestA",'Aobject','=',1,[7,13]],
             ["searchtestA","Aobject",'=',2,8],
             ["searchtestB","Aobject","=",1,13],
@@ -310,7 +313,8 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestA","Aoarray","one of",[3,1],9],
             ["searchtestA","Aoarray","all of",[3,4],9],
             ["searchtestA","Aoarray","none of",[3,4],[5,6,7,8,10,11,12,13,14,15]],
-           ];
+            ["searchtestB","Boarray","empty",null,[10,11,12,14,15]],
+        ];
     }
     
     public function testPassObject() {

@@ -41,6 +41,9 @@ class query_builder {
 
     private function request_table($property,$relation,$value) {
         $table_name = $property->get_table_name($relation,$value);
+        if (empty($table_name)) {
+            return 'zz';
+        }
         if (!isset($this->used_tables[$table_name])) {
             $letter= $this->next_table++;
             $table_join = $property->get_table_join($relation,$value,$letter);

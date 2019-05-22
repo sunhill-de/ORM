@@ -86,11 +86,11 @@ class oo_property_tags extends oo_property_arraybase {
 	}
 	
 	public function get_table_name($relation,$where) {
-	    return "tagcache";
+	    return "";
 	}
 	
 	public function get_table_join($relation,$where,$letter) {
-	    return $this;
+	    return "";
 	}
 	
 	public function get_special_join($letter) {
@@ -100,9 +100,11 @@ class oo_property_tags extends oo_property_arraybase {
 	protected function get_individual_where($relation,$value,$letter) {
 	    switch ($relation) {
 	        case 'has':
-	            return "$letter.name = ".$this->escape($value); break; 
+	            return "a.id in (select x.container_id from tagobjectassigns as x inner join tagcache as y on y.tag_id = x.tag_id where y.name = ".
+	   	            $this->escape($value).")";
 	        case 'has not':
-	            return "$letter.name <> ".$this->escape($value); break;
+	            return "a.id not in (select x.container_id from tagobjectassigns as x inner join tagcache as y on y.tag_id = x.tag_id where y.name = ".
+	   	            $this->escape($value).")";
 	        case 'one of':
 	            $first = true;
 	            $result = '';
@@ -112,9 +114,9 @@ class oo_property_tags extends oo_property_arraybase {
 	                    $result .= ' or ';
 	                }
 	                $first = false;
-	                $result .= "$letter.name = $single_value";
+	                $result .= "y.name = $single_value";
 	            }
-	            return $result; break;
+	            return "a.id in (select x.container_id from tagobjectassigns as x inner join tagcache as y on y.tag_id = x.tag_id where ".$result.")";
 	        case 'all of':
 	            $first = true;
 	            $result = '';
@@ -124,7 +126,8 @@ class oo_property_tags extends oo_property_arraybase {
 	                    $result .= ' and ';
 	                }
 	                $first = false;
-	                $result .= "$letter.name = $single_value";
+	                $result .= "a.id in (select xx.container_id from tagobjectassigns as xx inner join tagcache as xy on xy.tag_id = xx.tag_id ".
+	   	                       "where xy.name = $single_value)";
 	            }
 	            return $result; break;
 	        case 'none of':
@@ -133,12 +136,12 @@ class oo_property_tags extends oo_property_arraybase {
 	            foreach ($value as $single_value) {
 	                $single_value = $this->escape($single_value);
 	                if (!$first) {
-	                    $result .= ' and ';
+	                    $result .= ' or ';
 	                }
 	                $first = false;
-                    $result .= "not $letter.name = $single_value";
+	                $result .= "y.name = $single_value";
 	            }
-	            return $result; break;
+	            return "a.id not in (select x.container_id from tagobjectassigns as x inner join tagcache as y on y.tag_id = x.tag_id where ".$result.")";
 	    }
 	}
 	

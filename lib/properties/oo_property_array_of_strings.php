@@ -78,19 +78,21 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	}
 	
 	public function get_table_name($relation,$where) {
-	    return "stringobjectassigns";
+	    return "";
 	}
 	
 	public function get_table_join($relation,$where,$letter) {
-	    return "on a.id = $letter.container_id";
+	    return "";
 	}
 	
 	protected function get_individual_where($relation,$value,$letter) {
 	    switch ($relation) {
 	        case 'has':
-	            return "$letter.element_id = ".$this->escape($value); break;
+	            return "a.id in (select x.container_id from stringobjectassigns as x where x.element_id = ".
+	   	            $this->escape($value)." and x.field = '".$this->get_name()."')";
 	        case 'has not':
-	            return "not $letter.element_id = ".$this->escape($value); break;
+	            return "a.id not in (select x.container_id from stringobjectassigns as x where x.element_id = ".
+	   	            $this->escape($value)." and x.field = '".$this->get_name()."')";
 	        case 'one of':
 	            $first = true;
 	            $result = '';
@@ -100,19 +102,21 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	                    $result .= ' or ';
 	                }
 	                $first = false;
-	                $result .= "$letter.element_id = $single_value";
+	                $result .= "x.element_id = $single_value";
 	            }
-	            return $result; break;
+	            return "a.id in (select x.container_id from stringobjectassigns as x where (".$result.")".
+	   	               " and x.field = '".$this->get_name()."')";
 	        case 'all of':
-	            $first = true;
 	            $result = '';
+	            $first = true;
 	            foreach ($value as $single_value) {
 	                $single_value = $this->escape($single_value);
 	                if (!$first) {
 	                    $result .= ' and ';
 	                }
 	                $first = false;
-	                $result .= "$letter.element_id = $single_value";
+	                $result .= "a.id in (select xx.container_id from stringobjectassigns as xx ".
+	   	                "where xx.element_id = $single_value and xx.field = '".$this->get_name()."')";
 	            }
 	            return $result; break;
 	        case 'none of':
@@ -121,15 +125,18 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	            foreach ($value as $single_value) {
 	                $single_value = $this->escape($single_value);
 	                if (!$first) {
-	                    $result .= ' and ';
+	                    $result .= ' or ';
 	                }
 	                $first = false;
-	                $result .= "not $letter.element_id = $single_value";
+	                $result .= "x.element_id = $single_value";
 	            }
-	            return $result; break;
+	            return "a.id not in (select x.container_id from stringobjectassigns as x where (".$result.")".
+	   	            " and x.field = '".$this->get_name()."')"; break;
+	        case 'empty':
+	            return "a.id not in (select xx.container_id from stringobjectassigns as xx where ".
+	   	               "xx.field = '".$this->get_name()."')";
 	    }
 	}
-	
-	
+		
 	
 }
