@@ -232,6 +232,7 @@ class ObjectSearchTest extends ObjectCommon
         $this->prepare_tables();
         searchtestA::search()->where('Anosearch','=',1)->get();
     }
+  
     /**
      * @dataProvider SimpleProvider
      */
@@ -342,4 +343,27 @@ class ObjectSearchTest extends ObjectCommon
         $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->get_objects();
         $this->assertEquals([5,11],[$result[0]->get_id(),$result[1]->get_id()]);
     }
+
+    /**
+     * @dataProvider ComplexProvider
+     * @group complex
+     */
+    public function testComplexSearchIDs($searchclass,$field1,$relation1,$value1,$field2,$relation2,$value2,$expect) {
+        $this->prepare_tables();
+        $classname = "\\Tests\\Feature\\".$searchclass;
+        $result = $classname::search()->where($field1,$relation1,$value1)->where($field2,$relation2,$value2)->get();
+        $this->assertEquals($expect,$result);
+    }
+    
+    public function ComplexProvider() {
+        return [
+            ["searchtestA",'Aint','<',300,'Aint','<>','222',5],
+            ["searchtestA",'Aint','<',300,'Achar','=','ABC',5],
+            ["searchtestB",'Aint','>',300,'Bint','=','602',[12,13]],
+            ["searchtestA",'tags','has','TagA','Aint','<>',222,5],
+            ["searchtestA",'tags','has','TagA','tags','has','TagC',6],
+        ];
+    }
+    
+    
 }

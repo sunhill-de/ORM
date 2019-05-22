@@ -129,7 +129,7 @@ class query_builder {
         $first = true;
         foreach ($this->where as $where) {
             if (!$first) {
-                $result .= $where['connect'];
+                $result .= ' '.$where['connect'].' ';
             }
             $first = false;
             $result .= $where['string'];
