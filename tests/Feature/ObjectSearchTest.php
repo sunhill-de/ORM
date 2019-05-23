@@ -332,9 +332,45 @@ class ObjectSearchTest extends ObjectCommon
         $this->assertEquals(5,$result);        
     }
     
+    /**
+     * @group Focus
+     */
+    public function testGetFirstWithOneResult() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->first();
+        $this->assertEquals(5,$result);
+    }
+    
+    /**
+     * @group Focus
+     */
+    public function testGetFirstWithNoResult() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->first();
+        $this->assertEquals(null,$result);
+    }
+    
     public function testGetFirstObject() {
         $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first_object();
+        $this->assertEquals(5,$result->get_id());
+    }
+    
+    /**
+     * @group Focus
+     */
+    public function testGetFirstObjectWithNoResult() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->first_object();
+        $this->assertEquals(null,$result);
+    }
+    
+    /**
+     * @group Focus
+     */
+    public function testGetFirstObjectWithOneResult() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->first_object();
         $this->assertEquals(5,$result->get_id());
     }
     
@@ -344,6 +380,24 @@ class ObjectSearchTest extends ObjectCommon
         $this->assertEquals([5,11],[$result[0]->get_id(),$result[1]->get_id()]);
     }
 
+    /**
+     * @group Focus
+     */
+    public function testGetObjectsWithOneResult() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->get_objects();
+        $this->assertEquals(5,$result);
+    }
+    
+    /**
+     * @group Focus
+     */
+    public function testGetObjectsWithNoResult() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->get_objects();
+        $this->assertEquals(null,$result);
+    }
+    
     /**
      * @dataProvider ComplexProvider
      * @group complex

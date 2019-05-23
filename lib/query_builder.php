@@ -63,16 +63,26 @@ class query_builder {
     public function first() {
         $this->limit = '0,1';
         $result = $this->execute_query();
-        return $result[0];
+        if (is_array($result)) {
+            return $result[0];
+        } else {
+            return $result;
+        }
     }
     
     public function get_objects() {
         $query = $this->get();
-        $result = array();
-        foreach ($query as $id) {
-            $result[] = \Sunhill\Objects\oo_object::load_object_of($id);
+        if (empty($query)) {
+            return null;
+        } else if (is_array($query)) {
+            $result = array();
+            foreach ($query as $id) {
+                $result[] = \Sunhill\Objects\oo_object::load_object_of($id);
+            }
+            return $result;            
+        } else {
+            return $query;
         }
-        return $result;
     }
     
     public function first_object() {
