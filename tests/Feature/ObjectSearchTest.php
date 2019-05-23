@@ -362,6 +362,10 @@ class ObjectSearchTest extends ObjectCommon
             ["searchtestB",'Aint','>',300,'Bint','=','602',[12,13]],
             ["searchtestA",'tags','has','TagA','Aint','<>',222,5],
             ["searchtestA",'tags','has','TagA','tags','has','TagC',6],
+            ["searchtestA",'Acalc','<>','111=ABC','tags','has','TagA',6],
+            ["searchtestA",'Aobject','=',1,'Aint','<','502',7],
+            ["searchtestB","Boarray","empty",null,'Asarray','has','testC',null],
+            ["searchtestA",'Asarray','has','testA','Asarray','has','testC',8],
         ];
     }
     
