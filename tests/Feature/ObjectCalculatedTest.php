@@ -59,4 +59,14 @@ class ObjectCalculatedTest extends ObjectCommon
         $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->get_id())->where('fieldname','=','calcfield')->first();
         $this->assertEquals('DEF',$hilf->value);
     }
+    
+    public function testChangeCalc() {
+        $test = new TestClass;
+        $test->commit();
+        \Sunhill\Objects\oo_object::flush_cache();
+        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $this->assertEquals('ABC',$read->calcfield);
+        $read->return = 'DEF';
+        $this->assertEquals('DEF',$read->calcfield);
+    }
 }
