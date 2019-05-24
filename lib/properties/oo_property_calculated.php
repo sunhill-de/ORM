@@ -23,6 +23,7 @@ class oo_property_calculated extends oo_property_field {
 	    if (!$this->initialized) {
 	        $method_name = 'calculate_'.$this->name;
 	        $this->value = $this->owner->$method_name();
+	        $this->initialized = true;
 	    }
         return $this->value;
 	}
