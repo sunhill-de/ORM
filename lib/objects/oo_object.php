@@ -210,6 +210,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	                    $newobject->$name[] = $this->$name[$i];
 	                }
 	                break;
+	            case 'calculated':
+	                break;
 	            default:
 	                $newobject->$name = $this->$name;
 	        }
@@ -261,6 +263,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	                for ($i=0;$i<count($source->$name);$i++) {
 	                    $this->$name[] = $source->$name[$i];
 	                }
+	                break;
+	            case 'calculated':
 	                break;
 	            default:
 	                $this->$name = $source->$name;

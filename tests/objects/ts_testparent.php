@@ -25,7 +25,11 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 		self::object('parentobject')->set_allowed_objects(['\Sunhill\test\ts_dummy'])->set_default(null);
 		self::arrayofstrings('parentsarray');
 		self::arrayofobjects('parentoarray')->set_allowed_objects(['\Sunhill\Test\ts_dummy']);
+		self::calculated('parentcalc');
 	}
 	
+	public function calculate_parentcalc() {
+	    return $this->parentint."A";
+	}
 }
 
