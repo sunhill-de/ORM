@@ -54,6 +54,8 @@ class ObjectPromoteTest extends ObjectCommon
         $this->assertEquals(1,$read->childint);
         $this->assertEquals(2,$read->childchildint);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
+        $this->assertEquals('123A',$read->parentcalc);
+        $this->assertEquals(123,$read->parentobject->dummyint);
     }
     
     public function testTwoStepPromotion() {
