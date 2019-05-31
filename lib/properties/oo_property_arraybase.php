@@ -55,6 +55,7 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    }
 	    $this->value_removed($this->value[$offset]);
 	    unset($this->value[$offset]);
+	    $this->value = array_values($this->value); // Reindex
 	}
 	
 	protected function value_added($value) {

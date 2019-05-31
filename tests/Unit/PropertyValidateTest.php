@@ -117,6 +117,22 @@ class PropertyValidateTest extends TestCase
     	$test->get_value()[] = $object;
     	$this->assertEquals(23,$test->get_value()[0]->parentint);
     }
+    /**
+     * @group reindex
+     */
+    public function testArrayOfObjectReindex() {
+        $test = new \Sunhill\Properties\oo_property_array_of_objects(null);
+        $test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
+        $object1 = new \Sunhill\Test\ts_testchild();
+        $object1->parentint = 23;
+        $test->get_value()[] = $object1;
+        $object2 = new \Sunhill\Test\ts_testchild();
+        $object2->parentint = 34;
+        $test->get_value()[] = $object2;
+        unset($test->get_value()[0]);
+        $this->assertEquals(34,$test->get_value()[0]->parentint);
+        
+    }
     
     /**
      * @expectedException \Sunhill\Validators\ValidatorException
