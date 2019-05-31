@@ -21,7 +21,7 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
 
     public static $table_name = 'hookings';
     
-    protected static $hook_str = '';
+    public static $hook_str = '';
     
     protected static function setup_properties() {
         parent::setup_properties();
@@ -36,7 +36,7 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         parent::setup_hooks();
     }
     
-    protected function field_changed($params) {
+    protected function field_changing($params) {
         if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
@@ -46,7 +46,17 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         }
     }
     
-    protected function sarray_changed($diff) {
+    protected function field_changed($params) {
+        if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
+            $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
+            $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
+            self::$hook_str = '(ofield:'.$from.'=>'.$to.')';
+        } else {
+            self::$hook_str = '('.$params['subaction'].':'.$params['FROM']."=>".$params['TO'].")";
+        }
+    }
+    
+    protected function sarray_changing($diff) {
         $hilf = '(sarray:NEW:';
         foreach ($diff['NEW'] as $new) {
             $hilf .= $new;
@@ -58,7 +68,19 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         $this->hookstate = $hilf.')';
     }
     
-    protected function oarray_changed($diff) {
+    protected function sarray_changed($diff) {
+        $hilf = '(sarray:NEW:';
+        foreach ($diff['NEW'] as $new) {
+            $hilf .= $new;
+        }
+        $hilf .= ' REMOVED:';
+        foreach ($diff['REMOVED'] as $new) {
+            $hilf .= $new;
+        }
+        self::$hook_str = $hilf.')';
+    }
+    
+    protected function oarray_changing($diff) {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
             $hilf .= $new->dummyint;
@@ -68,6 +90,18 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
             $hilf .= $new->dummyint;
         }
         $this->hookstate = $hilf.')';        
+    }
+    
+    protected function oarray_changed($diff) {
+        $hilf = '(oarray:NEW:';
+        foreach ($diff['NEW'] as $new) {
+            $hilf .= $new->dummyint;
+        }
+        $hilf .= ' REMOVED:';
+        foreach ($diff['REMOVED'] as $new) {
+            $hilf .= $new->dummyint;
+        }
+        self::$hook_str = $hilf.')';
     }
     
     protected function child_changed($params) {
@@ -86,11 +120,50 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     
 }
 
+class HookingChild extends HookingObject {
+ 
+    public static $child_hookstr;
+    
+    public static $table_name = 'childhookings';
+    
+    protected static function setup_properties() {
+        parent::setup_properties();
+        self::integer('childhooking_int')->set_default(0);
+        self::arrayofobjects('childhooking_oarray')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
+    }
+    
+    protected function setup_hooks() {
+        parent::setup_hooks();
+        $this->add_hook('UPDATED_PROPERTY','childint_changed','childhooking_int');
+        $this->add_hook('UPDATED_PROPERTY','childoarray_changed','childhooking_oarray');
+        
+    }
+    
+    protected function childint_changed($diff) {
+        self::$child_hookstr = '('.$diff['FROM'].'=>'.$diff['TO'].')';
+    }
+    
+    protected function childoarray_changed($diff) {
+        $hilf = '(oarray:NEW:';
+        foreach ($diff['NEW'] as $new) {
+            $hilf .= $new->dummyint;
+        }
+        $hilf .= ' REMOVED:';
+        foreach ($diff['REMOVED'] as $new) {
+            $hilf .= $new->dummyint;
+        }
+        self::$child_hookstr = $hilf.')';
+    }
+    
+}
+
 class ObjectHookTest extends ObjectCommon
 {
     protected function setupHookTables() {
         DB::statement("drop table if exists hookings ");
+        DB::statement("drop table if exists childhookings ");
         DB::statement("create table hookings (id int primary key,hooking_int int,hookstate varchar(100))");       
+        DB::statement("create table childhookings (id int primary key,childhooking_int int)");
     }
     
     /**
@@ -112,6 +185,37 @@ class ObjectHookTest extends ObjectCommon
         $this->assertEquals($expect,$read->get_hook_str());
     }
     
+    /**
+     * @dataProvider HooksProvider
+     * @param unknown $init_hook
+     * @param unknown $change_hook
+     * @param unknown $excpect
+     */
+    public function testInlineHooks($init_hook,$change_hook,$expect) {
+        $this->setupHookTables();
+        $test = $init_hook();
+        $test->commit();
+        $change_hook($test);
+        $test->commit();        
+        $this->assertEquals($expect,$test->get_hook_str());        
+    }
+    
+    /**
+     * @dataProvider PostHooksProvider
+     * @param unknown $init_hook
+     * @param unknown $change_hook
+     * @param unknown $excpect
+     */
+    public function testPostHooks($init_hook,$change_hook,$expect) {
+        $this->setupHookTables();
+        $test = $init_hook();
+        $test->commit();
+        $change_hook($test);
+        $test->commit();
+        $this->assertEquals($expect,$test::$hook_str);
+    }
+    
+    
     public function HooksProvider() {
         return [
             [function() { // Einfacher Test bei simple-Field
@@ -119,8 +223,8 @@ class ObjectHookTest extends ObjectCommon
                 $result->hooking_int = 222;
                  return $result;
             },
-            function($change) {
-                $change->add_hook('UPDATING_PROPERTY','field_changed','hooking_int');
+            function($change,$postfix='ING') {
+                $change->add_hook('UPDATING_PROPERTY','field_changing','hooking_int');
                 $change->hooking_int = 333;
             },'(hooking_int:222=>333)'],
             
@@ -129,8 +233,8 @@ class ObjectHookTest extends ObjectCommon
                 $result->strarray[] = 'ABC';
                 return $result;
             },
-            function($change) { 
-                $change->add_hook('UPDATING_PROPERTY','sarray_changed','strarray');
+            function($change,$postfix='ING') { 
+                $change->add_hook('UPDATING_PROPERTY','sarray_changing','strarray');
                 $change->strarray[] = 'DEF';
             },'(sarray:NEW:DEF REMOVED:)'],
             
@@ -139,8 +243,8 @@ class ObjectHookTest extends ObjectCommon
                 $result->strarray[] = 'ABC';
                 return $result;
             },
-            function($change) {
-                $change->add_hook('UPDATING_PROPERTY','sarray_changed','strarray');
+            function($change,$postfix='ING') {
+                $change->add_hook('UPDATING_PROPERTY','sarray_changing','strarray');
                 unset($change->strarray[0]);
             },'(sarray:NEW: REMOVED:ABC)'],
 
@@ -148,8 +252,8 @@ class ObjectHookTest extends ObjectCommon
                 $result = new HookingObject();
                 return $result;
             },
-            function($change) {
-                $change->add_hook('UPDATING_PROPERTY','field_changed','ofield');
+            function($change,$postfix='ING') {
+                $change->add_hook('UPDATING_PROPERTY','field_changing','ofield');
                 $dummy = new \Sunhill\Test\ts_dummy();
                 $dummy->dummyint = 123;
                 $change->ofield = $dummy;
@@ -162,8 +266,8 @@ class ObjectHookTest extends ObjectCommon
                 $result->ofield = $dummy;
                 return $result;
             },            
-            function($change) {
-                $change->add_hook('UPDATING_PROPERTY','field_changed','ofield');
+            function($change,$postfix='ING') {
+                $change->add_hook('UPDATING_PROPERTY','field_changing','ofield');
                 $change->ofield = null;
             },'(ofield:123=>NULL)'],            
 
@@ -174,8 +278,8 @@ class ObjectHookTest extends ObjectCommon
                 $result->objarray[] = $dummy;
                 return $result;
             },
-            function($change) {
-                $change->add_hook('UPDATING_PROPERTY','oarray_changed','objarray');
+            function($change,$postfix='ING') {
+                $change->add_hook('UPDATING_PROPERTY','oarray_changing','objarray');
                 $dummy = new \Sunhill\Test\ts_dummy();
                 $dummy->dummyint = 345;
                 $change->objarray[] = $dummy;
@@ -188,12 +292,179 @@ class ObjectHookTest extends ObjectCommon
                 $result->objarray[] = $dummy;
                 return $result;
             },
-            function($change) {
-                $change->add_hook('UPDATING_PROPERTY','oarray_changed','objarray');
+            function($change,$postfix='ING') {
+                $change->add_hook('UPDATING_PROPERTY','oarray_changing','objarray');
                 unset($change->objarray[0]);
             },'(oarray:NEW: REMOVED:345)'],
             
+            [function() { // Test bei Object-Array, Eintrag entfernt
+                $result = new HookingObject();
+                $dummy1 = new \Sunhill\Test\ts_dummy();
+                $dummy1->dummyint = 345;
+                $dummy2 = new \Sunhill\Test\ts_dummy();
+                $dummy2->dummyint = 456;
+                $result->objarray[] = $dummy1;
+                $result->objarray[] = $dummy2;
+                return $result;
+            },
+            function($change,$postfix='ING') {
+                $change->add_hook('UPDATING_PROPERTY','oarray_changing','objarray');
+                unset($change->objarray[1]);
+            },'(oarray:NEW: REMOVED:456)'],
+            
             ];
+    }
+    
+    public function PostHooksProvider() {
+        return [
+            [function() { // Einfacher Test bei simple-Field
+                $result = new HookingObject();
+                $result->hooking_int = 222;
+                return $result;
+            },
+            function($change,$postfix='ED') {
+                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','field_changed','hooking_int');
+                $change->hooking_int = 333;
+            },'(hooking_int:222=>333)'],
+            
+            [function() {// Test bei String-Array, Eintrag hinzugefügt
+                $result = new HookingObject();
+                $result->strarray[] = 'ABC';
+                return $result;
+            },
+            function($change,$postfix='ED') {
+                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','sarray_changed','strarray');
+                $change->strarray[] = 'DEF';
+            },'(sarray:NEW:DEF REMOVED:)'],
+            
+            [function() { // Test bei String-Array, Eintrag entfernt
+                $result = new HookingObject();
+                $result->strarray[] = 'ABC';
+                return $result;
+            },
+            function($change,$postfix='ED') {
+                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','sarray_changed','strarray');
+                unset($change->strarray[0]);
+            },'(sarray:NEW: REMOVED:ABC)'],
+            
+            [function() { // Test bei Objekt-Felder
+                $result = new HookingObject();
+                return $result;
+            },
+            function($change,$postfix='ED') {
+                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','field_changed','ofield');
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 123;
+                $change->ofield = $dummy;
+            },'(ofield:NULL=>123)'],
+            
+            [function() { // Test bei Objekt-Felder
+                $result = new HookingObject();
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 123;
+                $result->ofield = $dummy;
+                return $result;
+            },
+            function($change,$postfix='ED') {
+                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','field_changed','ofield');
+                $change->ofield = null;
+            },'(ofield:123=>NULL)'],
+            
+            [function() {// Test bei Objekt-Array, Eintrag hinzugefügt
+                $result = new HookingObject();
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 123;
+                $result->objarray[] = $dummy;
+                return $result;
+            },
+            function($change,$postfix='ED') {
+                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 345;
+                $change->objarray[] = $dummy;
+            },'(oarray:NEW:345 REMOVED:)'],
+            
+            [function() { // Test bei String-Array, Eintrag entfernt
+                $result = new HookingObject();
+                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy->dummyint = 345;
+                $result->objarray[] = $dummy;
+                return $result;
+            },
+            function($change,$postfix='ED') {
+                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
+                unset($change->objarray[0]);
+            },'(oarray:NEW: REMOVED:345)'],
+            
+            [function() { // Test bei Object-Array, Eintrag entfernt
+                $result = new HookingObject();
+                $dummy1 = new \Sunhill\Test\ts_dummy();
+                $dummy1->dummyint = 345;
+                $dummy2 = new \Sunhill\Test\ts_dummy();
+                $dummy2->dummyint = 456;
+                $result->objarray[] = $dummy1;
+                $result->objarray[] = $dummy2;
+                return $result;
+            },
+            function($change,$postfix='ED') {
+                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
+                unset($change->objarray[1]);
+            },'(oarray:NEW: REMOVED:456)'],
+            
+            ];
+    }
+    
+    /**
+     * @group once
+     */
+    public function testOnceAgain1() {
+        $this->setupHookTables();
+        $test = new HookingChild();
+        $test::$child_hookstr = '';
+        $test->hooking_int = 666;
+        $test->childhooking_int = 123;
+        $test->commit();
+        $test->childhooking_int = 234;
+        $test->commit();
+        $this->assertEquals('(123=>234)',$test::$child_hookstr);
+    }
+    
+    /**
+     * @group once
+     */
+    public function testOnceAgain2() {
+        $this->setupHookTables();
+        $test = new HookingChild();
+        $test::$child_hookstr = '';
+        $dummy1 = new \Sunhill\Test\ts_dummy();
+        $dummy1->dummyint = 345;
+        $dummy2 = new \Sunhill\Test\ts_dummy();
+        $dummy2->dummyint = 456;
+        $test->objarray[] = $dummy1;
+        $test->objarray[] = $dummy2;
+        $test->commit();
+        unset($test->objarray[0]);
+        $test->commit();
+        $this->assertEquals('',$test::$child_hookstr);
+    }
+    
+    /**
+     * @group once
+     */
+    public function testOnceAgain3() {
+        $this->setupHookTables();
+        $test = new HookingChild();
+        $test::$child_hookstr = '';
+        $dummy1 = new \Sunhill\Test\ts_dummy();
+        $dummy1->dummyint = 345;
+        $dummy2 = new \Sunhill\Test\ts_dummy();
+        $dummy2->dummyint = 456;
+        $test->childhooking_oarray[] = $dummy1;
+        $test->childhooking_oarray[] = $dummy2;
+        $test->commit();
+        unset($test->childhooking_oarray[0]);
+        $test->commit();
+        $this->assertEquals('(oarray:NEW: REMOVED:345)',$test::$child_hookstr);
     }
     
     private function prepare_object_test() {

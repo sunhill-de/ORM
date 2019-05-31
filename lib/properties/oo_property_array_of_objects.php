@@ -78,6 +78,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	 * @see \Sunhill\Properties\oo_property::inserted()
 	 */
 	public function inserted(int $id) {
+	    $this->set_dirty(false);
 	    foreach ($this->value as $index => $object) {
     	        $object->commit();
 	            $model = new \App\objectobjectassign();
