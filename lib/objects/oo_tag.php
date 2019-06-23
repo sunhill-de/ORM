@@ -208,4 +208,25 @@ class oo_tag extends \Sunhill\base {
 		}
 		$this->commit();		
 	}
+	
+	// =============================== Statische Methoden ================================================
+	public static function add_tag($tag) {
+	    
+	}
+	
+	public static function delete_tag($tag) {
+	    
+	}
+	
+	public static function search_tag($tag) {
+	    
+	}
+	
+	public static function tree_tags($parent=null) {
+	    
+	}
+	
+	public static function get_orphaned_tags() {
+	    
+	}
 }

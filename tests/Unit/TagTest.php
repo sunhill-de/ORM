@@ -107,4 +107,23 @@ class TagTest extends \Tests\sunhill_testcase
 	public function testNotUnique() {
 		$tag = new \Sunhill\Objects\oo_tag('TagChildB');
 	}
+	
+	/**
+	 * @group static
+	 */
+	public function testAddTagNoParentPass() {
+	    \Sunhill\Objects\oo_tag::add_tag('addtagtest');
+	    $tag = new \Sunhill\Objects\oo_tag('addtagtest');
+	    $this->assertNotNull($tag);
+	}
+	
+	/**
+	 * @group static
+	 */
+	public function testAddTagParentPass() {
+	    \Sunhill\Objects\oo_tag::add_tag('addtagparent.addtagtest2');
+	    $tag = new \Sunhill\Objects\oo_tag('addtagparent.addtagtest2');
+	    $this->assertNotNull($tag->get_parent());
+	}
+	
 }
