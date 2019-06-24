@@ -3,14 +3,23 @@
 namespace Sunhill\Objects;
 
 use App\tag;
+use Illuminate\Support\Facades\DB;
 
 define('TO_LEAFABLE',0x0001);
 
+class TagException extends \Exception {}
+
 class oo_tag extends \Sunhill\base {
-	
-	public $parent;
-	
+		
 	protected $model;
+	
+	protected $tag_id;
+	
+	protected $options = 0;
+	
+	protected $parent = null;
+	
+	protected $name = '';
 	
 	/**
 	 * Konstruktor für ein Tag
@@ -26,9 +35,6 @@ class oo_tag extends \Sunhill\base {
 		} else if (is_string($id)) {
 			$this->search($id,$autocreate);
 		} else if (is_null($id)) {
-			$this->model = new tag;
-			$this->model->parent_id = 0;
-			$this->model->options   = 0;
 		} else {
 			// @todo Exeption werfen!
 		}
@@ -39,8 +45,8 @@ class oo_tag extends \Sunhill\base {
 	 * @return number
 	 */
 	public function get_id() {
-		if ($this->model->id) {
-			return $this->model->id;
+		if ($this->tag_id) {
+			return $this->tag_id;
 		} else {
 			return 0;
 		}
@@ -69,7 +75,7 @@ class oo_tag extends \Sunhill\base {
 	 * @return string
 	 */
 	public function get_name() {
-		return $this->model->name;
+		return $this->name;
 	}
 	
 	/**
@@ -78,29 +84,29 @@ class oo_tag extends \Sunhill\base {
 	 * @return \Crawler\oo_tag
 	 */
 	public function set_name($name) {
-		$this->model->name = $name;
+		$this->name = $name;
 		return $this;
 	}
 	
 	public function get_options() {
-		return $this->model->options;
+		return $this->options;
 	}
 	
 	public function set_options($options) {
-		$this->model->options = $options;
+		$this->options = $options;
 		return $this;
 	}
 	
 	public function is_leafable() {
-		return $this->model->options & TO_LEAFABLE;
+		return $this->options & TO_LEAFABLE;
 	}
 	
 	public function set_leafable() {
-		$this->model->options &= TO_LEAFABLE;
+		$this->options &= TO_LEAFABLE;
 	}
 	
 	public function unset_leafable() {
-		$this->model->options &= !TO_LEAFABLE;
+		$this->options &= !TO_LEAFABLE;
 	}
 	
 	/**
@@ -115,19 +121,7 @@ class oo_tag extends \Sunhill\base {
 		} else {
 			$this->update();
 		}
-		$this->flush_tagcache();
-	}
-	
-	private function flush_tagcache() {
-		\App\tagcache::where('tag_id','=',$this->get_id())->delete();
-		$fullpath = explode('.',$this->get_fullpath());
-		while (!empty($fullpath)) {
-			$entry = new \App\tagcache;
-			$entry->name = implode('.',$fullpath);
-			$entry->tag_id = $this->get_id();
-			$entry->save();
-			array_shift($fullpath);
-		}
+		self::flush_tagcache($this->get_id(),$this->get_fullpath());
 	}
 	
 	/**
@@ -135,18 +129,31 @@ class oo_tag extends \Sunhill\base {
 	 */
 	private function create() {
 		if (isset($this->parent)) {
-			$this->model->parent_id = $this->parent->get_id();
+			$parent_id = $this->parent->get_id();
 		} else {
-			$this->model->parent_id = 0;
+			$parent_id = 0;
 		}
-		$this->model->save();		
+	    $this->tag_id = DB::table('tags')->insertGetId([
+	        'name'=>$this->name,
+	        'parent_id'=>$parent_id,
+    	    'options'=>$this->options,
+	    ]);
 	}
 	
 	/**
 	 * Speichert das geänderte Tag
 	 */
 	private function update() {
-		$this->model->save();
+	    if (isset($this->parent)) {
+	        $parent_id = $this->parent->get_id();
+	    } else {
+	        $parent_id = 0;
+	    }
+	    DB::table('tags')->where('id',$this->tag_id)->update([
+	        'name'=>$this->name,
+	        'parent_id'=>$parent_id,
+	        'options'=>$this->options,
+	    ]);
 	}
 	
 	/**
@@ -154,12 +161,15 @@ class oo_tag extends \Sunhill\base {
 	 * @param int $id Die ID des Tags
 	 */
 	public function load($id) {
-		$this->model = tag::where('id','=',$id)->first();
-		if (is_null($this->model)) {
+		$data = DB::table('tags')->where('id',$id)->first();
+		if (is_null($data)) {
 		    throw new \Exception("Tag mit der id '$id' nicht gefunden.");
+		    return;
 		}
-		if ($this->model->parent_id) {
-			$this->parent = new oo_tag($this->model->parent_id);
+		$this->options = $data->options;
+		$this->name = $data->name;
+		if ($data->parent_id) {
+		    $this->parent = self::load_tag($data->parent_id);
 		}
 	}
 	
@@ -181,45 +191,122 @@ class oo_tag extends \Sunhill\base {
 	 * @param boolean $autocreate
 	 */
 	protected function search($tag,$autocreate) {
-		$results = \App\tagcache::where('name','=',$tag)->get();
-		if (count($results) == 0) {
-			if ($autocreate) {
-				$this->create_tag($tag);
-			} else {
-				// @todo Behandlung nicht gefundener Einträge ohne $autocreate
-				throw new \Exception("Das Tag '$tag' wurde nicht gefunden.");
-			}
-		} else if (count($results) == 1) {
-			$this->load($results[0]->tag_id);
-		} else {
-			// @todo Behandlung uneindeutiger Einträge!
-			throw new \Exception("Das Tag '$tag' ist nicht eindeutig zuordbar.");
+		$results = self::search_tag($tag);
+		if (is_null($results)) {
+		    if ($autocreate) {
+		        return self::add_tag($tag);
+		    } else {
+		        // @todo Behandlung nicht gefundener Einträge ohne $autocreate
+		        throw new TagException("Das Tag '$tag' wurde nicht gefunden.");
+		    }		    
 		}
+		if (is_array($results)) {
+		    throw new TagException("Das Tag '$tag' ist nicht eindeutig zuordbar.");
+		    return false;    
+		}
+		return $results;
 	}
 	
-	private function create_tag($tag) {
-		$this->model = new tag;
-		$tag_components = explode('.',$tag);
-		$tag = array_pop($tag_components);		
-		$this->set_name($tag)->set_options(TO_LEAFABLE);
-		if (!empty($tag_components)) { // Gibt es ein Eltern-Tag?
-			$glued = implode('.',$tag_components);
-			$this->set_parent(new oo_tag($glued,true));
-		}
-		$this->commit();		
+    /**
+     Löscht das Tag und alle Referenzen darauf
+     */
+	public function delete() {
+	    $this->delete_references();
+	    $this->delete_children();
+	    $this->delete_this();
 	}
 	
+	private function delete_references() {
+	    DB::table('tagcache')->where('tag_id',$this->get_id())->delete();	    
+	}
+	
+	private function delete_children() {
+	    
+	}
+	
+	private function delete_this() {
+        DB::table('tagcache')->delete($this->tag_id);	    
+	}
 	// =============================== Statische Methoden ================================================
-	public static function add_tag($tag) {
-	    
+	/**
+	 * Läd ein Tag mit der übergebenen ID
+	 * Statischer Wrapper von oo_tag()->load()
+	 * @param int $id
+	 * @return \Sunhill\Objects\oo_tag
+	 */
+	public static function load_tag(int $id) {
+	   $result = new oo_tag($id);
+	   return $result;
 	}
 	
-	public static function delete_tag($tag) {
-	    
+	public static function add_tag($tagname) {
+	    $tag = new oo_tag();
+	    $tag_components = explode('.',$tagname);
+	    $tagname = array_pop($tag_components);
+	    $tag->set_name($tagname)->set_options(TO_LEAFABLE);
+	    if (!empty($tag_components)) { // Gibt es ein Eltern-Tag?
+	        $glued = implode('.',$tag_components);
+	        $tag->set_parent(new oo_tag($glued,true));
+	    }
+	    $tag->commit();
+	    self::flush_tagcache($tag->get_id(),$tag->get_fullpath());
+	    return $tag;
 	}
 	
-	public static function search_tag($tag) {
-	    
+	public static function delete_tag(string $tagname) {
+	    $tag = self::search_tag($tagname);
+	    if (is_null($tag)) {
+	        throw new TagException("Tag '$tagname' nicht gefunden.");
+	        return;
+	    }
+	    if (is_array($tag)) {
+	        throw new TagException("Tag '$tagname' nicht eindeutig.");
+	        return;	        
+	    }
+	    $tag->delete();
+	}
+	
+	/**
+	 * Sucht nach dem übergebenen Tag
+	 * Gibt null zurück, wenn keines gefunden wurde
+	 * Gibt das Tag zurück, wenn genau eines gefunden wurde
+	 * Gibt ein Array von tags zurück, wenn mehrere gefunden wurden
+	 * @param string $tag
+	 * @return NULL|\Sunhill\Objects\oo_tag|\Sunhill\Objects\oo_tag[]
+	 */
+	public static function search_tag(string $tag) {
+	    $results = DB::table('tagcache')->where('name','=',$tag)->get();
+	    if (count($results) == 0) {
+	        return null;
+	    } else if (count($results) == 1) {
+	        return self::load_tag($results[0]->tag_id);
+	    } else {
+          $return = array();
+          foreach ($results as $result) {
+              $return[] = self::load_tag($result->tag_id);
+          }
+          return $return;
+	    }	    
+	}
+	
+	public static function search_or_add_tag($tag) {
+	   $tag = self::search_tag($tag);
+	   if (is_null($tag)) {
+	       $tag = self::add_tag($tag);
+	   }
+	   return $tag;
+	}
+	
+	public static function flush_tagcache($id,$tagpath) {
+	    DB::table('tagcache')->where('tag_id',$id)->delete();
+	    $fullpath = explode('.',$tagpath);
+	    while (!empty($fullpath)) {
+	        DB::table('tagcache')->insert([
+	            'name'=>implode('.',$fullpath),
+	            'tag_id'=>$id
+	        ]);
+	        array_shift($fullpath);
+	    }
 	}
 	
 	public static function tree_tags($parent=null) {
