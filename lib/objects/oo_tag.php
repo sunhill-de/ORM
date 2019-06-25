@@ -247,7 +247,7 @@ class oo_tag extends \Sunhill\loggable {
 	}
 	
 	private function delete_this() {
-        DB::table('tagcache')->delete($this->tag_id);	    
+	    DB::table('tags')->where('id',$this->get_id())->delete();	    
 	}
 	// =============================== Statische Methoden ================================================
 	/**

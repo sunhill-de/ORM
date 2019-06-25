@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Crawler;
+use Illuminate\Support\Facades\DB;
 
 class TagTest extends \Tests\sunhill_testcase
 {
@@ -171,9 +172,36 @@ class TagTest extends \Tests\sunhill_testcase
 	 * @group static
 	 */
 	public function testStaticDeleteTag() {
+	    $this->BuildTestClasses();
+	    $this->clear_system_tables();
+	    $this->seed();
 	    \Sunhill\Objects\oo_tag::delete_tag('TagA');
 	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagA');
 	    $this->assertNull($tag);
+	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticDeleteTagEraseTagTable() {
+	    $this->BuildTestClasses();
+	    $this->clear_system_tables();
+	    $this->seed();
+	    \Sunhill\Objects\oo_tag::delete_tag('TagA');
+        $result = DB::table('tags')->where('name','=','TagA')->first();
+        $this->assertNull($result);
+	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticDeleteTagEraseTagcacheTable() {
+	    $this->BuildTestClasses();
+	    $this->clear_system_tables();
+	    $this->seed();
+	    \Sunhill\Objects\oo_tag::delete_tag('TagA');
+	    $result = DB::table('tagcache')->where('tag_id','=',1)->first();
+	    $this->assertNull($result);
 	}
 	
 	/**
