@@ -211,4 +211,20 @@ class TagTest extends \Tests\sunhill_testcase
 	                        ]
 	    ],$tree);	    
 	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticOrphans() {
+	    $this->BuildTestClasses();
+	    $this->clear_system_tables();
+	    $this->seed();
+	    $object = new \Sunhill\Test\ts_dummy();
+	    $object->dummyint = 1;
+	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagA.TagChildA');
+	    $object->tags->stick($tag);
+	    $object->commit();
+	    $orphans = \Sunhill\Objects\oo_tag::get_orphaned_tags();
+	    $this->assertEquals(['TagB.TagChildB.TagChildB'],$orphans);
+	}
 }

@@ -350,6 +350,15 @@ class oo_tag extends \Sunhill\loggable {
 	}
 	
 	public static function get_orphaned_tags() {
-	    
+	   $results = DB::table('tags as a')->select('a.id as id')->
+	      leftJoin('tags as b','b.parent_id','=','a.id')->
+	      leftJoin('tagobjectassigns as c','c.tag_id','=','a.id')->
+	      whereNull('b.id')->whereNull('c.container_id')->get();
+       $result = array();
+       foreach ($results as $entry) {
+           $tag = oo_tag::load_tag($entry->id);           
+           $result[] = $tag->get_fullpath();   
+       }
+       return $result;
 	}
 }
