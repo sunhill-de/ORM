@@ -11,8 +11,6 @@ class TagException extends \Exception {}
 
 class oo_tag extends \Sunhill\base {
 		
-	protected $model;
-	
 	protected $tag_id;
 	
 	protected $options = 0;
@@ -168,6 +166,7 @@ class oo_tag extends \Sunhill\base {
 		}
 		$this->options = $data->options;
 		$this->name = $data->name;
+		$this->tag_id = $id;
 		if ($data->parent_id) {
 		    $this->parent = self::load_tag($data->parent_id);
 		}
@@ -194,16 +193,26 @@ class oo_tag extends \Sunhill\base {
 		$results = self::search_tag($tag);
 		if (is_null($results)) {
 		    if ($autocreate) {
-		        return self::add_tag($tag);
+		        $tag_obj = self::add_tag($tag);
+		        $this->name = $tag_obj->get_name();
+		        $this->parent = $tag_obj->get_parent();
+		        $this->options = $tag_obj->get_options();
+		        $this->tag_id = $tag_obj->get_id();
 		    } else {
 		        // @todo Behandlung nicht gefundener Einträge ohne $autocreate
 		        throw new TagException("Das Tag '$tag' wurde nicht gefunden.");
-		    }		    
+		    }
+		    return $tag_obj;
 		}
 		if (is_array($results)) {
 		    throw new TagException("Das Tag '$tag' ist nicht eindeutig zuordbar.");
 		    return false;    
 		}
+		$this->name = $results->get_name();
+		$this->parent = $results->get_parent();
+		$this->options = $results->get_options();
+		$this->tag_id = $results->get_id();
+		
 		return $results;
 	}
 	
