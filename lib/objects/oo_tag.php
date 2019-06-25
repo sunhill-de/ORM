@@ -2,14 +2,13 @@
 
 namespace Sunhill\Objects;
 
-use App\tag;
 use Illuminate\Support\Facades\DB;
 
 define('TO_LEAFABLE',0x0001);
 
 class TagException extends \Exception {}
 
-class oo_tag extends \Sunhill\base {
+class oo_tag extends \Sunhill\loggable {
 		
 	protected $tag_id;
 	
@@ -29,9 +28,14 @@ class oo_tag extends \Sunhill\base {
 	 */
 	public function __construct($id=null,$autocreate=false) {
 		if (is_numeric($id)) {
-			$this->load($id);
+			/**
+			 * @deprecated Das suchen und hinzufügen von Tags sollte über die statischen Methoden erfolgen
+			 */
+		    $this->load($id);
+            $this->warning('Deprecated (oo_tags): Dem Konstruktor sollten keine Felder mehr übergeben werden');
 		} else if (is_string($id)) {
 			$this->search($id,$autocreate);
+			$this->warning('Deprecated (oo_tags): Dem Konstruktor sollten keine Felder mehr übergeben werden');
 		} else if (is_null($id)) {
 		} else {
 			// @todo Exeption werfen!
@@ -230,7 +234,16 @@ class oo_tag extends \Sunhill\base {
 	}
 	
 	private function delete_children() {
-	    
+	    $entries = DB::table('tagobjectassigns')->where('tag_id',$this->get_id())->get();
+	    foreach ($entries as $entry) {
+	        $this->delete_child($entry->container_id);
+	    }
+	}
+	
+	private function delete_child($object_id) {
+	    $object = oo_object::load_object_of($object_id);
+	    $object->tags->remove($this);
+	    $object->commit();
 	}
 	
 	private function delete_this() {

@@ -111,7 +111,39 @@ class TagTest extends \Tests\sunhill_testcase
 	/**
 	 * @group static
 	 */
-	public function testAddTagNoParentPass() {
+	public function testStaticSearchTagPass() {
+	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagA');
+	    $this->assertEquals(1,$tag->get_id());
+	}
+
+	/**
+	 * @group static
+	 */
+	public function testStaticSearchTagWithParent() {
+	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagB.TagChildB');
+	    $this->assertEquals(4,$tag->get_id());
+	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticSearchTagFail() {
+	    $tag = \Sunhill\Objects\oo_tag::search_tag('notexisting');
+	    $this->assertNull($tag);
+	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticSearchTagMultiple() {
+	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagChildB');
+	    $this->assertTrue(is_array($tag));
+	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticAddTagNoParentPass() {
 	    \Sunhill\Objects\oo_tag::add_tag('addtagtest');
 	    $tag = new \Sunhill\Objects\oo_tag('addtagtest');
 	    $this->assertNotNull($tag);
@@ -120,10 +152,45 @@ class TagTest extends \Tests\sunhill_testcase
 	/**
 	 * @group static
 	 */
-	public function testAddTagParentPass() {
+	public function testStaticAddTagParentPass() {
 	    \Sunhill\Objects\oo_tag::add_tag('addtagparent.addtagtest2');
 	    $tag = new \Sunhill\Objects\oo_tag('addtagparent.addtagtest2');
 	    $this->assertNotNull($tag->get_parent());
 	}
 	
+	/**
+	 * @group static
+	 */
+	public function testStaticAddTagCache() {
+	    \Sunhill\Objects\oo_tag::add_tag('addtagparent.addtagtest3');
+	    $tag = new \Sunhill\Objects\oo_tag('addtagtest3');
+	    $this->assertNotNull($tag->get_parent());	    
+	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticDeleteTag() {
+	    \Sunhill\Objects\oo_tag::delete_tag('TagA');
+	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagA');
+	    $this->assertNull($tag);
+	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticDeleteTagObjects() {
+	    $this->BuildTestClasses();
+	    $this->clear_system_tables();
+	    $this->seed();
+	    $object = new \Sunhill\Test\ts_dummy(); 
+	    $object->dummyint = 1;
+	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagA');
+	    $object->tags->stick($tag);
+	    $object->commit();
+	    $tag = \Sunhill\Objects\oo_tag::delete_tag('TagA');
+	    \Sunhill\Objects\oo_object::flush_cache();
+	    $object = \Sunhill\Objects\oo_object::load_object_of($object->get_id());
+	    $this->assertEquals(0,count($object->tags));
+	}
 }
