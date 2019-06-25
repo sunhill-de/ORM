@@ -193,4 +193,22 @@ class TagTest extends \Tests\sunhill_testcase
 	    $object = \Sunhill\Objects\oo_object::load_object_of($object->get_id());
 	    $this->assertEquals(0,count($object->tags));
 	}
+	
+	/**
+	 * @group static
+	 */
+	public function testStaticTree() {
+	    $this->BuildTestClasses();
+	    $this->clear_system_tables();
+	    $this->seed();
+	    $tree = \Sunhill\Objects\oo_tag::tree_tags();
+	    $this->assertEquals([['name'=>'TagA','children'=>
+	                               [['name'=>'TagChildA','children'=>[]]]],
+	                         ['name'=>'TagB','children'=>
+	                               [['name'=>'TagChildB','children'=>
+	                                   [['name'=>'TagChildB','children'=>[]]]
+	                               ]]
+	                        ]
+	    ],$tree);	    
+	}
 }

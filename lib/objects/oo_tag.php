@@ -332,7 +332,21 @@ class oo_tag extends \Sunhill\loggable {
 	}
 	
 	public static function tree_tags($parent=null) {
-	    
+	    $tags = DB::table('tags')->get();
+	    $result = self::search_for_parent($tags, 0);
+	    return $result;
+	}
+	
+	private static function search_for_parent($tags,$parent) {
+	    $result = array();
+	    foreach ($tags as $tag) {
+	       $parent_id = is_null($tag->parent_id)?0:$tag->parent_id;
+	       if ($parent_id == $parent) {
+	           $result[] = array('name'=>$tag->name,
+	                             'children'=>self::search_for_parent($tags,$tag->id));
+	       }
+	    }
+	    return $result;
 	}
 	
 	public static function get_orphaned_tags() {
