@@ -3,6 +3,7 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\DB;
 
 require_once(dirname(__FILE__).'/lib/ObjectTestScenario.php');
 
@@ -29,5 +30,10 @@ abstract class TestCase extends BaseTestCase
             \Tests\setup_db();
             self::$db_up = true;
         } */
+    }
+    
+    public function tearDown() {
+        DB::connection()->setPdo(null);
+        parent::tearDown();
     }
 }
