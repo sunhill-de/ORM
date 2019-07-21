@@ -49,6 +49,7 @@ class oo_property_externalhooks extends oo_property_field {
            $entry->action = $hook['action'];
            $entry->subaction = $hook['subaction'];
            $entry->hook = $hook['hook'];
+           $entry->payload = '';
            $entry->save();
 	   }
 	   $this->set_dirty(false);

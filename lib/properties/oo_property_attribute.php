@@ -30,6 +30,7 @@ class oo_property_attribute extends oo_property {
 	    $attributevalue->attribute_id = $attribute->id;
 	    $attributevalue->object_id = $this->owner->get_id();
 	    $attributevalue->value = $this->get_value();
+	    $attributevalue->textvalue = '';
 	    $attributevalue->save();
 	}
 

@@ -18,12 +18,14 @@ class ObjectAttributeTest extends ObjectCommon
         $entry->name = 'int_attribute';
         $entry->type = 'int';
         $entry->allowedobjects = "\\Sunhill\\Test\\ts_dummy";
+        $entry->property = '';
         $entry->save();
         $entry = new \App\attribute();
         $entry->id = 2;
         $entry->name = 'attribute1';
         $entry->type = 'int';
         $entry->allowedobjects = "\\Sunhill\\Test\\ts_testparent";
+        $entry->property = '';
         $entry->save();        
     }
 
