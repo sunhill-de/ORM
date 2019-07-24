@@ -16,6 +16,7 @@ class CreateObjectsTable extends Migration
         Schema::create('objects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('classname');
+            $table->string('keyfield');
             $table->timestamps();
         });
     }
