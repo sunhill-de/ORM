@@ -30,7 +30,9 @@ class oo_property_calculated extends oo_property_field {
 	
 	public function load(int $id) {
         $values = DB::table('caching')->select('value')->where('object_id','=',$id)->where('fieldname','=',$this->name)->first();	   
-	    $this->value = $values->value;
+        if (!empty($values)) {
+            $this->value = $values->value;
+        }
 	}
 	
 	/**
@@ -39,7 +41,10 @@ class oo_property_calculated extends oo_property_field {
 	 * @see \Sunhill\Properties\oo_property::updated()
 	 */
 	public function updated(int $id) {
-	    DB::table('caching')->where('object_id','=',$id)->where('fieldname','=',$this->name)->update(['value'=>$this->get_value()]);
+	    $value = $this->get_value();
+	    if (!is_null($value)) {
+	       DB::table('caching')->where('object_id','=',$id)->where('fieldname','=',$this->name)->update(['value'=>$this->get_value()]);
+	    }
 	}
 	
 	/**
@@ -48,7 +53,10 @@ class oo_property_calculated extends oo_property_field {
 	 * @see \Sunhill\Properties\oo_property::inserted()
 	 */
 	public function inserted(int $id) {
+	    $value = $this->get_value();
+	    if (!is_null($value)) {
 	        DB::table('caching')->insert(['object_id'=>$id,'fieldname'=>$this->name,'value'=>$this->get_value()]);
+	    }
 	}
 
 	public function get_table_name($relation,$where) {

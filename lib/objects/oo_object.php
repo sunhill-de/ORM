@@ -13,6 +13,8 @@ class oo_object extends \Sunhill\propertieshaving {
 
     public static $table_name = 'objects';
     
+    protected static $has_keyfield = false;
+    
 	public $default_ns = '\\App';		
 	
 	public function __construct() {
@@ -22,6 +24,19 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $this->properties['attribute_loader'] = self::create_property('attribute_loader','attribute_loader')->set_owner($this);
 	    
 	}
+	
+	final public function calculate_keyfield() {
+	    if (static::$has_keyfield) {
+	        return $this->get_keyfield();
+	    } else {
+	        return null;
+	    }
+	}
+	
+	protected function get_keyfield() {
+	   return;   
+	}
+	
 // ================================ Laden ========================================	
 	/**
 	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
@@ -83,7 +98,7 @@ class oo_object extends \Sunhill\propertieshaving {
         $this->insert_core_object();
 	    $simple_fields = $this->get_properties_with_feature('simple',null,'class');
         foreach ($simple_fields as $class_name => $fields_of_class) {
-            if ($class_name == '\\Sunhill\Objects\oo_object') {
+            if ($class_name == '\\Sunhill\\Objects\\oo_object') {
                 continue; // Wurde schon gespeichert
             } else {
                 $values = array();
@@ -434,6 +449,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    self::add_property('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
+	    self::calculated('keyfield')->searchable();
 	}
 
 	protected static function timestamp($name) {
