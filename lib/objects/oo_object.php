@@ -27,10 +27,23 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	final public function calculate_keyfield() {
 	    if (static::$has_keyfield) {
-	        return $this->get_keyfield();
+	        return $this->unify($this->get_keyfield());
 	    } else {
 	        return null;
 	    }
+	}
+	
+	private function unify(string $keyfield) {
+	    $id = oo_object::search()->where('keyfield','=',$keyfield)->first();
+        $seed = 1;
+	    while ($id) {
+	        if ($id == $this->get_id()) {
+	            return $keyfield;
+	        }
+	        $keyfield .= $seed++;
+	        $id = oo_object::search()->where('keyfield','=',$keyfield)->first();
+	    }
+	    return $keyfield;
 	}
 	
 	protected function get_keyfield() {

@@ -90,4 +90,15 @@ class ObjectKeyfieldTest extends ObjectCommon
         $result = keyfieldA::search()->where('keyfield','=','Key:234')->get();
         $this->assertFalse(is_null($result));
     }
+    
+    public function testDuplicateKeyfield() {
+        $this->prepare_tables();
+        $object = new keyfieldA();
+        $object->Aint = 234;
+        $object->commit();
+        $object2 = new keyfieldA();
+        $object2->Aint = 234;
+        $object2->commit();
+        $this->assertEquals('Key:2341',$object2->keyfield);
+    }
 }
