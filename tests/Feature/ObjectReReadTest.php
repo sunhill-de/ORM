@@ -70,7 +70,7 @@ class ObjectReReadTest extends ObjectCommon
 	
 	public function SimpleFieldProvider() {
 	    return [ 
-           /* [ //Einfacher Test für einfache Felder
+            [ //Einfacher Test für einfache Felder
                 'ts_testparent',
                 [   'parentchar'=>'ABC',
                     'parentint'=>123,
@@ -99,7 +99,7 @@ class ObjectReReadTest extends ObjectCommon
                     'parenttime'=>'22:22:22',
                     'parentenum'=>'testB'
                 ],
-            ],*/
+            ],
 	        [ //Einfacher Test für geerbte Felder beide modifiziert
 	            'ts_testchild',
 	            [   'parentchar'=>'ABC',

@@ -14,12 +14,10 @@ class oo_property_attribute_loader extends oo_property {
 		$this->initialized = true;
 	}
 	
-	public function load(int $id) {
-	    $values = DB::table('attributevalues')->join('attributes','attributevalues.attribute_id','=','attributes.id')->
-	              where('attributevalues.object_id','=',$this->owner->get_id())->get();
-	    foreach ($values as $value) {
-	        $attribute_name = $value->name;   
-	        $this->owner->$attribute_name = $value->value;
+	public function load(\Sunhill\Storage\storage_load $loader) {
+	    $values = $loader->get_entity('attributes');
+	    foreach ($values as $name => $value) {
+	        $this->owner->$name = $value;
 	    }	    
 	}
 

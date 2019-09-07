@@ -24,11 +24,12 @@ class oo_property_object extends oo_property_field {
 	 * {@inheritDoc}
 	 * @see \Sunhill\Properties\oo_property::load()
 	 */
-	public function load(int $id) {
-	    $reference = \App\objectobjectassign::where('container_id','=',$id)
-	               ->where('field','=',$this->get_name())->first();
+	public function load(\Sunhill\Storage\storage_load $storage) {
+        $name = $this->get_name();
+        $reference = $storage->$name;
 	    if (!empty($reference)) {
-    	    $object = \Sunhill\Objects\oo_object::load_object_of($reference->element_id);
+// @todo Lazy-Objectloading
+	        $object = \Sunhill\Objects\oo_object::load_object_of($reference);
     	    $this->value = $object;
     	    $this->initialized = true;
 	    }

@@ -73,37 +73,15 @@ class oo_object extends \Sunhill\propertieshaving {
 	protected function do_load() {
 	    if (!$this->is_loading()) {
 	        $this->state = 'loading';
-            $this->load_core_object();
-	        $this->load_simple_fields();
-            $this->load_other_properties();
+	        $loader = new \Sunhill\Storage\storage_load($this);
+	        $loader->set_inheritance($this->get_inheritance(true));
+	        $loader->load_object($this->get_id());
+            $properties = $this->get_properties_with_feature();
+            foreach ($properties as $property) {
+                $property->load($loader);
+            }
 	        $this->state = 'normal';
 	    }
-	}
-	
-	private function load_core_object() {
-        $core = DB::table('objects')->select('updated_at','created_at')->where('id','=',$this->get_id())->first();
-	    $this->updated_at = $core->updated_at;
-	    $this->created_at = $core->created_at;
-	}
-	
-	private function load_simple_fields() {
-	    $properties = $this->get_properties_with_feature('simple',null,'class');
-	    foreach ($properties as $class_name => $fields_of_class) {
-    	        if ($class_name == '\\Sunhill\Objects\oo_object') {
-    	            continue; // Wurde schon geladen
-    	        } 	           
-    	        $fields = DB::table($class_name::$table_name)->where('id','=',$this->get_id())->first();
-    	        foreach ($fields_of_class as $field_name => $field) {
-    	            $this->$field_name = $fields->$field_name;
-    	        }
-	    }
-	}
-	
-	private function load_other_properties() {
-	   $properties = $this->get_properties_with_feature('');
-	   foreach ($properties as $name => $property) {
-	      $property->load($this->get_id()); 
-	   }
 	}
 	
 // ========================= Einfügen =============================	
@@ -304,15 +282,20 @@ class oo_object extends \Sunhill\propertieshaving {
 	    
 	}
 	
-	public function get_inheritance() {
+	public function get_inheritance($full=false) {
 	     $parent_class_names = array();
 	     $parent_class_name = get_class($this);
+	     if ($full) {
+	         //$parent_class_names[] = $parent_class_name;
+	     }
 	     do {
-	         if ($parent_class_name == 'Sunhill\\Objects\\oo_object') {
-	             array_shift($parent_class_names);
+	         $parent_class_names[] = $parent_class_name;
+	         if (($parent_class_name == 'Sunhill\\Objects\\oo_object')) {
+	             if (!$full) {
+	                array_shift($parent_class_names);
+	             }
 	             return $parent_class_names;
 	         }
-	         $parent_class_names[] = $parent_class_name;
 	         //array_unshift($parent_class_names,$parent_class_name);
 	     } while ($parent_class_name = get_parent_class($parent_class_name));
 	     return $parent_class_names;

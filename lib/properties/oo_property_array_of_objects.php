@@ -47,12 +47,16 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    return $this->model_name;
 	}
 	
-	public function load(int $id) {
-	    $references = \App\objectobjectassign::where('container_id','=',$id)
-	                                           ->where('field','=',$this->get_name())->get();
-	    foreach ($references as $reference) {
-	        $object = \Sunhill\Objects\oo_object::load_object_of($reference->element_id);
-	        $this->value[$reference->index] = $object;
+	public function load(\Sunhill\Storage\storage_load $loader) {
+	    $name = $this->get_name();
+	    $references = $loader->$name;
+	    if (empty($references)) {
+	        return;
+	    }
+	    foreach ($references as $index => $reference) {
+	    // @todo Lazy-Objectloading
+	       $object = \Sunhill\Objects\oo_object::load_object_of($reference);
+	       $this->value[$index] = $object;
 	    }
 	    $this->set_dirty(false);
 	    $this->initialized = true;

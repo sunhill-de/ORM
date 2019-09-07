@@ -27,14 +27,7 @@ class oo_property_calculated extends oo_property_field {
 	    }
         return $this->value;
 	}
-	
-	public function load(int $id) {
-        $values = DB::table('caching')->select('value')->where('object_id','=',$id)->where('fieldname','=',$this->name)->first();	   
-        if (!empty($values)) {
-            $this->value = $values->value;
-        }
-	}
-	
+		
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt geupdated wurde
 	 * {@inheritDoc}

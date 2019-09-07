@@ -16,8 +16,8 @@ class oo_property_externalhooks extends oo_property_field {
 	 * {@inheritDoc}
 	 * @see \Sunhill\Properties\oo_property::load()
 	 */
-	public function load(int $id) {
-	    $hooks = \App\externalhook::where('container_id','=',$id)->get();
+	public function load(\Sunhill\Storage\storage_load $loader) {
+        $hooks = $loader->get_entity('externalhooks');
 	    foreach ($hooks as $hook) {
 	        $this->owner->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target_id']);
 	    }

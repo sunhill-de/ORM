@@ -265,7 +265,9 @@ class oo_property extends \Sunhill\base {
 	                 'TO'=>$this->get_value());
 	}
 	
-	public function load(int $id) {
+	public function load(\Sunhill\Storage\storage_load $loader) {
+	    $name = $this->get_name();
+	    $this->value = $loader->$name;
 	    $this->initialized = true; 
 	}
 	
