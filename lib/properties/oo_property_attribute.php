@@ -16,7 +16,7 @@ class oo_property_attribute extends oo_property {
 		$this->initialized = true;
 	}
 	
-	public function load(int $id) {
+	public function load(\Sunhill\Storage\storage_load $loader) {
 	}
 
 	/**

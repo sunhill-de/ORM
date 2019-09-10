@@ -24,6 +24,11 @@ class TestClass extends \Sunhill\Objects\oo_object {
     public function calculate_calcfield() {
         return $this->return;
     }
+    
+    public function set_return($value) {
+        $this->return = $value;
+        $this->get_property('calcfield')->set_dirty();
+    }
 }
 
 class ObjectCalculatedTest extends ObjectCommon

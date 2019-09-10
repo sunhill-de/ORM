@@ -16,7 +16,6 @@ class storage_load extends storage_base {
         $this->load_tags();
         $this->load_calculated();
         $this->load_externalhooks();
-        var_dump($this->entities);
     }
     
     private function load_core() {
@@ -29,11 +28,10 @@ class storage_load extends storage_base {
         foreach ($this->inheritance as $inheritance) {
             $table = $inheritance::$table_name;
             $result = DB::table($table)->where('id','=',$this->entities['id'])->first();
-            if (empty($result)) {
-                return;
-            }
-            foreach ($result as $name => $value) {
-                $this->entities[$name] = $value;
+            if (!empty($result)) {
+                foreach ($result as $name => $value) {
+                    $this->entities[$name] = $value;
+                }
             }
         }
     }
@@ -61,7 +59,7 @@ class storage_load extends storage_base {
             return;
         }
         foreach ($references as $reference) {
-            if (!isset($this->entities['field'])) {
+            if (!isset($this->entities[$reference->field])) {
                 $this->entities[$reference->field] = [];
             }
             $this->entities[$reference->field][$reference->index] = $reference->element_id;
@@ -106,7 +104,11 @@ class storage_load extends storage_base {
             return;
         }
         foreach($hooks as $hook) {
-            $this->entities['externalhooks'][] = $hook;
+            $line = [];
+            foreach ($hook as $key => $value) {
+                $line[$key] = $value;
+            }
+            $this->entities['externalhooks'][] = $line;
         }
     }
     
