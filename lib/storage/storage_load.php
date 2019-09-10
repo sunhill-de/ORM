@@ -9,15 +9,14 @@ class storage_load extends storage_base {
     public function load_object(int $id) {
         $this->entities = ['id'=> $id,'tags'=>[],'attributes'=>[],'externalhooks'=>[]];
         $this->load_core();
-        $this->load_parentchain();
+     //   $this->load_parentchain();
         $this->load_objects();
         $this->load_strings();
         $this->load_attributes();
         $this->load_tags();
         $this->load_calculated();
         $this->load_externalhooks();
-        var_dump($this->entities);
-    }
+     }
     
     private function load_core() {
         $core = DB::table('objects')->select('updated_at','created_at')->where('id','=',$this->entities['id'])->first();

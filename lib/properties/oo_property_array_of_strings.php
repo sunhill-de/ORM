@@ -26,6 +26,7 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	public function load(\Sunhill\Storage\storage_load $storage) {
         $name = $this->get_name();
 	    $this->value = $storage->$name;
+	    var_dump($storage->$name);
 	    $this->set_dirty(false);
 	    $this->initialized = true;
 	    $this->shadow = $this->value;

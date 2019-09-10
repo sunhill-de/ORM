@@ -35,6 +35,15 @@ class oo_property_tags extends oo_property_arraybase {
 	    throw new PropertyException("Das zu löschende Tag '".$tag->get_fullpath()."' ist gar nicht gesetzt");
 	}
 	
+	public function load(\Sunhill\Storage\storage_load $loader)  {
+	    if (empty($loader->tags)) {
+	        return;
+	    }
+	    foreach ($loader->tags as $tag) {
+	        $this->stick($tag);
+	    }
+	}
+	
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
 	 * {@inheritDoc}
