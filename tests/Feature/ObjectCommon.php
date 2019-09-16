@@ -7,12 +7,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 
-class ObjectCommon extends \Tests\sunhill_testcase
+class ObjectCommon extends \Tests\sunhill_testcase_db
 {
     protected function setUp():void {
         parent::setUp();
-        $this->BuildTestClasses();
-        $this->clear_system_tables(); 
+//        $this->prepare_tables();
     }
     
     
