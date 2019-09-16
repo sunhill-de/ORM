@@ -16,9 +16,6 @@ class oo_property_attribute extends oo_property {
 		$this->initialized = true;
 	}
 	
-	public function load(\Sunhill\Storage\storage_load $loader) {
-	}
-
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
 	 * {@inheritDoc}

@@ -34,6 +34,10 @@ class oo_property_tags extends oo_property_arraybase {
 	    }	    
 	    throw new PropertyException("Das zu löschende Tag '".$tag->get_fullpath()."' ist gar nicht gesetzt");
 	}
+
+	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
+	    $storage->set_subvalue('xx_tags', 'tags', $this->value);
+	}
 	
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde

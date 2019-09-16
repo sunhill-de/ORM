@@ -14,7 +14,7 @@ class ts_dummy extends \Sunhill\Objects\oo_object {
     
     protected static function setup_properties() {
 		parent::setup_properties();
-		self::integer('dummyint')->set_model('dummy');
+		self::integer('dummyint');
 	}
 	
 	protected function setup_hooks() {

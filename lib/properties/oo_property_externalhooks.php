@@ -11,18 +11,25 @@ class oo_property_externalhooks extends oo_property_field {
 	protected $initialized = true;
 	protected $defaults_null = true;
 	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt geladen wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::load()
-	 */
-	public function load(\Sunhill\Storage\storage_load $loader) {
+    /**
+     * Läd Externe Hooks aus dem Storage
+     * {@inheritDoc}
+     * @see \Sunhill\Properties\oo_property::do_load()
+     */
+	protected function do_load(\Sunhill\Storage\storage_load $loader,$name) {
         $hooks = $loader->get_entity('externalhooks');
 	    foreach ($hooks as $hook) {
 	        $this->owner->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target_id']);
 	    }
-	    $this->set_dirty(false);
-	    $this->initialized = true;
+	}
+	
+	/**
+	 * Fügt externe Hooks in das Storage ein
+	 * {@inheritDoc}
+	 * @see \Sunhill\Properties\oo_property::do_insert()
+	 */
+	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
+	    
 	}
 	
 	/**
