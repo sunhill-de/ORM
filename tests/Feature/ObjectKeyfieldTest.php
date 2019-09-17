@@ -26,42 +26,10 @@ class keyfieldA extends \Sunhill\Objects\oo_object {
 
 class ObjectKeyfieldTest extends ObjectCommon
 {
-    private function insert_into($name,$fields,$values) {
-        $querystr = 'insert into '.$name.' (';
-        $first = true;
-        foreach ($fields as $field) {
-            if (!$first) {
-                $querystr .= ',';
-            }
-            $querystr .= "`".$field."`";
-            $first = false;
-        }
-        $querystr .= ') values ';
-        $firstset = true;
-        foreach ($values as $valueset) {
-            if (!$firstset) {
-                $querystr .= ',';
-            }
-            $firstset = false;
-            $querystr .= '(';
-            $first = true;
-            foreach ($valueset as $value) {
-                if (!$first) {
-                    $querystr .= ',';
-                }
-                $value = DB::connection()->getPdo()->quote($value);
-                $querystr .= $value;
-                $first = false;
-            }
-            $querystr .= ')';
-        }
-        DB::statement($querystr);
-    }
     
     protected function prepare_tables() {
-        DB::statement("drop table if exists keyfieldA");
-        DB::statement("create table keyfieldA (id int primary key,Aint int)");
-
+        parent::prepare_tables();
+        $this->create_table('keyfieldA',['Aint int']);
         $this->insert_into('objects',['id','classname','created_at','updated_at'],
             [
                 [1,"\\Tests\\Feature\\keyfieldA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],

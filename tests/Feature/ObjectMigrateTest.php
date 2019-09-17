@@ -75,14 +75,12 @@ class testE extends \Sunhill\Objects\oo_object {
 class ObjectMigrateTest extends ObjectCommon
 {
     protected function prepare_tables() {
-        DB::statement("drop table if exists testA");
-        DB::statement("drop table if exists testB");
-        DB::statement("drop table if exists testC");
-        DB::statement("drop table if exists testD");
-        DB::statement("create table testA (id int primary key,testint int,testchar varchar(255))");
-        DB::statement("create table testB (id int primary key,testint int,testchar varchar(255))");
-        DB::statement("create table testC (id int primary key,testfield int)");
-        DB::statement("create table testD (id int primary key)");
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->create_table('testA',['testint int','testchar varchar(255)']);
+        $this->create_table('testB',['testint int','testchar varchar(255)']);
+        $this->create_table('testC',['testfield int']);
+        $this->create_table('testD',[]);
     }
     
     /**

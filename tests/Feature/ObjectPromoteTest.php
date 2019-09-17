@@ -10,6 +10,16 @@ use Sunhill\Test;
 class ObjectPromoteTest extends ObjectCommon
 {
 
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->create_special_table('passthrus');
+        $this->create_special_table('testparents');
+        $this->create_special_table('testchildren');
+        $this->create_special_table('secondlevelchildren');
+        $this->create_special_table('thirdlevelchildren');
+    }
+    
     /**
      * @dataProvider InheritanceProvider
      */
@@ -29,6 +39,7 @@ class ObjectPromoteTest extends ObjectCommon
     }
     
     public function testOneStepPromotion() {
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_secondlevelchild;
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -59,6 +70,7 @@ class ObjectPromoteTest extends ObjectCommon
     }
     
     public function testTwoStepPromotion() {
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -89,6 +101,7 @@ class ObjectPromoteTest extends ObjectCommon
      * @expectedException Sunhill\Objects\ObjectException
      */
     public function testWrongInhertiance() {
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -107,6 +120,7 @@ class ObjectPromoteTest extends ObjectCommon
      * @expectedException \Sunhill\Objects\ObjectException
      */
     public function testNotExistingClassInhertiance() {
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
