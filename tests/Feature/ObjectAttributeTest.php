@@ -10,25 +10,16 @@ use Illuminate\Support\Facades\DB;
 
 class ObjectAttributeTest extends ObjectCommon
 {
-    protected function prepare_attributes() {
-        DB::statement("truncate attributes");
-        DB::statement("truncate attributevalues");
-        $entry = new \App\attribute();
-        $entry->id = 1;
-        $entry->name = 'int_attribute';
-        $entry->type = 'int';
-        $entry->allowedobjects = "\\Sunhill\\Test\\ts_dummy";
-        $entry->property = '';
-        $entry->save();
-        $entry = new \App\attribute();
-        $entry->id = 2;
-        $entry->name = 'attribute1';
-        $entry->type = 'int';
-        $entry->allowedobjects = "\\Sunhill\\Test\\ts_testparent";
-        $entry->property = '';
-        $entry->save();        
+    
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->insert_into('attributes',['id','name','type','allowedobjects','property'],
+            [[1,'int_attribute','int',"\\Sunhill\\Test\\ts_dummy",''],
+             [2,'attribute1','int',"\\Sunhill\\Test\\ts_testparent",'']
+        ]);
     }
-
+    
     /**
      * @dataProvider AttributeProvider
      * @param unknown $attributename
@@ -36,7 +27,7 @@ class ObjectAttributeTest extends ObjectCommon
      * @param unknown $change
      */
     public function testSimpleAttribute($attributename,$init,$change,$exception) {
-        $this->prepare_attributes();
+        $this->prepare_tables();
         try {
             $test = new \Sunhill\Test\ts_dummy();
             $test->$attributename = $init;
@@ -72,7 +63,7 @@ class ObjectAttributeTest extends ObjectCommon
      * @expectedException \Sunhill\Properties\AttributeException
      */
     public function testInvalidAttribute() {
-        $this->prepare_attributes();
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_dummy();
         $test->attribute1 = 2;
     }
