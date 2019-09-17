@@ -9,7 +9,16 @@ use Sunhill\Test;
 
 class ObjectDegradeTest extends ObjectCommon
 {
+    public function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->create_special_table('thirdlevelchildren');
+        $this->create_special_table('secondlevelchildren');
+        $this->create_special_table('testparents');
+    }
+    
     public function testOneStepDegration() {
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_thirdlevelchild;
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -39,6 +48,7 @@ class ObjectDegradeTest extends ObjectCommon
     }
     
     public function testTwoStepDegration() {
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_thirdlevelchild;
         $test->parentchar='ABC';
         $test->parentint=123;

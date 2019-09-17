@@ -35,7 +35,7 @@ class sunhill_testcase_db extends TestCase {
                                             'parentdate date', 
                                             'parenttime time',
                                             "parentenum ENUM('testA','testB','testC')"],
-                            'testparents'=>['childint int',
+                            'testchildren'=>['childint int',
                                             'childchar varchar(255)',
                                             'childfloat float',
                                             'childtext text',
@@ -49,6 +49,8 @@ class sunhill_testcase_db extends TestCase {
                         ];    
         if (isset($special_tables[$name])) {
             $this->create_table($name,$special_tables[$name]);
+        } else {
+            die("Tabelle '$name' nicht gefunden.");
         }
     }
     
