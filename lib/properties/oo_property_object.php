@@ -24,15 +24,17 @@ class oo_property_object extends oo_property_field {
 	 * {@inheritDoc}
 	 * @see \Sunhill\Properties\oo_property::load()
 	 */
-	public function load(\Sunhill\Storage\storage_load $storage) {
-        $name = $this->get_name();
+	protected function do_load(\Sunhill\Storage\storage_load $storage,$name) {
         $reference = $storage->$name;
 	    if (!empty($reference)) {
 // @todo Lazy-Objectloading
 	        $object = \Sunhill\Objects\oo_object::load_object_of($reference);
     	    $this->value = $object;
-    	    $this->initialized = true;
 	    }
+	}
+	
+	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
+	    $storage->set_subvalue('xx_objects', $name, [0=>$this->value]);
 	}
 	
 	public function updating(int $id) {

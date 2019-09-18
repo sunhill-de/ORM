@@ -61,12 +61,12 @@ class searchtestC extends searchtestB {
 class ObjectSearchTest extends ObjectCommon
 {
     protected function prepare_tables() {
-        DB::statement("drop table if exists searchtestA");
-        DB::statement("drop table if exists searchtestB");
-        DB::statement("drop table if exists searchtestC");
-        DB::statement("create table searchtestA (id int primary key,Aint int,Anosearch int,Achar varchar(255))");
-        DB::statement("create table searchtestB (id int primary key,Bint int,Bchar varchar(255))");
-        DB::statement("create table searchtestC (id int primary key)");
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->create_table('searchtestA', ['Aint int,Anosearch int,Achar varchar(255)']);
+        $this->create_table('searchtestB', ['Bint int,Bchar varchar(255)']);
+        $this->create_table('searchtestC', []);
+        
         $dummy_str = '\Sunhill\Test\ts_dummy';
         $this->insert_into('objects',['id','classname','created_at','updated_at'],
             [
@@ -167,38 +167,6 @@ class ObjectSearchTest extends ObjectCommon
                 [13,'testA','Bsarray',0],
                 [13,'testC','Asarray',0],                
             ]);
-    }
-    
-    private function insert_into($name,$fields,$values) {
-        $querystr = 'insert into '.$name.' (';
-        $first = true;
-        foreach ($fields as $field) {
-            if (!$first) {
-                $querystr .= ',';
-            }
-            $querystr .= "`".$field."`";
-            $first = false;
-        }
-        $querystr .= ') values ';
-        $firstset = true;
-        foreach ($values as $valueset) {
-            if (!$firstset) {
-                $querystr .= ',';
-            }
-            $firstset = false;
-            $querystr .= '(';
-            $first = true;
-            foreach ($valueset as $value) {
-                if (!$first) {
-                    $querystr .= ',';
-                }
-                $value = DB::connection()->getPdo()->quote($value);
-                $querystr .= $value;    
-                $first = false;
-            }
-            $querystr .= ')';
-        }
-        DB::statement($querystr); 
     }
     
     public function testSearchWithNoConditionSingleResult() {

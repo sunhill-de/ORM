@@ -86,31 +86,21 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 // ========================= Einfügen =============================	
 	protected function do_insert() {
-        $this->insert_core_object();
-	    $simple_fields = $this->get_properties_with_feature('simple',null,'class');
-        foreach ($simple_fields as $class_name => $fields_of_class) {
-            if ($class_name == '\\Sunhill\\Objects\\oo_object') {
-                continue; // Wurde schon gespeichert
-            } else {
-                $values = array();
-                foreach ($fields_of_class as $field_name => $field) {
-                    $values[$field_name] = $field->get_value();
-                }
-                $values['id'] = $this->get_id();
-                DB::table($class_name::$table_name)->insert($values);
-            }
-        }
+	        $storer = new \Sunhill\Storage\storage_insert($this);
+	        $storer->set_inheritance($this->get_inheritance(true));
+	        $properties = $this->get_properties_with_feature();
+	        foreach ($properties as $property) {
+	            $property->insert($storer);
+	        }
+            $this->read_back($storer);
+            $this->insert_cache($this->get_id());
 	}
 	
-	private function insert_core_object() {
-	    $id = DB::table('objects')->insertGetId(['classname'=>get_class($this),
-	                                             'created_at'=>DB::raw('now()'),
-	                                             'updated_at'=>DB::raw('now()')
-	    ]);
-	    $core = DB::table('objects')->where('id','=',$id)->first();
-	    $this->created_at = $core->created_at;
-	    $this->updated_at = $core->updated_at;
-	    $this->set_id($id);
+	private function read_back(\Sunhill\Storage\storage_insert $storer) {	    
+	    $storer->classname = get_class($this);
+	    $this->set_id($storer->store_object());
+	    $this->created_at = $storer->created_at;
+	    $this->updated_at = $storer->updated_at;
 	}
 
 // ========================== Aktualisieren ===================================	

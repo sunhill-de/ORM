@@ -9,7 +9,17 @@ use Sunhill\Test;
 
 class ObjectReReadTest extends ObjectCommon
 {
-	/**
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->create_special_table('passthrus');
+        $this->create_special_table('testparents');
+        $this->create_special_table('testchildren');
+        $this->create_special_table('referenceonlies');
+        $this->create_special_table('secondlevelchildren');
+    }
+    
+    /**
 	 * @dataProvider SimpleFieldProvider
 	 * @param string $classname
 	 * @param array $init
@@ -17,6 +27,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @param array $expect
 	 */
 	public function testSimpleFields($classname,$init,$modify,$expect) {
+	    $this->prepare_tables();
 	    \Sunhill\Objects\oo_object::flush_cache();
 	    $classname = 'Sunhill\\Test\\'.$classname;
 	    $init_object = new $classname;
@@ -239,6 +250,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @group complex
 	 */
 	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
+	    $this->prepare_tables();
 	    \Sunhill\Objects\oo_object::flush_cache();
 	    $this->clear_system_tables();
 	    $classname = 'Sunhill\\Test\\'.$classname;
@@ -576,6 +588,7 @@ class ObjectReReadTest extends ObjectCommon
 	}
 	
 	public function testChildChange() {
+	       $this->prepare_tables();
 	       \Sunhill\Objects\oo_object::flush_cache();
 	       $object = new \Sunhill\Test\ts_referenceonly();
 	       $child  = new \Sunhill\Test\ts_dummy();
@@ -594,6 +607,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @group many
 	 */
 	public function testManyObjects() {
+	    $this->prepare_tables();
 	    \Sunhill\Objects\oo_object::flush_cache();
 	    $sub = array();
 	    $main = array();

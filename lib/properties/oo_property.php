@@ -30,8 +30,6 @@ class oo_property extends \Sunhill\base {
 	
 	protected $initialized;
 	
-	protected $model_name;
-	
 	protected $read_only;
 	
 	protected $validator_name = 'validator_base';
@@ -82,6 +80,7 @@ class oo_property extends \Sunhill\base {
 	public function load_value($value) {
 		$this->value = $value;
 		$this->initialized = true;
+		$this->dirty = false;
 		return $this;		
 	}
 	
@@ -154,14 +153,6 @@ class oo_property extends \Sunhill\base {
 	
 	public function get_default() {
 		return $this->default;
-	}
-	
-	public function set_model($name) {
-	    return $this;
-	}
-	
-	public function get_model() {
-		return $this->model_name;
 	}
 	
 	public function set_class(string $class) {
@@ -265,10 +256,51 @@ class oo_property extends \Sunhill\base {
 	                 'TO'=>$this->get_value());
 	}
 	
-	public function load(\Sunhill\Storage\storage_load $loader) {
+	/**
+	 * Wird für jede Property aufgerufen, um den Wert aus dem Storage zu lesen
+	 * Ruft wiederrum die überschreibbare Methode do_load auf, die property-Individuelle Dinge erledigen kann
+	 * @param \Sunhill\Storage\storage_load $loader
+	 */
+	final public function load(\Sunhill\Storage\storage_load $loader) {
 	    $name = $this->get_name();
+        $this->do_load($loader,$name);
 	    $this->value = $loader->$name;
 	    $this->initialized = true; 
+	    $this->dirty = false;
+	}
+
+	/**
+	 * Individuell überschreibbare Methode, die dem Property erlaub, besondere Lademethoden zu verwenden
+	 * @param \Sunhill\Storage\storage_load $loader
+	 * @param unknown $name
+	 */
+	protected function do_load(\Sunhill\Storage\storage_load $loader,$name) {
+	    $this->value = $loader->$name;
+	}
+	
+	/**
+	 * Wird für jede Property aufgerufen, um den Wert in das Storage zu schreiben
+	 */
+	public function insert(\Sunhill\Storage\storage_insert $storage) {
+	    $name = $this->get_name();
+	    $classname = $this->get_class();
+	    if (property_exists($classname,'table_name')) {
+	        $table_name = $classname::$table_name;
+	    } else {
+	        $table_name = 'none';
+	    }
+	    $this->do_insert($storage,$table_name,$name);
+	    $this->dirty = false;	    
+	}
+	
+	/**
+	 * Individuell überschreibbare Methode, die dem Property erlaub, besondere Speichermethoden zu verwenden
+	 * @param \Sunhill\Storage\storage_insert $storage
+	 * @param string $tablename
+	 * @param string $name
+	 */
+	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
+	    $storage->set_subvalue($tablename, $name, $this->value);
 	}
 	
 	public function add_hook($action,$hook,$subaction,$target) {

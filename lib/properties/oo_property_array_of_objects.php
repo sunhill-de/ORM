@@ -8,8 +8,6 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 
 	protected $type = 'array_of_objects';
 		
-	protected $model_name;
-	
 	protected $features = ['object','complex','array'];
 	
 	protected $initialized = true;
@@ -34,21 +32,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    return $this->type;
 	}
 	
-	public function set_model($name) {
-	    if (strpos($name,'\\') === false) {
-	        $this->model_name = $this->owner->default_ns.'\\'.$name;
-	    } else {
-	        $this->model_name = $name;
-	    }
-	    return $this;
-	}
-	
-	public function get_model() {
-	    return $this->model_name;
-	}
-	
-	public function load(\Sunhill\Storage\storage_load $loader) {
-	    $name = $this->get_name();
+	protected function do_load(\Sunhill\Storage\storage_load $loader,$name) {
 	    $references = $loader->$name;
 	    if (empty($references)) {
 	        return;
@@ -58,10 +42,12 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	       $object = \Sunhill\Objects\oo_object::load_object_of($reference);
 	       $this->value[$index] = $object;
 	    }
-	    $this->set_dirty(false);
-	    $this->initialized = true;
-	    $this->shadow = $this->value;
-	    
+	}
+	
+	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
+	    foreach ($this->value as $index => $value) {
+	       $storage->set_subvalue('xx_objects', $name, [$index=>$value]);
+	    }
 	}
 	
 	/**

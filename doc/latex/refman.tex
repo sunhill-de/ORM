@@ -1,0 +1,428 @@
+\let\mypdfximage\pdfximage\def\pdfximage{\immediate\mypdfximage}\documentclass[twoside]{book}
+
+%% moved from doxygen.sty due to workaround for LaTex 2019 version and unmaintained tabu package
+\usepackage{ifthen}
+\ifx\requestedLaTeXdate\undefined
+\usepackage{array}
+\else
+\usepackage{array}[=2016-10-06]
+\fi
+%%
+% Packages required by doxygen
+\usepackage{fixltx2e}
+\usepackage{calc}
+\usepackage{doxygen}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{multirow}
+\PassOptionsToPackage{warn}{textcomp}
+\usepackage{textcomp}
+\usepackage[nointegrals]{wasysym}
+\usepackage[table]{xcolor}
+\usepackage{ifpdf,ifxetex}
+
+% NLS support packages
+\usepackage[ngerman]{babel}
+
+% Font selection
+\usepackage[T1]{fontenc}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+\usepackage{amssymb}
+\usepackage{sectsty}
+\renewcommand{\familydefault}{\sfdefault}
+\allsectionsfont{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\renewcommand{\DoxyLabelFont}{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
+
+% Arguments of doxygenemoji:
+% 1) ':<text>:' form of the emoji, already "LaTeX"-escaped
+% 2) file with the name of the emoji without the .png extension
+% in case image exist use this otherwise use the ':<text>:' form
+\newcommand{\doxygenemoji}[2]{%
+  \IfFileExists{./#2.png}{\raisebox{-0.1em}{\includegraphics[height=0.9em]{./#2.png}}}{#1}%
+}
+% Page & text layout
+\usepackage{geometry}
+\geometry{%
+  a4paper,%
+  top=2.5cm,%
+  bottom=2.5cm,%
+  left=2.5cm,%
+  right=2.5cm%
+}
+\tolerance=750
+\hfuzz=15pt
+\hbadness=750
+\setlength{\emergencystretch}{15pt}
+\setlength{\parindent}{0cm}
+\newcommand{\doxynormalparskip}{\setlength{\parskip}{3ex plus 2ex minus 2ex}}
+\newcommand{\doxytocparskip}{\setlength{\parskip}{1ex plus 0ex minus 0ex}}
+\doxynormalparskip
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@parafont%
+  }%
+}
+\renewcommand{\subparagraph}{%
+  \@startsection{subparagraph}{5}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@subparafont%
+  }%
+}
+\makeatother
+
+% Headers & footers
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead[LE]{\fancyplain{}{\bfseries\thepage}}
+\fancyhead[CE]{\fancyplain{}{}}
+\fancyhead[RE]{\fancyplain{}{\bfseries\leftmark}}
+\fancyhead[LO]{\fancyplain{}{\bfseries\rightmark}}
+\fancyhead[CO]{\fancyplain{}{}}
+\fancyhead[RO]{\fancyplain{}{\bfseries\thepage}}
+\fancyfoot[LE]{\fancyplain{}{}}
+\fancyfoot[CE]{\fancyplain{}{}}
+\fancyfoot[RE]{\fancyplain{}{\bfseries\scriptsize Erzeugt von Doxygen }}
+\fancyfoot[LO]{\fancyplain{}{\bfseries\scriptsize Erzeugt von Doxygen }}
+\fancyfoot[CO]{\fancyplain{}{}}
+\fancyfoot[RO]{\fancyplain{}{}}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\chaptermark}[1]{%
+  \markboth{#1}{}%
+}
+\renewcommand{\sectionmark}[1]{%
+  \markright{\thesection\ #1}%
+}
+
+% Indices & bibliography
+\usepackage{natbib}
+\usepackage[titles]{tocloft}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{5}
+\makeindex
+
+\usepackage{newunicodechar}
+  \newunicodechar{⁻}{${}^{-}$}% Superscript minus
+  \newunicodechar{²}{${}^{2}$}% Superscript two
+  \newunicodechar{³}{${}^{3}$}% Superscript three
+
+% Hyperlinks (required, but should be loaded last)
+\ifpdf
+  \usepackage[pdftex,pagebackref=true]{hyperref}
+\else
+  \ifxetex
+    \usepackage[pagebackref=true]{hyperref}
+  \else
+    \usepackage[ps2pdf,pagebackref=true]{hyperref}
+  \fi
+\fi
+
+\hypersetup{%
+  colorlinks=true,%
+  linkcolor=blue,%
+  citecolor=blue,%
+  unicode%
+}
+
+% Custom commands
+\newcommand{\clearemptydoublepage}{%
+  \newpage{\pagestyle{empty}\cleardoublepage}%
+}
+
+\usepackage{caption}
+\captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
+
+\usepackage{etoc}
+\etocsettocstyle{\doxytocparskip}{\doxynormalparskip}
+\renewcommand{\numberline}[1]{#1~}
+%===== C O N T E N T S =====
+
+\begin{document}
+
+% Titlepage & ToC
+\hypersetup{pageanchor=false,
+             bookmarksnumbered=true,
+             pdfencoding=unicode
+            }
+\pagenumbering{alph}
+\begin{titlepage}
+\vspace*{7cm}
+\begin{center}%
+{\Large Sunhill Framework \\[1ex]\large 1 }\\
+\vspace*{1cm}
+{\large Erzeugt von Doxygen 1.8.16}\\
+\end{center}
+\end{titlepage}
+\clearemptydoublepage
+\pagenumbering{roman}
+\tableofcontents
+\clearemptydoublepage
+\pagenumbering{arabic}
+\hypersetup{pageanchor=true}
+
+%--- Begin generated contents ---
+\chapter{Veraltete Elemente}
+\label{deprecated}
+\Hypertarget{deprecated}
+\input{da/d58/deprecated}
+\chapter{Verzeichnis der Namensbereiche}
+\input{namespaces}
+\chapter{Hierarchie-\/\+Verzeichnis}
+\input{hierarchy}
+\chapter{Klassen-\/\+Verzeichnis}
+\input{annotated}
+\chapter{Datei-\/\+Verzeichnis}
+\input{files}
+\chapter{Dokumentation der Namensbereiche}
+\input{dd/dc2/namespaceApp}
+\input{d3/da6/namespaceApp_1_1Commands}
+\input{d2/dd0/namespaceApp_1_1Providers}
+\input{d4/d90/namespaceSunhill}
+\input{d3/d2f/namespaceSunhill_1_1Objects}
+\input{d4/df2/namespaceSunhill_1_1Properties}
+\input{de/d0c/namespaceSunhill_1_1Test}
+\input{d7/d71/namespaceSunhill_1_1Validators}
+\input{df/da7/namespaceTests}
+\input{d5/df8/namespaceTests_1_1Feature}
+\input{d8/deb/namespaceTests_1_1Unit}
+\chapter{Klassen-\/\+Dokumentation}
+\input{da/d86/classApp_1_1Providers_1_1AppServiceProvider}
+\input{d5/dff/classApp_1_1attribute}
+\input{d5/d3e/classSunhill_1_1Properties_1_1AttributeException}
+\input{d4/da9/classApp_1_1attributevalue}
+\input{db/d06/classSunhill_1_1base}
+\input{de/d05/classCreateAttributesTable}
+\input{d4/dc8/classCreateAttributeValuesTable}
+\input{d5/d84/classCreateCachingTable}
+\input{d2/d37/classCreateExternalhooksTable}
+\input{dc/d7a/classCreateObjectobjectassignsTable}
+\input{d7/dd4/classCreateObjectsTable}
+\input{df/d72/classCreateStringobjectassignsTable}
+\input{d2/d6c/classCreateTagcacheTable}
+\input{d3/dc6/classCreateTagobjectassignsTable}
+\input{d9/db0/classCreateTagsTable}
+\input{d2/df4/classDatabaseSeeder}
+\input{d4/dd0/classSunhill_1_1Validators_1_1date__validator}
+\input{d0/d0c/classSunhill_1_1Validators_1_1datetime__validator}
+\input{d3/d0b/classSunhill_1_1Validators_1_1enum__validator}
+\input{db/d71/classApp_1_1externalhook}
+\input{d0/d5d/classSunhill_1_1Validators_1_1float__validator}
+\input{d9/d9c/classSunhill_1_1hookable}
+\input{d4/d86/classTests_1_1Unit_1_1HookableTest}
+\input{d5/dee/classTests_1_1Feature_1_1Hooking}
+\input{d2/d77/classTests_1_1Feature_1_1HookingChild}
+\input{d8/dd7/classTests_1_1Feature_1_1HookingObject}
+\input{db/dfd/classApp_1_1Commands_1_1InspiringCommand}
+\input{d6/dea/classSunhill_1_1Validators_1_1int__validator}
+\input{d8/d05/classSunhill_1_1Properties_1_1InvalidValueException}
+\input{d6/d71/classTests_1_1Feature_1_1keyfieldA}
+\input{d3/d86/classSunhill_1_1loggable}
+\input{d1/d80/classTests_1_1Unit_1_1LoggableTest}
+\input{d8/d98/classSunhill_1_1Validators_1_1object__validator}
+\input{d7/dc3/classTests_1_1Feature_1_1ObjectAttributeTest}
+\input{df/d9c/classTests_1_1Feature_1_1ObjectCacheTest}
+\input{d2/d14/classTests_1_1Feature_1_1ObjectCalculatedTest}
+\input{d5/dbe/classTests_1_1Feature_1_1ObjectCommon}
+\input{df/d0f/classTests_1_1Feature_1_1ObjectDegradeTest}
+\input{d2/d70/classTests_1_1Feature_1_1ObjectDeleteTest}
+\input{de/d49/classTests_1_1Feature_1_1ObjectDummy2Test}
+\input{d0/d51/classTests_1_1Feature_1_1ObjectDummy3Test}
+\input{d7/d3d/classTests_1_1Feature_1_1ObjectDummyTest}
+\input{da/dab/classSunhill_1_1Objects_1_1ObjectException}
+\input{dd/dfe/classTests_1_1Feature_1_1ObjectHookTest}
+\input{d2/d15/classTests_1_1Feature_1_1ObjectKeyfieldTest}
+\input{d8/d32/classTests_1_1Feature_1_1ObjectMigrateTest}
+\input{d4/df2/classTests_1_1Feature_1_1ObjectNamespaceTest}
+\input{d0/d01/classApp_1_1objectobjectassign}
+\input{df/dae/classTests_1_1Feature_1_1ObjectPromoteTest}
+\input{d5/d20/classTests_1_1Feature_1_1ObjectReReadStampsTest}
+\input{d6/d20/classTests_1_1Feature_1_1ObjectReReadTest}
+\input{d6/dd2/classTests_1_1Feature_1_1ObjectSearchTest}
+\input{d2/d03/classTests_1_1Feature_1_1ObjectSkipclassTest}
+\input{d1/d92/classTests_1_1Feature_1_1ObjectTagTest}
+\input{d5/d53/classSunhill_1_1Objects_1_1oo__object}
+\input{df/dce/classSunhill_1_1Properties_1_1oo__property}
+\input{dd/d48/classSunhill_1_1Properties_1_1oo__property__array__of__objects}
+\input{da/d04/classSunhill_1_1Properties_1_1oo__property__array__of__strings}
+\input{df/db2/classSunhill_1_1Properties_1_1oo__property__arraybase}
+\input{d0/d51/classSunhill_1_1Properties_1_1oo__property__attribute}
+\input{dc/d89/classSunhill_1_1Properties_1_1oo__property__attribute__int}
+\input{d9/d08/classSunhill_1_1Properties_1_1oo__property__attribute__loader}
+\input{d3/db8/classSunhill_1_1Properties_1_1oo__property__calculated}
+\input{d4/dde/classSunhill_1_1Properties_1_1oo__property__date}
+\input{dd/d41/classSunhill_1_1Properties_1_1oo__property__datetime}
+\input{d0/d81/classSunhill_1_1Properties_1_1oo__property__enum}
+\input{d2/d4f/classSunhill_1_1Properties_1_1oo__property__externalhooks}
+\input{da/da9/classSunhill_1_1Properties_1_1oo__property__field}
+\input{d7/dc9/classSunhill_1_1Properties_1_1oo__property__float}
+\input{da/d18/classSunhill_1_1Properties_1_1oo__property__integer}
+\input{dc/dbe/classSunhill_1_1Properties_1_1oo__property__object}
+\input{dd/dd8/classSunhill_1_1Properties_1_1oo__property__tags}
+\input{d6/d8b/classSunhill_1_1Properties_1_1oo__property__text}
+\input{db/d21/classSunhill_1_1Properties_1_1oo__property__time}
+\input{d9/def/classSunhill_1_1Properties_1_1oo__property__timestamp}
+\input{d0/d41/classSunhill_1_1Properties_1_1oo__property__varchar}
+\input{dc/dfb/classSunhill_1_1Objects_1_1oo__tag}
+\input{d2/db8/classSunhill_1_1propertieshaving}
+\input{d9/d56/classSunhill_1_1PropertiesHavingException}
+\input{d7/de1/classSunhill_1_1Properties_1_1PropertyException}
+\input{df/dc5/classTests_1_1Unit_1_1PropertyTest}
+\input{d9/d68/classTests_1_1Unit_1_1PropertyValidateTest}
+\input{d9/d3c/classSunhill_1_1query__builder}
+\input{d1/d14/classSunhill_1_1QueryException}
+\input{d3/d40/classTests_1_1Feature_1_1searchtestA}
+\input{de/d01/classTests_1_1Feature_1_1searchtestB}
+\input{dd/d21/classTests_1_1Feature_1_1searchtestC}
+\input{d2/da0/classTests_1_1Feature_1_1SkipClass}
+\input{de/d91/classApp_1_1stringobjectassign}
+\input{df/d50/classTests_1_1sunhill__testcase}
+\input{d1/d92/classApp_1_1tag}
+\input{d4/dc5/classTagCacheTableSeeder}
+\input{da/d1f/classSunhill_1_1Objects_1_1TagException}
+\input{d2/da5/classApp_1_1tagobjectassign}
+\input{d6/d93/classTagsTableSeeder}
+\input{d5/d34/classTests_1_1Unit_1_1TagTest}
+\input{dd/d43/classTests_1_1Feature_1_1testA}
+\input{dc/dc2/classTests_1_1Feature_1_1testB}
+\input{d9/da3/classTests_1_1Feature_1_1testC}
+\input{d5/db5/classTests_1_1TestCase}
+\input{dd/db2/classTests_1_1Feature_1_1TestClass}
+\input{d3/d72/classTests_1_1Feature_1_1testD}
+\input{df/d1c/classTests_1_1Feature_1_1testE}
+\input{db/de9/classTests_1_1Unit_1_1testhookable}
+\input{db/dd7/classTests_1_1Feature_1_1TestModel}
+\input{df/ddf/classTests_1_1Feature_1_1TestObject}
+\input{dd/dd7/classSunhill_1_1Validators_1_1time__validator}
+\input{d8/dc4/classSunhill_1_1Test_1_1ts__dummy}
+\input{d7/d8d/classSunhill_1_1Test_1_1ts__passthru}
+\input{d2/d8b/classSunhill_1_1Test_1_1ts__referenceonly}
+\input{dd/dab/classSunhill_1_1Test_1_1ts__secondlevelchild}
+\input{db/dd2/classSunhill_1_1Test_1_1ts__testchild}
+\input{d5/dff/classSunhill_1_1Test_1_1ts__testparent}
+\input{d8/df0/classSunhill_1_1Test_1_1ts__thirdlevelchild}
+\input{d6/d6c/classSunhill_1_1Objects_1_1UnknownPropertyException}
+\input{d6/dda/classSunhill_1_1Validators_1_1validator__base}
+\input{d0/dcc/classSunhill_1_1Validators_1_1ValidatorException}
+\chapter{Datei-\/\+Dokumentation}
+\input{d2/dc5/attribute_8php}
+\input{d8/d32/attributevalue_8php}
+\input{d3/d03/InspiringCommand_8php}
+\input{d9/dc7/externalhook_8php}
+\input{db/dca/objectobjectassign_8php}
+\input{d1/d1e/AppServiceProvider_8php}
+\input{d9/dd8/stringobjectassign_8php}
+\input{df/df6/tag_8php}
+\input{d7/da9/tagobjectassign_8php}
+\input{d7/dfb/bootstrap_2app_8php}
+\input{dd/d85/config_2app_8php}
+\input{de/d6d/services_8php}
+\input{da/d58/commands_8php}
+\input{d3/dcf/database_8mysql_8php}
+\input{d8/de4/database_8php}
+\input{d2/dac/database_8sqlite_8php}
+\input{dd/d45/logging_8php}
+\input{d4/dd4/2018__06__12__162233__create__caching__table_8php}
+\input{d4/da9/2018__06__12__162233__create__externalhooks__table_8php}
+\input{d9/d65/2018__06__12__162233__create__tags__table_8php}
+\input{d2/de4/2018__06__15__121944__create__tagcache__table_8php}
+\input{db/d5a/2018__06__15__144445__create__attributes__table_8php}
+\input{da/d57/2018__06__15__144445__create__attributevalues__table_8php}
+\input{da/da8/2018__06__15__144445__create__objects__table_8php}
+\input{d4/d21/2018__06__19__120455__create__objectobjectassigns__table_8php}
+\input{db/d0f/2018__06__19__120455__create__stringobjectassigns__table_8php}
+\input{d3/d14/2018__06__19__120455__create__tagobjectassigns__table_8php}
+\input{de/db3/DatabaseSeeder_8php}
+\input{d5/db1/TagCacheTableSeeder_8php}
+\input{d9/d6b/TagsTableSeeder_8php}
+\input{d4/d9a/base_8php}
+\input{d2/d59/hookable_8php}
+\input{d2/d89/loggable_8php}
+\input{d4/d17/oo__object_8php}
+\input{df/dd2/oo__tag_8php}
+\input{df/d27/oo__property_8php}
+\input{d0/d8c/oo__property__array__of__objects_8php}
+\input{da/d01/oo__property__array__of__strings_8php}
+\input{d5/db3/oo__property__arraybase_8php}
+\input{d6/de8/oo__property__attribute_8php}
+\input{d3/da2/oo__property__attribute__int_8php}
+\input{d0/d96/oo__property__attribute__loader_8php}
+\input{d0/da7/oo__property__calculated_8php}
+\input{d5/d7d/oo__property__date_8php}
+\input{d0/d75/oo__property__datetime_8php}
+\input{d9/db7/oo__property__enum_8php}
+\input{d4/d52/oo__property__externalhooks_8php}
+\input{df/dad/oo__property__field_8php}
+\input{d9/da2/oo__property__float_8php}
+\input{df/d7e/oo__property__integer_8php}
+\input{d2/dff/oo__property__object_8php}
+\input{d5/ddd/oo__property__tags_8php}
+\input{d3/d68/oo__property__text_8php}
+\input{d6/dc8/oo__property__time_8php}
+\input{d9/dfb/oo__property__timestamp_8php}
+\input{d3/d77/oo__property__varchar_8php}
+\input{d4/d8a/propertieshaving_8php}
+\input{d3/d23/query__builder_8php}
+\input{df/d8b/date__validator_8php}
+\input{d2/dee/datetime__validator_8php}
+\input{d8/dda/enum__validator_8php}
+\input{d3/d38/float__validator_8php}
+\input{d2/d69/int__validator_8php}
+\input{d8/dce/object__validator_8php}
+\input{d8/d23/time__validator_8php}
+\input{d1/d3a/validator__base_8php}
+\input{dd/d3d/CreatesApplication_8php}
+\input{d6/d41/ObjectAttributeTest_8php}
+\input{d8/d49/ObjectCacheTest_8php}
+\input{de/d03/ObjectCalculatedTest_8php}
+\input{d9/d20/ObjectCommon_8php}
+\input{d8/dec/ObjectDegradeTest_8php}
+\input{da/dc0/ObjectDeleteTest_8php}
+\input{d6/d2a/ObjectDummy2Test_8php}
+\input{d6/dd2/ObjectDummy3Test_8php}
+\input{d7/db1/ObjectDummyTest_8php}
+\input{d9/d43/ObjectHookTest_8php}
+\input{de/def/ObjectKeyfieldTest_8php}
+\input{dd/d7c/ObjectMigrateTest_8php}
+\input{d2/df9/ObjectNamespaceTest_8php}
+\input{d1/d8a/ObjectPromoteTest_8php}
+\input{d6/d0c/ObjectReReadStampsTest_8php}
+\input{df/d38/ObjectReReadTest_8php}
+\input{d6/d1c/ObjectSearchTest_8php}
+\input{d7/da4/ObjectSkipclassTest_8php}
+\input{d1/df1/ObjectTagTest_8php}
+\input{dd/d8d/DatabaseSetup_8php}
+\input{dd/de2/ObjectTestScenario_8php}
+\input{d3/d1e/sunhill__testcase_8php}
+\input{db/d7b/ts__dummy_8php}
+\input{d9/d6e/ts__passthru_8php}
+\input{d6/d14/ts__referenceonly_8php}
+\input{dc/dba/ts__secondlevelchild_8php}
+\input{d6/de6/ts__testchild_8php}
+\input{d3/d66/ts__testparent_8php}
+\input{d1/d0b/ts__thirdlevelchild_8php}
+\input{dd/da9/TestCase_8php}
+\input{dc/d93/HookableTest_8php}
+\input{d7/d21/LoggableTest_8php}
+\input{dc/da7/PropertyTest_8php}
+\input{d4/d21/PropertyValidateTest_8php}
+\input{d2/d9c/TagTest_8php}
+%--- End generated contents ---
+
+% Index
+\backmatter
+\newpage
+\phantomsection
+\clearemptydoublepage
+\addcontentsline{toc}{chapter}{\indexname}
+\printindex
+
+\end{document}

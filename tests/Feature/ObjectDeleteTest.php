@@ -10,8 +10,16 @@ use Illuminate\Support\Facades\DB;
 
 class ObjectDeleteTest extends ObjectCommon
 {
+ 
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('testchildren');
+        $this->create_special_table('testparents');
+        $this->create_special_table('dummies');
+    }
     
     function testCantLoad() {
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_testchild;
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -50,7 +58,7 @@ class ObjectDeleteTest extends ObjectCommon
      * @param Integer $id
      */
     function testObjectReferencesDeleted(Int $id) {
-       $result = \App\objectobjectassign::where('container_id','=',$id)->first();
+         $result = \App\objectobjectassign::where('container_id','=',$id)->first();
        $this->assertTrue(empty($result));
        $result = \App\objectobjectassign::where('element_id','=',$id)->first();
        $this->assertTrue(empty($result));

@@ -23,13 +23,14 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	    return $this->type;
 	}
 	
-	public function load(\Sunhill\Storage\storage_load $storage) {
-        $name = $this->get_name();
+	protected function do_load(\Sunhill\Storage\storage_load $storage,$name) {
 	    $this->value = $storage->$name;
-	    var_dump($storage->$name);
-	    $this->set_dirty(false);
-	    $this->initialized = true;
-	    $this->shadow = $this->value;
+	}
+	
+	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
+	    foreach ($this->value as $key => $value) {
+	       $storage->set_subvalue('xx_strings', $name, [$key=>$value]);
+	    }
 	}
 	
 	/**

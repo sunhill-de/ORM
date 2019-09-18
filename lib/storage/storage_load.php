@@ -4,8 +4,6 @@ use Illuminate\Support\Facades\DB;
 
 class storage_load extends storage_base {
     
-    protected $entities = [];
-    
     public function load_object(int $id) {
         $this->entities = ['id'=> $id,'tags'=>[],'attributes'=>[],'externalhooks'=>[]];
         $this->load_core();
@@ -112,19 +110,4 @@ class storage_load extends storage_base {
         }
     }
     
-    public function get_entity(string $name) {
-        if (!isset($this->entities[$name])) {
-            return null;
-        } else {
-            return $this->entities[$name];
-        }
-    }
-    
-    public function __get(string $name) {
-        return $this->get_entity($name);
-    }
-    
-    public function get_id() {
-        return $this->id;
-    }
 }
