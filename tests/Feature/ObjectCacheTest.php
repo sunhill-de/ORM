@@ -11,19 +11,20 @@ use Illuminate\Support\Facades\DB;
 class ObjectCacheTest extends ObjectCommon
 {
 
-    protected function fill_test_database() {
-        $classname = '\\Sunhill\\Test\\ts_dummy';
-        DB::table('objects')->insert(['id'=>1,'classname'=>$classname]);
-        DB::table('dummies')->insert(['id'=>1,'dummyint'=>1]);
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->insert_into('objects', ['id','classname'], [[1,"\\Sunhill\\Test\\ts_dummy"]]);
+        $this->insert_into('dummies', ['id','dummyint'],[[1,1]]);
     }
     
     public function testGetClassOf() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         $this->assertEquals('\\Sunhill\\Test\\ts_dummy',\Sunhill\Objects\oo_object::get_class_name_of(1));    
     }
     
     public function testIsNotCached() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         $this->assertFalse(\Sunhill\Objects\oo_object::is_cached(1));
     }
     
@@ -31,7 +32,7 @@ class ObjectCacheTest extends ObjectCommon
      * @depends testIsNotCached
      */
     public function testIsCached() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         $first  = \Sunhill\Objects\oo_object::load_object_of(1);
         if (!$first) {
             $this->fail('Objekt nicht gefunden.');
@@ -43,7 +44,7 @@ class ObjectCacheTest extends ObjectCommon
      * @depends testIsCached
      */
     public function testFlushCache() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         \Sunhill\Objects\oo_object::flush_cache();
         $this->assertFalse(\Sunhill\Objects\oo_object::is_cached(1));        
     }
@@ -52,7 +53,7 @@ class ObjectCacheTest extends ObjectCommon
      * @depends testFlushCache
      */
     public function testLoadFromCache() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         $first  = \Sunhill\Objects\oo_object::load_object_of(1);
         $second = \Sunhill\Objects\oo_object::load_object_of(1);
         $second->dummyint = 2;
@@ -63,7 +64,7 @@ class ObjectCacheTest extends ObjectCommon
      * @depends testLoadFromCache
      */
     public function testLoadMethod() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         \Sunhill\Objects\oo_object::flush_cache();
         $first  = \Sunhill\Objects\oo_object::load_object_of(1);
         $second = new \Sunhill\Test\ts_dummy();
@@ -76,7 +77,7 @@ class ObjectCacheTest extends ObjectCommon
      * @depends testFlushCache
      */
     public function testLoadMethodInsertCache() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         \Sunhill\Objects\oo_object::flush_cache();
         $second = new \Sunhill\Test\ts_dummy();
         $second = \Sunhill\Objects\oo_object::load_object_of(1);
@@ -87,7 +88,7 @@ class ObjectCacheTest extends ObjectCommon
      * @depends testFlushCache
      */
     public function testLoadMethodChange() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         \Sunhill\Objects\oo_object::flush_cache();
         $first = new \Sunhill\Test\ts_dummy();
         $first = \Sunhill\Objects\oo_object::load_object_of(1);
@@ -100,7 +101,7 @@ class ObjectCacheTest extends ObjectCommon
      * @depends testFlushCache
      */
     public function testLoadMethodChange2() {
-        $this->fill_test_database();
+        $this->prepare_tables();
         \Sunhill\Objects\oo_object::flush_cache();
         $first = new \Sunhill\Test\ts_dummy();
         $first = \Sunhill\Objects\oo_object::load_object_of(1);

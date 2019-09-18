@@ -10,13 +10,18 @@ use Sunhill\Test;
 class ObjectTagTest extends ObjectCommon
 {
     
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->seed();
+    }
+        
     /**
      * @dataProvider TagProvider
      */
     public function testTagObject($set,$expect,$create) {
-        $this->BuildTestClasses();
-        $this->clear_system_tables();
-        $this->seed();
+        $this->prepare_tables();
+
         $test = new \Sunhill\Test\ts_dummy();
         
         for ($i=0;$i<count($set);$i++) {
@@ -60,9 +65,7 @@ class ObjectTagTest extends ObjectCommon
      * @group change
      */
     public function testChangeTags($init,$add,$delete,$expect,$changestr) {
-        $this->BuildTestClasses();
-        $this->clear_system_tables();
-        $this->seed();
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_dummy();        
         for ($i=0;$i<count($init);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($init[$i],true);
@@ -101,9 +104,7 @@ class ObjectTagTest extends ObjectCommon
      * @group Trigger
      */
     public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
-        $this->BuildTestClasses();
-        $this->clear_system_tables();
-        $this->seed();
+        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_dummy();
         for ($i=0;$i<count($init);$i++) {
             $tag = new \Sunhill\Objects\oo_tag($init[$i],true);
