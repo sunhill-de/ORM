@@ -39,7 +39,7 @@ class oo_property_tags extends oo_property_arraybase {
 	    $storage->set_subvalue('xx_tags', 'tags', $this->value);
 	}
 	
-	public function load(\Sunhill\Storage\storage_load $loader)  {
+	protected function do_load(\Sunhill\Storage\storage_load $loader,$name)  {
 	    if (empty($loader->tags)) {
 	        return;
 	    }

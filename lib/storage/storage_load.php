@@ -2,11 +2,23 @@
 
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Die Klasse storage_load sammelt die Daten aus der Datenbank oder einem wie auch immer gearteten Storage
+ * Die Objekte wiederrum laden sich dann die Daten in normalisierter Form aus diesem Storage
+ * Der Vorteil des Storage ist dabei, dass die Repräsentation der Daten gekapselt von den Objekten ist und nur
+ * durch eine Anpassung des Storagesobjektes angepasst werden kann.
+ * @author klaus
+ *
+ */
 class storage_load extends storage_base {
     
+    /**
+     * Durch diese Methode wird das Laden der Daten angestoßen. Sie ruft wiederrum die einzelnen Unterroutinen
+     * für die Verschiedenen Aspekte der Daten auf. 
+     * @param int $id Die ID des Objektes, welches geladen werden soll
+     */
     public function load_object(int $id) {
         $this->entities = ['id'=> $id,'tags'=>[],'attributes'=>[],'externalhooks'=>[]];
-        $this->load_core();
         $this->load_parentchain();
         $this->load_objects();
         $this->load_strings();
@@ -16,12 +28,6 @@ class storage_load extends storage_base {
         $this->load_externalhooks();
      }
     
-    private function load_core() {
-        $core = DB::table('objects')->select('updated_at','created_at')->where('id','=',$this->entities['id'])->first();
-        $this->entities['updated_at'] = $core->updated_at;
-        $this->entities['created_at'] = $core->created_at;
-    }
-    
     private function load_parentchain() {
         foreach ($this->inheritance as $inheritance) {
             $table = $inheritance::$table_name;
@@ -30,6 +36,8 @@ class storage_load extends storage_base {
                 foreach ($result as $name => $value) {
                     $this->entities[$name] = $value;
                 }
+            } else {
+                throw new StorageException("Eine ID '".$this->entities['id']."' gibt es in der Tabelle '$table' nicht.");
             }
         }
     }
@@ -80,8 +88,7 @@ class storage_load extends storage_base {
             return;
         }
         foreach ($assigns as $assign) {
-            $tag = new \Sunhill\Objects\oo_tag($assign->tag_id);
-            $this->entities['tags'][] = $tag;
+            $this->entities['tags'][] = $assign->tag_id;
         }
         
     }
