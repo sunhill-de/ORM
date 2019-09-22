@@ -67,6 +67,11 @@ class StorageTest extends sunhill_testcase_db
             [
                 [1,1],[1,2]
             ]);
+        $this->insert_into('caching',['id','object_id','fieldname','value'],
+            [
+                [1,5,'parentcalc','123A'],
+                [2,6,'parentcalc','234A'],
+            ]);
     }
     
     /**
@@ -113,7 +118,8 @@ class StorageTest extends sunhill_testcase_db
             [5,'Sunhill\\Test\\ts_testparent','parentdate','1978-06-05'],                 // Werden intfelder gelesen
             [5,'Sunhill\\Test\\ts_testparent','parenttime','01:11:00'],              // Werden Floatfelder gelesen
             [5,'Sunhill\\Test\\ts_testparent','parentenum','testC'],      // Werden Textfelder gelesen
-
+            [5,'Sunhill\\Test\\ts_testparent','parentcalc','123A'],      // Werden Textfelder gelesen
+            
             [6,'Sunhill\\Test\\ts_testchild','parentchar','DEF'],              // Werden Varcharfelder gelesen
             [6,'Sunhill\\Test\\ts_testchild','parentint',234],                 // Werden intfelder gelesen
             [6,'Sunhill\\Test\\ts_testchild','parentfloat',2.34],              // Werden Floatfelder gelesen
@@ -130,6 +136,7 @@ class StorageTest extends sunhill_testcase_db
             [6,'Sunhill\\Test\\ts_testchild','childdate','2016-06-17'],                 // Werden intfelder gelesen
             [6,'Sunhill\\Test\\ts_testchild','childtime','18:00:00'],              // Werden Floatfelder gelesen
             [6,'Sunhill\\Test\\ts_testchild','childenum','testA'],      // Werden Textfelder gelesen
+            [6,'Sunhill\\Test\\ts_testchild','parentcalc','234A'],              // Werden Floatfelder gelesen
             
         ];
     }
