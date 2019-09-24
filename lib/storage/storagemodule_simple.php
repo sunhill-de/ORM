@@ -10,12 +10,16 @@ use Illuminate\Support\Facades\DB;
  * @author klaus
  *
  */
-class storage_load extends storage_base {
+class storagemodule_simple extends storagemodule_base {
     
     /**
-     * Durch diese Methode wird das Laden der Daten angestoßen. Sie ruft wiederrum die einzelnen Unterroutinen
-     * für die Verschiedenen Aspekte der Daten auf. 
-     * @param int $id Die ID des Objektes, welches geladen werden soll
+    public function prepare_load(int $id) {
+        // Macht gar nichts
+    }
+    
+    /**
+     * Läd die Simple-Fields der Objekte
+     * @param int $id
      */
     public function load_object(int $id) {
         $this->entities = ['id'=> $id,'tags'=>[],'attributes'=>[],'externalhooks'=>[]];
@@ -29,7 +33,7 @@ class storage_load extends storage_base {
      }
     
     private function load_parentchain() {
-        foreach ($this->inheritance as $inheritance) {
+        foreach ($this->get_inheritance() as $inheritance) {
             $table = $inheritance::$table_name;
             $result = DB::table($table)->where('id','=',$this->entities['id'])->first();
             if (!empty($result)) {

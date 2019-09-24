@@ -40,8 +40,7 @@ class StorageTest extends sunhill_testcase_db
             self::$is_prepared = true;
         }
         $object = new $class();
-        $loader = new \Sunhill\Storage\storage_load($object);
-        $loader->set_inheritance($object->get_inheritance(true));
+        $loader = new \Sunhill\Storage\storage_mysql($object);
         $loader->load_object($id);
         if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]/',$fieldname,$match)){
             $name = $match['name'];
