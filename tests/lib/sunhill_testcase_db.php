@@ -129,27 +129,7 @@ class sunhill_testcase_db extends TestCase {
         exec(dirname(__FILE__).'/../../application db:seed');
     }
     
-    protected function create_load_scenario() {
-        $this->insert_into('objects',['id','classname','created_at','updated_at'],
-            [[1,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [2,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [3,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [4,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [5,"\\Sunhill\\Test\\ts_testparent",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [6,"\\Sunhill\\Test\\ts_testchild",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [7,"\\Sunhill\\Test\\ts_referenceonly",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-            ]);
-        $this->insert_into('dummies',['id','dummyint'],[[1,123],[2,234],[3,345],[4,456]]);
-        $this->insert_into('testparents',['id','parentint','parentchar','parentfloat','parenttext','parentdatetime',
-            'parentdate','parenttime','parentenum'],
-            [[5,123,'ABC',1.23,'Lorem ipsum','1974-09-15 17:45:00','1978-06-05','01:11:00','testC'],
-                [6,234,'DEF',2.34,'Upsala Dupsala','1970-09-11 18:00:00','2013-11-24','16:00:00','testB']
-            ]);
-        $this->insert_into('testchildren',['id','childint','childchar','childfloat','childtext','childdatetime',
-            'childdate','childtime','childenum'],
-            [
-                [6,345,'GHI',3.45,'Norem Torem','1973-01-24 18:00:00','2016-06-17','18:00:00','testA']
-            ]);
+    protected function create_write_scenario() {
         $this->insert_into('tags',['id','created_at','updated_at','name','options','parent_id'],
             [
                 [1,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagA',0,0],
@@ -169,6 +149,41 @@ class sunhill_testcase_db extends TestCase {
                 [6,'TagE',5,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [7,'TagF',6,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
             ]);
+        $this->insert_into('attributes',['id','name','type','allowedobjects','property'],
+            [
+                [1,'int_attribute','int',"\\Sunhill\\Test\\ts_dummy",''],
+                [2,'attribute1','int',"\\Sunhill\\Test\\ts_testparent",''],
+                [3,'attribute2','int',"\\Sunhill\\Test\\ts_testparent",''],
+                
+            ]);        
+    }
+    
+    protected function create_load_scenario() {
+        $this->create_write_scenario();
+        $this->insert_into('objects',['id','classname','created_at','updated_at'],
+            [
+                [1,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [2,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [3,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [4,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [5,"\\Sunhill\\Test\\ts_testparent",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [6,"\\Sunhill\\Test\\ts_testchild",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [7,"\\Sunhill\\Test\\ts_passthru",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+            ]);
+        $this->insert_into('dummies',['id','dummyint'],[[1,123],[2,234],[3,345],[4,456]]);
+        $this->insert_into('testparents',['id','parentint','parentchar','parentfloat','parenttext','parentdatetime',
+            'parentdate','parenttime','parentenum'],
+            [
+                [5,123,'ABC',1.23,'Lorem ipsum','1974-09-15 17:45:00','1978-06-05','01:11:00','testC'],
+                [6,234,'DEF',2.34,'Upsala Dupsala','1970-09-11 18:00:00','2013-11-24','16:00:00','testB'],
+                [7,321,'FED',4.32,'Ups Dup','1970-09-11 18:00:00','2013-11-24','16:00:00','testB']
+            ]);
+        $this->insert_into('testchildren',['id','childint','childchar','childfloat','childtext','childdatetime',
+            'childdate','childtime','childenum'],
+            [
+                [6,345,'GHI',3.45,'Norem Torem','1973-01-24 18:00:00','2016-06-17','18:00:00','testA']
+            ]);
+        $this->insert_into('passthrus',['id'],[[7]]);
         $this->insert_into('tagobjectassigns',['container_id','tag_id'],
             [
                 [1,1],[1,2]
@@ -186,7 +201,7 @@ class sunhill_testcase_db extends TestCase {
                 [6,3,'childoarray',0],
                 [6,4,'childoarray',1],
                 [6,1,'childoarray',2],
-                
+                                
             ]);
         $this->insert_into('stringobjectassigns',['container_id','element_id','field','index'],
             [
@@ -202,13 +217,6 @@ class sunhill_testcase_db extends TestCase {
             [
                 [1,5,'parentcalc','123A'],
                 [2,6,'parentcalc','234A'],
-            ]);
-        $this->insert_into('attributes',['id','name','type','allowedobjects','property'],
-            [
-                [1,'int_attribute','int',"\\Sunhill\\Test\\ts_dummy",''],
-                [2,'attribute1','int',"\\Sunhill\\Test\\ts_testparent",''],
-                [3,'attribute2','int',"\\Sunhill\\Test\\ts_testparent",''],
-                
             ]);
         $this->insert_into('attributevalues',['id','attribute_id','object_id','value','textvalue','created_at','updated_at'],
             [

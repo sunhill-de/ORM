@@ -330,8 +330,11 @@ class propertieshaving extends hookable {
 	 * @param string $name Name der Property
 	 * @return oo_property
 	 */
-	public function get_property(string $name) {
+	public function get_property(string $name,bool $return_null=false) {
 	    if (!isset($this->properties[$name])) {
+	        if ($return_null) {
+	            return null;
+	        }
 	        throw new PropertiesHavingException("Unbekannter Property '$name'");
 	    }
 	    return $this->properties[$name];

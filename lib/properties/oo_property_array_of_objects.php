@@ -8,7 +8,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 
 	protected $type = 'array_of_objects';
 		
-	protected $features = ['object','complex','array'];
+	protected $features = ['object','complex','array','objectid'];
 	
 	protected $initialized = true;
 	

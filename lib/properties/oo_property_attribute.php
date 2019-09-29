@@ -10,7 +10,7 @@ class oo_property_attribute extends oo_property {
 	
 	protected $type = 'attribute';
 	
-	protected $features = ['attribute'];
+	protected $features = ['attribute','complex'];
 	
 	protected function initialize() {
 		$this->initialized = true;

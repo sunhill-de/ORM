@@ -8,7 +8,7 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	
 	protected $type = 'array_of_strings';
 	
-	protected $features = ['object','complex','array'];
+	protected $features = ['object','complex','array','strings'];
 	
 	protected function initialize() {
 		$this->initialized = true;

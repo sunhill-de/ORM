@@ -95,17 +95,65 @@ class storage_base  {
         return $this->set_entity($name,$value);
     }    
     
+    protected function execute_chain(string $chainname,int $id) {
+        $method_name = 'prepare_'.$chainname;
+        $module_list = [];
+        foreach ($this->modules as $module_name) {
+            $full_name = "\\Sunhill\\Storage\\storagemodule_".$module_name;
+            $module = new $full_name($this);
+            $module->$method_name($id);
+            $module_list[] = $module;
+        }
+        foreach ($module_list as $module) {
+            $id = $module->$chainname($id);
+        }
+        return $id;
+    }
+    
     /**
      * Läd das Objekt mit der ID $id
      * @param int $id
      */
     public function load_object(int $id) {
         $this->entities = ['id'=> $id,'tags'=>[],'attributes'=>[],'externalhooks'=>[]];
-        foreach ($this->modules as $module_name) {
-            $full_name = "\\Sunhill\\Storage\\storagemodule_".$module_name;
-            $module = new $full_name($this);
-            $module->prepare_load($id);
-            $module->load($id);
-        }
+        return $this->execute_chain('load',$id);
     }
+    
+    public function insert_object(int $id=0) {
+        return $this->execute_chain('insert',$id);
+    }
+    
+    
+    public function filter_storage($features,$grouping=null) {
+        $result = [];
+        foreach ($this->entities as $entity => $value) {
+            $property = $this->get_caller()->get_property($entity,true);
+            if (is_null($property)) { continue; }
+            if (is_array($features)) {
+                $pass = true;
+                foreach ($features as $feature) {
+                    if (!$property->has_feature($feature)) {
+                        $pass = false;
+                    }
+                }
+            } else {
+                $pass = $property->has_feature($features);   
+            }
+            if ($pass) {
+              // Dieses Property hat die Filter überstanden, jetzt noch gruppieren
+                if (isset($grouping)) {
+                    $group_value = $property->$grouping;
+                    if (isset($result[$group_value])) {
+                        $result[$group_value][$entity] = $value;
+                    } else {
+                        $result[$group_value] = [$entity=>$value];
+                    }
+                } else {
+                    $result[$entity] = $value;
+                }
+            }
+        }
+        return $result;
+    }
+    
 }

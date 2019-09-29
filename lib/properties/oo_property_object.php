@@ -8,7 +8,7 @@ class oo_property_object extends oo_property_field {
 	
 	protected $type = 'object';
 	
-	protected $features = ['object','complex'];
+	protected $features = ['object','complex','objectid'];
 	
 	protected $initialized = true;
 	

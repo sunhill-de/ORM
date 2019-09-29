@@ -21,8 +21,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	    parent::__construct();
 	    $this->properties['tags'] = self::create_property('tags','tags')->set_owner($this);
 	    $this->properties['externalhooks'] = self::create_property('externalhooks','externalhooks')->set_owner($this);
-	    $this->properties['attribute_loader'] = self::create_property('attribute_loader','attribute_loader')->set_owner($this);
-	    
 	}
 	
 	final public function calculate_keyfield() {
@@ -73,8 +71,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	protected function do_load() {
 	    if (!$this->is_loading()) {
 	        $this->state = 'loading';
-	        $loader = new \Sunhill\Storage\storage_load($this);
-	        $loader->set_inheritance($this->get_inheritance(true));
+	        $loader = new \Sunhill\Storage\storage_mysql($this);
 	        $loader->load_object($this->get_id());
             $properties = $this->get_properties_with_feature();
             foreach ($properties as $property) {
@@ -86,41 +83,26 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 // ========================= Einfügen =============================	
 	protected function do_insert() {
-	        $storer = new \Sunhill\Storage\storage_insert($this);
-	        $storer->set_inheritance($this->get_inheritance(true));
+	        $storer = new \Sunhill\Storage\storage_mysql($this);
 	        $properties = $this->get_properties_with_feature();
 	        foreach ($properties as $property) {
 	            $property->insert($storer);
 	        }
-            $this->read_back($storer);
+            $storer->insert_object();
+	        $this->set_id($this->read_back($storer));
             $this->insert_cache($this->get_id());
 	}
 	
-	private function read_back(\Sunhill\Storage\storage_insert $storer) {	    
-	    $storer->classname = get_class($this);
-	    $this->set_id($storer->store_object());
-	    $this->created_at = $storer->created_at;
-	    $this->updated_at = $storer->updated_at;
-	}
-
 // ========================== Aktualisieren ===================================	
 	protected function do_update() {
-	    $this->update_core_object();
-	    $simple_fields = $this->get_properties_with_feature('simple',true,'class');
-	    foreach ($simple_fields as $class_name => $fields_of_class) {
-            $values = array();
-	        foreach ($fields_of_class as $field_name => $field) {
-	            $values[$field_name] = $field->get_value();
-	        }
-            DB::table($class_name::$table_name)->
-                      updateOrInsert(['id'=>$this->get_id()],$values);
+	    $updater = new \Sunhill\Storage\storage_mysql($this);
+	    $properties = $this->get_properties_with_feature();
+	    foreach ($properties as $property) {
+	        $property->update($updater);
 	    }
+	    $updater->update_object($this->get_id());
 	}
-	
-	private function update_core_object() {
-	    DB::table('objects')->where('id','=',$this->get_id())->update(['updated_at'=>DB::raw('now()')]);
-	}
-	
+		
 	/**
 	 * Erzeugt ein leeres neues Objekt
 	 */
@@ -130,23 +112,13 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	// ================================= Löschen =============================================
 	protected function do_delete() {
-	    $this->set_state('deleting');
-	    $this->delete_core_object();
-	    $this->delete_simple_fields();
-	    $this->set_state('invalid');
-	}
-	
-	private function delete_core_object() {
-	    DB::table('objects')->where('id','=',$this->get_id())->delete();
-	}
-	
-	private function  delete_simple_fields() {
-	    $fields = $this->get_properties_with_feature('simple',null,'class');
-	    foreach ($fields as $class_name=>$fields) {
-	        if (!empty($class_name)) {
-	            DB::table($class_name::$table_name)->where('id','=',$this->get_id())->delete();
-	        }
+	    $updater = new \Sunhill\Storage\storage_mysql($this);
+	    $properties = $this->get_properties_with_feature();
+	    foreach ($properties as $property) {
+	        $property->delete($updater);
 	    }
+	    $updater->delete_object($this->get_id());
+        $this->clear_cache_entry();
 	}
 	
 	protected function clear_cache_entry() {

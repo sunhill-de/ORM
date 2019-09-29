@@ -16,6 +16,18 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
             }
             $this->storage->entities['externalhooks'][] = $line;
         }
+        return $id;
     }
     
+    public function insert(int $id) {
+        return $id;
+    }
+    
+    public function update(int $id) {
+        
+    }
+    
+    public function delete(int $id) {
+        
+    }
 }
