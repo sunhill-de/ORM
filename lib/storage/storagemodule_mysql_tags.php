@@ -28,6 +28,11 @@ class storagemodule_mysql_tags extends storagemodule_base {
     }
     
     public function update(int $id) {
+        if (is_null($this->storage->tags)) {
+            return $id;
+        }
+        $this->delete($id);
+        $this->insert($id);
         return $id;
     }
     

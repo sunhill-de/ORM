@@ -40,6 +40,16 @@ class storagemodule_mysql_attributes extends storagemodule_base {
     }
     
     public function update(int $id) {
+        if (! isset($this->storage->entities['attributes'])) {
+            return $id;
+        }
+        foreach($this->storage->entities['attributes'] as $attribute) {
+            $updates = ['attribute_id'=>$attribute['attribute_id'],
+                'object_id'=>$id,
+                'value'=>$attribute['value'],
+                'textvalue'=>$attribute['textvalue']];            
+            DB::table('attributevalues')->where('id',$attribute['id'])->update($updates);
+        }
         return $id;
     }
     

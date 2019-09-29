@@ -31,6 +31,15 @@ class storagemodule_mysql_strings extends storagemodule_base {
     }
     
     public function update(int $id) {
+        $inserts = [];
+        $properties = $this->storage->filter_storage('strings');
+        foreach ($properties as $property=>$values) {
+            DB::table('stringobjectassigns')->where('container_id',$id)->where('field',$property)->delete();
+            foreach ($values as $index=>$value) {
+                $inserts[] = ['container_id'=>$id,'element_id'=>$value,'field'=>$property,'index'=>$index];
+            }
+        }
+        DB::table('stringobjectassigns')->insert($inserts);
         return $id;
     }
     

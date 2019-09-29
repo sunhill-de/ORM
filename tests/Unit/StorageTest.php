@@ -251,8 +251,70 @@ class StorageTest extends sunhill_testcase_db
         return [
             [1,'Sunhill\\Test\\ts_dummy',function($storage) {
                 $storage->dummyint = 321;
-            },'dummyint',321],                       // Wird ein einfaches Feld gelesen?
-        ];
+            },'dummyint',321],                       // Wird ein einfaches Feld geändert?
+            [5,'Sunhill\\Test\\ts_testparent',function($storage) {
+                $storage->parentint = 321;
+            },'parentint',321],                       // Wird ein einfaches Feld geändert?
+            [5,'Sunhill\\Test\\ts_testparent',function($storage) {
+                $storage->parentchar = 'OOO';
+            },'parentchar','OOO'],                       // Wird ein einfaches Feld geändert?
+            [5,'Sunhill\\Test\\ts_testparent',function($storage) {
+                $storage->parentint = '999';
+                $storage->parentchar = 'OOO';
+            },'parentchar','OOO'],  
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentint = '999';
+                $storage->parentchar = 'OOO';
+                $storage->childint = '888';
+                $storage->childchar = 'PPP';
+            },'parentchar','OOO'],
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentint = '999';
+                $storage->parentchar = 'OOO';
+                $storage->childint = '888';
+                $storage->childchar = 'PPP';
+            },'childchar','PPP'],
+            [7,'Sunhill\\Test\\ts_passthru',function($storage) {
+                $storage->parentint = '999';
+                $storage->parentchar = 'OOO';
+            },'parentchar','OOO'],
+            [1,'Sunhill\\Test\\ts_dummy',function($storage) {
+                $storage->attributes = ['int_attribute' => ['id'=>1,'attribute_id'=>1,'value'=>999,'textvalue'=>'']];
+            },'attributes[int_attribute][value]',999],
+            [1,'Sunhill\\Test\\ts_dummy',function($storage) {
+                $storage->tags = [1,2,3];
+            },'tags',[1,2,3]],                         // Werden die Tags vernünftig ausgelesen?
+            [1,'Sunhill\\Test\\ts_dummy',function($storage) {
+                $storage->tags = [1];
+            },'tags',[1]],                         // Werden die Tags vernünftig ausgelesen?
+            [1,'Sunhill\\Test\\ts_dummy',function($storage) {
+                $storage->tags = [];
+            },'tags',[]],                         // Werden die Tags vernünftig ausgelesen?
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentoarray = [1,2,3];
+            },'parentoarray',[1,2,3]],
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentoarray = [1];
+            },'parentoarray',[1]],
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentoarray = [];
+            },'parentoarray',null],
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentchar = 'ABCDEF';
+            },'parentoarray',[1,2]],
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentobject = 12;
+            },'parentobject',12],
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentsarray = ['TESTA','TESTB','TESTC'];
+            },'parentsarray',['TESTA','TESTB','TESTC']],
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentsarray = ['TESTA'];
+            },'parentsarray',['TESTA']],
+            [6,'Sunhill\\Test\\ts_testchild',function($storage) {
+                $storage->parentsarray = [];
+            },'parentsarray',null],
+            ];
     }
     
     /**
@@ -275,12 +337,12 @@ class StorageTest extends sunhill_testcase_db
     
     public function DeleteProvider() {
         return [
-/*            [1,'Sunhill\\Test\\ts_dummy','dummies','id'],                       // Wird ein einfaches Feld gelesen?
+            [1,'Sunhill\\Test\\ts_dummy','dummies','id'],                       // Wird ein einfaches Feld gelesen?
             [1,'Sunhill\\Test\\ts_dummy','objects','id'],                       // Wird ein einfaches Feld gelesen?
             [2,'Sunhill\\Test\\ts_dummy','dummies','id'],                       // Wird ein einfaches Feld mit höherem Index gelesen?
             [1,'Sunhill\\Test\\ts_dummy','tagobjectassigns','container_id'],                         // Werden die Tags vernünftig ausgelesen?
             [1,'Sunhill\\Test\\ts_dummy','attributevalues','object_id'],      // Werden Attribute richtig ausgelesen
-            */
+            
             [5,'Sunhill\\Test\\ts_testparent','testparents','id'],              // Werden Varcharfelder gelesen
             [5,'Sunhill\\Test\\ts_testparent','caching','object_id'],             // Werden calculierte Felder gelesen
             [5,'Sunhill\\Test\\ts_testparent','objectobjectassigns','container_id'],                // Werden Objektfelder gelesen
@@ -297,7 +359,7 @@ class StorageTest extends sunhill_testcase_db
             [6,'Sunhill\\Test\\ts_testchild','objects','id'],            // Werden Objektarrays gelesen
             [6,'Sunhill\\Test\\ts_testchild','attributevalues','object_id'],    // Werden Attribute gelesen
                         
- //           [7,'Sunhill\\Test\\ts_passthru','passthrus','id']                         // Werden Objekte ohne Simple-Fields geladen
+            [7,'Sunhill\\Test\\ts_passthru','passthrus','id']                         // Werden Objekte ohne Simple-Fields geladen
         ];        
     }
 }
