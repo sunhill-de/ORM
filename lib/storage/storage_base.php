@@ -123,6 +123,13 @@ class storage_base  {
         return $this->execute_chain('insert',$id);
     }
     
+    public function update_object(int $id) {
+        return $this->execute_chain('update',$id);    
+    }
+    
+    public function delete_object(int $id) {
+        return $this->execute_chain('delete',$id);    
+    }
     
     public function filter_storage($features,$grouping=null) {
         $result = [];

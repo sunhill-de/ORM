@@ -24,10 +24,10 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
     }
     
     public function update(int $id) {
-        
+        return $id;
     }
     
     public function delete(int $id) {
-        
+       return $id;
     }
 }

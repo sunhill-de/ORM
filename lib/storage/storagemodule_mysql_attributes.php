@@ -40,10 +40,11 @@ class storagemodule_mysql_attributes extends storagemodule_base {
     }
     
     public function update(int $id) {
-        
+        return $id;
     }
     
     public function delete(int $id) {
        DB::table('attributevalues')->where('object_id','=',$id)->delete(); 
+       return $id;
     }
 }

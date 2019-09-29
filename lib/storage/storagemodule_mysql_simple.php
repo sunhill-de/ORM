@@ -54,11 +54,36 @@ class storagemodule_mysql_simple extends storagemodule_base {
         return $id;
     }
     
+    private function update_core(int $id) {
+        DB::table('objects')->where('id',$id)->update(['updated_at'=>DB::raw('now()')]);
+    }
+    
+    private function update_table($id,$table,$fields) {
+        DB::table($table)->where('id',$id)->update($fields);
+    }
+    
     public function update(int $id) {
-        
+        $fields = $this->storage->filter_storage('simple','class');
+        if (empty($fields)) {
+            return $id;
+        }
+        foreach ($this->storage->get_inheritance() as $inheritance) {
+            if ($inheritance == "Sunhill\\Objects\\oo_object") {
+                $this->update_core($id);
+            }
+            $table = $inheritance::$table_name;
+            if (isset($fields[$inheritance])) {
+                $this->update_table($id,$table,$fields[$inheritance]);
+            }
+        }
+        return $id;
     }
     
     public function delete(int $id) {
-        
+        foreach ($this->storage->get_inheritance() as $inheritance) {
+            $table = $inheritance::$table_name;
+            DB::table($table)->where('id',$id)->delete();
+        }
+        return $id;        
     }
 }

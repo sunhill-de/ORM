@@ -62,6 +62,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
     public function update(int $id) {
         $this->delete($id);
         $this->insert($id);
+        return $id;
     }
     
     /**
@@ -71,5 +72,6 @@ class storagemodule_mysql_objects extends storagemodule_base {
      */
     public function delete(int $id) {
         DB::table('objectobjectassigns')->where('container_id','=',$id)->delete();
+        return $id;
     }
 }
