@@ -279,7 +279,12 @@ class StorageTest extends sunhill_testcase_db
                 $storage->parentchar = 'OOO';
             },'parentchar','OOO'],
             [1,'Sunhill\\Test\\ts_dummy',function($storage) {
-                $storage->attributes = ['int_attribute' => ['id'=>1,'attribute_id'=>1,'value'=>999,'textvalue'=>'']];
+                $storage->attributes = ['int_attribute' => [
+                    'id'=>1,
+                    'attribute_id'=>1,
+                    'value'=>999,
+                    'textvalue'=>'',
+                    'value_id'=>1]];
             },'attributes[int_attribute][value]',999],
             [1,'Sunhill\\Test\\ts_dummy',function($storage) {
                 $storage->tags = [1,2,3];
