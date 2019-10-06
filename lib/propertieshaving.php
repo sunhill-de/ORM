@@ -158,40 +158,6 @@ class propertieshaving extends hookable {
 	    $this->check_for_hook('POSTUPDATE');
 	}
 
-	/**
-	 * Ermittelt die ALLE (!) properties und ruft für jeden die methode ->updating sowie
-	 * die Hook UPDATING_PROPERTIES auf
-	 */
-	private function updating_properties() {
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->updating($this->get_id());
-	        if ($property->get_dirty($this->get_id())) {
-    	        $this->check_for_hook('UPDATING_PROPERTY',
-    	                              $property->get_name(),
-    	                              $property->get_diff_array());
-	        }
-	    }
-	}
-	
-	/**
-	 * Ermittelt die dirty properties und ruft für jeden die methode ->updated sowie
-	 * die Hook UPDATED_PROPERTIES auf
-	 */
-	private function updated_properties() {
-	    $readonly = $this->get_readonly();
-	    $this->set_readonly(true);
-	    $dirty_properties = $this->get_properties_with_feature('',true);
-	    foreach ($dirty_properties as $property) {
-	        $diff = $property->get_diff_array();
-	        $property->updated($this->get_id());
-	        $this->check_for_hook('UPDATED_PROPERTY',
-	                              $property->get_name(),
-	                              $diff);
-	    }	    
-	    $this->set_readonly($readonly);
-	}
-	
 	protected function do_update() {
 	    // Muss von der abgeleiteten Klasse überschrieben werden
 	}
@@ -205,66 +171,25 @@ class propertieshaving extends hookable {
 
 // ======================================= Inserting ===========================================
 	protected function insert() {
-	    $this->inserting_properties();
 	    $this->check_for_hook('PREINSERT');
 	    $this->do_insert();
-	    $this->inserted_properties();
 	    $this->check_for_hook('POSTINSERT');
 	}
-	
-	/**
-	 * Ermittelt die ALLE (!) properties und ruft für jeden die methode ->inserting sowie
-	 * die Hook INSERTING_PROPERTIES auf
-	 */
-	private function inserting_properties() {
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->inserting();
-	        $this->check_for_hook('INSERTING_PROPERTY',
-	                $property->get_name());
-	    }
-	}
-	
-	/**
-	 * Ermittelt die dirty properties und ruft für jeden die methode ->updated sowie
-	 * die Hook UPDATED_PROPERTIES auf
-	 */
-	private function inserted_properties() {
-	    $readonly = $this->get_readonly();
-	    $this->set_readonly(true);
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->inserted($this->get_id());
-	        $this->check_for_hook('INSERTED_PROPERTY',
-	            $property->get_name());
-	    }
-	    $this->set_readonly($readonly);
+
+	protected function do_insert() {
+	    
 	}
 	
 	// ====================================== Deleting ==========================================
 	public function delete() {
-	    $this->deleting_properties();
 	    $this->check_for_hook('PREDELETE');
 	    $this->do_delete();
-	    $this->deleted_properties();
 	    $this->check_for_hook('POSTDELETE');
 	    $this->clear_cache_entry();
 	}
 	
-	private function deleting_properties() {
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->deleting($this->get_id());
-	        $this->check_for_hook('DELETING_PROPERTY',$property->get_name());
-	    }	    
-	}
-	
-	private function deleted_properties() {
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->deleting($this->get_id());
-	        $this->check_for_hook('DELETED_PROPERTY',$property->get_name());
-	    }	    
+	protected function do_delete() {
+	    
 	}
 	
 	protected function clear_cache_entry() {

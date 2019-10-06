@@ -43,7 +43,7 @@ class ObjectInsertTest extends \Tests\sunhill_testcase_db
         $object->oarray[] = $dummy4;
         $object->tags->stick(1);
         $object->tags->stick(2);
-    //    $object->general_attribute = 321;
+        $object->general_attribute = 321;
         $object->commit();
         $this->assertEquals(1,$object->get_id());
         return $object;

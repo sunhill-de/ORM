@@ -12,6 +12,11 @@ class FakeStorage extends \Sunhill\Storage\storage_base {
                 $this->entities = $this->caller->storage_values;
                 break;
             case 'insert':
+                if (isset($this->entities['attributes'])) {
+                    foreach ($this->entities['attributes'] as $attribute) {
+                        $this->entities['attributes'][$attribute['name']]['value_id'] = 9;
+                    }
+                }
             case 'update':
                 $this->caller->storage_values = $this->entities;
                 break;

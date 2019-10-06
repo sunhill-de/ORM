@@ -35,7 +35,7 @@ class storagemodule_mysql_attributes extends storagemodule_base {
                           'value'=>$attribute['value'],
                           'textvalue'=>$attribute['textvalue']];
             $this->storage->entities['attributes'][$attribute['name']]['id'] = 
-                DB::table('attributevalues')->insert($insert);
+                   DB::table('attributevalues')->insertGetId($insert);
         }
         return $id;
     }

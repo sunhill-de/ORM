@@ -28,6 +28,31 @@ class oo_property_attribute extends oo_property {
 		$this->initialized = true;
 	}
 
+	public function set_allowed_objects(string $allowed_objects) {
+	    $this->allowed_objects = $allowed_objects;
+	    return $this;
+	}
+	
+	public function set_attribute_id(int $id) {
+	    $this->attribute_id = $id;
+	    return $this;
+	}
+	
+	public function set_attribute_name(string $name) {
+	    $this->attribute_name = $name;
+	    return $this;
+	}
+	
+	public function set_attribute_type(string $type) {
+	    $this->attribute_type = $type;
+	    return $this;
+	}
+	
+	public function set_attribute_property(string $property) {
+	    $this->attribute_property = $property;
+	    return $this;
+	}
+	
 // ===================================== Laden ===========================================	
 	/**
 	 * Individuell überschreibbare Methode, die dem Property erlaub, besondere Lademethoden zu verwenden
@@ -54,15 +79,29 @@ class oo_property_attribute extends oo_property {
 	}
 
 // ============================ Einfügen ========================================	
-	protected function do_insert(\Sunhill\Storage\storage_base $loader,$name) {
-	    $loader->entities['attributes'][$name] = 
-	       ['value'=>$this->value];    
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,$name) {
+        $storage->entities['attributes'][$name] = [
+            'name'=>$this->attribute_name,
+            'attribute_id'=>$this->attribute_id,
+            'allowed_objects'=>$this->allowed_objects,
+            'type'=>$this->attribute_type,
+            'property'=>$this->property
+        ];
+        $this->insert_value($storage);        
 	}
-	
+
 	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
+	 * Trägt die ID für den Attribut-Wert nach, da dieser erst nach dem Einfügen feststeht.
+	 * {@inheritDoc}
+	 * @see \Sunhill\Properties\oo_property::inserted()
 	 */
 	public function inserted(\Sunhill\Storage\storage_base $storage) {
+	    $this->value_id = $storage->entities['attributes'][$this->attribute_name]['value_id'];
+	}
+	
+	protected function insert_value(\Sunhill\Storage\storage_base $storage) {
+	   $storage->entities['attributes'][$this->attribute_name]['value'] = $this->value;    
+	   $storage->entities['attributes'][$this->attribute_name]['textvalue'] = '';
 	}
 	
 	// ============================ Statische Funktionen ===========================
