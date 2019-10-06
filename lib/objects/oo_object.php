@@ -55,10 +55,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * @return \Sunhill\Storage\storage_base
 	 */
 	final protected function get_storage() {
-	    if (!isset($this->storage)) {
-	        $this->storage = $this->create_storage();
-	    }
-	    return $this->storage;
+	    return $this->create_storage();
 	}
 	
 	/**
