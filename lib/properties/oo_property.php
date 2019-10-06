@@ -54,7 +54,6 @@ class oo_property extends \Sunhill\base {
 	}
 	
 	public function initialize() {
-		$this->initialized = true;
 	}
 	
 	protected function init_validator() {

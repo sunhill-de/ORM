@@ -151,10 +151,8 @@ class propertieshaving extends hookable {
 	
 // ====================================== Updating ========================================	
 	protected function update() {
-        $this->updating_properties();
 	    $this->check_for_hook('PREUPDATE');
 	    $this->do_update();
-	    $this->updated_properties();
 	    $this->check_for_hook('POSTUPDATE');
 	}
 

@@ -225,7 +225,7 @@ class StorageTest extends sunhill_testcase_db
             },'tags',[1,2,3]],
             ['Sunhill\\Test\\ts_dummy',function($object) { 
                 $object->dummyint = 123; 
-                $object->attributes = ['int_attribute' =>['attribute_id'=>1,'value'=>999,'textvalue'=>'']];
+                $object->attributes = ['int_attribute' =>['name'=>'int_attribute','type'=>'int','property'=>'','attribute_id'=>1,'value'=>999,'textvalue'=>'']];
             },'attributes[int_attribute][value]',999], // Einfacher Test mit simple Fields
             ];
     }
