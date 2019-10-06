@@ -34,7 +34,7 @@ class storagemodule_mysql_attributes extends storagemodule_base {
                           'object_id'=>$id,
                           'value'=>$attribute['value'],
                           'textvalue'=>$attribute['textvalue']];
-            $this->storage->entities['attributes'][$attribute['name']]['id'] = 
+            $this->storage->entities['attributes'][$attribute['name']]['value_id'] = 
                    DB::table('attributevalues')->insertGetId($insert);
         }
         return $id;
@@ -49,7 +49,7 @@ class storagemodule_mysql_attributes extends storagemodule_base {
                 'object_id'=>$id,
                 'value'=>$attribute['value'],
                 'textvalue'=>$attribute['textvalue']];            
-            DB::table('attributevalues')->where('id',$attribute['id'])->update($updates);
+            DB::table('attributevalues')->where('id',$attribute['value_id'])->update($updates);
         }
         return $id;
     }

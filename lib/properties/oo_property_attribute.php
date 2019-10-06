@@ -104,6 +104,15 @@ class oo_property_attribute extends oo_property {
 	   $storage->entities['attributes'][$this->attribute_name]['textvalue'] = '';
 	}
 	
+// ================================= Update =========================================
+	protected function do_update(\Sunhill\Storage\storage_base $storage,$name) {
+	    $storage->entities['attributes'][$this->attribute_name] = [
+	        'attribute_id'=>$this->attribute_id,
+	        'value_id'=>$this->value_id
+	    ];
+	    $this->insert_value($storage);	    
+	}
+	
 	// ============================ Statische Funktionen ===========================
 	static public function search($name) {
 	    $property = DB::table('attributes')->where('name','=',$name)->first();

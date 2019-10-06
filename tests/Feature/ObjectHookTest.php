@@ -25,8 +25,8 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     
     protected static function setup_properties() {
         parent::setup_properties();
-        self::integer('hooking_int')->set_model('\Tests\Feature\Hooking')->set_default(0);
-        self::varchar('hookstate')->set_model('\Tests\Feature\Hooking')->set_default('');
+        self::integer('hooking_int')->set_default(0);
+        self::varchar('hookstate')->set_default('');
         self::object('ofield')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
         self::arrayofstrings('strarray');
         self::arrayofobjects('objarray')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
