@@ -14,10 +14,6 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	
 	protected $validator_name = 'object_validator';
 	
-	protected function initialize() {
-		$this->initialized = true;	
-	}
-	
 	public function set_allowed_objects($object) {
 	    $this->validator->set_allowed_objects($object);
 	    return $this;
@@ -32,53 +28,35 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    return $this->type;
 	}
 	
-	protected function do_load(\Sunhill\Storage\storage_load $loader,$name) {
+	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
 	    $references = $loader->$name;
 	    if (empty($references)) {
 	        return;
 	    }
 	    foreach ($references as $index => $reference) {
-	    // @todo Lazy-Objectloading
-	       $object = \Sunhill\Objects\oo_object::load_object_of($reference);
-	       $this->value[$index] = $object;
+	       $this->value[$index] = $reference;
 	    }
 	}
 	
-	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
+	protected function &do_get_indexed_value($index) {
+	    if (is_int($this->value[$index])) {
+	        $this->value[$index] = \Sunhill\Objects\oo_object::load_object_of($value[$index]);
+	    }
+	    return $this->value[$index];
+	}
+	
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	    $result = [];
 	    foreach ($this->value as $index => $value) {
-	       $storage->set_subvalue('xx_objects', $name, [$index=>$value]);
+	        if (is_int($value)) {
+	            $result[$index] = $value;
+	        } else {
+	            $result[$index] = $value->get_id();
+	        }
 	    }
+	    $storage->set_entity($name,$result);
 	}
 	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt geupdated wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::updated()
-	 */
-	public function updated(int $id) {
-	    $this->set_dirty(false);
-	    DB::table('objectobjectassigns')->where([['container_id','=',$id],
-	        ['field','=',$this->get_name()]])->delete();
-	    $this->inserted($id);
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
-	 */
-	public function inserted(int $id) {
-	    $this->set_dirty(false);
-	    foreach ($this->value as $index => $object) {
-    	        $object->commit();
-	            $model = new \App\objectobjectassign();
-    	        $model->container_id = $id;
-    	        $model->element_id = $object->get_id();
-    	        $model->field = $this->get_name();
-    	        $model->index = $index;
-    	        $model->save();
-	    }
-	}
 	protected function value_added($value) {
 	    foreach ($this->hooks as $hook) {
 	        $value->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);

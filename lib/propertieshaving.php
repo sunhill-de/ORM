@@ -8,7 +8,7 @@ class PropertiesHavingException extends \Exception {}
 
 class propertieshaving extends hookable {
 	
-    private $id;
+    protected $id;
     
     protected $state = 'normal';
     
@@ -420,6 +420,7 @@ class propertieshaving extends hookable {
 	    $property->set_name($name);
 	    $property->set_type($type);
 	    $property->set_class(self::get_calling_class());
+	    $property->initialize();
 	    return $property;
 	}
 	

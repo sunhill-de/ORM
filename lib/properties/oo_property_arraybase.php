@@ -6,10 +6,6 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 
 	protected $initialized = true;
 	
-	protected function initialize() {
-		$this->initialized = true;	
-	}
-
 	private function check_array() {
 	    if (!$this->is_array()) {
 	        throw new \Exception('Die Property "'.$this->name.'" wurde mit array Funktionen aufgerufen obwohl vom Typ "'.$this->type.'"');
@@ -22,7 +18,7 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	
 	public function offsetGet($offset) {
 	    $this->check_array();
-	    return $this->value[$offset];
+	    return $this->do_get_indexed_value($offset);
 	}
 	
 	public function offsetSet($offset, $value) {

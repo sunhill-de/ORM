@@ -24,17 +24,32 @@ class oo_property_object extends oo_property_field {
 	 * {@inheritDoc}
 	 * @see \Sunhill\Properties\oo_property::load()
 	 */
-	protected function do_load(\Sunhill\Storage\storage_load $storage,$name) {
+	protected function do_load(\Sunhill\Storage\storage_base $storage,$name) {
         $reference = $storage->$name;
 	    if (!empty($reference)) {
-// @todo Lazy-Objectloading
-	        $object = \Sunhill\Objects\oo_object::load_object_of($reference);
-    	    $this->value = $object;
+	        $this->do_set_value($reference);
 	    }
 	}
 	
-	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
-	    $storage->set_subvalue('xx_objects', $name, [0=>$this->value]);
+	/**
+	 * Überschriebene Methode von oo_property. Prüft, ob die Objekt-ID bisher nur als Nummer gespeichert war. Wenn ja, wird das
+	 * Objekt lazy geladen.
+	 * {@inheritDoc}
+	 * @see \Sunhill\Properties\oo_property::do_get_value()
+	 */
+	protected function &do_get_value() {
+	    if (is_int($this->value)) {
+	        $this->value = \Sunhill\Objects\oo_object::load_object_of($this->value);
+	    }
+        return $this->value;	    
+	}
+	
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	    if (is_int($this->value)) {
+	        $storage->set_entity($name,$this->value);
+	    } else if (is_object($this->value)){
+	        $storage->set_entity($name,$this->value->get_id());
+	    }
 	}
 	
 	public function updating(int $id) {

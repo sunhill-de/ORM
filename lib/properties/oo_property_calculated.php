@@ -12,18 +12,17 @@ class oo_property_calculated extends oo_property_field {
 	
 	protected $readonly = true;
 	
-	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
-	    $storage->set_subvalue('xx_calculated', $name, $this->get_value());
-	}
+	protected $initialized = true;
 	
 	public function get_dirty() {
 	    return true;
 	}
 	
-	public function set_value($value) {
+	protected function do_set_value($value) {
 	    throw new \Sunhill\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
 	}
-	public function &get_value() {
+	
+	protected function &do_get_value() {
 	// @todo: Ein sehr schmutziger Hack, damit die Tests durchlaufen
 	//    if (!$this->initialized) {
 	    if (true) {
@@ -34,30 +33,6 @@ class oo_property_calculated extends oo_property_field {
         return $this->value;
 	}
 		
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt geupdated wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::updated()
-	 */
-	public function updated(int $id) {
-	    $value = $this->get_value();
-	    if (!is_null($value)) {
-	       DB::table('caching')->where('object_id','=',$id)->where('fieldname','=',$this->name)->update(['value'=>$this->get_value()]);
-	    }
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
-	 */
-	public function inserted(int $id) {
-	    $value = $this->get_value();
-	    if (!is_null($value)) {
-	        DB::table('caching')->insert(['object_id'=>$id,'fieldname'=>$this->name,'value'=>$this->get_value()]);
-	    }
-	}
-
 	public function get_table_name($relation,$where) {
 	    return 'caching';
 	}

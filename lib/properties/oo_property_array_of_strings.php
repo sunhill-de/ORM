@@ -10,10 +10,6 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	
 	protected $features = ['object','complex','array','strings'];
 	
-	protected function initialize() {
-		$this->initialized = true;
-	}
-	
 	public function set_type($type) {
 	    $this->type = $type;
 	    return $this;
@@ -21,16 +17,6 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	
 	public function get_type() {
 	    return $this->type;
-	}
-	
-	protected function do_load(\Sunhill\Storage\storage_load $storage,$name) {
-	    $this->value = $storage->$name;
-	}
-	
-	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
-	    foreach ($this->value as $key => $value) {
-	       $storage->set_subvalue('xx_strings', $name, [$key=>$value]);
-	    }
 	}
 	
 	/**

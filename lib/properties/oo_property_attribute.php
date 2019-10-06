@@ -12,44 +12,37 @@ class oo_property_attribute extends oo_property {
 	
 	protected $features = ['attribute','complex'];
 	
-	protected function initialize() {
+	protected $allowed_objects;
+	
+	protected $property;
+	
+    protected $attribute_id;
+    
+	public function initialize() {
+		$attribute = self::search($this->type);
+	    $this->allowed_objects = $attribute->allowed_objects;
+	    $this->property = $attribute->property;
+	    $this->attribute_id = $attribute->id;
 		$this->initialized = true;
 	}
 	
 	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
+	 * Individuell überschreibbare Methode, die dem Property erlaub, besondere Lademethoden zu verwenden
+	 * @param \Sunhill\Storage\storage_load $loader
+	 * @param unknown $name
 	 */
-	public function inserted(int $id) {
-	    $attribute = \Sunhill\Properties\oo_property_attribute::search($this->get_name());
-	    $attributevalue = new \App\attributevalue();
-	    $attributevalue->attribute_id = $attribute->id;
-	    $attributevalue->object_id = $this->owner->get_id();
-	    $attributevalue->value = $this->get_value();
-	    $attributevalue->textvalue = '';
-	    $attributevalue->save();
+	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
+	    $this->value = $loader->entities['attributes'][$name]['value'];
 	}
-
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
-	 */
-	public function updated(int $id) {
-	   $this->deleted($id);
-	   $this->inserted($id);
+	
+	protected function do_insert(\Sunhill\Storage\storage_base $loader,$name) {
+	    $loader->entities['attributes'][$name] = 
+	       ['value'=>$this->value];    
 	}
-
-	public function deleted(int $id) {
-	    $attribute = \Sunhill\Properties\oo_property_attribute::search($this->get_name());
-	    DB::table('attributevalues')->where('object_id','=',$this->owner->get_id())
-	                               ->where('attribute_id','=',$attribute->id)->delete();
-	}
-
+	
 	// ============================ Statische Funktionen ===========================
 	static public function search($name) {
-	    $property = \App\attribute::where('name','=',$name)->first();
+	    $property = DB::table('attributes')->where('name','=',$name)->first();
 	    if (empty($property)) {
 	        return false;
 	    } else {

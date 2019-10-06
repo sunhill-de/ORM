@@ -15,6 +15,8 @@ class oo_object extends \Sunhill\propertieshaving {
     
     protected static $has_keyfield = false;
     
+    private $storage=null;
+    
 	public $default_ns = '\\App';		
 	
 	public function __construct() {
@@ -47,7 +49,26 @@ class oo_object extends \Sunhill\propertieshaving {
 	protected function get_keyfield() {
 	   return;   
 	}
+
+	/**
+	 * Liefert das aktuelle Storage zurück oder erzeugt eines, wenn es ein solches noch nicht gibt.
+	 * @return \Sunhill\Storage\storage_base
+	 */
+	final protected function get_storage() {
+	    if (!isset($this->storage)) {
+	        $this->storage = $this->create_storage();
+	    }
+	    return $this->storage;
+	}
 	
+	/**
+	 * Erzeugt ein Storage. Defaultmäßig ist es das mysql-Storage. Diese methode kann für Debug-Zwecke überschrieben werden
+	 * @return \Sunhill\Storage\storage_mysql
+	 */
+	protected function create_storage() {
+	    return new \Sunhill\Storage\storage_mysql($this);
+	}
+	    
 // ================================ Laden ========================================	
 	/**
 	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
@@ -68,34 +89,54 @@ class oo_object extends \Sunhill\propertieshaving {
 	    self::load_id_called($id,$this);	    
 	}
 	
+	/**
+	 * Läd das Objekt aus dem Storage.
+	 * {@inheritDoc}
+	 * @see \Sunhill\propertieshaving::do_load()
+	 */
 	protected function do_load() {
 	    if (!$this->is_loading()) {
 	        $this->state = 'loading';
-	        $loader = new \Sunhill\Storage\storage_mysql($this);
+	        $loader = $this->get_storage();
 	        $loader->load_object($this->get_id());
             $properties = $this->get_properties_with_feature();
             foreach ($properties as $property) {
                 $property->load($loader);
             }
+            $this->load_attributes();
+            $this->load_external_hooks();
 	        $this->state = 'normal';
 	    }
 	}
 	
+	/**
+	 * Da die Anzahl der Attribute vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
+	 */
+	protected function load_attributes() {
+	    
+	}
+	
+	/**
+	 * Da die Anzahl der externen Hooks vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
+	 */
+	protected function load_external_hooks() {
+	    
+	}
+	
 // ========================= Einfügen =============================	
 	protected function do_insert() {
-	        $storer = new \Sunhill\Storage\storage_mysql($this);
+	        $storer = $this->get_storage();
 	        $properties = $this->get_properties_with_feature();
 	        foreach ($properties as $property) {
 	            $property->insert($storer);
 	        }
-            $storer->insert_object();
-	        $this->set_id($this->read_back($storer));
+            $this->set_id($storer->insert_object());
             $this->insert_cache($this->get_id());
 	}
 	
 // ========================== Aktualisieren ===================================	
 	protected function do_update() {
-	    $updater = new \Sunhill\Storage\storage_mysql($this);
+	    $updater = $this->get_storage();
 	    $properties = $this->get_properties_with_feature();
 	    foreach ($properties as $property) {
 	        $property->update($updater);
@@ -112,7 +153,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	// ================================= Löschen =============================================
 	protected function do_delete() {
-	    $updater = new \Sunhill\Storage\storage_mysql($this);
+	    $updater = $this->get_storage();
 	    $properties = $this->get_properties_with_feature();
 	    foreach ($properties as $property) {
 	        $property->delete($updater);

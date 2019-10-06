@@ -8,4 +8,5 @@ class oo_property_timestamp extends oo_property_field {
 	
 	protected $features = ['object','complex'];
 
+	protected $initialized = true;
 }

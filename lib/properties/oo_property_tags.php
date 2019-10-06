@@ -10,11 +10,10 @@ class oo_property_tags extends oo_property_arraybase {
 	
 	protected $features = ['tags','array'];
 	
-	protected function initialize() {
-		$this->initialized = true;
-	}
-	
-	public function stick(\Sunhill\Objects\oo_tag $tag) {
+	public function stick($tag) {
+	    if (is_int($tag)) {
+	        $tag = \Sunhill\Objects\oo_tag::load_tag($tag);
+	    }
 	    foreach ($this->value as $listed) {
 	        if ($listed->get_fullpath() === $tag->get_fullpath()) {
 	            return $this; // Gibt es schon
@@ -35,11 +34,19 @@ class oo_property_tags extends oo_property_arraybase {
 	    throw new PropertyException("Das zu löschende Tag '".$tag->get_fullpath()."' ist gar nicht gesetzt");
 	}
 
-	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
-	    $storage->set_subvalue('xx_tags', 'tags', $this->value);
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	    $result = [];
+	    foreach ($this->value as $tag) {
+	        if (is_int($tag)) {
+	            $result[] = $tag;
+	        } else {
+	            $result[] = $tag->get_id();
+	        }
+	    }
+	    $storage->set_entity('tags',$result);
 	}
 	
-	protected function do_load(\Sunhill\Storage\storage_load $loader,$name)  {
+	protected function do_load(\Sunhill\Storage\storage_base $loader,$name)  {
 	    if (empty($loader->tags)) {
 	        return;
 	    }

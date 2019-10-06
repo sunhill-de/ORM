@@ -16,20 +16,14 @@ class oo_property_externalhooks extends oo_property_field {
      * {@inheritDoc}
      * @see \Sunhill\Properties\oo_property::do_load()
      */
-	protected function do_load(\Sunhill\Storage\storage_load $loader,$name) {
+	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
         $hooks = $loader->get_entity('externalhooks');
+        if (empty($hooks)) {
+            return;
+        }
 	    foreach ($hooks as $hook) {
 	        $this->owner->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target_id']);
 	    }
-	}
-	
-	/**
-	 * Fügt externe Hooks in das Storage ein
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::do_insert()
-	 */
-	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
-	    
 	}
 	
 	/**
@@ -67,7 +61,4 @@ class oo_property_externalhooks extends oo_property_field {
 	    $this->set_dirty(false);
 	}
 	
-	public function &get_value() {
-	    return $this->value;
-	}
 }

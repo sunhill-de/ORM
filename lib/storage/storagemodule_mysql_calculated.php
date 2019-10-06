@@ -19,7 +19,7 @@ class storagemodule_mysql_calculated extends storagemodule_base {
         $inserts = [];
         $properties = $this->storage->filter_storage('calculated');
         foreach ($properties as $property=>$value) {
-                $inserts[] = ['object_id'=>$id,'value'=>$value,'fieldname'=>$property];
+                $inserts[] = ['object_id'=>$id,'value'=>is_null($value)?'null':$value,'fieldname'=>$property];
         }
         DB::table('caching')->insert($inserts);
         return $id;

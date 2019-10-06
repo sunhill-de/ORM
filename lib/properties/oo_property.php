@@ -28,7 +28,7 @@ class oo_property extends \Sunhill\base {
 	
 	protected $dirty;
 	
-	protected $initialized;
+	protected $initialized=false;
 	
 	protected $read_only;
 	
@@ -44,7 +44,6 @@ class oo_property extends \Sunhill\base {
 	
 	public function __construct() {
 		$this->dirty = false;
-		$this->initialized = false;
 		$this->defaults_null = false;
 		$this->read_only = false;
 		if ($this->is_array()) {
@@ -54,8 +53,8 @@ class oo_property extends \Sunhill\base {
 		$this->init_validator();
 	}
 	
-	protected function initialize() {
-		
+	public function initialize() {
+		$this->initialized = true;
 	}
 	
 	protected function init_validator() {
@@ -67,16 +66,18 @@ class oo_property extends \Sunhill\base {
 	    $this->owner = $owner;
 	    return $this;	    
 	}
-	
+
 	public function set_name($name) {
 		$this->name = $name;
 		return $this;
 	}
-	
+	 
 	public function get_name() {
 		return $this->name;
 	}
-	
+	/**
+	 * @todo Methode kann entfernt werden
+	 */
 	public function load_value($value) {
 		$this->value = $value;
 		$this->initialized = true;
@@ -84,28 +85,58 @@ class oo_property extends \Sunhill\base {
 		return $this;		
 	}
 	
-	public function set_value($value) {
+	/**
+	 * Greift schreibend auf den Wert von $value zu. Darf nicht überschrieben werden.
+	 * @param unknown $value
+	 * @param unknown $index
+	 * @throws PropertyException
+	 * @return \Sunhill\Properties\oo_property
+	 */
+	final public function set_value($value,$index=null) {
 		if ($this->read_only) {
 			throw new PropertyException("Die Property ist read-only.");
 		}
-		if ($value !== $this->value || !$this->initialized) {
-		    $oldvalue = $this->value;
-		    if (!$this->dirty) {
-		        $this->shadow = $this->value;
-		        $this->dirty = true;
-		    }
-		    $this->value = (is_null($value)?null:$this->validate($value));
-			$this->initialized = true;
-			$this->value_changed($oldvalue,$this->value);
+		
+		// Prüfen, ob sich der Wert überhaupt ändert
+		if ($this->initialized) {
+            if (!is_null($index)) {
+        		 if (isset($this->value[$index]) && ($this->value[$index] === $value)) {
+        		     return $this;
+        		 } 
+            } else if ($value === $this->value) {
+    		      return $this;
+            }		
 		}
+        $oldvalue = $this->value;
+		if (!$this->dirty) {
+		    $this->shadow = $this->value;
+		    $this->dirty = true;
+		}
+		
+		if (is_null($index)) {
+		      $this->do_set_value((is_null($value)?null:$this->validate($value)));
+		} else {
+		    $this->do_set_indexed_value($index,(is_null($value)?null:$this->validate($value)));
+		}
+		    
+		$this->initialized = true;
+		$this->value_changed($oldvalue,$this->value);
 		return $this;
+	}
+
+	protected function do_set_value($value) {
+	    $this->value = $value;
+	}
+	
+	protected function do_set_indexed_value($index,$value) {
+	    $this->value[$index] = $value;
 	}
 	
 	protected function value_changed($from,$to) {
 	    
 	}
 	
-	public function &get_value() {
+	final public function &get_value($index=null) {
 		if (!$this->initialized) {
 			if (isset($this->default) || $this->defaults_null) {
 				$this->value = $this->default;
@@ -115,11 +146,23 @@ class oo_property extends \Sunhill\base {
 			    throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
 			}
 		}
-		if ($this->is_array()) {
-		    return $this;
+		if (is_null($index)) {
+		    if ($this->is_array()) {
+		        return $this;
+		    } else {
+		        return $this->do_get_value();
+		    }
 		} else {
-		    return $this->value;
+		        return $this->do_get_indexed_value($index);
 		}
+	}
+	
+	protected function &do_get_value() {
+	    return $this->value;    
+	}
+	
+	protected function &do_get_indexed_value($index) {
+	    return $this->value[$index];
 	}
 	
 	public function get_old_value() {
@@ -261,7 +304,7 @@ class oo_property extends \Sunhill\base {
 	 * Ruft wiederrum die überschreibbare Methode do_load auf, die property-Individuelle Dinge erledigen kann
 	 * @param \Sunhill\Storage\storage_load $loader
 	 */
-	final public function load(\Sunhill\Storage\storage_load $loader) {
+	final public function load(\Sunhill\Storage\storage_base $loader) {
 	    $name = $this->get_name();
         $this->do_load($loader,$name);
 	    $this->value = $loader->$name;
@@ -274,22 +317,15 @@ class oo_property extends \Sunhill\base {
 	 * @param \Sunhill\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function do_load(\Sunhill\Storage\storage_load $loader,$name) {
+	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
 	    $this->value = $loader->$name;
 	}
 	
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert in das Storage zu schreiben
 	 */
-	public function insert(\Sunhill\Storage\storage_insert $storage) {
-	    $name = $this->get_name();
-	    $classname = $this->get_class();
-	    if (property_exists($classname,'table_name')) {
-	        $table_name = $classname::$table_name;
-	    } else {
-	        $table_name = 'none';
-	    }
-	    $this->do_insert($storage,$table_name,$name);
+	public function insert(\Sunhill\Storage\storage_base $storage) {
+	    $this->do_insert($storage,$this->get_name());
 	    $this->dirty = false;	    
 	}
 	
@@ -299,8 +335,19 @@ class oo_property extends \Sunhill\base {
 	 * @param string $tablename
 	 * @param string $name
 	 */
-	protected function do_insert(\Sunhill\Storage\storage_insert $storage,string $tablename,string $name) {
-	    $storage->set_subvalue($tablename, $name, $this->value);
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	    $storage->set_entity($name, $this->value);
+	}
+	
+	public function update(\Sunhill\Storage\storage_base $storage) {
+	    if ($this->dirty) {
+    	    $this->do_update($storage,$this->get_name());
+            $this->dirty = false;
+	    }
+	}
+	
+	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
+        $storage->set_entity($name,$this->value);	    
 	}
 	
 	public function add_hook($action,$hook,$subaction,$target) {

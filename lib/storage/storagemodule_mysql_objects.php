@@ -42,6 +42,9 @@ class storagemodule_mysql_objects extends storagemodule_base {
         $properties = $this->storage->get_caller()->get_properties_with_feature('objectid');
         foreach ($properties as $property) {
             $fieldname = $property->get_name();
+            if (is_null($this->storage->$fieldname)) {
+                continue;
+            }
             if (is_array($this->storage->$fieldname)) {
                 foreach ($this->storage->$fieldname as $index => $element) {
                     $inserts[] = ['container_id'=>$id,'element_id'=>$element,'field'=>$fieldname,'index'=>$index];
