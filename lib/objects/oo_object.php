@@ -98,14 +98,13 @@ class oo_object extends \Sunhill\propertieshaving {
 	    if (!$this->is_loading()) {
 	        $this->state = 'loading';
 	        $loader = $this->get_storage();
+	        $this->walk_properties('loading',$loader);
 	        $loader->load_object($this->get_id());
-            $properties = $this->get_properties_with_feature();
-            foreach ($properties as $property) {
-                $property->load($loader);
-            }
+            $this->walk_properties('load',$loader);
             $this->load_attributes($loader);
             $this->load_external_hooks($loader);
-	        $this->state = 'normal';
+            $this->walk_properties('loaded', $loader);
+            $this->state = 'normal';
 	    }
 	}
 	
@@ -117,14 +116,13 @@ class oo_object extends \Sunhill\propertieshaving {
 	        return;
 	    }
 	    foreach ($storage->get_entity('attributes') as $name => $value) {
-	        if (!empty($value['0property'])) {
+	        if (!empty($value['property'])) {
 	            $property_name = $value['property'];
 	        } else {
 	            $property_name = 'attribute_'.$value['type'];
 	        }
 	        $property = $this->dynamic_add_property($name, $property_name);
-	        $property->load($storage);
-	        
+	        $property->load($storage);	        
 	    }
 	}
 	
@@ -136,24 +134,27 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 // ========================= Einfügen =============================	
+	/**
+	 * Fügt ein Objekt in das Storage ein. 
+	 * Zunächst wird für jede Property inserting aufgerufen, anschließend insert und nach
+	 * abschluss aller Arbeiten noch inserted.
+	 */
 	protected function do_insert() {
-	        $storer = $this->get_storage();
-	        $properties = $this->get_properties_with_feature();
-	        foreach ($properties as $property) {
-	            $property->insert($storer);
-	        }
-            $this->set_id($storer->insert_object());
+	        $storage = $this->get_storage();
+	        $this->walk_properties('inserting', $storage);
+            $this->walk_properties('insert',$storage);
+            $this->set_id($storage->insert_object());
+            $this->walk_properties('inserted',$storage);
             $this->insert_cache($this->get_id());
 	}
 	
 // ========================== Aktualisieren ===================================	
 	protected function do_update() {
-	    $updater = $this->get_storage();
-	    $properties = $this->get_properties_with_feature();
-	    foreach ($properties as $property) {
-	        $property->update($updater);
-	    }
-	    $updater->update_object($this->get_id());
+	    $storage = $this->get_storage();
+	    $this->walk_properties('updating', $storage);
+	    $this->walk_properties('update',$storage);
+	    $storage->update_object($this->get_id());
+	    $this->walk_properties('updated',$storage);
 	}
 		
 	/**
@@ -165,13 +166,12 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	// ================================= Löschen =============================================
 	protected function do_delete() {
-	    $updater = $this->get_storage();
-	    $properties = $this->get_properties_with_feature();
-	    foreach ($properties as $property) {
-	        $property->delete($updater);
-	    }
-	    $updater->delete_object($this->get_id());
-        $this->clear_cache_entry();
+	    $storage = $this->get_storage();
+	    $this->walk_properties('deleting',$storage);
+	    $this->walk_properties('delete',$storage);
+	    $storage->delete_object($this->get_id());
+	    $this->walk_properties('deleted',$storage);
+	    $this->clear_cache_entry();
 	}
 	
 	protected function clear_cache_entry() {
@@ -179,6 +179,18 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	// ********************* Property Handling *************************************	
+	
+	/**
+	 * Ruft für jede Property die durch $action definierte Methode auf und übergibt dieser das Storage
+	 * @param string $action
+	 * @param \Sunhill\Storage\storage_base $storage
+	 */
+	protected function walk_properties(string $action,\Sunhill\Storage\storage_base $storage) {
+	    $properties = $this->get_properties_with_feature();
+	    foreach ($properties as $property) {
+	        $property->$action($storage);
+	    }
+	}
 	
 	/**
 	 * Hebt das momentane Objekt auf eine abgeleitete Klasse an

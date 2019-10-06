@@ -11,6 +11,10 @@ class FakeStorage extends \Sunhill\Storage\storage_base {
             case 'load':
                 $this->entities = $this->caller->storage_values;
                 break;
+            case 'insert':
+            case 'update':
+                $this->caller->storage_values = $this->entities;
+                break;
         }
         return 1;
     }

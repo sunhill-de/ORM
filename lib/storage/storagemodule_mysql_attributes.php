@@ -12,7 +12,8 @@ class storagemodule_mysql_attributes extends storagemodule_base {
             $this->storage->entities['attributes'][$attribute_name] = 
               [
                  'attribute_id'=>$value->attribute_id,
-                 'object_id'=>$id,
+                 'value_id'=>$value->id,
+                  'object_id'=>$id,
                   'value'=>$value->value,
                   'textvalue'=>$value->textvalue,
                   'name'=>$value->name,
@@ -28,14 +29,14 @@ class storagemodule_mysql_attributes extends storagemodule_base {
         if (! isset($this->storage->entities['attributes'])) {
             return $id;
         }
-        $inserts = [];
         foreach ($this->storage->entities['attributes'] as $attribute) {
-            $inserts[] = ['attribute_id'=>$attribute['attribute_id'],
+            $insert = ['attribute_id'=>$attribute['attribute_id'],
                           'object_id'=>$id,
                           'value'=>$attribute['value'],
                           'textvalue'=>$attribute['textvalue']];
+            $this->storage->entities['attributes'][$attribute['name']]['id'] = 
+                DB::table('attributevalues')->insert($insert);
         }
-        DB::table('attributevalues')->insert($inserts);
         return $id;
     }
     

@@ -40,7 +40,8 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
             'calcvalue'=>'123A',
             'tags'=>[1,2,3,4],
             'attributes'=>['general_attribute'=>[
-                'attribute_id'=>1,
+                'attribute_id'=>4,
+                'value_id'=>1,
                 'object_id'=>1,
                 'value'=>12,
                 'textvalue'=>'',
@@ -110,6 +111,5 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
         $this->assertEquals('123A',$object->calcvalue);
         return $object;
     }
-    
-    
+        
 }

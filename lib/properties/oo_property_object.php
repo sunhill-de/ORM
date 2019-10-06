@@ -52,48 +52,6 @@ class oo_property_object extends oo_property_field {
 	    }
 	}
 	
-	public function updating(int $id) {
-	    if (!empty($this->value)) {
-	        $this->value->commit();	        
-	    }
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt geupdated wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::updated()
-	 */
-	public function updated(int $id) {
-	    DB::table('objectobjectassigns')->where([['container_id','=',$id],
-	        ['field','=',$this->get_name()],
-	        ['index','=',0]])->delete();
-	    if (!empty($this->value)) {
-	        $this->value->commit();
-    	    DB::table('objectobjectassigns')->insert(
-    	            ['container_id'=>$id,
-    	             'element_id'=>$this->value->get_id(),
-    	             'field'=>$this->get_name(),
-    	             'index'=>0]); 
-	    }
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
-	 */
-	public function inserted(int $id) {
-	    if (!empty($this->value)) {
-	        $this->value->commit();
-	        $model = new \App\objectobjectassign();
-    	    $model->container_id = $id;
-    	    $model->element_id = $this->value->get_id();
-    	    $model->field = $this->get_name();
-    	    $model->index = 0;
-    	    $model->save();
-	    }
-	}
-	
 	protected function value_changed($from,$to) {
 	    foreach ($this->hooks as $hook) {
 	        $to->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);

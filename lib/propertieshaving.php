@@ -128,6 +128,9 @@ class propertieshaving extends hookable {
 // ===================================== Committing =======================================
 	public function commit() {
 	    $this->check_validity();
+	    if (!$this->get_dirty()) {
+	        return;
+	    }
 	    if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
 	        $this->set_state('committing');
 	        $this->check_for_hook('COMMITTING');
@@ -141,6 +144,11 @@ class propertieshaving extends hookable {
 	    }
 	}
 
+	protected function get_dirty() {
+	    $dirty_properties = $this->get_properties_with_feature('',true);
+	    return (!empty($dirty_properties));	    
+	}
+	
 // ====================================== Updating ========================================	
 	protected function update() {
         $this->updating_properties();

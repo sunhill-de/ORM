@@ -75,15 +75,6 @@ class oo_property extends \Sunhill\base {
 	public function get_name() {
 		return $this->name;
 	}
-	/**
-	 * @todo Methode kann entfernt werden
-	 */
-	public function load_value($value) {
-		$this->value = $value;
-		$this->initialized = true;
-		$this->dirty = false;
-		return $this;		
-	}
 	
 	/**
 	 * Greift schreibend auf den Wert von $value zu. Darf nicht überschrieben werden.
@@ -258,39 +249,11 @@ class oo_property extends \Sunhill\base {
 	    return in_array($test,$this->features);
 	}
 	
-	/**
-	 * Wird aufgerufen, bevor das Elternobjekt ein update erhält
-	 */
-	public function updating(int $id) {
+	public function deleting(\Sunhill\Storage\storage_base $storage) {
 	    
 	}
 	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt ein update erhalten hat
-	 */
-	public function updated(int $id) {
-	    $this->commit();
-	}
-	
-	/**
-	 * Wird aufgerufen, bevor das Elternobjekt eingefügt wurde
-	 */
-	public function inserting() {
-	    
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 */
-	public function inserted(int $id) {
-	    $this->commit();	    
-	}
-	
-	public function deleting(int $id) {
-	    
-	}
-	
-	public function deleted(int $id) {
+	public function deleted(\Sunhill\Storage\storage_base $storage) {
 	    
 	}
 	
@@ -299,6 +262,7 @@ class oo_property extends \Sunhill\base {
 	                 'TO'=>$this->get_value());
 	}
 	
+// ================================== Laden ===========================================	
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert aus dem Storage zu lesen
 	 * Ruft wiederrum die überschreibbare Methode do_load auf, die property-Individuelle Dinge erledigen kann
@@ -319,7 +283,24 @@ class oo_property extends \Sunhill\base {
 	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
 	    $this->value = $loader->$name;
 	}
+
+	/**
+	 * Wird aufgerufen, bevor das Property geladen wird
+	 * @param \Sunhill\Storage\storage_base $storage
+	 */
+	public function loading(\Sunhill\Storage\storage_base $storage) {
+	    // Macht nix
+	}
 	
+	/**
+	 * Wird aufgerufen, nachdem das Property geladen ist
+	 * @param \Sunhill\Storage\storage_base $storage
+	 */
+	public function loaded(\Sunhill\Storage\storage_base $storage) {
+	    // Macht nix
+	}
+	
+	// ============================= Insert =========================================	
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert in das Storage zu schreiben
 	 */
@@ -338,6 +319,23 @@ class oo_property extends \Sunhill\base {
 	    $storage->set_entity($name, $this->value);
 	}
 	
+    /**
+     * Wird vor dem Einfügen aufgerufen
+     * @param \Sunhill\Storage\storage_base $storage
+     */
+	public function inserting(\Sunhill\Storage\storage_base $storage) {
+        // Macht nix	    
+	}
+	
+	/**
+	 * Wird nach dem Einfügen aufgerufen
+	 * @param \Sunhill\Storage\storage_base $storage
+	 */
+	public function inserted(\Sunhill\Storage\storage_base $storage) {
+	    // Macht nix
+	}
+
+// ================================= Update ====================================	
 	public function update(\Sunhill\Storage\storage_base $storage) {
 	    if ($this->dirty) {
     	    $this->do_update($storage,$this->get_name());
@@ -347,6 +345,22 @@ class oo_property extends \Sunhill\base {
 	
 	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
         $storage->set_entity($name,$this->value);	    
+	}
+	
+    /**
+     * Wird aufgerufen, bevor das Update stattfindet
+     * @param \Sunhill\Storage\storage_base $storage
+     */
+	public function updating(\Sunhill\Storage\storage_base $storage) {
+	    // Macht nix
+	}
+	
+    /**
+     * Wird aufgerufen, nachdem das Update stattgefunden hat
+     * @param \Sunhill\Storage\storage_base $storage
+     */
+	public function updated(\Sunhill\Storage\storage_base $storage) {
+	   // Macht nix
 	}
 	
 	public function add_hook($action,$hook,$subaction,$target) {
