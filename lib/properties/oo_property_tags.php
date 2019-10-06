@@ -34,6 +34,11 @@ class oo_property_tags extends oo_property_arraybase {
 	    throw new PropertyException("Das zu löschende Tag '".$tag->get_fullpath()."' ist gar nicht gesetzt");
 	}
 
+	protected function &do_get_indexed_value($index) {
+	    $value = $this->value[$index]->get_fullpath();
+	    return $value;
+	}
+	
 	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
 	    $result = [];
 	    foreach ($this->value as $tag) {
@@ -47,51 +52,12 @@ class oo_property_tags extends oo_property_arraybase {
 	}
 	
 	protected function do_load(\Sunhill\Storage\storage_base $loader,$name)  {
-	    if (empty($loader->tags)) {
+	    if (empty($loader->entities['tags'])) {
 	        return;
 	    }
-	    foreach ($loader->tags as $tag) {
+	    foreach ($loader->entities['tags'] as $tag) {
 	        $this->stick($tag);
 	    }
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
-	 */
-	public function inserted(int $id) {
-	    foreach ($this->value as $tag) {
-	        $tagid = $tag->get_id();
-	        DB::statement("insert ignore into tagobjectassigns (container_id,tag_id) values ($id,$tagid)");
-	    }
-	}
-
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
-	 */
-	public function updated(int $id) {
-	    $this->deleted($id);
-	    if (count($this->value) > 0) {
-    	    foreach ($this->value as $tag) {
-    	        $tagid = $tag->get_id();
-    	        DB::statement("insert ignore into tagobjectassigns (container_id,tag_id) values ($id,$tagid)");
-    	    }
-	    }
-	}
-
-	public function deleted(int $id) {
-	    DB::statement("delete from tagobjectassigns where container_id = $id");
-	    
-	}
-	/**
-	 * Speichert eine einzelne Referenz eines Tags in der Datenbank ab
-	 * @todo Hier besteht Optimierungpotential für zusammengefassten Datenbankanfragen
-	 * @param oo_tag $tag
-	 */
-	private function store_tag(oo_tag $tag,$id) {
 	}
 	
 	public function get_table_name($relation,$where) {

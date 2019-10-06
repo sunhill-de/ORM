@@ -154,6 +154,7 @@ class sunhill_testcase_db extends TestCase {
                 [1,'int_attribute','int',"\\Sunhill\\Test\\ts_dummy",''],
                 [2,'attribute1','int',"\\Sunhill\\Test\\ts_testparent",''],
                 [3,'attribute2','int',"\\Sunhill\\Test\\ts_testparent",''],
+                [4,'general_attribute','int',"\\Sunhill\\Objects\\oo_object",''],
                 
             ]);        
     }

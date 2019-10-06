@@ -40,7 +40,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	
 	protected function &do_get_indexed_value($index) {
 	    if (is_int($this->value[$index])) {
-	        $this->value[$index] = \Sunhill\Objects\oo_object::load_object_of($value[$index]);
+	        $this->value[$index] = \Sunhill\Objects\oo_object::load_object_of($this->value[$index]);
 	    }
 	    return $this->value[$index];
 	}

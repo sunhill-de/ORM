@@ -103,8 +103,8 @@ class oo_object extends \Sunhill\propertieshaving {
             foreach ($properties as $property) {
                 $property->load($loader);
             }
-            $this->load_attributes();
-            $this->load_external_hooks();
+            $this->load_attributes($loader);
+            $this->load_external_hooks($loader);
 	        $this->state = 'normal';
 	    }
 	}
@@ -112,14 +112,26 @@ class oo_object extends \Sunhill\propertieshaving {
 	/**
 	 * Da die Anzahl der Attribute vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
 	 */
-	protected function load_attributes() {
-	    
+	protected function load_attributes(\Sunhill\Storage\storage_base $storage) {
+	    if (empty($storage->get_entity('attributes'))) {
+	        return;
+	    }
+	    foreach ($storage->get_entity('attributes') as $name => $value) {
+	        if (!empty($value['0property'])) {
+	            $property_name = $value['property'];
+	        } else {
+	            $property_name = 'attribute_'.$value['type'];
+	        }
+	        $property = $this->dynamic_add_property($name, $property_name);
+	        $property->load($storage);
+	        
+	    }
 	}
 	
 	/**
 	 * Da die Anzahl der externen Hooks vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
 	 */
-	protected function load_external_hooks() {
+	protected function load_external_hooks(\Sunhill\Storage\storage_base $storage) {
 	    
 	}
 	

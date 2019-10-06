@@ -19,10 +19,6 @@ class oo_property_attribute extends oo_property {
     protected $attribute_id;
     
 	public function initialize() {
-		$attribute = self::search($this->type);
-	    $this->allowed_objects = $attribute->allowed_objects;
-	    $this->property = $attribute->property;
-	    $this->attribute_id = $attribute->id;
 		$this->initialized = true;
 	}
 	
@@ -33,6 +29,9 @@ class oo_property_attribute extends oo_property {
 	 */
 	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
 	    $this->value = $loader->entities['attributes'][$name]['value'];
+	    $this->allowed_objects = $loader->entities['attributes'][$name]['allowedobjects'];
+	    $this->property = $loader->entities['attributes'][$name]['property'];
+	    $this->attribute_id = $loader->entities['attributes'][$name]['attribute_id'];
 	}
 	
 	protected function do_insert(\Sunhill\Storage\storage_base $loader,$name) {
