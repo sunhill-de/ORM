@@ -307,21 +307,21 @@ class StorageTest extends sunhill_testcase_db
 
 // Objektarraytests
             [6,'Sunhill\\Test\\ts_testchild',function($storage) { // Objekt hinzufügen
-                $storage->parentoarray = ['FROM'=>[1,2],'TO'=>[1,2,3],
-                                          'ADD'=>[3],'DELETE'=>[]];
+                $storage->parentoarray = ['FROM'=>[0=>1,1=>2],'TO'=>[0=>1,1=>2,2=>3],
+                                          'ADD'=>[2=>3],'DELETE'=>[]];
             },'parentoarray',[1,2,3]],
             [6,'Sunhill\\Test\\ts_testchild',function($storage) { // Objekt löschen
-                $storage->parentoarray = ['FROM'=>[1,2],'TO'=>[1],
-                                          'ADD'=>[],'DELETE'=>[2]];
+                $storage->parentoarray = ['FROM'=>[0=>1,1=>2],'TO'=>[0=>1],
+                                          'ADD'=>[],'DELETE'=>[1=>2]];
             },'parentoarray',[1]],
             [6,'Sunhill\\Test\\ts_testchild',function($storage) { // Alle Objekte löschen
-                $storage->parentoarray = ['FROM'=>[1,2],'TO'=>[],
-                                          'ADD'=>[],'DELETE'=>[1,2]];
+                $storage->parentoarray = ['FROM'=>[0=>1,1=>2],'TO'=>[],
+                                          'ADD'=>[],'DELETE'=>[0=>1,1=>2]];
             },'parentoarray',null],
             [6,'Sunhill\\Test\\ts_testchild',function($storage) { // Kombiniertes hinzufügen und löschen
-                $storage->parentoarray = ['FROM'=>[1,2],'TO'=>[1,3],
-                                          'ADD'=>[3],'DELETE'=>[2]];
-            },'parentoarray',null],
+                $storage->parentoarray = ['FROM'=>[0=>1,1=>2],'TO'=>[0=>1,1=>3],
+                                          'ADD'=>[1=>3],'DELETE'=>[1=>2]];
+            },'parentoarray',[1,3]],
             [6,'Sunhill\\Test\\ts_testchild',function($storage) { // Änderung in anderen Feldern
                 $storage->parentchar = ['FROM'=>'ABC','TO'=>'ABCDEF'];
             },'parentoarray',[1,2]],
@@ -339,21 +339,21 @@ class StorageTest extends sunhill_testcase_db
             
 // Stringarraytests            
             [6,'Sunhill\\Test\\ts_testchild',function($storage) {
-                $storage->parentsarray = ['FROM'=>['Parent0','Parent1'],'TO'=>['Parent0','Parent1','Parent2'],
-                                          'ADD'=>['Parent2'],'DELETE'=>[]];
+                $storage->parentsarray = ['FROM'=>[0=>'Parent0',1=>'Parent1'],'TO'=>[0=>'Parent0',1=>'Parent1',2=>'Parent2'],
+                                          'ADD'=>[2=>'Parent2'],'DELETE'=>[]];
             },'parentsarray',['Parent0','Parent1','Parent2']],
             [6,'Sunhill\\Test\\ts_testchild',function($storage) {
-                $storage->parentsarray = ['FROM'=>['Parent0','Parent1'],'TO'=>['Parent0'],
-                                          'ADD'=>[],'DELETE'=>['Parent1']];
-            },'parentsarray',['TESTA']],
+                $storage->parentsarray = ['FROM'=>[0=>'Parent0',1=>'Parent1'],'TO'=>[0=>'Parent0'],
+                                          'ADD'=>[],'DELETE'=>[1=>'Parent1']];
+            },'parentsarray',['Parent0']],
             [6,'Sunhill\\Test\\ts_testchild',function($storage) {
-                $storage->parentsarray = ['FROM'=>['Parent0','Parent1'],'TO'=>[],
-                                          'ADD'=>[],'DELETE'=>['Parent0','Parent1']];
+                $storage->parentsarray = ['FROM'=>[0=>'Parent0',1=>'Parent1'],'TO'=>[],
+                                          'ADD'=>[],'DELETE'=>[0=>'Parent0',1=>'Parent1']];
             },'parentsarray',null],
             [6,'Sunhill\\Test\\ts_testchild',function($storage) {
-                $storage->parentsarray = ['FROM'=>['Parent0','Parent1'],'TO'=>['Parent0','Parent2'],
-                                          'ADD'=>['Parent2'],'DELETE'=>['Parent1']];
-            },'parentsarray',null],
+                $storage->parentsarray = ['FROM'=>[0=>'Parent0',1=>'Parent1'],'TO'=>[0=>'Parent0',1=>'Parent2'],
+                                          'ADD'=>[1=>'Parent2'],'DELETE'=>[1=>'Parent1']];
+            },'parentsarray',['Parent0','Parent2']],
             ];
     }
     

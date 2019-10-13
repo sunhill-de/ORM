@@ -148,6 +148,7 @@ class oo_object extends \Sunhill\propertieshaving {
 // ========================== Aktualisieren ===================================	
 	protected function do_update() {
 	    $storage = $this->get_storage();
+	    $storage->set_entity('id',$this->get_id());
 	    $this->walk_properties('updating', $storage);
 	    $this->walk_properties('update',$storage);
 	    $storage->update_object($this->get_id());

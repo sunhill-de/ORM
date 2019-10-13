@@ -15,6 +15,7 @@ class ObjectDegradeTest extends ObjectCommon
         $this->create_special_table('thirdlevelchildren');
         $this->create_special_table('secondlevelchildren');
         $this->create_special_table('testparents');
+        $this->create_special_table('passthrus');
     }
     
     public function testOneStepDegration() {

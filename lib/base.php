@@ -2,8 +2,17 @@
 
 namespace Sunhill;
 
+
 /**
- * Macht zur Zeit erstmal nichts, dient nur als gemeinsamer Vorfahre für die weiteren crawler-Klassen
+ * Basisklasse für Exceptions im Sunhill-Framework
+ * @author lokal
+ *
+ */
+class SunhillException extends \Exception {}
+
+/**
+ * Basisklasse für alle Klassen innhalb des sunhill Frameworks 
+ * Macht zur Zeit erstmal nichts, dient nur als gemeinsamer Vorfahre für die weiteren sunhill-Klassen
  * @author klaus
  *
  */

@@ -97,8 +97,10 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    return $result;
 	}
 	
-	public function get_diff_array() {
-	    return $this->get_array_diff();
+	public function get_diff_array(int $type=PD_VALUE) {
+	    $result = parent::get_diff_array($type);
+	    $diff = $this->get_array_diff();
+	    return array_merge($result,$diff);
 	}
 	
 	protected function is_allowed_relation(string $relation,$value) {

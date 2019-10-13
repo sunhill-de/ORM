@@ -2,46 +2,146 @@
 
 namespace Sunhill\Properties;
 
-//use DeepCopy\Exception\PropertyException;
+/**
+ * @todo Muss das wirklich sein, oder kann man das auf das Storage auslagern
+ */
 use Illuminate\Support\Facades\DB;
-class PropertyException extends \Exception {}
 
+/** 
+ * Die folgenden Defines legen Konstanten fest, die get_diff_array als (optionalem) Parameter übergeben
+ * werden können
+ * @var unknown
+ */
+define ('PD_VALUE',1); // In das Diff Array werden die Werte direkt von $value und $shadow kopiert
+define ('PD_ID',2);    // Bei Objektreferenzen werden statt dessen nur die IDs kopiert
+
+/**
+ * Basisklasse für Exceptions, die etwas mit Properties zu tun haben
+ * @author lokal
+ *
+ */
+class PropertyException extends \Sunhill\SunhillException {}
+
+/**
+ * Die Exception für ungültige Wertzuweisungen an dieses Property
+ * @author lokal
+ *
+ */
 class InvalidValueException extends PropertyException {}
 
+/**
+ * Basisklasse für Properties
+ * @author lokal
+ *
+ */
 class oo_property extends \Sunhill\base {
 	
+    /**
+     * Über das Feature-Array werden die Eigenschaften des Properties definiert. Features können über
+     * has_feature() abgefragt werden
+     * @var array
+     */
     protected $features = array();
     
+    /**
+     * Der Owner ist das besitzende Objekt dieses Properties (also eine von propertieshaving abgeleitete Klasse)
+     * Wird über get_owner() und set_owner() abgefragt bzw. geändert.
+     * @var \Sunhill\propertieshaving
+     */
 	protected $owner;
 	
+    /**
+     * Der Name der Property
+     * Wird über get_name() und set_name() abgefragt bzw. festgelegt
+     * @var string
+     */
 	protected $name;
 	
+	/**
+	 * Der Wert dieser Property
+	 * @var void
+	 */
 	protected $value;
 	
+	/**
+	 * Der Schattenwert dieser Property (also der Wert nach dem letzten commit(). Wird für ein 
+	 * Rollback benötigt, sowie für die Erzeugung des diff_arrays
+	 * @var void
+	 */
 	protected $shadow;
 	
+	/**
+	 * Der Typ der Property. Wird in der jeweiligen Property als Defaultwert gesetzt.
+	 * @var string
+	 */
 	protected $type;
 	
+	/**
+	 * Der Vorgabewert für value, wenn er nicht gesetzt wird. Wenn $default null ist und $defaults_null ebenfalls
+	 * ist der vorgabewert null, wenn $defaults_null false ist, gibt es keinen Vorgabewert
+	 * @var void
+	 */
 	protected $default;
 	
+	/**
+	 * Legt fest ob der Standardwert für value null sein soll. Wird auf true gesetzt, wenn set_default
+	 * mit null aufgerufen wird. 
+	 * @var bool
+	 */
 	protected $defaults_null;
 	
+	/**
+	 * Gibt die Dirtyness der Property an. Ist der Wert false, wurde der Wert der Property seit der
+	 * Initialisierung oder dem letzten commit() nicht verändert. Ist er true, wurde er verändert
+	 * Der Zugriff sollte langfristig auch innerhalb der abgeleiteten Klassen über get_dirty() und set_dirty()
+	 * erfolgen.  
+	 * @var bool
+	 */
 	protected $dirty;
 	
+	/**
+	 * Gibt den Initialiserungstatus der Property an. Ist der Wert false, wurde value noch nie ein Wert
+	 * zugeweisen, ist er true, wurde die Property entweder bereits zugeweisen oder geladen.
+	 * @var bool
+	 */
 	protected $initialized=false;
 	
-	protected $read_only;
+	/**
+	 * Gibt an, ob die Property nur lesen (true) oder auch beschreibbar (false) ist
+	 * @var bool
+	 */
+	protected $read_only=false;
 	
+	/**
+	 * Name des Validators. Defaultmäßig ein Basisvalidator, der alle Werte durchwinkt.
+	 * @var string
+	 */
 	protected $validator_name = 'validator_base';
 	
+	/**
+	 * Speichert das validator-Objekt
+	 * @var \Sunhill\Validators\validator_base
+	 */
 	protected $validator;
 	
+	/**
+	 * Speichert die Hooks für dieses Property
+	 * @var array
+	 */
 	protected $hooks = array();
 	
 	protected $class;
 	
+	/**
+	 * Gibt an, ob nach nach diesem Property suchen kann (true) oder nicht (false)
+	 * @var string
+	 */
 	protected $searchable=false;
 	
+	/**
+	 * Konstruktor der Property
+	 * Setzt die Parameter auf default-Werte
+	 */
 	public function __construct() {
 		$this->dirty = false;
 		$this->defaults_null = false;
@@ -53,19 +153,35 @@ class oo_property extends \Sunhill\base {
 		$this->init_validator();
 	}
 	
+	/**
+	 * Initialisiert diese Property. Das ist aber nicht gleichbedeutend mit $initialized!!
+	 * Hier können zusätzliche Schritte unternommen werden
+	 */
 	public function initialize() {
 	}
 	
+	/**
+	 * Initialisiert den validator.
+	 * @throws PropertyException Wenn es den Validator nicht gibt
+	 */
 	protected function init_validator() {
 	    $validator_name = "\\Sunhill\\Validators\\".$this->validator_name;
+	    if (!class_exists($validator_name)) {
+	        throw new PropertyException("Unbekannter Validator '".$this->validator_name."' aufgerufen.");
+	    }
 	    $this->validator = new $validator_name();    
 	}
-	
+
+// =========================== Setter und Getter ========================================	
 	public function set_owner($owner) {
 	    $this->owner = $owner;
 	    return $this;	    
 	}
 
+	public function get_owner() {
+	    return $this->owner;
+	}
+	
 	public function set_name($name) {
 		$this->name = $name;
 		return $this;
@@ -75,6 +191,55 @@ class oo_property extends \Sunhill\base {
 		return $this->name;
 	}
 	
+	public function set_type($type) {
+	    $this->type = $type;
+	    return $this;
+	}
+	
+	public function get_type() {
+	    return $this->type;
+	}
+	
+	public function set_default($default) {
+	    if (!isset($default)) {
+	        $this->defaults_null = true;
+	    }
+	    $this->default = $default;
+	    return $this;
+	}
+	
+	public function get_default() {
+	    return $this->default;
+	}
+	
+	public function set_class(string $class) {
+	    $this->class = $class;
+	    return $this;
+	}
+	
+	public function get_class() {
+	    return $this->class;
+	}
+	
+	public function set_readonly($value) {
+	    $this->read_only = $value;
+	    return $this;
+	}
+	
+	public function get_readonly() {
+	    return $this->read_only;
+	}
+	
+	public function searchable() {
+	    $this->searchable = true;
+	    return $this;
+	}
+	
+	public function get_searchable() {
+	    return $this->searchable;
+	}
+	
+// ============================== Value Handling =====================================	
 	/**
 	 * Greift schreibend auf den Wert von $value zu. Darf nicht überschrieben werden.
 	 * @param unknown $value
@@ -159,42 +324,26 @@ class oo_property extends \Sunhill\base {
 		return $this->shadow;
 	}
 	
-	public function set_type($type) {
-		$this->type = $type;
-		return $this;
+	/**
+	 * Erzeugt ein Diff-Array. 
+	 * d.h. es wird ein Array mit (mindestens) zwei Elementen zurückgebene:
+	 * FROM ist der alte Wert
+	 * TO ist der neue Wert
+	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
+	 * @return void[]|\Sunhill\Properties\oo_property[]
+	 */
+	public function get_diff_array(int $type=PD_VALUE) {
+	    return array('FROM'=>$this->get_old_value(),
+	                 'TO'=>$this->get_value());
 	}
 	
-	public function get_type() {
-		return $this->type;
-	}
-	
+//========================== Dirtyness ===============================================	
 	public function get_dirty() {
 		return $this->dirty;	
 	}
 	
 	public function set_dirty($value) {
 		$this->dirty = $value;
-	}
-	
-	public function set_default($default) {
-		if (!isset($default)) {
-			$this->defaults_null = true;
-		}
-		$this->default = $default;
-		return $this;
-	}
-	
-	public function get_default() {
-		return $this->default;
-	}
-	
-	public function set_class(string $class) {
-	   $this->class = $class;
-	   return $this;
-	}
-	
-	public function get_class() {
-	    return $this->class;
 	}
 	
 	public function commit() {
@@ -218,24 +367,6 @@ class oo_property extends \Sunhill\base {
 		return $this->validator->validate($value);
 	}
 	
-	public function set_readonly($value) {
-		$this->read_only = $value;
-		return $this;
-	}
-	
-	public function get_readonly() {
-		return $this->read_only;
-	}	
-	
-	public function searchable() {
-	    $this->searchable = true;
-	    return $this;
-	}
-	
-	public function get_searchable() {
-	    return $this->searchable;
-	}
-	
 	public function is_array() {
 		return $this->has_feature('array');
 	}
@@ -254,11 +385,6 @@ class oo_property extends \Sunhill\base {
 	
 	public function deleted(\Sunhill\Storage\storage_base $storage) {
 	    
-	}
-	
-	public function get_diff_array() {
-	    return array('FROM'=>$this->get_old_value(),
-	                 'TO'=>$this->get_value());
 	}
 	
 // ================================== Laden ===========================================	

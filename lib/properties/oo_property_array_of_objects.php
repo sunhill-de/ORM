@@ -57,6 +57,24 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    $storage->set_entity($name,$result);
 	}
 	
+	public function inserting(\Sunhill\Storage\storage_base $storage) {
+	    if (!empty($this->value)) {
+	        foreach ($this->value as $element) {
+	            if (!is_int($element)) {
+	                $element->commit();
+	            }
+	        }
+	    }
+	}
+	
+	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
+        $this->do_insert($storage,$name);
+	}
+	
+	public function updating(\Sunhill\Storage\storage_base $storage) {
+	    $this->inserting($storage);
+	}
+	
 	protected function value_added($value) {
 	    foreach ($this->hooks as $hook) {
 	        $value->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);

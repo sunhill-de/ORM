@@ -15,7 +15,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
      * @see \Sunhill\Storage\storagemodule_base::load()
      */
     public function load(int $id) {
-        $references = DB::table('objectobjectassigns')->where('container_id','=',$id)->get();
+        $references = DB::table('objectobjectassigns')->where('container_id','=',$id)->orderBy('index','asc')->get();
         if (empty($references)) {
             return;
         }
@@ -63,18 +63,28 @@ class storagemodule_mysql_objects extends storagemodule_base {
      * @see \Sunhill\Storage\storagemodule_base::update()
      */
     public function update(int $id) {
+        $properties = $this->storage->filter_storage('objectid');
+        if (empty($properties)) {
+            return $id;
+        }
         $inserts = [];
-        $properties = $this->storage->get_caller()->get_properties_with_feature('objectid');
-        foreach ($properties as $property) {
-            $fieldname = $property->get_name();
-            if (isset($this->storage->entities[$fieldname])) {
-                DB::table('objectobjectassigns')->where('container_id',$id)->where('field',$fieldname)->delete();
-                if (is_array($this->storage->$fieldname)) {
-                    foreach ($this->storage->$fieldname as $index => $element) {
-                        $inserts[] = ['container_id'=>$id,'element_id'=>$element,'field'=>$fieldname,'index'=>$index];
+        foreach ($properties as $property=>$diff) {
+            if (!isset($diff['ADD'])) {
+                // Es ist nur ein einfaches Objektfeld
+                DB::table('objectobjectassigns')
+                    ->where('container_id',$id)
+                    ->where('field',$property)
+                    ->where('index',0)
+                    ->update(['element_id'=>$diff['TO']]);
+            } else {            
+                if (!empty($diff['ADD'])) {
+                    foreach ($diff['ADD'] as $index=>$value) {
+                        $inserts[] = ['container_id'=>$id,'element_id'=>$value,'field'=>$property,'index'=>$index];
                     }
-                } else {
-                    $inserts[] = ['container_id'=>$id,'element_id'=>$this->storage->$fieldname,'field'=>$fieldname,'index'=>0];
+                }
+                if (!empty($diff['DELETE'])) {
+                    DB::table('objectobjectassigns')->where('container_id','=',$id)
+                    ->whereIn('element_id',$diff['DELETE'])->delete();
                 }
             }
         }

@@ -52,6 +52,20 @@ class oo_property_object extends oo_property_field {
 	    }
 	}
 	
+	public function inserting(\Sunhill\Storage\storage_base $storage) {
+	    if (!empty($this->value) && !(is_int($this->value))) {
+	        $this->value->commit();
+	    }
+	}
+	
+	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
+	   $this->do_insert($storage,$name);
+	}
+	
+	public function updating(\Sunhill\Storage\storage_base $storage) {
+        $this->inserting($storage);
+	}
+	
 	protected function value_changed($from,$to) {
 	    foreach ($this->hooks as $hook) {
 	        $to->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
