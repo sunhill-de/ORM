@@ -213,23 +213,6 @@ class TagTest extends \Tests\sunhill_testcase_db
 	/**
 	 * @group static
 	 */
-	public function testStaticDeleteTagObjects() {
-	    $this->prepare_tables();
-	    $this->seed();
-	    $object = new \Sunhill\Test\ts_dummy(); 
-	    $object->dummyint = 1;
-	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagA');
-	    $object->tags->stick($tag);
-	    $object->commit();
-	    $tag = \Sunhill\Objects\oo_tag::delete_tag('TagA');
-	    \Sunhill\Objects\oo_object::flush_cache();
-	    $object = \Sunhill\Objects\oo_object::load_object_of($object->get_id());
-	    $this->assertEquals(0,count($object->tags));
-	}
-	
-	/**
-	 * @group static
-	 */
 	public function testStaticTree() {
 	    $this->prepare_tables();
 	    $this->seed();
