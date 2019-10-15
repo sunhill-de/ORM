@@ -333,8 +333,8 @@ class oo_property extends \Sunhill\base {
 	 * @return void[]|\Sunhill\Properties\oo_property[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
-	    return array('FROM'=>$this->get_old_value(),
-	                 'TO'=>$this->get_value());
+	    return array('FROM'=>$this->shadow,
+	                 'TO'=>$this->value);
 	}
 	
 //========================== Dirtyness ===============================================	

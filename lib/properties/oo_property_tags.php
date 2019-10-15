@@ -54,8 +54,11 @@ class oo_property_tags extends oo_property_arraybase {
 	    if ($this->is_duplicate($tag)) {  // Ist es schon in der Liste ?
 	        return; // Ja, dann abbrechen
 	    }
+        if (!$this->get_dirty()) {
+            $this->set_dirty(true);       // Und als dirty setzen
+            $this->shadow = $this->value; // Schattenverzeichnis setzen
+        }
         $this->value[] = $tag;  // Und an die Liste anfügen
-	    $this->set_dirty(true); // Und als dirty setzen
 	}
 	
 	/**
@@ -67,8 +70,11 @@ class oo_property_tags extends oo_property_arraybase {
         $tag = $this->get_tag($tag);
     	    for ($i=0;$i<count($this->value);$i++) {
 	        if ($this->value[$i]->get_id() === $tag->get_id()) {
+	            if (!$this->get_dirty()) {
+	                $this->set_dirty(true);       // Und als dirty setzen
+	                $this->shadow = $this->value; // Schattenverzeichnis setzen
+	            }
 	            array_splice($this->value,$i,1);
-	            $this->set_dirty(true);
 	            return $this;
 	        }	        
 	    }	    
@@ -151,20 +157,18 @@ class oo_property_tags extends oo_property_arraybase {
 	    $diff = parent::get_diff_array($type);
 	    if ($type == PD_ID) {
 	       $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[]];
-	       foreach ($diff as $item) {
+	       foreach ($diff as $name=>$item) {
 	           if (empty($item)) {
 	               continue;
 	           }
 	           foreach ($item as $entry) {
-	               $result[$item] = $entry->get_id();
+	               $result[$name][] = $entry->get_id();
 	           }
 	       }
 	       return $result;
 	    } else {
 	        return $diff;
 	    }
-	    return array('FROM'=>$this->get_old_value(),
-	        'TO'=>$this->get_value());
 	}
 		
 	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {

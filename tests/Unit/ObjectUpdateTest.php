@@ -85,7 +85,7 @@ class ObjectUpdateTest extends \Tests\sunhill_testcase_db
             ],
             [
                 function($object) {
-                    $object->stick(3);
+                    $object->tags->stick(3);
                     $object->tags->remove(2);
                 },
                 ['id'=>1,'tags'=>['FROM'=>[1,2],'TO'=>[1,3],'ADD'=>[3],'DELETE'=>[2]]]
