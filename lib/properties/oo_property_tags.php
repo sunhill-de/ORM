@@ -80,7 +80,7 @@ class oo_property_tags extends oo_property_arraybase {
 	 * @param \Sunhill\Objects\oo_object $test
 	 * @return boolean
 	 */
-	protected function is_duplicate(\Sunhill\Objects\oo_object $test) {
+	protected function is_duplicate(\Sunhill\Objects\oo_tag $test) {
 	    foreach ($this->value as $listed) {
 	        if ($listed->get_id() == $test->get_id()) {
 	            return $test;
@@ -139,8 +139,37 @@ class oo_property_tags extends oo_property_arraybase {
 	    }
 	}
 	
+	/**
+	 * Erzeugt ein Diff-Array.
+	 * d.h. es wird ein Array mit (mindestens) zwei Elementen zurückgebene:
+	 * FROM ist der alte Wert
+	 * TO ist der neue Wert
+	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
+	 * @return void[]|\Sunhill\Properties\oo_property[]
+	 */
+	public function get_diff_array(int $type=PD_VALUE) {
+	    $diff = parent::get_diff_array($type);
+	    if ($type == PD_ID) {
+	       $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[]];
+	       foreach ($diff as $item) {
+	           if (empty($item)) {
+	               continue;
+	           }
+	           foreach ($item as $entry) {
+	               $result[$item] = $entry->get_id();
+	           }
+	       }
+	       return $result;
+	    } else {
+	        return $diff;
+	    }
+	    return array('FROM'=>$this->get_old_value(),
+	        'TO'=>$this->get_value());
+	}
+		
 	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
-        $this->do_insert($storage,$name);
+        $diff = $this->get_diff_array(PD_ID);
+        $storage->set_entity($name, $diff);
 	}
 	
 	public function get_table_name($relation,$where) {

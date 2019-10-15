@@ -469,7 +469,8 @@ class oo_property extends \Sunhill\base {
 	}
 	
 	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
-        $storage->set_entity($name,$this->value);	    
+        $diff = $this->get_diff_array(PD_ID);
+	    $storage->set_entity($name,$diff);	    
 	}
 	
     /**

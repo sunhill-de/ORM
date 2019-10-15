@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\DB;
 
 require_once(dirname(__FILE__).'/lib/ObjectTestScenario.php');
 
+/**
+ * Basisklasse für die Sunhill-Tests
+ * Die eigentlichen Tests sollten dann aber von sunhill_testcase_nodb oder sunhill_testcase_db abgeleitet werden
+ * @author lokal
+ *
+ */
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
@@ -32,11 +38,26 @@ abstract class TestCase extends BaseTestCase
         } */
     }
     
+    /**
+     * Verhindert das too-many-connections problem bei meheren Datenbankrelevanten tests
+     * {@inheritDoc}
+     * @see \PHPUnit\Framework\TestCase::tearDown()
+     */
     public function tearDown() {
         DB::connection()->setPdo(null);
         parent::tearDown();
     }
 
+    /**
+     * Wrapper für Wertermittlung
+     * Ist $fieldname nur ein einfacher string wird $loader->$fieldname zurückgegeben
+     * Ist $fieldname in der Form irgendwas[index] wird $loader->$irgendwas[$index] zurückgegeben
+     * Ist $fieldname in der Form irgendwas->subfeld wird $loader->$irgendwas->$subfeld zurückgegeben
+     * Ist $fieldname in der Form irgendwas[index]->subfeld wird $loader->$irgendwas[$index]->$subfeld zurückgegeben
+     * @param unknown $loader
+     * @param unknown $fieldname
+     * @return unknown
+     */
     protected function get_field($loader,$fieldname) {
         $match = '';
         if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]->(?P<subfield>\w+)/',$fieldname,$match)) {

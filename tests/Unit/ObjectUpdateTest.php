@@ -69,26 +69,26 @@ class ObjectUpdateTest extends \Tests\sunhill_testcase_db
                 function($object) {
                     $object->intvalue = 234;
                 },
-                ['id'=>1,'intvalue'=>234]                
+                ['id'=>1,'intvalue'=>['FROM'=>123,'TO'=>234]]                
             ],
             [
                 function($object) {
                     $object->tags->stick(3);
                 },
-                ['id'=>1,'tags'=>['add'=>[3],'remove'=>[]]]
+                ['id'=>1,'tags'=>['FROM'=>[1,2],'TO'=>[1,2,3],'ADD'=>[3],'DELETE'=>[]]]
             ],
             [
                 function($object) {
                     $object->tags->remove(2);
                 },
-                ['id'=>1,'tags'=>['add'=>[],'remove'=>[2]]]
+                ['id'=>1,'tags'=>['FROM'=>[1,2],'TO'=>[1],'ADD'=>[],'DELETE'=>[2]]]
             ],
             [
                 function($object) {
                     $object->stick(3);
                     $object->tags->remove(2);
                 },
-                ['id'=>1,'tags'=>['add'=>[3],'remove'=>[2]]]
+                ['id'=>1,'tags'=>['FROM'=>[1,2],'TO'=>[1,3],'ADD'=>[3],'DELETE'=>[2]]]
             ],
                 
     ];

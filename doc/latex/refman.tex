@@ -1,17 +1,10 @@
-\let\mypdfximage\pdfximage\def\pdfximage{\immediate\mypdfximage}\documentclass[twoside]{book}
+\documentclass[twoside]{book}
 
-%% moved from doxygen.sty due to workaround for LaTex 2019 version and unmaintained tabu package
-\usepackage{ifthen}
-\ifx\requestedLaTeXdate\undefined
-\usepackage{array}
-\else
-\usepackage{array}[=2016-10-06]
-\fi
-%%
 % Packages required by doxygen
 \usepackage{fixltx2e}
 \usepackage{calc}
 \usepackage{doxygen}
+\usepackage[export]{adjustbox} % also loads graphicx
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{makeidx}
@@ -21,7 +14,6 @@
 \usepackage{textcomp}
 \usepackage[nointegrals]{wasysym}
 \usepackage[table]{xcolor}
-\usepackage{ifpdf,ifxetex}
 
 % NLS support packages
 \usepackage[ngerman]{babel}
@@ -43,13 +35,6 @@
 }
 \newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
 
-% Arguments of doxygenemoji:
-% 1) ':<text>:' form of the emoji, already "LaTeX"-escaped
-% 2) file with the name of the emoji without the .png extension
-% in case image exist use this otherwise use the ':<text>:' form
-\newcommand{\doxygenemoji}[2]{%
-  \IfFileExists{./#2.png}{\raisebox{-0.1em}{\includegraphics[height=0.9em]{./#2.png}}}{#1}%
-}
 % Page & text layout
 \usepackage{geometry}
 \geometry{%
@@ -64,9 +49,7 @@
 \hbadness=750
 \setlength{\emergencystretch}{15pt}
 \setlength{\parindent}{0cm}
-\newcommand{\doxynormalparskip}{\setlength{\parskip}{3ex plus 2ex minus 2ex}}
-\newcommand{\doxytocparskip}{\setlength{\parskip}{1ex plus 0ex minus 0ex}}
-\doxynormalparskip
+\setlength{\parskip}{3ex plus 2ex minus 2ex}
 \makeatletter
 \renewcommand{\paragraph}{%
   \@startsection{paragraph}{4}{0ex}{-1.0ex}{1.0ex}{%
@@ -110,22 +93,13 @@
 \setcounter{secnumdepth}{5}
 \makeindex
 
-\usepackage{newunicodechar}
-  \newunicodechar{⁻}{${}^{-}$}% Superscript minus
-  \newunicodechar{²}{${}^{2}$}% Superscript two
-  \newunicodechar{³}{${}^{3}$}% Superscript three
-
 % Hyperlinks (required, but should be loaded last)
+\usepackage{ifpdf}
 \ifpdf
   \usepackage[pdftex,pagebackref=true]{hyperref}
 \else
-  \ifxetex
-    \usepackage[pagebackref=true]{hyperref}
-  \else
-    \usepackage[ps2pdf,pagebackref=true]{hyperref}
-  \fi
+  \usepackage[ps2pdf,pagebackref=true]{hyperref}
 \fi
-
 \hypersetup{%
   colorlinks=true,%
   linkcolor=blue,%
@@ -141,9 +115,6 @@
 \usepackage{caption}
 \captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
 
-\usepackage{etoc}
-\etocsettocstyle{\doxytocparskip}{\doxynormalparskip}
-\renewcommand{\numberline}[1]{#1~}
 %===== C O N T E N T S =====
 
 \begin{document}
@@ -159,7 +130,7 @@
 \begin{center}%
 {\Large Sunhill Framework \\[1ex]\large 1 }\\
 \vspace*{1cm}
-{\large Erzeugt von Doxygen 1.8.16}\\
+{\large Erzeugt von Doxygen 1.8.13}\\
 \end{center}
 \end{titlepage}
 \clearemptydoublepage
@@ -170,6 +141,10 @@
 \hypersetup{pageanchor=true}
 
 %--- Begin generated contents ---
+\chapter{Ausstehende Aufgaben}
+\label{todo}
+\Hypertarget{todo}
+\input{dd/da0/todo}
 \chapter{Veraltete Elemente}
 \label{deprecated}
 \Hypertarget{deprecated}
@@ -189,6 +164,7 @@
 \input{d4/d90/namespaceSunhill}
 \input{d3/d2f/namespaceSunhill_1_1Objects}
 \input{d4/df2/namespaceSunhill_1_1Properties}
+\input{d3/d23/namespaceSunhill_1_1Storage}
 \input{de/d0c/namespaceSunhill_1_1Test}
 \input{d7/d71/namespaceSunhill_1_1Validators}
 \input{df/da7/namespaceTests}
@@ -215,6 +191,7 @@
 \input{d0/d0c/classSunhill_1_1Validators_1_1datetime__validator}
 \input{d3/d0b/classSunhill_1_1Validators_1_1enum__validator}
 \input{db/d71/classApp_1_1externalhook}
+\input{d7/d98/classSunhill_1_1Test_1_1FakeStorage}
 \input{d0/d5d/classSunhill_1_1Validators_1_1float__validator}
 \input{d9/d9c/classSunhill_1_1hookable}
 \input{d4/d86/classTests_1_1Unit_1_1HookableTest}
@@ -234,21 +211,22 @@
 \input{d5/dbe/classTests_1_1Feature_1_1ObjectCommon}
 \input{df/d0f/classTests_1_1Feature_1_1ObjectDegradeTest}
 \input{d2/d70/classTests_1_1Feature_1_1ObjectDeleteTest}
-\input{de/d49/classTests_1_1Feature_1_1ObjectDummy2Test}
-\input{d0/d51/classTests_1_1Feature_1_1ObjectDummy3Test}
-\input{d7/d3d/classTests_1_1Feature_1_1ObjectDummyTest}
 \input{da/dab/classSunhill_1_1Objects_1_1ObjectException}
 \input{dd/dfe/classTests_1_1Feature_1_1ObjectHookTest}
+\input{dc/d4e/classTests_1_1Unit_1_1ObjectInsertTest}
 \input{d2/d15/classTests_1_1Feature_1_1ObjectKeyfieldTest}
 \input{d8/d32/classTests_1_1Feature_1_1ObjectMigrateTest}
 \input{d4/df2/classTests_1_1Feature_1_1ObjectNamespaceTest}
 \input{d0/d01/classApp_1_1objectobjectassign}
 \input{df/dae/classTests_1_1Feature_1_1ObjectPromoteTest}
+\input{d5/db7/classTests_1_1Unit_1_1ObjectReadTest}
+\input{d9/d17/classTests_1_1Feature_1_1ObjectReadTest}
 \input{d5/d20/classTests_1_1Feature_1_1ObjectReReadStampsTest}
 \input{d6/d20/classTests_1_1Feature_1_1ObjectReReadTest}
 \input{d6/dd2/classTests_1_1Feature_1_1ObjectSearchTest}
 \input{d2/d03/classTests_1_1Feature_1_1ObjectSkipclassTest}
 \input{d1/d92/classTests_1_1Feature_1_1ObjectTagTest}
+\input{d8/dbf/classTests_1_1Unit_1_1ObjectUpdateTest}
 \input{d5/d53/classSunhill_1_1Objects_1_1oo__object}
 \input{df/dce/classSunhill_1_1Properties_1_1oo__property}
 \input{dd/d48/classSunhill_1_1Properties_1_1oo__property__array__of__objects}
@@ -256,7 +234,6 @@
 \input{df/db2/classSunhill_1_1Properties_1_1oo__property__arraybase}
 \input{d0/d51/classSunhill_1_1Properties_1_1oo__property__attribute}
 \input{dc/d89/classSunhill_1_1Properties_1_1oo__property__attribute__int}
-\input{d9/d08/classSunhill_1_1Properties_1_1oo__property__attribute__loader}
 \input{d3/db8/classSunhill_1_1Properties_1_1oo__property__calculated}
 \input{d4/dde/classSunhill_1_1Properties_1_1oo__property__date}
 \input{dd/d41/classSunhill_1_1Properties_1_1oo__property__datetime}
@@ -279,12 +256,33 @@
 \input{d9/d68/classTests_1_1Unit_1_1PropertyValidateTest}
 \input{d9/d3c/classSunhill_1_1query__builder}
 \input{d1/d14/classSunhill_1_1QueryException}
+\input{dd/d97/classTests_1_1Feature_1_1RegressionTest}
 \input{d3/d40/classTests_1_1Feature_1_1searchtestA}
 \input{de/d01/classTests_1_1Feature_1_1searchtestB}
 \input{dd/d21/classTests_1_1Feature_1_1searchtestC}
 \input{d2/da0/classTests_1_1Feature_1_1SkipClass}
+\input{d6/dbd/classSunhill_1_1Storage_1_1storage__base}
+\input{d7/d93/classSunhill_1_1Storage_1_1storage__insert}
+\input{d6/d22/classSunhill_1_1Storage_1_1storage__mysql}
+\input{dc/dbb/classTests_1_1Unit_1_1StorageBase}
+\input{db/dd2/classTests_1_1Unit_1_1StorageDeleteTest}
+\input{db/d40/classSunhill_1_1Storage_1_1StorageException}
+\input{d0/db5/classTests_1_1Unit_1_1StorageInsertTest}
+\input{d2/d10/classSunhill_1_1Storage_1_1storagemodule__base}
+\input{d1/d85/classSunhill_1_1Storage_1_1storagemodule__mysql__attributes}
+\input{d3/d1b/classSunhill_1_1Storage_1_1storagemodule__mysql__calculated}
+\input{df/d72/classSunhill_1_1Storage_1_1storagemodule__mysql__externalhooks}
+\input{df/d34/classSunhill_1_1Storage_1_1storagemodule__mysql__objects}
+\input{df/dd4/classSunhill_1_1Storage_1_1storagemodule__mysql__simple}
+\input{d0/ded/classSunhill_1_1Storage_1_1storagemodule__mysql__strings}
+\input{df/de0/classSunhill_1_1Storage_1_1storagemodule__mysql__tags}
+\input{d3/d57/classTests_1_1Unit_1_1StorageReadTest}
+\input{d3/d65/classTests_1_1Unit_1_1StorageUpdateTest}
 \input{de/d91/classApp_1_1stringobjectassign}
 \input{df/d50/classTests_1_1sunhill__testcase}
+\input{d6/dac/classTests_1_1sunhill__testcase__db}
+\input{da/dbf/classTests_1_1sunhill__testcase__nodb}
+\input{de/deb/classSunhill_1_1SunhillException}
 \input{d1/d92/classApp_1_1tag}
 \input{d4/dc5/classTagCacheTableSeeder}
 \input{da/d1f/classSunhill_1_1Objects_1_1TagException}
@@ -302,7 +300,9 @@
 \input{db/dd7/classTests_1_1Feature_1_1TestModel}
 \input{df/ddf/classTests_1_1Feature_1_1TestObject}
 \input{dd/dd7/classSunhill_1_1Validators_1_1time__validator}
+\input{d7/d7c/classTests_1_1Feature_1_1TortureObject}
 \input{d8/dc4/classSunhill_1_1Test_1_1ts__dummy}
+\input{d6/d43/classSunhill_1_1Test_1_1ts__objectunit}
 \input{d7/d8d/classSunhill_1_1Test_1_1ts__passthru}
 \input{d2/d8b/classSunhill_1_1Test_1_1ts__referenceonly}
 \input{dd/dab/classSunhill_1_1Test_1_1ts__secondlevelchild}
@@ -354,7 +354,6 @@
 \input{d5/db3/oo__property__arraybase_8php}
 \input{d6/de8/oo__property__attribute_8php}
 \input{d3/da2/oo__property__attribute__int_8php}
-\input{d0/d96/oo__property__attribute__loader_8php}
 \input{d0/da7/oo__property__calculated_8php}
 \input{d5/d7d/oo__property__date_8php}
 \input{d0/d75/oo__property__datetime_8php}
@@ -371,6 +370,17 @@
 \input{d3/d77/oo__property__varchar_8php}
 \input{d4/d8a/propertieshaving_8php}
 \input{d3/d23/query__builder_8php}
+\input{d7/d69/storage__base_8php}
+\input{d7/d72/storage__insert_8php}
+\input{d2/d91/storage__mysql_8php}
+\input{d2/d84/storagemodule__base_8php}
+\input{d0/d1e/storagemodule__mysql__attributes_8php}
+\input{dc/d72/storagemodule__mysql__calculated_8php}
+\input{d2/d41/storagemodule__mysql__externalhooks_8php}
+\input{df/d44/storagemodule__mysql__objects_8php}
+\input{df/dba/storagemodule__mysql__simple_8php}
+\input{d3/d9e/storagemodule__mysql__strings_8php}
+\input{d5/d59/storagemodule__mysql__tags_8php}
 \input{df/d8b/date__validator_8php}
 \input{d2/dee/datetime__validator_8php}
 \input{d8/dda/enum__validator_8php}
@@ -386,34 +396,45 @@
 \input{d9/d20/ObjectCommon_8php}
 \input{d8/dec/ObjectDegradeTest_8php}
 \input{da/dc0/ObjectDeleteTest_8php}
-\input{d6/d2a/ObjectDummy2Test_8php}
-\input{d6/dd2/ObjectDummy3Test_8php}
-\input{d7/db1/ObjectDummyTest_8php}
 \input{d9/d43/ObjectHookTest_8php}
 \input{de/def/ObjectKeyfieldTest_8php}
 \input{dd/d7c/ObjectMigrateTest_8php}
 \input{d2/df9/ObjectNamespaceTest_8php}
 \input{d1/d8a/ObjectPromoteTest_8php}
+\input{db/d6a/Feature_2ObjectReadTest_8php}
+\input{d6/de9/Unit_2ObjectReadTest_8php}
 \input{d6/d0c/ObjectReReadStampsTest_8php}
 \input{df/d38/ObjectReReadTest_8php}
 \input{d6/d1c/ObjectSearchTest_8php}
 \input{d7/da4/ObjectSkipclassTest_8php}
 \input{d1/df1/ObjectTagTest_8php}
+\input{de/dad/RegressionTest_8php}
 \input{dd/d8d/DatabaseSetup_8php}
 \input{dd/de2/ObjectTestScenario_8php}
 \input{d3/d1e/sunhill__testcase_8php}
+\input{dc/d30/sunhill__testcase__db_8php}
+\input{df/d40/sunhill__testcase__nodb_8php}
 \input{db/d7b/ts__dummy_8php}
+\input{dc/d36/ts__objectunit_8php}
 \input{d9/d6e/ts__passthru_8php}
 \input{d6/d14/ts__referenceonly_8php}
 \input{dc/dba/ts__secondlevelchild_8php}
 \input{d6/de6/ts__testchild_8php}
 \input{d3/d66/ts__testparent_8php}
 \input{d1/d0b/ts__thirdlevelchild_8php}
+\input{d8/d70/TortureTest_8php}
 \input{dd/da9/TestCase_8php}
 \input{dc/d93/HookableTest_8php}
 \input{d7/d21/LoggableTest_8php}
+\input{d3/da7/ObjectInsertTest_8php}
+\input{dd/d19/ObjectUpdateTest_8php}
 \input{dc/da7/PropertyTest_8php}
 \input{d4/d21/PropertyValidateTest_8php}
+\input{df/dfc/StorageBase_8php}
+\input{d5/de8/StorageDeleteTest_8php}
+\input{de/d47/StorageInsertTest_8php}
+\input{d2/d92/StorageReadTest_8php}
+\input{d6/d59/StorageUpdateTest_8php}
 \input{d2/d9c/TagTest_8php}
 %--- End generated contents ---
 
@@ -422,7 +443,7 @@
 \newpage
 \phantomsection
 \clearemptydoublepage
-\addcontentsline{toc}{chapter}{\indexname}
+\addcontentsline{toc}{chapter}{Index}
 \printindex
 
 \end{document}
