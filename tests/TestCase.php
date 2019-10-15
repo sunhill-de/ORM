@@ -5,8 +5,6 @@ namespace Tests;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
 
-require_once(dirname(__FILE__).'/lib/ObjectTestScenario.php');
-
 /**
  * Basisklasse für die Sunhill-Tests
  * Die eigentlichen Tests sollten dann aber von sunhill_testcase_nodb oder sunhill_testcase_db abgeleitet werden
@@ -32,10 +30,6 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         $this->app = $this->createApplication();
-/*        if (!self::$db_up ) {
-            \Tests\setup_db();
-            self::$db_up = true;
-        } */
     }
     
     /**
