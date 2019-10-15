@@ -26,6 +26,10 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
         $this->create_load_scenario();
     }
     
+    /**
+     * @group load
+     * @return \Sunhill\Test\ts_objectunit
+     */
     public function testStorageCreation() {
         $this->prepare_read();
         $object = new \Sunhill\Test\ts_objectunit();
@@ -57,6 +61,7 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
     }
     
     /**
+     * @group load
      * @depends testStorageCreation
      */
     public function testSimpleValue($object) {
@@ -65,6 +70,7 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
     }
     
     /**
+     * @group load
      * @depends testStorageCreation
      */
     public function testObjectValue($object) {
@@ -73,6 +79,7 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
     }
     
     /**
+     * @group load
      * @depends testStorageCreation
      */
     public function testSArrayValue($object) {
@@ -81,6 +88,7 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
     }
     
     /**
+     * @group load
      * @depends testStorageCreation
      */
     public function testOArrayValue($object) {
@@ -89,6 +97,7 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
     }
     
     /**
+     * @group load
      * @depends testStorageCreation
      */
     public function testTagValue($object) {
@@ -97,6 +106,7 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
     }
     
     /**
+     * @group load
      * @depends testStorageCreation
      */
     public function testAttributeValue($object) {
@@ -105,6 +115,7 @@ class ObjectReadTest extends \Tests\sunhill_testcase_db
     }
     
     /**
+     * @group load
      * @depends testStorageCreation
      */
     public function testCalcValue($object) {
