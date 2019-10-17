@@ -298,7 +298,9 @@ class oo_property extends \Sunhill\base {
 				$this->shadow = $this->default;
 				$this->initialized = true;
 			} else {
-			    throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
+			    if (!$this->initialize_value()) {
+			         throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
+			    }
 			}
 		}
 		if (is_null($index)) {
@@ -310,6 +312,14 @@ class oo_property extends \Sunhill\base {
 		} else {
 		        return $this->do_get_indexed_value($index);
 		}
+	}
+
+	/**
+	 * Hier kann man noch zusätzlich versuchen, einem uninitialisierten Wert einen solchen noch zuzuweisen (z.B. Calculate-Felder)
+	 * @return boolean
+	 */
+	protected function initialize_value() {
+	    return false;
 	}
 	
 	protected function &do_get_value() {

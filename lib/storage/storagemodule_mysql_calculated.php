@@ -26,6 +26,10 @@ class storagemodule_mysql_calculated extends storagemodule_base {
     }
     
     public function update(int $id) {
+        $properties = $this->storage->filter_storage('calculated');
+        foreach ($properties as $property=>$value) {
+            DB::table('caching')->where('object_id',$id)->where('fieldname',$property)->update(['value'=>is_null($value['TO'])?'null':$value['TO']]);
+        }
         return $id;
     }
     

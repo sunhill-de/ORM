@@ -10,9 +10,7 @@ class oo_property_calculated extends oo_property_field {
 
 	protected $features = ['complex','calculated'];
 	
-	protected $readonly = true;
-	
-	protected $initialized = true;
+	protected $read_only = true;
 	
 	protected function do_set_value($value) {
 	    throw new \Sunhill\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
@@ -31,6 +29,18 @@ class oo_property_calculated extends oo_property_field {
 	        }
 	        $this->value = $newvalue;
 	    }
+	}
+	
+	protected function initialize_value() {
+	    $this->recalculate();
+	    return true;
+	}
+	
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	    if (!$this->initialized) {
+	        $this->recalculate();
+	    }
+	    parent::do_insert($storage,$name);
 	}
 	
 	public function get_table_name($relation,$where) {

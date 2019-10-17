@@ -27,7 +27,7 @@ class TestClass extends \Sunhill\Objects\oo_object {
     
     public function set_return($value) {
         $this->return = $value;
-        $this->get_property('calcfield')->set_dirty();
+        $this->recalculate();
     }
 }
 
@@ -56,10 +56,11 @@ class ObjectCalculatedTest extends ObjectCommon
     
     public function testChangeCache() {
         $test = new TestClass;
+        $test->set_return('ABC');
         $test->commit();
         \Sunhill\Objects\oo_object::flush_cache();
         $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
-        $read->return = 'DEF';
+        $read->set_return('DEF');
         $read->commit();
         $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->get_id())->where('fieldname','=','calcfield')->first();
         $this->assertEquals('DEF',$hilf->value);
@@ -67,11 +68,12 @@ class ObjectCalculatedTest extends ObjectCommon
     
     public function testChangeCalc() {
         $test = new TestClass;
+        $test->set_return('ABC');
         $test->commit();
         \Sunhill\Objects\oo_object::flush_cache();
         $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
         $this->assertEquals('ABC',$read->calcfield);
-        $read->return = 'DEF';
+        $read->set_return('DEF');
         $this->assertEquals('DEF',$read->calcfield);
     }
 }

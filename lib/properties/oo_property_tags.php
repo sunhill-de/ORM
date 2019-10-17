@@ -159,10 +159,10 @@ class oo_property_tags extends oo_property_arraybase {
 	       $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[]];
 	       foreach ($diff as $name=>$item) {
 	           if (empty($item)) {
-	               continue;
+	               continue; 
 	           }
 	           foreach ($item as $entry) {
-	               $result[$name][] = $entry->get_id();
+	               $result[$name][] = $this->get_tag($entry)->get_id();
 	           }
 	       }
 	       return $result;
