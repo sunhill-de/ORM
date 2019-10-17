@@ -236,7 +236,7 @@ class propertieshaving extends hookable {
 	    }
 	}
 
-	protected function clean_properties() {
+	public function clean_properties() {
 	    foreach ($this->properties as $property) {
 	        $property->set_dirty(false);
 	    }

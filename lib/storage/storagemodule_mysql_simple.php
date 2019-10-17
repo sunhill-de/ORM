@@ -90,4 +90,17 @@ class storagemodule_mysql_simple extends storagemodule_base {
         }
         return $id;        
     }
+    
+    /**
+     * Löscht die höhergestellten Tabellen 
+     * {@inheritDoc}
+     * @see \Sunhill\Storage\storagemodule_base::degrade()
+     */
+    public function degrade(int $id,array $degration_info) {
+        DB::table('objects')->where('id',$id)->update(['classname'=>$degration_info['newclass']]);
+        foreach ($degration_info['diff'] as $class) {
+            DB::table($class::$table_name)->where('id',$id)->delete();
+        }
+        return $id;
+    }
 }

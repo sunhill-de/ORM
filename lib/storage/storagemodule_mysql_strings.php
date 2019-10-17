@@ -58,4 +58,19 @@ class storagemodule_mysql_strings extends storagemodule_base {
         DB::table('stringobjectassigns')->where('container_id','=',$id)->delete(); 
         return $id;
     }
+    
+    /**
+     * Löscht die höhergestellten Tabellen
+     * {@inheritDoc}
+     * @see \Sunhill\Storage\storagemodule_base::degrade()
+     */
+    public function degrade(int $id,array $degration_info) {
+        $properties = $this->storage->filter_storage('strings');
+        foreach ($properties as $property=>$payload) {
+                DB::table('stringobjectassigns')
+                ->where('container_id',$id)
+                ->where('field',$property)->delete();
+        }
+        return $id;
+    }
 }

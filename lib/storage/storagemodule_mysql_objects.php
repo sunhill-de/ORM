@@ -102,4 +102,18 @@ class storagemodule_mysql_objects extends storagemodule_base {
         DB::table('objectobjectassigns')->where('container_id','=',$id)->delete();
         return $id;
     }
+    /**
+     * Löscht die höhergestellten Tabellen
+     * {@inheritDoc}
+     * @see \Sunhill\Storage\storagemodule_base::degrade()
+     */
+    public function degrade(int $id,array $degration_info) {
+        $properties = $this->storage->filter_storage('objectid');
+        foreach ($properties as $property=>$payload) {
+                DB::table('objectobjectassigns')
+                    ->where('container_id',$id)
+                    ->where('field',$property)->delete();
+        }
+        return $id;
+    }
 }

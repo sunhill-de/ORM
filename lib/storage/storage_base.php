@@ -95,17 +95,25 @@ class storage_base  {
         return $this->set_entity($name,$value);
     }    
     
-    protected function execute_chain(string $chainname,int $id) {
+    protected function execute_chain(string $chainname,int $id,$payload=null) {
         $method_name = 'prepare_'.$chainname;
         $module_list = [];
         foreach ($this->modules as $module_name) {
             $full_name = "\\Sunhill\\Storage\\storagemodule_".$module_name;
             $module = new $full_name($this);
-            $module->$method_name($id);
+            if (isset($payload)) {
+                $module->$method_name($id,$payload);
+            } else {
+                $module->$method_name($id);                
+            }
             $module_list[] = $module;
         }
         foreach ($module_list as $module) {
-            $id = $module->$chainname($id);
+            if (isset($payload)) {
+                $id = $module->$chainname($id,$payload);
+            } else {
+                $id = $module->$chainname($id);
+            }
         }
         return $id;
     }
@@ -129,6 +137,10 @@ class storage_base  {
     
     public function delete_object(int $id) {
         return $this->execute_chain('delete',$id);    
+    }
+    
+    public function degrade_object(int $id,array $degration_info) {
+        return $this->execute_chain('degrade',$id,$degration_info);
     }
     
     public function filter_storage($features,$grouping=null) {

@@ -2,29 +2,57 @@
 
 namespace Sunhill\Objects;
 
-use App;
 use Illuminate\Support\Facades\DB;
 use Sunhill\base;
+use Sunhill\SunhillException;
 
-class ObjectException extends \Exception {}
+require_once(dirname(__FILE__).'/../base.php');
+
+/**
+ * Exception, die innerhalb eines Objektes ausgelöst werden
+ * @author lokal
+ */
+class ObjectException extends \Sunhill\SunhillException {}
+
+/**
+ * Diese Exception wird geworfen, wenn eine unbekannte Property angefordert wird
+ */
 class UnknownPropertyException extends ObjectException {}
 
+/**
+ * Die zentrale Klasse des sunhill-Frameworks. Alle Klassen in der sunhill-Objecthirarchie müssen direkt oder
+ * indirekt von oo_object abgeleitet werden. Interationen mit den anderen Klassen der Frameworks sollten nach
+ * Möglichkeit in den abgeleiteten Klassen nicht statt finden müssen. Weiterhin sollten direkte Datenbank
+ * Zugriffe vermieden werden, sondern statt dessen über ein Storage erfolgen.  
+ * @author lokal
+ *
+ */
 class oo_object extends \Sunhill\propertieshaving {
 
+    /**
+     * Statische Variable, die den Namen der Datenbanktabelle definiert.
+     * @todo Aufgrund der Datenbankkapselung müsste diese irgendwie in die Storages ausgelagert werden
+     * @var string
+     */
     public static $table_name = 'objects';
     
+    /**
+     * Gibt an, ob dieses Objekt über ein Keyfield verfügt. 
+     * @todo Das ganze Konzept der Keyfields sollte nochmals überdacht werden
+     * @var boolean
+     */
     protected static $has_keyfield = false;
-    
-    private $storage=null;
-    
-	public $default_ns = '\\App';		
-	
+        
+    /**
+     * Konstruktor für Objekte. Initialisiert interne properties und ruft ansonsten den geerbten Kontruktor auf
+     */
 	public function __construct() {
 	    parent::__construct();
 	    $this->properties['tags'] = self::create_property('tags','tags')->set_owner($this);
 	    $this->properties['externalhooks'] = self::create_property('externalhooks','externalhooks')->set_owner($this);
 	}
 	
+// ========================================= Keyfeld Methoden ========================================	
 	final public function calculate_keyfield() {
 	    if (static::$has_keyfield) {
 	        return $this->unify($this->get_keyfield());
@@ -50,6 +78,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	   return;   
 	}
 
+// ============================ Storagefunktionen =======================================	
 	/**
 	 * Liefert das aktuelle Storage zurück oder erzeugt eines, wenn es ein solches noch nicht gibt.
 	 * @return \Sunhill\Storage\storage_base
@@ -184,6 +213,12 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	// ********************* Property Handling *************************************	
 	
+	/**
+	 * Berechnet ein oder alle Calculatefelder neu
+	 * Wird der Parameter $property mit dem Namen eines Calculate-Felder aufgerufen, wird nur dieses
+	 * neu berechnet. Ohne diesen Parameter werden alle neu berechnet.
+	 * @param unknown $property
+	 */
 	public function recalculate($property=null) {
 	    if (!is_null($property)) {
 	        $property_obj = $this->get_property($property);
@@ -207,7 +242,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	        $property->$action($storage);
 	    }
 	}
-	
+
+// ================================== Promotion ===========================================	
 	/**
 	 * Hebt das momentane Objekt auf eine abgeleitete Klasse an
 	 * @param String $newclass
@@ -274,7 +310,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	public function post_promotion(oo_object $from) {
 	    
 	}
-	
+
+// ===================================== Degration =============================================	
 	public function degrade(String $newclass) {
 	    if (!class_exists($newclass)) {
 	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");
@@ -283,8 +320,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	        throw new ObjectException("'".get_class($this)."' ist keine Unterklasse von '$newclass'");
 	    }
 	    $this->pre_degration($newclass);
-	    $newobject = $this->degration($newclass);
+        $newobject = $this->degration($newclass);
 	    $newobject->post_degration($this);
+	    $this->set_state('invalid'); // Das alte darf nicht mehr weiter benutzt werden
 	    return $newobject;
 	}
 	
@@ -292,10 +330,30 @@ class oo_object extends \Sunhill\propertieshaving {
 	       return true;    
 	}
 	
+	private function get_class_diff($hiclass,$loclass) {
+	    $hi_hirarchy = $hiclass->get_inheritance(true);
+	    $lo_hirarchy = $loclass->get_inheritance(true);
+	    return array_diff($hi_hirarchy,$lo_hirarchy);
+	}
+	
+	private function get_affected_fields($storage,array $diff) {
+	   foreach($this->properties as $property) {
+	       if (in_array($property->get_class(),$diff)) {
+                $storage->set_entity($property->get_name(),1);
+	       }
+	   }
+	}
+	
 	protected function degration(String $newclass) {
 	    $newobject = new $newclass; // Neues Objekt erzeugen
+	    $storage = $this->get_storage();
+	    $class_diff = $this->get_class_diff($this,$newobject);
+	    $this->get_affected_fields($storage, $class_diff);
+	    $storage->degrade_object($this->get_id(),array('newclass'=>$newclass,
+	                                                   'diff'=>$class_diff));
+	    
 	    $newobject->copy_from($this); // Die Werte bis zu dieser Hirarchie können kopiert werden
-	    DB::table('objects')->where('id','=',$this->get_id())->update(['classname'=>$newclass]);
+	    $newobject->clean_properties();
 	    return $newobject;
 	    
 	}

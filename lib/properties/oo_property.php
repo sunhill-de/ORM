@@ -397,7 +397,11 @@ class oo_property extends \Sunhill\base {
 	    
 	}
 	
-// ================================== Laden ===========================================	
+	public function delete($storage) {
+	    
+	}
+	
+	// ================================== Laden ===========================================	
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert aus dem Storage zu lesen
 	 * Ruft wiederrum die überschreibbare Methode do_load auf, die property-Individuelle Dinge erledigen kann

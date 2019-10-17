@@ -9,6 +9,8 @@ class ts_thirdlevelchild extends ts_secondlevelchild {
     protected static function setup_properties() {
 		parent::setup_properties();
 		self::integer('childchildint');
+		self::object('thirdlevelobject')->set_allowed_objects(["\\Sunhill\\Objects\\oo_object"]);
+		self::arrayofstrings('thirdlevelsarray');
 	}
 	
 	public function post_promotion($from) {

@@ -74,4 +74,12 @@ abstract class storagemodule_base {
      */
     abstract public function delete(int $id);
     
+    public function prepare_degrade(int $id,array $degration_info) {
+        
+    }
+    
+    public function degrade(int $id,array $degration_info) {
+        // Normalerweise muss ein Property hier nix machen
+        return $id;
+    }
 }

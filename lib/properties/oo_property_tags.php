@@ -170,7 +170,7 @@ class oo_property_tags extends oo_property_arraybase {
 	        return $diff;
 	    }
 	}
-		
+	
 	public function get_table_name($relation,$where) {
 	    return "";
 	}
