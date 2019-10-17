@@ -435,6 +435,15 @@ class oo_property extends \Sunhill\base {
 	}
 	
 	/**
+	 * Wird im Falle eines ReInserts (zweiter Lauf bei zirkulären Referenzen)
+	 * aufgerufen
+	 * @param \Sunhill\Storage\storage_base $storage
+	 */
+	public function reinsert(\Sunhill\Storage\storage_base $storage) {
+	    // Macht standardmäßig nix
+	}
+	
+	/**
 	 * Individuell überschreibbare Methode, die dem Property erlaub, besondere Speichermethoden zu verwenden
 	 * @param \Sunhill\Storage\storage_insert $storage
 	 * @param string $tablename
@@ -462,7 +471,7 @@ class oo_property extends \Sunhill\base {
 
 // ================================= Update ====================================	
 	public function update(\Sunhill\Storage\storage_base $storage) {
-	    if ($this->dirty) {
+	    if ($this->dirty || $this->owner->get_needs_recommit()) {
     	    $this->do_update($storage,$this->get_name());
             $this->dirty = false;
 	    }

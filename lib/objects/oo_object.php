@@ -137,12 +137,18 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * abschluss aller Arbeiten noch inserted.
 	 */
 	protected function do_insert() {
-	        $storage = $this->get_storage();
-	        $this->walk_properties('inserting', $storage);
-            $this->walk_properties('insert',$storage);
-            $this->set_id($storage->insert_object());
-            $this->walk_properties('inserted',$storage);
-            $this->insert_cache($this->get_id());
+	       $storage = $this->get_storage();
+    	   $this->walk_properties('inserting', $storage);
+           $this->walk_properties('insert',$storage);
+           $this->set_id($storage->insert_object());
+           $this->walk_properties('inserted',$storage);
+           $this->insert_cache($this->get_id());
+	}
+
+	protected function do_recommit() {
+	    $storage = $this->get_storage();
+	    $this->walk_properties('reinsert',$storage);
+	    $storage->update_object($this->get_id());	    
 	}
 	
 // ========================== Aktualisieren ===================================	
@@ -177,6 +183,18 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	// ********************* Property Handling *************************************	
+	
+	public function recalculate($property=null) {
+	    if (!is_null($property)) {
+	        $property_obj = $this->get_property($property);
+	        $property_obj->recalculate();
+	    } else {
+	        $properties = $this->get_properties_with_feature('calculated');
+	        foreach ($properties as $property) {
+	            $property->recalculate();
+	        }	        
+	    }
+	}
 	
 	/**
 	 * Ruft für jede Property die durch $action definierte Methode auf und übergibt dieser das Storage

@@ -16,6 +16,8 @@ class propertieshaving extends hookable {
     
     protected $properties;
     
+    protected $need_recommit=false;
+    
     /**
      * Konstruktur, ruft nur zusätzlich setup_properties auf
      */
@@ -64,6 +66,23 @@ class propertieshaving extends hookable {
 	}
 	
 // ============================== State-Handling ===========================================	
+	/**
+	 * Kann von Properties aufgerufen, werden, wenn das Objekt am Ende des Commits erneut committed werden
+	 * muss.
+	 */
+	public function set_needs_recommit() {
+	   $this->need_recommit = true;
+	   return $this;
+	}
+	
+	/**
+	 * Kann von Properties aufgerufen, werden, wenn das Objekt am Ende des Commits erneut committed werden
+	 * muss.
+	 */
+	public function get_needs_recommit() {
+	    return $this->need_recommit;
+	}
+	
 	protected function set_state(string $state) {
 	    $this->state = $state;
 	    return $this;
@@ -126,12 +145,9 @@ class propertieshaving extends hookable {
 	}
 	
 // ===================================== Committing =======================================
-	public function commit() {
+	public function commit($caller=null) {
 	    $this->check_validity();
-	    if (!$this->get_dirty()) {
-	        return;
-	    }
-	    if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
+    	if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
 	        $this->set_state('committing');
 	        $this->check_for_hook('COMMITTING');
 	        if ($this->get_id()) {
@@ -142,11 +158,19 @@ class propertieshaving extends hookable {
 	        $this->check_for_hook('COMMITTED');
 	        $this->set_state('normal');
 	    }
+	    if (is_null($caller) && ($this->need_recommit)) {
+	        $this->do_recommit();
+	    }
+	    return $this->need_recommit;
 	}
 
 	protected function get_dirty() {
 	    $dirty_properties = $this->get_properties_with_feature('',true);
 	    return (!empty($dirty_properties));	    
+	}
+	
+	protected function do_recommit() {
+	    
 	}
 	
 // ====================================== Updating ========================================	
@@ -174,6 +198,10 @@ class propertieshaving extends hookable {
 	    $this->check_for_hook('POSTINSERT');
 	}
 
+	/**
+	 * Führt den eigentlichen Commit aus
+	 * @param bool $recommit
+	 */
 	protected function do_insert() {
 	    
 	}

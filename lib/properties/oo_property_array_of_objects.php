@@ -59,16 +59,52 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	
 	public function inserting(\Sunhill\Storage\storage_base $storage) {
 	    if (!empty($this->value)) {
-	        foreach ($this->value as $element) {
+	        foreach ($this->value as $index=>$element) {
 	            if (!is_int($element)) {
 	                $element->commit();
+	            } else if (\Sunhill\Objects\oo_object::is_cached($element)) {
+	                // Wenn es im Cache ist, kann es per seiteneffekt manipuliert worden sein
+	                $this->value[$index] = \Sunhill\Objects\oo_object::load_object_of($element);	
+	                $this->value[$index]->commit();
 	            }
 	        }
 	    }
 	}
 	
-	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
-        $this->do_insert($storage,$name);
+	private function get_local_id($test) {
+	    if (is_null($test)) {
+	        return null;
+	    } else if (is_int($test)) {
+	        return $test;
+	    } else {
+	        return $test->get_id();
+	    }
+	}
+	
+	/**
+	 * Erzeugt ein Diff-Array.
+	 * d.h. es wird ein Array mit (mindestens) zwei Elementen zurückgebene:
+	 * FROM ist der alte Wert
+	 * TO ist der neue Wert
+	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
+	 * @return void[]|\Sunhill\Properties\oo_property[]
+	 */
+	public function get_diff_array(int $type=PD_VALUE) {
+	    $diff = parent::get_diff_array($type);
+	    if ($type == PD_ID) {
+	        $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[]];
+	        foreach ($diff as $name=>$item) {
+	            if (empty($item)) {
+	                continue;
+	            }
+	            foreach ($item as $index=>$entry) {
+	                $result[$name][$index] = $this->get_local_id($entry);
+	            }
+	        }
+	        return $result;
+	    } else {
+	        return $diff;
+	    }
 	}
 	
 	public function updating(\Sunhill\Storage\storage_base $storage) {

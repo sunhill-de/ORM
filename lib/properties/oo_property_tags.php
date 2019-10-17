@@ -171,11 +171,6 @@ class oo_property_tags extends oo_property_arraybase {
 	    }
 	}
 		
-	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
-        $diff = $this->get_diff_array(PD_ID);
-        $storage->set_entity($name, $diff);
-	}
-	
 	public function get_table_name($relation,$where) {
 	    return "";
 	}

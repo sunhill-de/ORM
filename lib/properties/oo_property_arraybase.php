@@ -83,15 +83,15 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    $this->check_array();
 	    $result = ['ADD'=>array(),'DELETE'=>array()];
 	    if (isset($this->shadow)) {
-    	    foreach ($this->shadow as $oldentry) {
+    	    foreach ($this->shadow as $index=>$oldentry) {
     	        if ($this->array_search($oldentry,$this->value)===false) {
-    	            $result['DELETE'][] = $oldentry;
+    	            $result['DELETE'][$index] = $oldentry;
     	        }
     	    }
 	    }
-	    foreach ($this->value as $newentry) {
+	    foreach ($this->value as $index=>$newentry) {
 	        if ($this->array_search($newentry,$this->shadow)===false) {
-	            $result['ADD'][] = $newentry;
+	            $result['ADD'][$index] = $newentry;
 	        }
 	    }
 	    return $result;

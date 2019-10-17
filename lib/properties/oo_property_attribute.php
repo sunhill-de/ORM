@@ -105,12 +105,37 @@ class oo_property_attribute extends oo_property {
 	}
 	
 // ================================= Update =========================================
-	protected function do_update(\Sunhill\Storage\storage_base $storage,$name) {
-	    $storage->entities['attributes'][$this->attribute_name] = [
-	        'attribute_id'=>$this->attribute_id,
-	        'value_id'=>$this->value_id
-	    ];
-	    $this->insert_value($storage);	    
+	/**
+	 * Erzeugt ein Diff-Array.
+	 * d.h. es wird ein Array mit (mindestens) zwei Elementen zurückgebene:
+	 * FROM ist der alte Wert
+	 * TO ist der neue Wert
+	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
+	 * @return void[]|\Sunhill\Properties\oo_property[]
+	 */
+	public function get_diff_array(int $type=PD_VALUE) {
+        $result = [
+            'attribute_id'=>$this->attribute_id,
+            'value_id'=>$this->value_id,
+            'object_id'=>$this->owner->get_id(),
+            'name'=>'general_attribute',
+            'allowedobjects'=>"\\Sunhill\\Objects\\oo_object",
+            'type'=>'int',
+            'property'=>''            
+        ];
+        if ($this->attribute_type == 'text') {
+            $result['textvalue']=['FROM'=>$this->shadow,'TO'=>$this->value];
+            $result['value']=['FROM'=>'','TO'=>is_null($this->value)?null:''];            
+        } else {
+            $result['value']=['FROM'=>$this->shadow,'TO'=>$this->value];
+            $result['textvalue']=['FROM'=>'','TO'=>is_null($this->value)?null:''];            
+        }
+        return $result;
+	}
+	
+	public function do_update($storage, $name) {
+	    $diff = $this->get_diff_array(PD_ID);
+	    $storage->entities['attributes'][$this->attribute_name] = $diff;
 	}
 	
 	// ============================ Statische Funktionen ===========================

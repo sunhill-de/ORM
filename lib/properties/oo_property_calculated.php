@@ -14,25 +14,25 @@ class oo_property_calculated extends oo_property_field {
 	
 	protected $initialized = true;
 	
-	public function get_dirty() {
-	    return true;
-	}
-	
 	protected function do_set_value($value) {
 	    throw new \Sunhill\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
 	}
 	
-	protected function &do_get_value() {
-	// @todo: Ein sehr schmutziger Hack, damit die Tests durchlaufen
-	//    if (!$this->initialized) {
-	    if (true) {
-	        $method_name = 'calculate_'.$this->name;
-	        $this->value = $this->owner->$method_name();
-	        //$this->initialized = true;
+	/**
+	 * Fordert das Property auf, sich neu zu berechnen (lassen)
+	 */
+	public function recalculate() {
+	    $method_name = 'calculate_'.$this->name;
+	    $newvalue = $this->owner->$method_name();
+	    if ($this->value !== $newvalue) { // Gab es überhaupt eine Änderung
+	        if (!$this->get_dirty()) {
+	            $this->shadow = $this->value;
+	            $this->set_dirty(true);
+	        }
+	        $this->value = $newvalue;
 	    }
-        return $this->value;
 	}
-		
+	
 	public function get_table_name($relation,$where) {
 	    return 'caching';
 	}
