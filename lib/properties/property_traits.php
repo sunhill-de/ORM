@@ -26,15 +26,15 @@ trait LazyIDLoading {
      */
     protected function commit_child_if_loaded($child) {
         if (!empty($child)) {
-            if (is_int($child)) {
+            if (is_numeric($child)) {
                 if (\Sunhill\Objects\oo_object::is_cached($child)) {
                     // Wenn es im Cache ist, kann es per seiteneffekt manipuliert worden sein
                     $child = \Sunhill\Objects\oo_object::load_object_of($child);
                 } else {
                     return; // Weder geladen noch im Cache
                 }
-            }             
-            $this->commit_child($this->value);
+            } 
+            $this->commit_child($child);
         }
     }
  

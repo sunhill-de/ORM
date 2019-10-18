@@ -33,6 +33,7 @@ class ObjectUpdateTest extends \Tests\sunhill_testcase_db
      */
     public function testStorageUpdate($update_callback,$test_result) {
         $this->prepare_read();
+        \Sunhill\Objects\oo_object::flush_cache();
         $object = new \Sunhill\Test\ts_objectunit();
         $object->storage_values = [
             'id'=>1,
@@ -114,13 +115,13 @@ class ObjectUpdateTest extends \Tests\sunhill_testcase_db
                     $dummy1 = \Sunhill\Objects\oo_object::load_object_of(2);
                     $object->oarray[] = $dummy1;
                 },
-                ['id'=>1,'oarray'=>['FROM'=>[3,4],'TO'=>[3,4,2],'ADD'=>[2],'DELETE'=>[]]]
+                ['id'=>1,'oarray'=>['FROM'=>[3,4],'TO'=>[3,4,2],'ADD'=>[2=>2],'DELETE'=>[]]]
             ],
             [
                 function($object) {
                     unset($object->oarray[1]);;
                 },
-                ['id'=>1,'oarray'=>['FROM'=>[3,4],'TO'=>[3],'ADD'=>[],'DELETE'=>[4]]]
+                ['id'=>1,'oarray'=>['FROM'=>[3,4],'TO'=>[3],'ADD'=>[],'DELETE'=>[1=>4]]]
             ],
             [
                 function($object) {
@@ -131,27 +132,27 @@ class ObjectUpdateTest extends \Tests\sunhill_testcase_db
                     unset($object->oarray[1]);;
                     $object->oarray[] = $dummy1;
                 },
-                ['id'=>1,'oarray'=>['FROM'=>[3,4],'TO'=>[3,2],'ADD'=>[2],'DELETE'=>[4]]]
+                ['id'=>1,'oarray'=>['FROM'=>[3,4],'TO'=>[3,2],'ADD'=>[1=>2],'DELETE'=>[1=>4]]]
             ],
 // Stringarray-Tests
             [
                 function($object) {
                     $object->sarray[] = 'JKL';
                 },
-                ['id'=>1,'sarray'=>['FROM'=>['ABC','DEF','GHI'],'TO'=>['ABC','DEF','GHI','JKL'],'ADD'=>['JKL'],'DELETE'=>[]]]
+                ['id'=>1,'sarray'=>['FROM'=>['ABC','DEF','GHI'],'TO'=>['ABC','DEF','GHI','JKL'],'ADD'=>[3=>'JKL'],'DELETE'=>[]]]
             ],
             [
                 function($object) {
                      unset($object->sarray[1]);;
                 },
-                ['id'=>1,'sarray'=>['FROM'=>['ABC','DEF','GHI'],'TO'=>['ABC','GHI'],'ADD'=>[],'DELETE'=>['DEF']]]
+                ['id'=>1,'sarray'=>['FROM'=>['ABC','DEF','GHI'],'TO'=>['ABC','GHI'],'ADD'=>[],'DELETE'=>[1=>'DEF']]]
             ],
             [
                 function($object) {
                      unset($object->sarray[1]);;
                      $object->sarray[] = 'JKL';
                 },
-                ['id'=>1,'sarray'=>['FROM'=>['ABC','DEF','GHI'],'TO'=>['ABC','GHI','JKL'],'ADD'=>['JKL'],'DELETE'=>['DEF']]]
+                ['id'=>1,'sarray'=>['FROM'=>['ABC','DEF','GHI'],'TO'=>['ABC','GHI','JKL'],'ADD'=>[2=>'JKL'],'DELETE'=>[1=>'DEF']]]
             ],
 // Attribut-Tests
             [
