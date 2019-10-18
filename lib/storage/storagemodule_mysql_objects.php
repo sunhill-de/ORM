@@ -71,12 +71,19 @@ class storagemodule_mysql_objects extends storagemodule_base {
         foreach ($properties as $property=>$diff) {
             if (!isset($diff['ADD'])) {
                 // Es ist nur ein einfaches Objektfeld
-                DB::table('objectobjectassigns')->updateOrInsert([
-                    'container_id'=>$id,
-                    'field'=>$property,
-                    'index'=>0],[
-                        'element_id'=>$diff['TO']                        
-                    ]);
+                if (is_null($diff['TO'])) {
+                    DB::table('objectobjectassigns')
+                    ->where('container_id',$id)
+                    ->where('field',$property)
+                    ->where('index',0)->delete();
+                } else {
+                    DB::table('objectobjectassigns')->updateOrInsert([
+                        'container_id'=>$id,
+                        'field'=>$property,
+                        'index'=>0],[
+                            'element_id'=>$diff['TO']                        
+                        ]);
+                }
             } else {            
                 if (!empty($diff['ADD'])) {
                     foreach ($diff['ADD'] as $index=>$value) {
