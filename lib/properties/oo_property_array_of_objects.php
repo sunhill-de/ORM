@@ -92,7 +92,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	public function get_diff_array(int $type=PD_VALUE) {
 	    $diff = parent::get_diff_array($type);
 	    if ($type == PD_ID) {
-	        $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[]];
+	        $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[],'NEW'=>[],'REMOVED'=>[]];
 	        foreach ($diff as $name=>$item) {
 	            if (empty($item)) {
 	                continue;

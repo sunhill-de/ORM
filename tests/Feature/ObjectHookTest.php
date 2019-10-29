@@ -37,6 +37,14 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     }
     
     protected function field_changing($params) {
+        if ($params['subaction'] == 'ofield') {
+            if (is_int($params['FROM'])) {
+                $params['FROM'] = \Sunhill\Objects\oo_object::load_object_of($params['FROM']);
+            }
+            if (is_int($params['TO'])) {
+                $params['TO'] = \Sunhill\Objects\oo_object::load_object_of($params['TO']);
+            }
+        }
         if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
@@ -83,10 +91,16 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     protected function oarray_changing($diff) {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         $this->hookstate = $hilf.')';        
@@ -95,10 +109,16 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     protected function oarray_changed($diff) {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         self::$hook_str = $hilf.')';
@@ -159,7 +179,13 @@ class HookingChild extends HookingObject {
 
 class ObjectHookTest extends ObjectCommon
 {
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+    }
+    
     protected function setupHookTables() {
+        $this->prepare_tables();
         DB::statement("drop table if exists hookings ");
         DB::statement("drop table if exists childhookings ");
         DB::statement("create table hookings (id int primary key,hooking_int int,hookstate varchar(100))");       

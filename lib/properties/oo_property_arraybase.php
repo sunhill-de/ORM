@@ -81,17 +81,19 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	
 	public function get_array_diff() {
 	    $this->check_array();
-	    $result = ['ADD'=>array(),'DELETE'=>array()];
+	    $result = ['ADD'=>array(),'DELETE'=>array(),'NEW'=>array(),'REMOVED'=>array()];
 	    if (isset($this->shadow)) {
     	    foreach ($this->shadow as $index=>$oldentry) {
     	        if ($this->array_search($oldentry,$this->value)===false) {
     	            $result['DELETE'][$index] = $oldentry;
+    	            $result['REMOVED'][$index] = $oldentry; /** Für die Abwärtskompatibilität */
     	        }
     	    }
 	    }
 	    foreach ($this->value as $index=>$newentry) {
 	        if ($this->array_search($newentry,$this->shadow)===false) {
 	            $result['ADD'][$index] = $newentry;
+	            $result['NEW'][$index] = $newentry; /** Für die Abwärtskompatibilität */
 	        }
 	    }
 	    return $result;
