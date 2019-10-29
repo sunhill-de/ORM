@@ -1,13 +1,27 @@
 <?php
-
+/**
+ * @file hookable.php
+ * Definiert die Klasse hookable
+ */
 namespace Sunhill;
 
+/**
+ * Basisklasse für Klassen, die Hooks benutzen
+ * Folgende Hooks werden vordefiniert:
+ * @defgroup Hooks
+ * - CONSTRUCTED Wird immer aufgerufen, wenn ein neues Objekt erzeugt wurde 
+ * @author lokal
+ */
 class hookable extends loggable {
 
 	
 	protected $hooks = array();
 	protected $external_hooks = array();
 	
+	/**
+	 * Der Konstruktor muss von abgeleiteten Klassen aufgerufen werden. Er initialiesiert über einen Aufruf
+	 * von setup_hooks() die Hooks und ruft (sofern vorhanden) die Hooks für CONSTRUCTED auf
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->setup_hooks();
@@ -81,7 +95,7 @@ class hookable extends loggable {
 	 * @param string $subaction
 	 * @param array $params
 	 */
-	protected function check_for_hook(string $action,$subaction='default',array $params=null) {
+	public function check_for_hook(string $action,$subaction='default',array $params=null) {
 	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
 	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
                 $destination = $descriptor['destination'];
