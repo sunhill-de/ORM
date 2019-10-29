@@ -25,7 +25,7 @@ class UnknownPropertyException extends ObjectException {}
  * Möglichkeit in den abgeleiteten Klassen nicht statt finden müssen. Weiterhin sollten direkte Datenbank
  * Zugriffe vermieden werden, sondern statt dessen über ein Storage erfolgen.  
  * @author lokal
- *
+ * Als Nachkomme von hookable 
  */
 class oo_object extends \Sunhill\propertieshaving {
 

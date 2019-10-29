@@ -1,11 +1,41 @@
 <?php
-
+/**
+ * @file propertieshaving.php
+ * Definiert die Klassen PropertiesHavingException und propertieshaving
+ */
 namespace Sunhill;
 
 use Sunhill\Properties\PropertyException;
 
-class PropertiesHavingException extends \Exception {}
+/**
+ * Abgeleitete Exception die im Zusammenhang mit Properties stehen
+ * @author lokal
+ */
+class PropertiesHavingException extends SunhillException {}
 
+/**
+ * Basisklasse für Klassen, die Properties besitzen
+ * Die Klasse erbt von hookable folgende Hooks:
+ * * - CONSTRUCTED
+ * 
+ * Die Klasse definiert folgende Hooks:
+ * - COMMITTING Wird vor dem Commit aufgerufen
+ * - COMMITTED Wird nach dem Commit aufgerufen 
+ * - LOADING Wird vor dem Laden aufgerufen
+ * - LOADED Wird nach dem Laden aufgerufen
+ * - INSERTING Wird vor dem Einfügen aufgerufen
+ * - INSERTED Wird nach dem Einfügen aufgerufen
+ * - UPDATING Wird vor dem Update aufgerufen
+ * - UPDATED Wird nach dem Update aufgerufen
+ * - DELETING Wird vor dem Löschen aufgerufen
+ * - DELETED Wird nach dem Löschen aufgerufen
+ * 
+ * Über die Properties werden folgende Hooks definiert:
+ * - PROPERTY_CHANGING
+ * - PROPERTY_CHANGED
+ *  
+ * @author lokal
+ */
 class propertieshaving extends hookable {
 	
     protected $id;
@@ -175,9 +205,9 @@ class propertieshaving extends hookable {
 	
 // ====================================== Updating ========================================	
 	protected function update() {
-	    $this->check_for_hook('PREUPDATE');
+	    $this->check_for_hook('UPDATING');
 	    $this->do_update();
-	    $this->check_for_hook('POSTUPDATE');
+	    $this->check_for_hook('UPDATED');
 	}
 
 	protected function do_update() {
@@ -193,9 +223,9 @@ class propertieshaving extends hookable {
 
 // ======================================= Inserting ===========================================
 	protected function insert() {
-	    $this->check_for_hook('PREINSERT');
+	    $this->check_for_hook('INSERTING');
 	    $this->do_insert();
-	    $this->check_for_hook('POSTINSERT');
+	    $this->check_for_hook('INSERTED');
 	}
 
 	/**
@@ -208,9 +238,9 @@ class propertieshaving extends hookable {
 	
 	// ====================================== Deleting ==========================================
 	public function delete() {
-	    $this->check_for_hook('PREDELETE');
+	    $this->check_for_hook('DELETING');
 	    $this->do_delete();
-	    $this->check_for_hook('POSTDELETE');
+	    $this->check_for_hook('DELETED');
 	    $this->clear_cache_entry();
 	}
 	
