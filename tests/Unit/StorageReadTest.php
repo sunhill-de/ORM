@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 class StorageReadTest extends StorageBase
 {
 
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->fill_externalhooks();
+    }
     /**
      * 
      * @param unknown $id

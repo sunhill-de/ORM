@@ -20,6 +20,19 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
     }
     
     public function insert(int $id) {
+        $lines = [];
+        foreach ($this->storage->entities['externalhooks'] as $hook) {
+            $line = [
+                'container_id'=>$id,
+                'target_id'=>$hook['target'],
+                'action'=>$hook['action'],
+                'subaction'=>$hook['subaction'],
+                'hook'=>$hook['hook'],
+                'payload'=>$hook['payload']
+            ];
+            $lines[] = $line;
+        }
+        DB::table('externalhooks')->insert($lines);
         return $id;
     }
     
@@ -28,6 +41,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
     }
     
     public function delete(int $id) {
-       return $id;
+        DB::table('externalhooks')->where('container_id',$id)->orWhere('target_id',$id)->delete();
+        return $id;
     }
 }

@@ -137,4 +137,21 @@ class StorageInsertTest extends StorageBase {
             ];
     }
     
+    /**
+     * @group externalhooks
+     */
+    public function testInsertHooks() {
+        $this->prepare_write();
+        $object = new \Sunhill\Test\ts_dummy();
+        $storage = new \Sunhill\Storage\storage_mysql($object);
+        $storage->dummyint = 123;
+        $storage->set_entity('externalhooks', 
+         [['target'=>2,'action'=>'PROPERTY_UPDATED','subaction'=>'dummyint','hook'=>'dummychanged','payload'=>'']]);
+        $id = $storage->insert_object();
+        
+        $readobject = new \Sunhill\Test\ts_dummy();
+        $loader = new \Sunhill\Storage\storage_mysql($readobject);
+        $loader->load_object($id);
+        $this->assertEquals('dummyint',$this->get_field($loader,'externalhooks[0][subaction]'));
+    }
 }

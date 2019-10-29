@@ -55,6 +55,14 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     }
     
     protected function field_changed($params) {
+        if ($params['subaction'] == 'ofield') {
+            if (is_int($params['FROM'])) {
+                $params['FROM'] = \Sunhill\Objects\oo_object::load_object_of($params['FROM']);
+            }
+            if (is_int($params['TO'])) {
+                $params['TO'] = \Sunhill\Objects\oo_object::load_object_of($params['TO']);
+            }
+        }
         if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
@@ -166,10 +174,16 @@ class HookingChild extends HookingObject {
     protected function childoarray_changed($diff) {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         self::$child_hookstr = $hilf.')';
@@ -514,6 +528,9 @@ class ObjectHookTest extends ObjectCommon
         $this->assertEquals('(Cofield:123->234)',$test->get_hook_str());
     }
     
+    /**
+     * @group externalhooks
+     */
     public function testChildChangeObjectIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
         \Sunhill\Objects\oo_object::flush_cache();
@@ -526,6 +543,9 @@ class ObjectHookTest extends ObjectCommon
         
     }
     
+    /**
+     * @group externalhooks
+     */
     public function testChildChangeObjectBothIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
         \Sunhill\Objects\oo_object::flush_cache();
@@ -563,6 +583,9 @@ class ObjectHookTest extends ObjectCommon
         
     }
     
+    /**
+     * @group externalhooks
+     */
     public function testChildChangeArrayIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
         \Sunhill\Objects\oo_object::flush_cache();
@@ -574,6 +597,9 @@ class ObjectHookTest extends ObjectCommon
         $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());        
     }
     
+    /**
+     * @group externalhooks
+     */
     public function testChildChangeArrayBothIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
         \Sunhill\Objects\oo_object::flush_cache();

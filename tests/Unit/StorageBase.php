@@ -38,7 +38,6 @@ class StorageBase extends sunhill_testcase_db
         $this->create_special_table('testparents');
         $this->create_special_table('testchildren');
         $this->create_special_table('referenceonlies');
-        $this->fill_externalhooks();
     }
     
     protected function prepare_read() {
