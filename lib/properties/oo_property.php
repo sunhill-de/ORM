@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
  */
 define ('PD_VALUE',1); // In das Diff Array werden die Werte direkt von $value und $shadow kopiert
 define ('PD_ID',2);    // Bei Objektreferenzen werden statt dessen nur die IDs kopiert
+define ('PD_KEEP',3);  // Ist das Objekt bereits geladen, gib dies zurück, ansonsten die ID
 
 /**
  * Basisklasse für Exceptions, die etwas mit Properties zu tun haben
@@ -501,7 +502,7 @@ class oo_property extends \Sunhill\base {
 // ================================= Update ====================================	
 	public function update(\Sunhill\Storage\storage_base $storage) {
 	    if ($this->dirty || $this->owner->get_needs_recommit()) {
-            $diff = $this->get_diff_array(PD_ID);
+            $diff = $this->get_diff_array(PD_KEEP);
 	        $this->get_owner()->check_for_hook('UPDATING_PROPERTY',$this->get_name(),$diff);
     	    $this->do_update($storage,$this->get_name());
     	    $this->get_owner()->check_for_hook('UPDATED_PROPERTY',$this->get_name(),$diff);
