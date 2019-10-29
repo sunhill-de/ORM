@@ -263,6 +263,7 @@ class oo_property extends \Sunhill\base {
             }		
 		}
         $oldvalue = $this->value;
+        $this->value_changing($oldvalue,$value);
 		if (!$this->dirty) {
 		    $this->shadow = $this->value;
 		    $this->dirty = true;
@@ -287,8 +288,22 @@ class oo_property extends \Sunhill\base {
 	    $this->value[$index] = $value;
 	}
 	
+	/**
+	 * Prüft auf Hooks, die vor dem Ändern eines Wertes aufgerufen werden sollen
+	 * @param unknown $from Alter Wert der Property
+	 * @param unknown $to Neuer Wert der Property
+	 */
+	protected function value_changing($from,$to) {
+	    $this->owner->check_for_hook('PROPERTY_CHANGING',$this->get_name(),array('FROM'=>$from,'TO'=>$to));	    
+	}
+	
+	/**
+	 * Prüft auf Hooks, die nach dem Ändern eines Wertes aufgerufen werden sollen
+	 * @param unknown $from Alter Wert der Property
+	 * @param unknown $to Neuer Wert der Property
+	 */
 	protected function value_changed($from,$to) {
-	    
+	    $this->owner->check_for_hook('PROPERTY_CHANGED',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
 	final public function &get_value($index=null) {
@@ -486,8 +501,11 @@ class oo_property extends \Sunhill\base {
 // ================================= Update ====================================	
 	public function update(\Sunhill\Storage\storage_base $storage) {
 	    if ($this->dirty || $this->owner->get_needs_recommit()) {
+            $diff = $this->get_diff_array(PD_ID);
+	        $this->get_owner()->check_for_hook('UPDATING_PROPERTY',$this->get_name(),$diff);
     	    $this->do_update($storage,$this->get_name());
-            $this->dirty = false;
+    	    $this->get_owner()->check_for_hook('UPDATED_PROPERTY',$this->get_name(),$diff);
+    	    $this->dirty = false;
 	    }
 	}
 	
