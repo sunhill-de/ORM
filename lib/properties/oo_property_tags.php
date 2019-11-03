@@ -115,6 +115,7 @@ class oo_property_tags extends oo_property_arraybase {
 	            return \Sunhill\Objects\oo_tag::search_tag($tag);
 	        }
 	    }
+	    throw new \Sunhill\Objects\TagException("Unbekannter Typ für ein Tag.");
 	}
 
 	
@@ -145,31 +146,28 @@ class oo_property_tags extends oo_property_arraybase {
 	    }
 	}
 	
-	/**
-	 * Erzeugt ein Diff-Array.
-	 * d.h. es wird ein Array mit (mindestens) zwei Elementen zurückgebene:
-	 * FROM ist der alte Wert
-	 * TO ist der neue Wert
-	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\Properties\oo_property[]
-	 */
-	public function get_diff_array(int $type=PD_VALUE) {
-	    $diff = parent::get_diff_array($type);
-	    if ($type == PD_ID) {
-	       $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[]];
-	       foreach ($diff as $name=>$item) {
-	           if (empty($item)) {
-	               continue; 
-	           }
-	           foreach ($item as $entry) {
-	               $result[$name][] = $this->get_tag($entry)->get_id();
-	           }
-	       }
-	       return $result;
-	    } else {
-	        return $diff;
+    /**
+     * Überschriebene Methode, die bei Tags den Typ respektiert und zurück gibt
+     * {@inheritDoc}
+     * @see \Sunhill\Properties\oo_property::get_diff_entry()
+     */
+	protected function get_diff_entry($tag,$type) {
+	    switch ($type) {
+	        case PD_ID: // Es wird immer die ID des Tags zurückgegeben
+	            if (is_int($tag)) {
+	                return $tag;
+	            }
+	            return $this->get_tag($tag)->get_id();
+	            break;
+	        case PD_KEEP: // Es wird das zurückgegeben, was gerade geladen ist
+	            return $tag;
+	            break;
+	        case PD_VALUE: // Es wird immer das Tag-Objekt zurückgegeben
+	            return $this->get_tag($tag);
+	            break;
 	    }
 	}
+	
 	
 	public function get_table_name($relation,$where) {
 	    return "";

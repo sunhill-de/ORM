@@ -281,12 +281,33 @@ class oo_property extends \Sunhill\base {
 		return $this;
 	}
 
+	/**
+	 * Schreibt den neuen Wert nach $value
+	 * @param unknown $value
+	 */
 	protected function do_set_value($value) {
 	    $this->value = $value;
 	}
 	
-	protected function do_set_indexed_value($index,$value) {
+	/**
+	 * Schreibt den neuen indizierten Wert nach $value
+	 * @param int $index Index, der neu gesetzt werden soll
+	 * @param unknown $value Wert, den dieses Element bekommen soll
+	 */
+	protected function do_set_indexed_value(int $index,$value) {
 	    $this->value[$index] = $value;
+	}
+
+	/**
+	 * Prüft, ob ein Owner gesetzt ist. Wenn ja wird dessen Methode check_for_hook aufgerufen
+	 * @param unknown $action
+	 * @param unknown $subaction
+	 * @param unknown $info
+	 */
+	protected function check_owner_hook($action,$subaction,$info) {
+	    if (!empty($this->owner)) {
+	        $this->owner->check_for_hook($action,$subaction,$info);
+	    }
 	}
 	
 	/**
@@ -295,7 +316,7 @@ class oo_property extends \Sunhill\base {
 	 * @param unknown $to Neuer Wert der Property
 	 */
 	protected function value_changing($from,$to) {
-	    $this->owner->check_for_hook('PROPERTY_CHANGING',$this->get_name(),array('FROM'=>$from,'TO'=>$to));	    
+	    $this->check_owner_hook('PROPERTY_CHANGING',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
 	/**
@@ -304,7 +325,7 @@ class oo_property extends \Sunhill\base {
 	 * @param unknown $to Neuer Wert der Property
 	 */
 	protected function value_changed($from,$to) {
-	    $this->owner->check_for_hook('PROPERTY_CHANGED',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
+	    $this->check_owner_hook('PROPERTY_CHANGED',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
 	final public function &get_value($index=null) {
@@ -359,10 +380,20 @@ class oo_property extends \Sunhill\base {
 	 * @return void[]|\Sunhill\Properties\oo_property[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
-	    return array('FROM'=>$this->shadow,
-	                 'TO'=>$this->value);
+	    return array('FROM'=>$this->get_diff_entry($this->shadow,$type),
+	                 'TO'=>$this->get_diff_entry($this->value,$type));
 	}
 	
+	/**
+	 * Da der Typ bei den meisten Properties ignoriert wird, kann eine abgeleitete Property diese
+	 * Methode überschreiben, um den Praemeter $type zu respektieren.
+	 * @param unknown $entry
+	 * @param int $type
+	 * @return unknown
+	 */
+	protected function get_diff_entry($entry,int $type) {
+	    return $entry;
+	}
 //========================== Dirtyness ===============================================	
 	public function get_dirty() {
 		return $this->dirty;	

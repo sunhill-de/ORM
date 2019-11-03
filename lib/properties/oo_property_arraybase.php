@@ -78,31 +78,33 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    }
 	    return false;
 	}
-	
-	public function get_array_diff() {
+		
+	/**
+	 * Überschreibt die geerbte Methode und ergänzt das Resultat noch um die Einträge ADD,DELETE, NEW und REMOVED
+	 * @return array[]
+	 */
+	public function get_diff_array(int $type=PD_VALUE) {
 	    $this->check_array();
-	    $result = ['ADD'=>array(),'DELETE'=>array(),'NEW'=>array(),'REMOVED'=>array()];
+	    $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[],'NEW'=>[],'REMOVED'=>[]];
 	    if (isset($this->shadow)) {
-    	    foreach ($this->shadow as $index=>$oldentry) {
-    	        if ($this->array_search($oldentry,$this->value)===false) {
-    	            $result['DELETE'][$index] = $oldentry;
-    	            $result['REMOVED'][$index] = $oldentry; /** Für die Abwärtskompatibilität */
+	        foreach ($this->shadow as $index=>$oldentry) {
+	            $result['FROM'][$index] = $this->get_diff_entry($oldentry, $type);
+	            if ($this->array_search($oldentry,$this->value)===false) {
+	                $result['DELETE'][$index] = $this->get_diff_entry($oldentry,$type);
+	                $result['REMOVED'][] = $this->get_diff_entry($oldentry,$type);
+	            }
+	        }
+	    }
+	    if (isset($this->value)) {
+    	    foreach ($this->value as $index=>$newentry) {
+    	        $result['TO'][$index] = $this->get_diff_entry($newentry,$type);
+    	        if ($this->array_search($newentry,$this->shadow)===false) {
+    	            $result['ADD'][$index] = $this->get_diff_entry($newentry,$type);
+    	            $result['NEW'][] = $this->get_diff_entry($newentry,$type);
     	        }
     	    }
 	    }
-	    foreach ($this->value as $index=>$newentry) {
-	        if ($this->array_search($newentry,$this->shadow)===false) {
-	            $result['ADD'][$index] = $newentry;
-	            $result['NEW'][$index] = $newentry; /** Für die Abwärtskompatibilität */
-	        }
-	    }
-	    return $result;
-	}
-	
-	public function get_diff_array(int $type=PD_VALUE) {
-	    $result = parent::get_diff_array($type);
-	    $diff = $this->get_array_diff();
-	    return array_merge($result,$diff);
+    	return $result;
 	}
 	
 	protected function is_allowed_relation(string $relation,$value) {

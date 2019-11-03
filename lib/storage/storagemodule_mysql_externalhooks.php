@@ -21,6 +21,9 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
     
     public function insert(int $id) {
         $lines = [];
+        if (empty($this->storage->entities['externalhooks'])) {
+            return $id;
+        }
         foreach ($this->storage->entities['externalhooks'] as $hook) {
             $line = [
                 'container_id'=>$id,

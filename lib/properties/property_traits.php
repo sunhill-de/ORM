@@ -51,7 +51,6 @@ trait LazyIDLoading {
         } else {
             return $test->get_id();
         }
-    }
-    
+    }   
     
 }
