@@ -225,7 +225,13 @@ class sunhill_testcase_db extends TestCase {
                 [2,2,5,121,'','2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [3,2,6,232,'','2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [4,3,6,666,'','2019-05-15 10:00:00','2019-05-15 10:00:00']
-            ]);        
+            ]);  
+        $this->insert_into('externalhooks',['id','container_id','target_id','action','subaction','hook','payload'],
+            [
+                [1,1,2,'PROPERTY_UPDATED','dummyint','dummyint_updated',null],
+                [2,2,1,'PROPERTY_UPDATED','dummyint','dummyint_updated',null],
+                [3,1,5,'PROPERTY_UPDATED','dummyint','dummyint_updated',null]
+            ]);
     }
     
 }
