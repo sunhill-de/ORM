@@ -229,8 +229,8 @@ class sunhill_testcase_db extends TestCase {
         $this->insert_into('externalhooks',['id','container_id','target_id','action','subaction','hook','payload'],
             [
                 [1,1,2,'PROPERTY_UPDATED','dummyint','dummyint_updated',null],
-                [2,2,1,'PROPERTY_UPDATED','dummyint','dummyint_updated',null],
-                [3,1,5,'PROPERTY_UPDATED','dummyint','dummyint_updated',null]
+                [2,2,1,'PROPERTY_UPDATED','dummyint','dummyint2_updated',null],
+                [3,1,5,'PROPERTY_UPDATED','dummyint','dummyint3_updated',null]
             ]);
     }
     

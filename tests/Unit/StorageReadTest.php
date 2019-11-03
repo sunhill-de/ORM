@@ -14,7 +14,6 @@ class StorageReadTest extends StorageBase
 
     protected function prepare_tables() {
         parent::prepare_tables();
-        $this->fill_externalhooks();
     }
     /**
      * 
@@ -43,8 +42,8 @@ class StorageReadTest extends StorageBase
             [1,'Sunhill\\Test\\ts_dummy','created_at','2019-05-15 10:00:00'],   // Werden die Felder aus oo_object ausgelesen?
             [1,'Sunhill\\Test\\ts_dummy','tags[0]',1],                          // Werden Felder richtig indiziert
             [1,'Sunhill\\Test\\ts_dummy','attributes[int_attribute][value]',111],      // Werden Attribute richtig ausgelesen
-            [1,'Sunhill\\Test\\ts_dummy','externalhooks[0][hook]','testint_updated'],
-            [2,'Sunhill\\Test\\ts_dummy','externalhooks[0][hook]','testint2_updated'],
+            [1,'Sunhill\\Test\\ts_dummy','externalhooks[0][hook]','dummyint_updated'],
+            [2,'Sunhill\\Test\\ts_dummy','externalhooks[0][hook]','dummyint2_updated'],
             
             [5,'Sunhill\\Test\\ts_testparent','parentchar','ABC'],              // Werden Varcharfelder gelesen
             [5,'Sunhill\\Test\\ts_testparent','parentint',123],                 // Werden intfelder gelesen

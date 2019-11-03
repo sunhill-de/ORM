@@ -28,6 +28,7 @@ class oo_property_calculated extends oo_property_field {
 	        if (!$this->get_dirty()) {
 	            $this->shadow = $this->value;
 	            $this->set_dirty(true);
+	            $this->initialized = true;
 	        }
 	        $this->value = $newvalue;
 	    }
