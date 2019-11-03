@@ -9,13 +9,22 @@ use Sunhill\Test;
 
 class SkipClass extends \Sunhill\Test\ts_dummy {
     
+    public static $table_name = 'skipclasses';
 }
 
 class ObjectSkipclassTest extends ObjectCommon
 {
 
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+        $this->create_table('skipclasses', []);
+        $this->create_write_scenario();
+    }
+    
     public function testSkipclass() {
-	    $init_object = new SkipClass;
+        $this->prepare_tables();
+        $init_object = new SkipClass;
         $init_object->dummyint = 1243;
         $init_object->commit();
 
