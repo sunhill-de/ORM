@@ -36,6 +36,7 @@ class ObjectCalculatedTest extends ObjectCommon
 
     public function testReadCalculated() {
         $test = new TestClass;
+  //      $test->recalculate();
         $this->assertEquals('ABC',$test->calcfield);
     }
     
@@ -49,6 +50,7 @@ class ObjectCalculatedTest extends ObjectCommon
     
     public function testCacheCalculated() {
         $test = new TestClass;
+   //     $test->recalcualate();
         $test->commit();
         $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->get_id())->where('fieldname','=','calcfield')->first();
         $this->assertEquals('ABC',$hilf->value);

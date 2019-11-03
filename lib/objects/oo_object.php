@@ -296,15 +296,17 @@ class oo_object extends \Sunhill\propertieshaving {
 	                for ($i=0;$i<count($this->$name);$i++) {
 	                    $newobject->$name[] = $this->$name[$i];
 	                }
+	                $newobject->get_property($name)->commit();
 	                break;
 	            case 'calculated':
+	                $newobject->recalculate($name);
+	                continue;
 	                break;
 	            default:
 	                $newobject->$name = $this->$name;
+	                $newobject->get_property($name)->commit();
 	        }
-	        $newobject->get_property($name)->commit();
 	    }
-	    $newobject->keyfield = null;
 	}
 	
 	/**
@@ -555,7 +557,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    self::add_property('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
-	    self::calculated('keyfield')->searchable();
+	    self::calculated('keyfield')->searchable()->set_default(null);
 	}
 
 	protected static function timestamp($name) {

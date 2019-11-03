@@ -12,7 +12,7 @@ class oo_property_calculated extends oo_property_field {
 	
 	protected $read_only = true;
 	
-	protected $initialized = true;
+//	protected $initialized = true;
 	
 	protected function do_set_value($value) {
 	    throw new \Sunhill\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
