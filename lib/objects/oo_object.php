@@ -277,8 +277,10 @@ class oo_object extends \Sunhill\propertieshaving {
 	 */
 	private function promotion(String $newclass) {
 	    $newobject = new $newclass; // Neues Objekt erzeugen
+	    $newobject->set_id($this->get_id());
 	    $this->copy_to($newobject); // Die Werte bis zu dieser Hirarchie können kopiert werden
 	    DB::table('objects')->where('id','=',$this->get_id())->update(['classname'=>$newclass]);
+	    $newobject->recalculate();
 	    return $newobject;
 	}
 	
@@ -300,7 +302,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	            default:
 	                $newobject->$name = $this->$name;
 	        }
+	        $newobject->get_property($name)->commit();
 	    }
+	    $newobject->keyfield = null;
 	}
 	
 	/**

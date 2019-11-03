@@ -63,7 +63,7 @@ class storagemodule_mysql_simple extends storagemodule_base {
         foreach ($fields as $field=>$diff) {
             $change[$field] = $diff['TO'];
         }
-        DB::table($table)->where('id',$id)->update($change);
+        DB::table($table)->updateOrInsert(['id'=>$id],$change);
     }
     
     public function update(int $id) {
