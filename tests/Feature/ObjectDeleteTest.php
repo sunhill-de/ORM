@@ -58,9 +58,9 @@ class ObjectDeleteTest extends ObjectCommon
      * @param Integer $id
      */
     function testObjectReferencesDeleted(Int $id) {
-         $result = \App\objectobjectassign::where('container_id','=',$id)->first();
+       $result = DB::table('objectobjectassigns')->where('container_id','=',$id)->first();
        $this->assertTrue(empty($result));
-       $result = \App\objectobjectassign::where('element_id','=',$id)->first();
+       $result = DB::table('objectobjectassigns')->where('element_id','=',$id)->first();
        $this->assertTrue(empty($result));
     }
     
@@ -68,7 +68,7 @@ class ObjectDeleteTest extends ObjectCommon
      * @depends testCantLoad
      */
     function testStringReferencesDeleted(int $id) {
-        $result = \App\stringobjectassign::where('container_id','=',$id)->first();
+        $result = DB::table('stringobjectassigns')->where('container_id','=',$id)->first();
         $this->assertTrue(empty($result));        
     }
 }
