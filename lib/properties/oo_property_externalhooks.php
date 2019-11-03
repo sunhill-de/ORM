@@ -26,4 +26,16 @@ class oo_property_externalhooks extends oo_property_field {
 	    }
 	}
 	
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,$name) {	    
+	    foreach ($this->owner->get_external_hooks() as $hook) {
+	        $line = [
+	            'action'=>$hook['action'],
+	            'subaction'=>$hook['subaction'],
+	            'hook'=>$hook['hook'],
+	            'payload'=>$hook['payload'],
+	            'target_id'=>$hook['target_id']
+	        ];
+	        $storage->entities['externalhooks'][] = $line;
+	    }
+	}
 }

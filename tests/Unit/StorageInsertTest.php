@@ -133,8 +133,8 @@ class StorageInsertTest extends StorageBase {
             ['Sunhill\\Test\\ts_dummy',function($object) { 
                 $object->dummyint = 123; 
                 $object->attributes = ['int_attribute' =>['name'=>'int_attribute','type'=>'int','property'=>'','attribute_id'=>1,'value'=>999,'textvalue'=>'']];
-            },'attributes[int_attribute][value]',999], // Einfacher Test mit simple Fields
-            ];
+            },'attributes[int_attribute][value]',999], // Einfacher Test mit simple Fields            
+          ];
     }
     
     /**
@@ -146,7 +146,7 @@ class StorageInsertTest extends StorageBase {
         $storage = new \Sunhill\Storage\storage_mysql($object);
         $storage->dummyint = 123;
         $storage->set_entity('externalhooks', 
-         [['target'=>2,'action'=>'PROPERTY_UPDATED','subaction'=>'dummyint','hook'=>'dummychanged','payload'=>'']]);
+         [['target_id'=>2,'action'=>'PROPERTY_UPDATED','subaction'=>'dummyint','hook'=>'dummychanged','payload'=>'']]);
         $id = $storage->insert_object();
         
         $readobject = new \Sunhill\Test\ts_dummy();

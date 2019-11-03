@@ -136,6 +136,8 @@ class StorageUpdateTest extends StorageBase
                 $storage->parentsarray = ['FROM'=>[0=>'Parent0',1=>'Parent1'],'TO'=>[0=>'Parent0',1=>'Parent2'],
                                           'ADD'=>[1=>'Parent2'],'DELETE'=>[1=>'Parent1']];
             },'parentsarray',['Parent0','Parent2']],
+         
+// Externalhooks
             ];
     }
     

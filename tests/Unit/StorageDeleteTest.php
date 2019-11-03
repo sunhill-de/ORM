@@ -32,12 +32,13 @@ class StorageDeleteTest extends StorageBase
     
     public function DeleteProvider() {
         return [
-            [1,'Sunhill\\Test\\ts_dummy','dummies','id'],                       // Wird ein einfaches Feld gelesen?
-            [1,'Sunhill\\Test\\ts_dummy','objects','id'],                       // Wird ein einfaches Feld gelesen?
-            [2,'Sunhill\\Test\\ts_dummy','dummies','id'],                       // Wird ein einfaches Feld mit höherem Index gelesen?
-            [1,'Sunhill\\Test\\ts_dummy','tagobjectassigns','container_id'],                         // Werden die Tags vernünftig ausgelesen?
+            [1,'Sunhill\\Test\\ts_dummy','dummies','id'],                     // Wird ein einfaches Feld gelesen?
+            [1,'Sunhill\\Test\\ts_dummy','objects','id'],                     // Wird ein einfaches Feld gelesen?
+            [2,'Sunhill\\Test\\ts_dummy','dummies','id'],                     // Wird ein einfaches Feld mit höherem Index gelesen?
+            [1,'Sunhill\\Test\\ts_dummy','tagobjectassigns','container_id'],  // Werden die Tags vernünftig ausgelesen?
             [1,'Sunhill\\Test\\ts_dummy','attributevalues','object_id'],      // Werden Attribute richtig ausgelesen
-            [1,'Sunhill\\Test\\ts_dummy','externalhooks','container_id'],                       // Wird ein einfaches Feld gelesen?
+            [1,'Sunhill\\Test\\ts_dummy','externalhooks','container_id'],     // Werden Referenzen auf externe Hooks gelöscht (von $id)
+            [1,'Sunhill\\Test\\ts_dummy','externalhooks','target_id'],        // Werden Referenzen auf externe Hooks gelöscht (auf $id)
             
             [5,'Sunhill\\Test\\ts_testparent','testparents','id'],              // Werden Varcharfelder gelesen
             [5,'Sunhill\\Test\\ts_testparent','caching','object_id'],             // Werden calculierte Felder gelesen
