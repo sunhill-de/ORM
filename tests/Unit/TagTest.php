@@ -58,7 +58,7 @@ class TagTest extends \Tests\sunhill_testcase_db
 		$tag = new \Sunhill\Objects\oo_tag();
 		$tag->set_name('TestTag');
 		$tag->commit();
-		$read = \App\tag::where('name','=','TestTag')->first();
+		$read = DB::table('tags')->where('name','=','TestTag')->first();
 		$this->assertFalse(is_null($read));
 	}
 
