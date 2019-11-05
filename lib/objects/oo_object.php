@@ -156,7 +156,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * Da die Anzahl der externen Hooks vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
 	 */
 	protected function load_external_hooks(\Sunhill\Storage\storage_base $storage) {
-	    
 	}
 	
 // ========================= Einfügen =============================	
@@ -424,6 +423,11 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $property = $this->get_property($field);
 	    $property->add_hook($action,$hook,$restaction,$destination);
 	//    $this->add_hook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
+	}
+	
+	protected function set_external_hook($action,$subaction,$destination,$payload,$hook) {
+	    parent::set_external_hook($action,$subaction,$destination,$payload,$hook);
+        $this->get_property('externalhooks')->set_dirty(true);
 	}
 	
 	protected function complex_changed($params) {

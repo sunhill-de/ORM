@@ -48,7 +48,7 @@ class hookable extends loggable {
 	        return;
 	    }
 	    if ($destination !== $this) {
-	        $this->external_hooks[] = array('action'=>$action,'subaction'=>$subaction,'destination'=>$destination,'payload'=>$payload);
+            $this->set_external_hook($action,$subaction,$destination,$payload,$hook);
 	    }
 	    if (!isset($this->hooks[$action])) {
 	        $this->hooks[$action] = array();
@@ -62,6 +62,10 @@ class hookable extends loggable {
 	    } else {	    
 	       $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook,'payload'=>$payload);
 	    }
+	}
+	
+	protected function set_external_hook($action,$subaction,$destination,$payload,$hook) {
+	    $this->external_hooks[] = array('action'=>$action,'subaction'=>$subaction,'destination'=>$destination,'payload'=>$payload);	    
 	}
 	
 	private function hook_already_installed($action,$hook,$subaction,$destination,$payload) {

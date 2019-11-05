@@ -73,6 +73,10 @@ class oo_property_object extends oo_property_field {
 	public function inserting(\Sunhill\Storage\storage_base $storage) {
 	    $this->commit_child_if_loaded($this->value);
 	}
+
+	public function inserted(\Sunhill\Storage\storage_base $storage) {
+	    $this->commit_child_if_loaded($this->value);	    
+	}
 	
 	/**
 	 * Erzeugt ein Diff-Array.
@@ -96,6 +100,10 @@ class oo_property_object extends oo_property_field {
 	
 	public function updating(\Sunhill\Storage\storage_base $storage) {
         $this->inserting($storage);
+	}
+	
+	public function updated(\Sunhill\Storage\storage_base $storage) {
+	    $this->updating($storage);
 	}
 	
 	protected function value_changed($from,$to) {

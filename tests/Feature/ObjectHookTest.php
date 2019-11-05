@@ -511,6 +511,7 @@ class ObjectHookTest extends ObjectCommon
         $this->setupHookTables();
         $dummy = new \Sunhill\Test\ts_dummy();
         $dummy->dummyint = 123;
+        $dummy->commit();
         $test = new HookingObject();
         $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'ofield.dummyint');
         $test->ofield = $dummy;
