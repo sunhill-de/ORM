@@ -36,12 +36,6 @@ class oo_object extends \Sunhill\propertieshaving {
      */
     public static $table_name = 'objects';
     
-    /**
-     * Gibt an, ob dieses Objekt über ein Keyfield verfügt. 
-     * @todo Das ganze Konzept der Keyfields sollte nochmals überdacht werden
-     * @var boolean
-     */
-    protected static $has_keyfield = false;
 
         /**
      * Hier werden die Queries gespeichert, die erst ausgeführt werden können, wenn das Objekt eine ID besitzt
@@ -80,32 +74,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $storage->execute_need_id_queries();
 	}
 	
-	// ========================================= Keyfeld Methoden ========================================	
-	final public function calculate_keyfield() {
-	    if (static::$has_keyfield) {
-	        return $this->unify($this->get_keyfield());
-	    } else {
-	        return null;
-	    }
-	}
-	
-	private function unify(string $keyfield) {
-	    $id = oo_object::search()->where('keyfield','=',$keyfield)->first();
-        $seed = 1;
-	    while ($id) {
-	        if ($id == $this->get_id()) {
-	            return $keyfield;
-	        }
-	        $keyfield .= $seed++;
-	        $id = oo_object::search()->where('keyfield','=',$keyfield)->first();
-	    }
-	    return $keyfield;
-	}
-	
-	protected function get_keyfield() {
-	   return;   
-	}
-
 // ============================ Storagefunktionen =======================================	
 	/**
 	 * Liefert das aktuelle Storage zurück oder erzeugt eines, wenn es ein solches noch nicht gibt.
@@ -565,7 +533,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	    self::add_property('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
-	    self::calculated('keyfield')->searchable()->set_default(null);
 	}
 
 	protected static function timestamp($name) {
