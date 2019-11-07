@@ -16,9 +16,12 @@ class storage_mysql extends storage_base  {
                           'mysql_tags','mysql_externalhooks','mysql_attributes'];
     
 
-    protected function execute_need_id_queries()
+    public function execute_need_id_queries()
     {
-        foreach ($this->needid_queries as $query) {
+        if (empty($this->entities['needid_queries'])) {
+            return;
+        }
+        foreach ($this->entities['needid_queries'] as $query) {
             $query['fixed'][$query['id_field']] = $this->get_id();
             DB::table($query['table'])->insert($query['fixed']);
         }

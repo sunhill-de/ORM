@@ -43,6 +43,12 @@ class oo_object extends \Sunhill\propertieshaving {
      */
     protected static $has_keyfield = false;
 
+        /**
+     * Hier werden die Queries gespeichert, die erst ausgeführt werden können, wenn das Objekt eine ID besitzt
+     * @var array
+     */
+    protected $needid_queries = [];
+    
     /**
      * Konstruktor für Objekte. Initialisiert interne properties und ruft ansonsten den geerbten Kontruktor auf
      */
@@ -52,7 +58,29 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $this->properties['externalhooks'] = self::create_property('externalhooks','externalhooks')->set_owner($this);
 	}
 	
-// ========================================= Keyfeld Methoden ========================================	
+	// ========================================== NeedID-Queries ========================================
+	
+	
+	/**
+	 * Fügt dem Objekt einen neuen Eintrag hinzu, der die ID des Objektes benötigt
+	 * @param string $table
+	 * @param array $fixed
+	 * @param string $id_field
+	 */
+	public function add_need_id_query(string $table,array $fixed,string $id_field) {
+	    $this->needid_queries[] = ['table'=>$table,'fixed'=>$fixed,'id_field'=>$id_field];
+	}
+	
+	/**
+	 * Die Einträge werden der Reihe nach abgearbeitet
+	 * @param \Sunhill\Storage\storage_base $storage
+	 */
+	protected function execute_need_id_queries(\Sunhill\Storage\storage_base $storage) {
+	    $storage->entities['needid_queries'] = $this->needid_queries;
+	    $storage->execute_need_id_queries();
+	}
+	
+	// ========================================= Keyfeld Methoden ========================================	
 	final public function calculate_keyfield() {
 	    if (static::$has_keyfield) {
 	        return $this->unify($this->get_keyfield());
@@ -169,6 +197,7 @@ class oo_object extends \Sunhill\propertieshaving {
     	   $this->walk_properties('inserting', $storage);
            $this->walk_properties('insert',$storage);
            $this->set_id($storage->insert_object());
+           $this->execute_need_id_queries($storage);
            $this->walk_properties('inserted',$storage);
            $this->insert_cache($this->get_id());
 	}

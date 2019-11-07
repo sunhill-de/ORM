@@ -37,12 +37,6 @@ abstract class storage_base  {
     public $entities = [];
     
     /**
-     * Hier werden die Queries gespeichert, die erst ausgeführt werden können, wenn das Objekt eine ID besitzt
-     * @var array
-     */
-    protected $needid_queries = [];
-    
-    /**
      * Konstruktor, übernimmt das aufrufende Objekt als Parameter.
      * @param unknown $caller
      */
@@ -50,25 +44,7 @@ abstract class storage_base  {
         $this->caller = $caller;    
     }
     
-    // ========================================== NeedID-Queries ========================================
-    
-    
-    /**
-     * Fügt dem Objekt einen neuen Eintrag hinzu, der die ID des Objektes benötigt
-     * @param string $table
-     * @param array $fixed
-     * @param string $id_field
-     */
-    public function add_need_id_query(string $table,array $fixed,string $id_field) {
-        $this->needid_queries[] = ['table'=>$table,'fixed'=>$fixed,'id_field'=>$id_field];
-    }
-    
-    /**
-     * Die Einträge werden der Reihe nach abgearbeitet
-     * @todo Zu Testzwecken werden die Queries zunächst hier abgearbeitet, dies sollte später im Storage erfolgen
-     * @param \Sunhill\Storage\storage_base $storage
-     */
-    abstract protected function execute_need_id_queries(); 
+    abstract public function execute_need_id_queries();
     
     /**
      * @retval array Die Vererbunghirarchie der übergebenen Klasse
