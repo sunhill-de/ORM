@@ -255,14 +255,8 @@ class oo_property extends \Sunhill\base {
 		}
 		
 		// Prüfen, ob sich der Wert überhaupt ändert
-		if ($this->initialized) {
-            if (!is_null($index)) {
-        		 if (isset($this->value[$index]) && ($this->value[$index] === $value)) {
-        		     return $this;
-        		 } 
-            } else if ($value === $this->value) {
-    		      return $this;
-            }		
+		if ($this->initialized && ($value === $this->value)) {
+    		return $this;
 		}
         $oldvalue = $this->value;
         $this->value_changing($oldvalue,$value);
@@ -290,15 +284,6 @@ class oo_property extends \Sunhill\base {
 	    $this->value = $value;
 	}
 	
-	/**
-	 * Schreibt den neuen indizierten Wert nach $value
-	 * @param int $index Index, der neu gesetzt werden soll
-	 * @param unknown $value Wert, den dieses Element bekommen soll
-	 */
-	protected function do_set_indexed_value(int $index,$value) {
-	    $this->value[$index] = $value;
-	}
-
 	/**
 	 * Prüft, ob ein Owner gesetzt ist. Wenn ja wird dessen Methode check_for_hook aufgerufen
 	 * @param unknown $action
@@ -329,7 +314,7 @@ class oo_property extends \Sunhill\base {
 	    $this->check_owner_hook('PROPERTY_CHANGED',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
-	final public function &get_value($index=null) {
+	final public function &get_value() {
 		if (!$this->initialized) {
 			if (isset($this->default) || $this->defaults_null) {
 				$this->value = $this->default;
@@ -341,14 +326,10 @@ class oo_property extends \Sunhill\base {
 			    }
 			}
 		}
-		if (is_null($index)) {
-		    if ($this->is_array()) {
+		if ($this->is_array()) {
 		        return $this;
-		    } else {
-		        return $this->do_get_value();
-		    }
 		} else {
-		        return $this->do_get_indexed_value($index);
+		        return $this->do_get_value();
 		}
 	}
 
@@ -494,15 +475,6 @@ class oo_property extends \Sunhill\base {
 	public function insert(\Sunhill\Storage\storage_base $storage) {
 	    $this->do_insert($storage,$this->get_name());
 	    $this->dirty = false;	    
-	}
-	
-	/**
-	 * Wird im Falle eines ReInserts (zweiter Lauf bei zirkulären Referenzen)
-	 * aufgerufen
-	 * @param \Sunhill\Storage\storage_base $storage
-	 */
-	public function reinsert(\Sunhill\Storage\storage_base $storage) {
-	    // Macht standardmäßig nix
 	}
 	
 	/**

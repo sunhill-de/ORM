@@ -55,6 +55,12 @@ class oo_property_externalhooks extends oo_property_field {
 	    $this->shadow = $this->owner->get_external_hooks();
 	}
 	
+	/**
+	 * @todo bisher kein Coverage, da wir noch keine Hooks hinzugefügt oder gelöscht haben. Tests schreiben
+	 * @param array $hook
+	 * @param array $array
+	 * @return boolean
+	 */
 	private function hook_in_array(array $hook,array $array) {
 	    foreach ($array as $entry) {
 	        if (($entry['action'] == $hook['action']) &&

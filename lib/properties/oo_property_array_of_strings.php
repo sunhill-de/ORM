@@ -23,10 +23,6 @@ class oo_property_array_of_strings extends oo_property_arraybase {
 	    return "";
 	}
 	
-	public function get_table_join($relation,$where,$letter) {
-	    return "";
-	}
-	
 	protected function get_individual_where($relation,$value,$letter) {
 	    switch ($relation) {
 	        case 'has':

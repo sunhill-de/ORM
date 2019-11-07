@@ -121,13 +121,6 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    return "";
 	}
 	
-	public function get_table_join($relation,$where,$letter) {
-	    return "";
-	}
-	
-	public function get_special_join($letter) {
-	}
-	
 	protected function get_individual_where($relation,$value,$letter) {
 	    switch ($relation) {
 	        case 'has':

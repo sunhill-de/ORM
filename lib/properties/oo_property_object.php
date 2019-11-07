@@ -48,11 +48,6 @@ class oo_property_object extends oo_property_field {
         return $this->value;	    
 	}
 	
-	public function reinsert(\Sunhill\Storage\storage_base $storage) {
-	    $this->commit_child_if_loaded($this->value);
-	    $this->do_update($storage,$this->get_name());	   
-	}
-	
 	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
 	    if (is_int($this->value)) {
 	        $storage->set_entity($name,$this->value);
@@ -105,10 +100,6 @@ class oo_property_object extends oo_property_field {
 
 	public function get_table_name($relation,$where) {
         return '';
-	}
-	
-	public function get_table_join($relation,$where,$letter) {
-	    return "";
 	}
 	
 	protected function get_individual_where($relation,$value,$letter) {

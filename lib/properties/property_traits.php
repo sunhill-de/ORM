@@ -15,9 +15,7 @@ trait LazyIDLoading {
      * @param unknown $child
      */
     protected function commit_child($child) {
-        if ($child->commit($this)) {
-            $this->get_owner()->set_needs_recommit();
-        }        
+        $child->commit($this);
     }
     
     /**

@@ -173,14 +173,6 @@ class oo_property_tags extends oo_property_arraybase {
 	    return "";
 	}
 	
-	public function get_table_join($relation,$where,$letter) {
-	    return "";
-	}
-	
-	public function get_special_join($letter) {
-	    return " inner join tagobjectassigns as zz on zz.container_id = a.id inner join tagcache as $letter on zz.tag_id = $letter.tag_id";     
-	}
-	
 	protected function get_individual_where($relation,$value,$letter) {
 	    switch ($relation) {
 	        case 'has':

@@ -202,12 +202,6 @@ class oo_object extends \Sunhill\propertieshaving {
            $this->insert_cache($this->get_id());
 	}
 
-	protected function do_recommit() {
-	    $storage = $this->get_storage();
-	    $this->walk_properties('reinsert',$storage);
-	    $storage->update_object($this->get_id());	    
-	}
-	
 // ========================== Aktualisieren ===================================	
 	protected function do_update() {
 	    $storage = $this->get_storage();
@@ -457,25 +451,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	protected function set_external_hook($action,$subaction,$destination,$payload,$hook) {
 	    parent::set_external_hook($action,$subaction,$destination,$payload,$hook);
         $this->get_property('externalhooks')->set_dirty(true);
-	}
-	
-	protected function complex_changed($params) {
-	    $target = $params['subaction'];
-        if (isset($target)) {
-            $fieldname = $params['payload']['field'];
-            $hookname  = $params['payload']['hook'];
-            $this->$target->add_hook($params['payload']['action'],$hookname,$fieldname,$this);
-        }
-	}
-	
-	protected function target_equal($test1,$test2) {
-	    if ($test1 instanceof oo_object) {
-	        $test1 = $test1->get_id();
-	    }
-	    if ($test2 instanceof oo_object) {
-	        $test2 = $test2->get_id();
-	    }
-	    return ($test1 === $test2);
 	}
 	
 	public function array_field_new_entry($name,$index,$value) {
