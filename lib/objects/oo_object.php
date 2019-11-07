@@ -2,29 +2,85 @@
 
 namespace Sunhill\Objects;
 
-use App;
 use Illuminate\Support\Facades\DB;
 use Sunhill\base;
+use Sunhill\SunhillException;
 
-class ObjectException extends \Exception {}
+require_once(dirname(__FILE__).'/../base.php');
+
+/**
+ * Exception, die innerhalb eines Objektes ausgelöst werden
+ * @author lokal
+ */
+class ObjectException extends \Sunhill\SunhillException {}
+
+/**
+ * Diese Exception wird geworfen, wenn eine unbekannte Property angefordert wird
+ */
 class UnknownPropertyException extends ObjectException {}
 
+/**
+ * Die zentrale Klasse des sunhill-Frameworks. Alle Klassen in der sunhill-Objecthirarchie müssen direkt oder
+ * indirekt von oo_object abgeleitet werden. Interationen mit den anderen Klassen der Frameworks sollten nach
+ * Möglichkeit in den abgeleiteten Klassen nicht statt finden müssen. Weiterhin sollten direkte Datenbank
+ * Zugriffe vermieden werden, sondern statt dessen über ein Storage erfolgen.  
+ * @author lokal
+ * Als Nachkomme von hookable 
+ */
 class oo_object extends \Sunhill\propertieshaving {
 
+    /**
+     * Statische Variable, die den Namen der Datenbanktabelle definiert.
+     * @todo Aufgrund der Datenbankkapselung müsste diese irgendwie in die Storages ausgelagert werden
+     * @var string
+     */
     public static $table_name = 'objects';
     
+    /**
+     * Gibt an, ob dieses Objekt über ein Keyfield verfügt. 
+     * @todo Das ganze Konzept der Keyfields sollte nochmals überdacht werden
+     * @var boolean
+     */
     protected static $has_keyfield = false;
+
+        /**
+     * Hier werden die Queries gespeichert, die erst ausgeführt werden können, wenn das Objekt eine ID besitzt
+     * @var array
+     */
+    protected $needid_queries = [];
     
-	public $default_ns = '\\App';		
-	
+    /**
+     * Konstruktor für Objekte. Initialisiert interne properties und ruft ansonsten den geerbten Kontruktor auf
+     */
 	public function __construct() {
 	    parent::__construct();
 	    $this->properties['tags'] = self::create_property('tags','tags')->set_owner($this);
 	    $this->properties['externalhooks'] = self::create_property('externalhooks','externalhooks')->set_owner($this);
-	    $this->properties['attribute_loader'] = self::create_property('attribute_loader','attribute_loader')->set_owner($this);
-	    
 	}
 	
+	// ========================================== NeedID-Queries ========================================
+	
+	
+	/**
+	 * Fügt dem Objekt einen neuen Eintrag hinzu, der die ID des Objektes benötigt
+	 * @param string $table
+	 * @param array $fixed
+	 * @param string $id_field
+	 */
+	public function add_needid_query(string $table,array $fixed,string $id_field) {
+	    $this->needid_queries[] = ['table'=>$table,'fixed'=>$fixed,'id_field'=>$id_field];
+	}
+	
+	/**
+	 * Die Einträge werden der Reihe nach abgearbeitet
+	 * @param \Sunhill\Storage\storage_base $storage
+	 */
+	protected function execute_need_id_queries(\Sunhill\Storage\storage_base $storage) {
+	    $storage->entities['needid_queries'] = $this->needid_queries;
+	    $storage->execute_need_id_queries();
+	}
+	
+	// ========================================= Keyfeld Methoden ========================================	
 	final public function calculate_keyfield() {
 	    if (static::$has_keyfield) {
 	        return $this->unify($this->get_keyfield());
@@ -49,7 +105,24 @@ class oo_object extends \Sunhill\propertieshaving {
 	protected function get_keyfield() {
 	   return;   
 	}
+
+// ============================ Storagefunktionen =======================================	
+	/**
+	 * Liefert das aktuelle Storage zurück oder erzeugt eines, wenn es ein solches noch nicht gibt.
+	 * @return \Sunhill\Storage\storage_base
+	 */
+	final protected function get_storage() {
+	    return $this->create_storage();
+	}
 	
+	/**
+	 * Erzeugt ein Storage. Defaultmäßig ist es das mysql-Storage. Diese methode kann für Debug-Zwecke überschrieben werden
+	 * @return \Sunhill\Storage\storage_mysql
+	 */
+	protected function create_storage() {
+	    return new \Sunhill\Storage\storage_mysql($this);
+	}
+	    
 // ================================ Laden ========================================	
 	/**
 	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
@@ -70,89 +143,81 @@ class oo_object extends \Sunhill\propertieshaving {
 	    self::load_id_called($id,$this);	    
 	}
 	
+	/**
+	 * Läd das Objekt aus dem Storage.
+	 * {@inheritDoc}
+	 * @see \Sunhill\propertieshaving::do_load()
+	 */
 	protected function do_load() {
 	    if (!$this->is_loading()) {
 	        $this->state = 'loading';
-            $this->load_core_object();
-	        $this->load_simple_fields();
-            $this->load_other_properties();
-	        $this->state = 'normal';
+	        $loader = $this->get_storage();
+	        $this->walk_properties('loading',$loader);
+	        $loader->load_object($this->get_id());
+            $this->walk_properties('load',$loader);
+            $this->load_attributes($loader);
+            $this->load_external_hooks($loader);
+            $this->walk_properties('loaded', $loader);
+            $this->state = 'normal';
 	    }
 	}
 	
-	private function load_core_object() {
-        $core = DB::table('objects')->select('updated_at','created_at')->where('id','=',$this->get_id())->first();
-	    $this->updated_at = $core->updated_at;
-	    $this->created_at = $core->created_at;
-	}
-	
-	private function load_simple_fields() {
-	    $properties = $this->get_properties_with_feature('simple',null,'class');
-	    foreach ($properties as $class_name => $fields_of_class) {
-    	        if ($class_name == '\\Sunhill\Objects\oo_object') {
-    	            continue; // Wurde schon geladen
-    	        } 	           
-    	        $fields = DB::table($class_name::$table_name)->where('id','=',$this->get_id())->first();
-    	        foreach ($fields_of_class as $field_name => $field) {
-    	            $this->$field_name = $fields->$field_name;
-    	        }
+	/**
+	 * Da die Anzahl der Attribute vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
+	 */
+	protected function load_attributes(\Sunhill\Storage\storage_base $storage) {
+	    if (empty($storage->get_entity('attributes'))) {
+	        return;
+	    }
+	    foreach ($storage->get_entity('attributes') as $name => $value) {
+	        if (!empty($value['property'])) {
+	            $property_name = $value['property'];
+	        } else {
+	            $property_name = 'attribute_'.$value['type'];
+	        }
+	        $property = $this->dynamic_add_property($name, $property_name);
+	        $property->load($storage);	        
 	    }
 	}
 	
-	private function load_other_properties() {
-	   $properties = $this->get_properties_with_feature('');
-	   foreach ($properties as $name => $property) {
-	      $property->load($this->get_id()); 
-	   }
+	/**
+	 * Da die Anzahl der externen Hooks vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
+	 */
+	protected function load_external_hooks(\Sunhill\Storage\storage_base $storage) {
 	}
 	
 // ========================= Einfügen =============================	
+	/**
+	 * Fügt ein Objekt in das Storage ein. 
+	 * Zunächst wird für jede Property inserting aufgerufen, anschließend insert und nach
+	 * abschluss aller Arbeiten noch inserted.
+	 */
 	protected function do_insert() {
-        $this->insert_core_object();
-	    $simple_fields = $this->get_properties_with_feature('simple',null,'class');
-        foreach ($simple_fields as $class_name => $fields_of_class) {
-            if ($class_name == '\\Sunhill\\Objects\\oo_object') {
-                continue; // Wurde schon gespeichert
-            } else {
-                $values = array();
-                foreach ($fields_of_class as $field_name => $field) {
-                    $values[$field_name] = $field->get_value();
-                }
-                $values['id'] = $this->get_id();
-                DB::table($class_name::$table_name)->insert($values);
-            }
-        }
-	}
-	
-	private function insert_core_object() {
-	    $id = DB::table('objects')->insertGetId(['classname'=>get_class($this),
-	                                             'created_at'=>DB::raw('now()'),
-	                                             'updated_at'=>DB::raw('now()')
-	    ]);
-	    $core = DB::table('objects')->where('id','=',$id)->first();
-	    $this->created_at = $core->created_at;
-	    $this->updated_at = $core->updated_at;
-	    $this->set_id($id);
+	       $storage = $this->get_storage();
+    	   $this->walk_properties('inserting', $storage);
+           $this->walk_properties('insert',$storage);
+           $this->set_id($storage->insert_object());
+           $this->execute_need_id_queries($storage);
+           $this->walk_properties('inserted',$storage);
+           $this->insert_cache($this->get_id());
 	}
 
+	protected function do_recommit() {
+	    $storage = $this->get_storage();
+	    $this->walk_properties('reinsert',$storage);
+	    $storage->update_object($this->get_id());	    
+	}
+	
 // ========================== Aktualisieren ===================================	
 	protected function do_update() {
-	    $this->update_core_object();
-	    $simple_fields = $this->get_properties_with_feature('simple',true,'class');
-	    foreach ($simple_fields as $class_name => $fields_of_class) {
-            $values = array();
-	        foreach ($fields_of_class as $field_name => $field) {
-	            $values[$field_name] = $field->get_value();
-	        }
-            DB::table($class_name::$table_name)->
-                      updateOrInsert(['id'=>$this->get_id()],$values);
-	    }
+	    $storage = $this->get_storage();
+	    $storage->set_entity('id',$this->get_id());
+	    $this->walk_properties('updating', $storage);
+	    $this->walk_properties('update',$storage);
+	    $storage->update_object($this->get_id());
+	    $this->walk_properties('updated',$storage);
 	}
-	
-	private function update_core_object() {
-	    DB::table('objects')->where('id','=',$this->get_id())->update(['updated_at'=>DB::raw('now()')]);
-	}
-	
+		
 	/**
 	 * Erzeugt ein leeres neues Objekt
 	 */
@@ -162,23 +227,12 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	// ================================= Löschen =============================================
 	protected function do_delete() {
-	    $this->set_state('deleting');
-	    $this->delete_core_object();
-	    $this->delete_simple_fields();
-	    $this->set_state('invalid');
-	}
-	
-	private function delete_core_object() {
-	    DB::table('objects')->where('id','=',$this->get_id())->delete();
-	}
-	
-	private function  delete_simple_fields() {
-	    $fields = $this->get_properties_with_feature('simple',null,'class');
-	    foreach ($fields as $class_name=>$fields) {
-	        if (!empty($class_name)) {
-	            DB::table($class_name::$table_name)->where('id','=',$this->get_id())->delete();
-	        }
-	    }
+	    $storage = $this->get_storage();
+	    $this->walk_properties('deleting',$storage);
+	    $this->walk_properties('delete',$storage);
+	    $storage->delete_object($this->get_id());
+	    $this->walk_properties('deleted',$storage);
+	    $this->clear_cache_entry();
 	}
 	
 	protected function clear_cache_entry() {
@@ -187,6 +241,37 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	// ********************* Property Handling *************************************	
 	
+	/**
+	 * Berechnet ein oder alle Calculatefelder neu
+	 * Wird der Parameter $property mit dem Namen eines Calculate-Felder aufgerufen, wird nur dieses
+	 * neu berechnet. Ohne diesen Parameter werden alle neu berechnet.
+	 * @param unknown $property
+	 */
+	public function recalculate($property=null) {
+	    if (!is_null($property)) {
+	        $property_obj = $this->get_property($property);
+	        $property_obj->recalculate();
+	    } else {
+	        $properties = $this->get_properties_with_feature('calculated');
+	        foreach ($properties as $property) {
+	            $property->recalculate();
+	        }	        
+	    }
+	}
+	
+	/**
+	 * Ruft für jede Property die durch $action definierte Methode auf und übergibt dieser das Storage
+	 * @param string $action
+	 * @param \Sunhill\Storage\storage_base $storage
+	 */
+	protected function walk_properties(string $action,\Sunhill\Storage\storage_base $storage) {
+	    $properties = $this->get_properties_with_feature();
+	    foreach ($properties as $property) {
+	        $property->$action($storage);
+	    }
+	}
+
+// ================================== Promotion ===========================================	
 	/**
 	 * Hebt das momentane Objekt auf eine abgeleitete Klasse an
 	 * @param String $newclass
@@ -220,8 +305,10 @@ class oo_object extends \Sunhill\propertieshaving {
 	 */
 	private function promotion(String $newclass) {
 	    $newobject = new $newclass; // Neues Objekt erzeugen
+	    $newobject->set_id($this->get_id());
 	    $this->copy_to($newobject); // Die Werte bis zu dieser Hirarchie können kopiert werden
 	    DB::table('objects')->where('id','=',$this->get_id())->update(['classname'=>$newclass]);
+	    $newobject->recalculate();
 	    return $newobject;
 	}
 	
@@ -237,11 +324,15 @@ class oo_object extends \Sunhill\propertieshaving {
 	                for ($i=0;$i<count($this->$name);$i++) {
 	                    $newobject->$name[] = $this->$name[$i];
 	                }
+	                $newobject->get_property($name)->commit();
 	                break;
 	            case 'calculated':
+	                $newobject->recalculate($name);
+	                continue;
 	                break;
 	            default:
 	                $newobject->$name = $this->$name;
+	                $newobject->get_property($name)->commit();
 	        }
 	    }
 	}
@@ -253,7 +344,8 @@ class oo_object extends \Sunhill\propertieshaving {
 	public function post_promotion(oo_object $from) {
 	    
 	}
-	
+
+// ===================================== Degration =============================================	
 	public function degrade(String $newclass) {
 	    if (!class_exists($newclass)) {
 	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");
@@ -262,8 +354,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	        throw new ObjectException("'".get_class($this)."' ist keine Unterklasse von '$newclass'");
 	    }
 	    $this->pre_degration($newclass);
-	    $newobject = $this->degration($newclass);
+        $newobject = $this->degration($newclass);
 	    $newobject->post_degration($this);
+	    $this->set_state('invalid'); // Das alte darf nicht mehr weiter benutzt werden
 	    return $newobject;
 	}
 	
@@ -271,10 +364,30 @@ class oo_object extends \Sunhill\propertieshaving {
 	       return true;    
 	}
 	
+	private function get_class_diff($hiclass,$loclass) {
+	    $hi_hirarchy = $hiclass->get_inheritance(true);
+	    $lo_hirarchy = $loclass->get_inheritance(true);
+	    return array_diff($hi_hirarchy,$lo_hirarchy);
+	}
+	
+	private function get_affected_fields($storage,array $diff) {
+	   foreach($this->properties as $property) {
+	       if (in_array($property->get_class(),$diff)) {
+                $storage->set_entity($property->get_name(),1);
+	       }
+	   }
+	}
+	
 	protected function degration(String $newclass) {
 	    $newobject = new $newclass; // Neues Objekt erzeugen
+	    $storage = $this->get_storage();
+	    $class_diff = $this->get_class_diff($this,$newobject);
+	    $this->get_affected_fields($storage, $class_diff);
+	    $storage->degrade_object($this->get_id(),array('newclass'=>$newclass,
+	                                                   'diff'=>$class_diff));
+	    
 	    $newobject->copy_from($this); // Die Werte bis zu dieser Hirarchie können kopiert werden
-	    DB::table('objects')->where('id','=',$this->get_id())->update(['classname'=>$newclass]);
+	    $newobject->clean_properties();
 	    return $newobject;
 	    
 	}
@@ -304,15 +417,20 @@ class oo_object extends \Sunhill\propertieshaving {
 	    
 	}
 	
-	public function get_inheritance() {
+	public function get_inheritance($full=false) {
 	     $parent_class_names = array();
 	     $parent_class_name = get_class($this);
+	     if ($full) {
+	         //$parent_class_names[] = $parent_class_name;
+	     }
 	     do {
-	         if ($parent_class_name == 'Sunhill\\Objects\\oo_object') {
-	             array_shift($parent_class_names);
+	         $parent_class_names[] = $parent_class_name;
+	         if (($parent_class_name == 'Sunhill\\Objects\\oo_object')) {
+	             if (!$full) {
+	                array_shift($parent_class_names);
+	             }
 	             return $parent_class_names;
 	         }
-	         $parent_class_names[] = $parent_class_name;
 	         //array_unshift($parent_class_names,$parent_class_name);
 	     } while ($parent_class_name = get_parent_class($parent_class_name));
 	     return $parent_class_names;
@@ -334,6 +452,11 @@ class oo_object extends \Sunhill\propertieshaving {
 	    $property = $this->get_property($field);
 	    $property->add_hook($action,$hook,$restaction,$destination);
 	//    $this->add_hook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
+	}
+	
+	protected function set_external_hook($action,$subaction,$destination,$payload,$hook) {
+	    parent::set_external_hook($action,$subaction,$destination,$payload,$hook);
+        $this->get_property('externalhooks')->set_dirty(true);
 	}
 	
 	protected function complex_changed($params) {
@@ -381,6 +504,11 @@ class oo_object extends \Sunhill\propertieshaving {
 	       $property_name = 'attribute_'.$attribute->type;
 	   }
 	   $property = $this->dynamic_add_property($attribute->name, $property_name);
+	   $property->set_allowed_objects($attribute->allowedobjects)
+	   ->set_attribute_name($attribute->name)
+	   ->set_attribute_type($attribute->type)
+	   ->set_attribute_property($attribute->property)
+	   ->set_attribute_id($attribute->id);
 	   $property->set_value($value);
 	   $property->set_dirty(true);
 	   return true;
@@ -462,7 +590,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	    self::add_property('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
-	    self::calculated('keyfield')->searchable();
+	    self::calculated('keyfield')->searchable()->set_default(null);
 	}
 
 	protected static function timestamp($name) {

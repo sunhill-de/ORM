@@ -6,10 +6,6 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 
 	protected $initialized = true;
 	
-	protected function initialize() {
-		$this->initialized = true;	
-	}
-
 	private function check_array() {
 	    if (!$this->is_array()) {
 	        throw new \Exception('Die Property "'.$this->name.'" wurde mit array Funktionen aufgerufen obwohl vom Typ "'.$this->type.'"');
@@ -22,7 +18,7 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	
 	public function offsetGet($offset) {
 	    $this->check_array();
-	    return $this->value[$offset];
+	    return $this->do_get_indexed_value($offset);
 	}
 	
 	public function offsetSet($offset, $value) {
@@ -82,27 +78,33 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    }
 	    return false;
 	}
-	
-	public function get_array_diff() {
+		
+	/**
+	 * Überschreibt die geerbte Methode und ergänzt das Resultat noch um die Einträge ADD,DELETE, NEW und REMOVED
+	 * @return array[]
+	 */
+	public function get_diff_array(int $type=PD_VALUE) {
 	    $this->check_array();
-	    $result = ['NEW'=>array(),'REMOVED'=>array()];
+	    $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[],'NEW'=>[],'REMOVED'=>[]];
 	    if (isset($this->shadow)) {
-    	    foreach ($this->shadow as $oldentry) {
-    	        if ($this->array_search($oldentry,$this->value)===false) {
-    	            $result['REMOVED'][] = $oldentry;
+	        foreach ($this->shadow as $index=>$oldentry) {
+	            $result['FROM'][$index] = $this->get_diff_entry($oldentry, $type);
+	            if ($this->array_search($oldentry,$this->value)===false) {
+	                $result['DELETE'][$index] = $this->get_diff_entry($oldentry,$type);
+	                $result['REMOVED'][] = $this->get_diff_entry($oldentry,$type);
+	            }
+	        }
+	    }
+	    if (isset($this->value)) {
+    	    foreach ($this->value as $index=>$newentry) {
+    	        $result['TO'][$index] = $this->get_diff_entry($newentry,$type);
+    	        if ($this->array_search($newentry,$this->shadow)===false) {
+    	            $result['ADD'][$index] = $this->get_diff_entry($newentry,$type);
+    	            $result['NEW'][] = $this->get_diff_entry($newentry,$type);
     	        }
     	    }
 	    }
-	    foreach ($this->value as $newentry) {
-	        if ($this->array_search($newentry,$this->shadow)===false) {
-	            $result['NEW'][] = $newentry;
-	        }
-	    }
-	    return $result;
-	}
-	
-	public function get_diff_array() {
-	    return $this->get_array_diff();
+    	return $result;
 	}
 	
 	protected function is_allowed_relation(string $relation,$value) {

@@ -67,7 +67,7 @@ class RegressionTest extends ObjectCommon
 	    
 	    \Sunhill\Objects\oo_object::flush_cache();
 	    $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
-	    $this->assertEquals('TagB',$reread->tags[1]->get_fullpath());
+	    $this->assertEquals('TagB',$reread->tags[1]);
 	}
 
 	public function testRegression3() {

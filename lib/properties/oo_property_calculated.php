@@ -10,55 +10,42 @@ class oo_property_calculated extends oo_property_field {
 
 	protected $features = ['complex','calculated'];
 	
-	protected $readonly = true;
+	protected $read_only = true;
 	
-	public function get_dirty() {
+//	protected $initialized = true;
+	
+	protected function do_set_value($value) {
+	    throw new \Sunhill\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
+	}
+	
+	/**
+	 * Fordert das Property auf, sich neu zu berechnen (lassen)
+	 */
+	public function recalculate() {
+	    $method_name = 'calculate_'.$this->name;
+	    $newvalue = $this->owner->$method_name();
+	    if ($this->value !== $newvalue) { // Gab es überhaupt eine Änderung
+	        if (!$this->get_dirty()) {
+	            $this->shadow = $this->value;
+	            $this->set_dirty(true);
+	            $this->initialized = true;
+	        }
+	        $this->value = $newvalue;
+	    }
+	}
+	
+	protected function initialize_value() {
+	    $this->recalculate();
 	    return true;
 	}
 	
-	public function set_value($value) {
-	    throw new \Sunhill\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
-	}
-	public function &get_value() {
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
 	    if (!$this->initialized) {
-	        $method_name = 'calculate_'.$this->name;
-	        $this->value = $this->owner->$method_name();
-	        //$this->initialized = true;
+	        $this->recalculate();
 	    }
-        return $this->value;
+	    parent::do_insert($storage,$name);
 	}
 	
-	public function load(int $id) {
-        $values = DB::table('caching')->select('value')->where('object_id','=',$id)->where('fieldname','=',$this->name)->first();	   
-        if (!empty($values)) {
-            $this->value = $values->value;
-        }
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt geupdated wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::updated()
-	 */
-	public function updated(int $id) {
-	    $value = $this->get_value();
-	    if (!is_null($value)) {
-	       DB::table('caching')->where('object_id','=',$id)->where('fieldname','=',$this->name)->update(['value'=>$this->get_value()]);
-	    }
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
-	 */
-	public function inserted(int $id) {
-	    $value = $this->get_value();
-	    if (!is_null($value)) {
-	        DB::table('caching')->insert(['object_id'=>$id,'fieldname'=>$this->name,'value'=>$this->get_value()]);
-	    }
-	}
-
 	public function get_table_name($relation,$where) {
 	    return 'caching';
 	}

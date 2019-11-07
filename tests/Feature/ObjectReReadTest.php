@@ -25,6 +25,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @param array $init
 	 * @param array $modify
 	 * @param array $expect
+	 * @group simple
 	 */
 	public function testSimpleFields($classname,$init,$modify,$expect) {
 	    $this->prepare_tables();
@@ -352,13 +353,16 @@ class ObjectReReadTest extends ObjectCommon
 	                ($object->parentsarray[count($object->parentsarray)-1] == 'EDC');
 	            },
 	            function($object) { // Expect-Callback
-	                return ($object->parentobject->dummyint == 4321) &&
-	                ($object->parentoarray[0]->dummyint == 2345) &&
-	                ($object->parentoarray[1]->dummyint == 3456) &&
-	                ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 5432) &&
-	                ($object->parentsarray[0] == 'CBA') &&
-	                ($object->parentsarray[1] == 'DCB') &&
-	                ($object->parentsarray[count($object->parentsarray)-1] == 'EDC');
+	                $this->assertEquals([4321,2345,3456,5432,'CBA','DCB','EDC'],[
+	                    $object->parentobject->dummyint,
+	                    $object->parentoarray[0]->dummyint,
+	                    $object->parentoarray[1]->dummyint,
+	                    $object->parentoarray[count($object->parentoarray)-1]->dummyint,
+	                    $object->parentsarray[0],
+	                    $object->parentsarray[1],
+	                    $object->parentsarray[count($object->parentsarray)-1]]
+	                    );
+	                return true;
 	            },
 	            ],
 	            [ //Einfacher Test für geerbte Felder beide modifiziert
@@ -455,16 +459,23 @@ class ObjectReReadTest extends ObjectCommon
 	                    ($object->childsarray[count($object->parentsarray)-1] == 'QRS');
 	                },
 	                function($object) { // Expect-Callback
-	                    return ($object->parentobject->dummyint == 4321) &&
-	                    ($object->parentoarray[0]->dummyint == 2345) &&
-	                    ($object->parentoarray[count($object->parentoarray)-1]->dummyint == 5432) &&
-	                    ($object->parentsarray[0] == 'CBA') &&
-	                    ($object->parentsarray[count($object->parentsarray)-1] == 'PQR') &&
-	                    ($object->childobject->dummyint == 6543) &&
-	                    ($object->childoarray[0]->dummyint == 5678) &&
-	                    ($object->childoarray[count($object->parentoarray)-1]->dummyint == 7654) &&
-	                    ($object->childsarray[0] == 'EDC') &&
-	                    ($object->childsarray[count($object->parentsarray)-1] == 'QRS');
+	                    $this->assertEquals(
+	                        [
+	                            4321,2345,5432,'CBA','PQR',6543,5678,7654,'EDC','QRS'
+	                        ],[
+	                            $object->parentobject->dummyint,
+	                            $object->parentoarray[0]->dummyint,
+	                            $object->parentoarray[count($object->parentoarray)-1]->dummyint,
+	                            $object->parentsarray[0],
+	                            $object->parentsarray[count($object->parentsarray)-1],
+	                            $object->childobject->dummyint,
+	                            $object->childoarray[0]->dummyint,
+	                            $object->childoarray[count($object->parentoarray)-1]->dummyint,
+	                            $object->childsarray[0],
+	                            $object->childsarray[count($object->parentsarray)-1]
+	                        ]
+	                        );
+	                    return true;
 	                },
 	                ],
 	                [ // Änderung nur der untergebenen Objekte, hier mit doppelter Referenz
@@ -486,8 +497,17 @@ class ObjectReReadTest extends ObjectCommon
 	                        return true;
 	                    },
 	                    function($object) { // Expect Callback
-	                        return ($object->testint == 1234) && ($object->testobject->dummyint == 666) &&
-	                        ($object->testoarray[0]->dummyint == 666);
+	                        $this->assertEquals(
+	                            [
+	                             1234,666,666   
+	                            ],[
+	                                $object->testint,
+	                                $object->testobject->dummyint,
+	                                $object->testoarray[0]->dummyint
+	                            ]	                            
+	                            );
+	                        
+	                        return true;
 	                    }
 	                    
 	                ],
@@ -578,7 +598,8 @@ class ObjectReReadTest extends ObjectCommon
 	                                return true;
 	                            },
 	                            function($object) { // Expect Callback
-	                                return ($object->testobject->dummyint == 5432);
+	                                $this->assertEquals(5432,$object->testobject->dummyint);
+	                                return true;
 	                            }
 	                            
 	                            ]

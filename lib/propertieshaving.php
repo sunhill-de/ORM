@@ -1,14 +1,44 @@
 <?php
-
+/**
+ * @file propertieshaving.php
+ * Definiert die Klassen PropertiesHavingException und propertieshaving
+ */
 namespace Sunhill;
 
 use Sunhill\Properties\PropertyException;
 
-class PropertiesHavingException extends \Exception {}
+/**
+ * Abgeleitete Exception die im Zusammenhang mit Properties stehen
+ * @author lokal
+ */
+class PropertiesHavingException extends SunhillException {}
 
+/**
+ * Basisklasse für Klassen, die Properties besitzen
+ * Die Klasse erbt von hookable folgende Hooks:
+ * * - CONSTRUCTED
+ * 
+ * Die Klasse definiert folgende Hooks:
+ * - COMMITTING Wird vor dem Commit aufgerufen
+ * - COMMITTED Wird nach dem Commit aufgerufen 
+ * - LOADING Wird vor dem Laden aufgerufen
+ * - LOADED Wird nach dem Laden aufgerufen
+ * - INSERTING Wird vor dem Einfügen aufgerufen
+ * - INSERTED Wird nach dem Einfügen aufgerufen
+ * - UPDATING Wird vor dem Update aufgerufen
+ * - UPDATED Wird nach dem Update aufgerufen
+ * - DELETING Wird vor dem Löschen aufgerufen
+ * - DELETED Wird nach dem Löschen aufgerufen
+ * 
+ * Über die Properties werden folgende Hooks definiert:
+ * - PROPERTY_CHANGING
+ * - PROPERTY_CHANGED
+ *  
+ * @author lokal
+ */
 class propertieshaving extends hookable {
 	
-    private $id;
+    protected $id;
     
     protected $state = 'normal';
     
@@ -64,6 +94,7 @@ class propertieshaving extends hookable {
 	}
 	
 // ============================== State-Handling ===========================================	
+	
 	protected function set_state(string $state) {
 	    $this->state = $state;
 	    return $this;
@@ -126,9 +157,9 @@ class propertieshaving extends hookable {
 	}
 	
 // ===================================== Committing =======================================
-	public function commit() {
+	public function commit($caller=null) {
 	    $this->check_validity();
-	    if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
+    	if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
 	        $this->set_state('committing');
 	        $this->check_for_hook('COMMITTING');
 	        if ($this->get_id()) {
@@ -139,51 +170,25 @@ class propertieshaving extends hookable {
 	        $this->check_for_hook('COMMITTED');
 	        $this->set_state('normal');
 	    }
+	    return;
 	}
 
+	protected function get_dirty() {
+	    $dirty_properties = $this->get_properties_with_feature('',true);
+	    return (!empty($dirty_properties));	    
+	}
+	
+	protected function do_recommit() {
+	    
+	}
+	
 // ====================================== Updating ========================================	
 	protected function update() {
-        $this->updating_properties();
-	    $this->check_for_hook('PREUPDATE');
+	    $this->check_for_hook('UPDATING');
 	    $this->do_update();
-	    $this->updated_properties();
-	    $this->check_for_hook('POSTUPDATE');
+	    $this->check_for_hook('UPDATED');
 	}
 
-	/**
-	 * Ermittelt die ALLE (!) properties und ruft für jeden die methode ->updating sowie
-	 * die Hook UPDATING_PROPERTIES auf
-	 */
-	private function updating_properties() {
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->updating($this->get_id());
-	        if ($property->get_dirty($this->get_id())) {
-    	        $this->check_for_hook('UPDATING_PROPERTY',
-    	                              $property->get_name(),
-    	                              $property->get_diff_array());
-	        }
-	    }
-	}
-	
-	/**
-	 * Ermittelt die dirty properties und ruft für jeden die methode ->updated sowie
-	 * die Hook UPDATED_PROPERTIES auf
-	 */
-	private function updated_properties() {
-	    $readonly = $this->get_readonly();
-	    $this->set_readonly(true);
-	    $dirty_properties = $this->get_properties_with_feature('',true);
-	    foreach ($dirty_properties as $property) {
-	        $diff = $property->get_diff_array();
-	        $property->updated($this->get_id());
-	        $this->check_for_hook('UPDATED_PROPERTY',
-	                              $property->get_name(),
-	                              $diff);
-	    }	    
-	    $this->set_readonly($readonly);
-	}
-	
 	protected function do_update() {
 	    // Muss von der abgeleiteten Klasse überschrieben werden
 	}
@@ -197,66 +202,29 @@ class propertieshaving extends hookable {
 
 // ======================================= Inserting ===========================================
 	protected function insert() {
-	    $this->inserting_properties();
-	    $this->check_for_hook('PREINSERT');
+	    $this->check_for_hook('INSERTING');
 	    $this->do_insert();
-	    $this->inserted_properties();
-	    $this->check_for_hook('POSTINSERT');
+	    $this->check_for_hook('INSERTED');
 	}
-	
+
 	/**
-	 * Ermittelt die ALLE (!) properties und ruft für jeden die methode ->inserting sowie
-	 * die Hook INSERTING_PROPERTIES auf
+	 * Führt den eigentlichen Commit aus
+	 * @param bool $recommit
 	 */
-	private function inserting_properties() {
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->inserting();
-	        $this->check_for_hook('INSERTING_PROPERTY',
-	                $property->get_name());
-	    }
-	}
-	
-	/**
-	 * Ermittelt die dirty properties und ruft für jeden die methode ->updated sowie
-	 * die Hook UPDATED_PROPERTIES auf
-	 */
-	private function inserted_properties() {
-	    $readonly = $this->get_readonly();
-	    $this->set_readonly(true);
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->inserted($this->get_id());
-	        $this->check_for_hook('INSERTED_PROPERTY',
-	            $property->get_name());
-	    }
-	    $this->set_readonly($readonly);
+	protected function do_insert() {
+	    
 	}
 	
 	// ====================================== Deleting ==========================================
 	public function delete() {
-	    $this->deleting_properties();
-	    $this->check_for_hook('PREDELETE');
+	    $this->check_for_hook('DELETING');
 	    $this->do_delete();
-	    $this->deleted_properties();
-	    $this->check_for_hook('POSTDELETE');
+	    $this->check_for_hook('DELETED');
 	    $this->clear_cache_entry();
 	}
 	
-	private function deleting_properties() {
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->deleting($this->get_id());
-	        $this->check_for_hook('DELETING_PROPERTY',$property->get_name());
-	    }	    
-	}
-	
-	private function deleted_properties() {
-	    $dirty_properties = $this->get_properties_with_feature('');
-	    foreach ($dirty_properties as $property) {
-	        $property->deleting($this->get_id());
-	        $this->check_for_hook('DELETED_PROPERTY',$property->get_name());
-	    }	    
+	protected function do_delete() {
+	    
 	}
 	
 	protected function clear_cache_entry() {
@@ -277,7 +245,7 @@ class propertieshaving extends hookable {
 	    }
 	}
 
-	protected function clean_properties() {
+	public function clean_properties() {
 	    foreach ($this->properties as $property) {
 	        $property->set_dirty(false);
 	    }
@@ -330,8 +298,11 @@ class propertieshaving extends hookable {
 	 * @param string $name Name der Property
 	 * @return oo_property
 	 */
-	public function get_property(string $name) {
+	public function get_property(string $name,bool $return_null=false) {
 	    if (!isset($this->properties[$name])) {
+	        if ($return_null) {
+	            return null;
+	        }
 	        throw new PropertiesHavingException("Unbekannter Property '$name'");
 	    }
 	    return $this->properties[$name];
@@ -417,6 +388,7 @@ class propertieshaving extends hookable {
 	    $property->set_name($name);
 	    $property->set_type($type);
 	    $property->set_class(self::get_calling_class());
+	    $property->initialize();
 	    return $property;
 	}
 	

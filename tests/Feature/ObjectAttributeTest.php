@@ -14,10 +14,7 @@ class ObjectAttributeTest extends ObjectCommon
     protected function prepare_tables() {
         parent::prepare_tables();
         $this->create_special_table('dummies');
-        $this->insert_into('attributes',['id','name','type','allowedobjects','property'],
-            [[1,'int_attribute','int',"\\Sunhill\\Test\\ts_dummy",''],
-             [2,'attribute1','int',"\\Sunhill\\Test\\ts_testparent",'']
-        ]);
+        $this->create_write_scenario();
     }
     
     /**

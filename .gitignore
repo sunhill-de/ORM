@@ -7,5 +7,6 @@
 /storage
 composer.lock
 .buildpath*
-doc/latex
-doc/html
+/doc/latex
+/doc/html
+/doc/coverage

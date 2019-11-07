@@ -26,7 +26,7 @@
 		"laravel-zero/framework" : "5.6.*"
 	},
 	"require-dev" : {
-		"phpunit/phpunit" : "^7.1"
+		"phpunit/phpunit": "^7.1"
 	},
 	"autoload" : {
 		"psr-4" : {
@@ -39,7 +39,8 @@
 			"Sunhill\\" : "lib",
 			"Tests\\" : "tests/lib",
 			"Sunhill\\Properties\\" : "lib/properties",
-			"Sunhill\\Validators\\" : "lib/validators"
+			"Sunhill\\Validators\\" : "lib/validators",
+			"Sunhill\\Storage\\" : "lib/storage"
 		}
 	},
 	"autoload-dev" : {

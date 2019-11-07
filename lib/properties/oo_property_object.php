@@ -4,11 +4,15 @@ namespace Sunhill\Properties;
 
 use Illuminate\Support\Facades\DB;
 
+require_once('property_traits.php');
+
 class oo_property_object extends oo_property_field {
 	
+    use LazyIDLoading;
+    
 	protected $type = 'object';
 	
-	protected $features = ['object','complex'];
+	protected $features = ['object','complex','objectid'];
 	
 	protected $initialized = true;
 	
@@ -24,56 +28,73 @@ class oo_property_object extends oo_property_field {
 	 * {@inheritDoc}
 	 * @see \Sunhill\Properties\oo_property::load()
 	 */
-	public function load(int $id) {
-	    $reference = \App\objectobjectassign::where('container_id','=',$id)
-	               ->where('field','=',$this->get_name())->first();
+	protected function do_load(\Sunhill\Storage\storage_base $storage,$name) {
+        $reference = $storage->$name;
 	    if (!empty($reference)) {
-    	    $object = \Sunhill\Objects\oo_object::load_object_of($reference->element_id);
-    	    $this->value = $object;
-    	    $this->initialized = true;
-	    }
-	}
-	
-	public function updating(int $id) {
-	    if (!empty($this->value)) {
-	        $this->value->commit();	        
+	        $this->do_set_value($reference);
 	    }
 	}
 	
 	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt geupdated wurde
+	 * Überschriebene Methode von oo_property. Prüft, ob die Objekt-ID bisher nur als Nummer gespeichert war. Wenn ja, wird das
+	 * Objekt lazy geladen.
 	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::updated()
+	 * @see \Sunhill\Properties\oo_property::do_get_value()
 	 */
-	public function updated(int $id) {
-	    DB::table('objectobjectassigns')->where([['container_id','=',$id],
-	        ['field','=',$this->get_name()],
-	        ['index','=',0]])->delete();
-	    if (!empty($this->value)) {
-	        $this->value->commit();
-    	    DB::table('objectobjectassigns')->insert(
-    	            ['container_id'=>$id,
-    	             'element_id'=>$this->value->get_id(),
-    	             'field'=>$this->get_name(),
-    	             'index'=>0]); 
+	protected function &do_get_value() {
+	    if (is_int($this->value)) {
+	        $this->value = \Sunhill\Objects\oo_object::load_object_of($this->value);
+	    }
+        return $this->value;	    
+	}
+	
+	public function reinsert(\Sunhill\Storage\storage_base $storage) {
+	    $this->commit_child_if_loaded($this->value);
+	    $this->do_update($storage,$this->get_name());	   
+	}
+	
+	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	    if (is_int($this->value)) {
+	        $storage->set_entity($name,$this->value);
+	    } else if (is_object($this->value)){
+	        $storage->set_entity($name,$this->value->get_id());
 	    }
 	}
 	
+	public function inserting(\Sunhill\Storage\storage_base $storage) {
+	    $this->commit_child_if_loaded($this->value);
+	}
+
+	public function inserted(\Sunhill\Storage\storage_base $storage) {
+	    $this->commit_child_if_loaded($this->value);	    
+	}
+	
 	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt eingefügt wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
+	 * Erzeugt ein Diff-Array.
+	 * d.h. es wird ein Array mit (mindestens) zwei Elementen zurückgebene:
+	 * FROM ist der alte Wert
+	 * TO ist der neue Wert
+	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
+	 * @return void[]|\Sunhill\Properties\oo_property[]
 	 */
-	public function inserted(int $id) {
-	    if (!empty($this->value)) {
-	        $this->value->commit();
-	        $model = new \App\objectobjectassign();
-    	    $model->container_id = $id;
-    	    $model->element_id = $this->value->get_id();
-    	    $model->field = $this->get_name();
-    	    $model->index = 0;
-    	    $model->save();
+	public function get_diff_array(int $type=PD_VALUE) {
+	    $diff = parent::get_diff_array($type);
+	    if ($type == PD_ID) {
+	        return [
+	            'FROM'=>$this->get_local_id($this->shadow),
+	            'TO'=>$this->get_local_id($this->value)
+	        ];
+	    } else {
+	        return $diff;
 	    }
+	}
+	
+	public function updating(\Sunhill\Storage\storage_base $storage) {
+        $this->inserting($storage);
+	}
+	
+	public function updated(\Sunhill\Storage\storage_base $storage) {
+	    $this->updating($storage);
 	}
 	
 	protected function value_changed($from,$to) {

@@ -25,8 +25,8 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     
     protected static function setup_properties() {
         parent::setup_properties();
-        self::integer('hooking_int')->set_model('\Tests\Feature\Hooking')->set_default(0);
-        self::varchar('hookstate')->set_model('\Tests\Feature\Hooking')->set_default('');
+        self::integer('hooking_int')->set_default(0);
+        self::varchar('hookstate')->set_default('');
         self::object('ofield')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
         self::arrayofstrings('strarray');
         self::arrayofobjects('objarray')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
@@ -37,6 +37,14 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     }
     
     protected function field_changing($params) {
+        if ($params['subaction'] == 'ofield') {
+            if (is_int($params['FROM'])) {
+                $params['FROM'] = \Sunhill\Objects\oo_object::load_object_of($params['FROM']);
+            }
+            if (is_int($params['TO'])) {
+                $params['TO'] = \Sunhill\Objects\oo_object::load_object_of($params['TO']);
+            }
+        }
         if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
@@ -47,6 +55,14 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     }
     
     protected function field_changed($params) {
+        if ($params['subaction'] == 'ofield') {
+            if (is_int($params['FROM'])) {
+                $params['FROM'] = \Sunhill\Objects\oo_object::load_object_of($params['FROM']);
+            }
+            if (is_int($params['TO'])) {
+                $params['TO'] = \Sunhill\Objects\oo_object::load_object_of($params['TO']);
+            }
+        }
         if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
@@ -83,10 +99,16 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     protected function oarray_changing($diff) {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         $this->hookstate = $hilf.')';        
@@ -95,10 +117,16 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     protected function oarray_changed($diff) {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         self::$hook_str = $hilf.')';
@@ -146,10 +174,16 @@ class HookingChild extends HookingObject {
     protected function childoarray_changed($diff) {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
+            if (is_int($new)) {
+                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+            }
             $hilf .= $new->dummyint;
         }
         self::$child_hookstr = $hilf.')';
@@ -159,7 +193,13 @@ class HookingChild extends HookingObject {
 
 class ObjectHookTest extends ObjectCommon
 {
+    protected function prepare_tables() {
+        parent::prepare_tables();
+        $this->create_special_table('dummies');
+    }
+    
     protected function setupHookTables() {
+        $this->prepare_tables();
         DB::statement("drop table if exists hookings ");
         DB::statement("drop table if exists childhookings ");
         DB::statement("create table hookings (id int primary key,hooking_int int,hookstate varchar(100))");       
@@ -471,6 +511,7 @@ class ObjectHookTest extends ObjectCommon
         $this->setupHookTables();
         $dummy = new \Sunhill\Test\ts_dummy();
         $dummy->dummyint = 123;
+        $dummy->commit();
         $test = new HookingObject();
         $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'ofield.dummyint');
         $test->ofield = $dummy;
@@ -488,6 +529,9 @@ class ObjectHookTest extends ObjectCommon
         $this->assertEquals('(Cofield:123->234)',$test->get_hook_str());
     }
     
+    /**
+     * @group externalhooks
+     */
     public function testChildChangeObjectIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
         \Sunhill\Objects\oo_object::flush_cache();
@@ -500,6 +544,9 @@ class ObjectHookTest extends ObjectCommon
         
     }
     
+    /**
+     * @group externalhooks
+     */
     public function testChildChangeObjectBothIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
         \Sunhill\Objects\oo_object::flush_cache();
@@ -537,6 +584,9 @@ class ObjectHookTest extends ObjectCommon
         
     }
     
+    /**
+     * @group externalhooks
+     */
     public function testChildChangeArrayIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
         \Sunhill\Objects\oo_object::flush_cache();
@@ -548,6 +598,9 @@ class ObjectHookTest extends ObjectCommon
         $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());        
     }
     
+    /**
+     * @group externalhooks
+     */
     public function testChildChangeArrayBothIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
         \Sunhill\Objects\oo_object::flush_cache();

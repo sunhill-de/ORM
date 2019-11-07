@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\Test;
+use Illuminate\Support\Facades\DB;
 
 class ObjectDegradeTest extends ObjectCommon
 {
@@ -15,6 +16,7 @@ class ObjectDegradeTest extends ObjectCommon
         $this->create_special_table('thirdlevelchildren');
         $this->create_special_table('secondlevelchildren');
         $this->create_special_table('testparents');
+        $this->create_special_table('passthrus');
     }
     
     public function testOneStepDegration() {
@@ -64,6 +66,9 @@ class ObjectDegradeTest extends ObjectCommon
         $test->parentoarray[] = $add;
         $test->childint = 1;
         $test->childchildint = 2;
+        $test->thirdlevelobject = $add;
+        $test->thirdlevelsarray[] = 'AAA';
+        $test->thirdlevelsarray[] = 'BBB';
         $tag = new \Sunhill\Objects\oo_tag('TestTag',true);
         $test->tags->stick($tag);
         $test->commit();
@@ -74,6 +79,37 @@ class ObjectDegradeTest extends ObjectCommon
         $read = \Sunhill\Objects\oo_object::load_object_of($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
         $this->assertEquals('Sunhill\\Test\ts_testparent',\Sunhill\Objects\oo_object::get_class_name_of($id));
+        return $test;
     }
-        
+       
+    /**
+     * @depends testTwoStepDegration
+     * @param unknown $test
+     */
+    public function testTablesDeleted($test) {
+        $result = DB::table('thirdlevelchildren')->where('id',$test->get_id())->first();
+        $this->assertTrue(empty($result));
+        return $test;
+    }
+    /**
+     * @depends testTwoStepDegration
+     * @param unknown $test
+     */
+    public function testTableChildDeleted($test) {
+        $result = DB::table('secondlevelchildren')->where('id',$test->get_id())->first();
+        $this->assertTrue(empty($result));
+        return $test;
+    }
+    
+    /**
+     * @depends testTwoStepDegration
+     * @param unknown $test
+     */
+    public function testObjectsDeleted($test) {
+        $result = DB::table('objectobjectassigns')->where('container_id',$test->get_id())->where('field','thirdlevelobject')->first();
+        $this->assertTrue(empty($result));
+        return $test;
+    }
+    
+    
 }

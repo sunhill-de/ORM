@@ -30,11 +30,11 @@ class ObjectPromoteTest extends ObjectCommon
     
     public function InheritanceProvider(){    
         return [
-            ['Sunhill\Test\\ts_testparent',[]],
-            ['Sunhill\Test\\ts_testchild',['Sunhill\Test\\ts_testparent']],
-            ['Sunhill\Test\\ts_passthru',['Sunhill\Test\\ts_testparent']],
-            ['Sunhill\Test\\ts_secondlevelchild',['Sunhill\Test\\ts_passthru','Sunhill\Test\\ts_testparent']],
-            ['Sunhill\Test\\ts_thirdlevelchild',['Sunhill\Test\\ts_secondlevelchild','Sunhill\Test\\ts_passthru','Sunhill\Test\\ts_testparent']]
+            ['Sunhill\Test\\ts_testparent',['Sunhill\Objects\oo_object']],
+            ['Sunhill\Test\\ts_testchild',['Sunhill\Test\\ts_testparent','Sunhill\Objects\oo_object']],
+            ['Sunhill\Test\\ts_passthru',['Sunhill\Test\\ts_testparent','Sunhill\Objects\oo_object']],
+            ['Sunhill\Test\\ts_secondlevelchild',['Sunhill\Test\\ts_passthru','Sunhill\Test\\ts_testparent','Sunhill\Objects\oo_object']],
+            ['Sunhill\Test\\ts_thirdlevelchild',['Sunhill\Test\\ts_secondlevelchild','Sunhill\Test\\ts_passthru','Sunhill\Test\\ts_testparent','Sunhill\Objects\oo_object']]
         ];
     }
     

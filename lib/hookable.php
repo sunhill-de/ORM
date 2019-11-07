@@ -1,13 +1,27 @@
 <?php
-
+/**
+ * @file hookable.php
+ * Definiert die Klasse hookable
+ */
 namespace Sunhill;
 
+/**
+ * Basisklasse für Klassen, die Hooks benutzen
+ * Folgende Hooks werden vordefiniert:
+ * @defgroup Hooks
+ * - CONSTRUCTED Wird immer aufgerufen, wenn ein neues Objekt erzeugt wurde 
+ * @author lokal
+ */
 class hookable extends loggable {
 
 	
 	protected $hooks = array();
 	protected $external_hooks = array();
 	
+	/**
+	 * Der Konstruktor muss von abgeleiteten Klassen aufgerufen werden. Er initialiesiert über einen Aufruf
+	 * von setup_hooks() die Hooks und ruft (sofern vorhanden) die Hooks für CONSTRUCTED auf
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->setup_hooks();
@@ -34,7 +48,7 @@ class hookable extends loggable {
 	        return;
 	    }
 	    if ($destination !== $this) {
-	        $this->external_hooks[] = array('action'=>$action,'subaction'=>$subaction,'destination'=>$destination,'payload'=>$payload);
+            $this->set_external_hook($action,$subaction,$destination,$payload,$hook);
 	    }
 	    if (!isset($this->hooks[$action])) {
 	        $this->hooks[$action] = array();
@@ -48,6 +62,10 @@ class hookable extends loggable {
 	    } else {	    
 	       $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook,'payload'=>$payload);
 	    }
+	}
+	
+	protected function set_external_hook($action,$subaction,$destination,$payload,$hook) {
+	    $this->external_hooks[] = array('action'=>$action,'subaction'=>$subaction,'destination'=>$destination,'payload'=>$payload);	    
 	}
 	
 	private function hook_already_installed($action,$hook,$subaction,$destination,$payload) {
@@ -81,7 +99,7 @@ class hookable extends loggable {
 	 * @param string $subaction
 	 * @param array $params
 	 */
-	protected function check_for_hook(string $action,$subaction='default',array $params=null) {
+	public function check_for_hook(string $action,$subaction='default',array $params=null) {
 	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
 	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
                 $destination = $descriptor['destination'];
@@ -108,6 +126,7 @@ class hookable extends loggable {
 	                if (is_int($hook['destination']) || ($hook['destination'] !== $this)) {
 	                    $hook['action'] = $actionname;
 	                    $hook['subaction'] = $subactionname;
+	                    $hook['target_id'] = is_int($hook['destination'])?$hook['destination']:$hook['destination']->get_id();
 	                    $result[] = $hook;
 	                }
 	            }
