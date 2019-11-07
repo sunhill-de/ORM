@@ -46,8 +46,6 @@ class propertieshaving extends hookable {
     
     protected $properties;
     
-    protected $need_recommit=false;
-    
     /**
      * Konstruktur, ruft nur zusätzlich setup_properties auf
      */
@@ -96,22 +94,6 @@ class propertieshaving extends hookable {
 	}
 	
 // ============================== State-Handling ===========================================	
-	/**
-	 * Kann von Properties aufgerufen, werden, wenn das Objekt am Ende des Commits erneut committed werden
-	 * muss.
-	 */
-	public function set_needs_recommit() {
-	   $this->need_recommit = true;
-	   return $this;
-	}
-	
-	/**
-	 * Kann von Properties aufgerufen, werden, wenn das Objekt am Ende des Commits erneut committed werden
-	 * muss.
-	 */
-	public function get_needs_recommit() {
-	    return $this->need_recommit;
-	}
 	
 	protected function set_state(string $state) {
 	    $this->state = $state;
@@ -188,10 +170,7 @@ class propertieshaving extends hookable {
 	        $this->check_for_hook('COMMITTED');
 	        $this->set_state('normal');
 	    }
-	    if (is_null($caller) && ($this->need_recommit)) {
-	        $this->do_recommit();
-	    }
-	    return $this->need_recommit;
+	    return;
 	}
 
 	protected function get_dirty() {
