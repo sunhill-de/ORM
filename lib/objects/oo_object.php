@@ -42,7 +42,7 @@ class oo_object extends \Sunhill\propertieshaving {
      * @var boolean
      */
     protected static $has_keyfield = false;
-        
+
     /**
      * Konstruktor für Objekte. Initialisiert interne properties und ruft ansonsten den geerbten Kontruktor auf
      */
