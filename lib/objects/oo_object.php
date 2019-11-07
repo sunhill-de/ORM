@@ -67,7 +67,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	 * @param array $fixed
 	 * @param string $id_field
 	 */
-	public function add_need_id_query(string $table,array $fixed,string $id_field) {
+	public function add_needid_query(string $table,array $fixed,string $id_field) {
 	    $this->needid_queries[] = ['table'=>$table,'fixed'=>$fixed,'id_field'=>$id_field];
 	}
 	

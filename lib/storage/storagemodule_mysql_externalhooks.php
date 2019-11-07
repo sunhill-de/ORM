@@ -42,15 +42,26 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
             return $id;
         }
         foreach ($this->storage->entities['externalhooks'] as $hook) {
-            $line = [
-                'container_id'=>$id,
-                'target_id'=>$hook['target_id'],
-                'action'=>$hook['action'],
-                'subaction'=>$hook['subaction'],
-                'hook'=>$hook['hook'],
-                'payload'=>(is_null($hook['payload'])?'':$hook['payload'])
-            ];
-            $lines[] = $line;
+            if (is_null($hook['target_id'])) {
+                $hook['destination']->add_needid_query('externalhooks',
+                    [
+                        'container_id'=>$id,
+                        'action'=>$hook['action'],
+                        'subaction'=>$hook['subaction'],
+                        'hook'=>$hook['hook'],
+                        'payload'=>(is_null($hook['payload'])?'':$hook['payload'])
+                    ],'target_id');  
+            } else {
+                $line = [
+                    'container_id'=>$id,
+                    'target_id'=>$hook['target_id'],
+                    'action'=>$hook['action'],
+                    'subaction'=>$hook['subaction'],
+                    'hook'=>$hook['hook'],
+                    'payload'=>(is_null($hook['payload'])?'':$hook['payload'])
+                ];
+                $lines[] = $line;
+            }
         }
         DB::table('externalhooks')->insert($lines);
         return $id;
@@ -75,16 +86,26 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
                 ->where('hook',$hook['hook'])->delete();
         }
         foreach ($this->storage->entities['externalhooks']['NEW'] as $hook) {
-           DB::table('externalhooks')->insert(
-               [
-                   'container_id'=>$id,
-                   'target_id'=>$hook['target_id'],
-                   'action'=>$hook['action'],
-                   'subaction'=>$hook['subaction'],
-                   'hook'=>$hook['hook'],
-                   'payload'=>$hook['payload']                   
-               ]
-               ); 
+            if (empty($hook['target_id'])) {
+                $hook['destination']->add_needid_query('externalhooks',[
+                    'container_id'=>$id,
+                    'action'=>$hook['action'],
+                    'subaction'=>$hook['subaction'],
+                    'hook'=>$hook['hook'],
+                    'payload'=>(is_null($hook['payload'])?'':$hook['payload'])
+                ],'target_id');   
+            } else {
+                DB::table('externalhooks')->insert(
+                   [
+                       'container_id'=>$id,
+                       'target_id'=>$hook['target_id'],
+                       'action'=>$hook['action'],
+                       'subaction'=>$hook['subaction'],
+                       'hook'=>$hook['hook'],
+                       'payload'=>(is_null($hook['payload'])?'':$hook['payload'])
+                   ]
+                   );
+            }
         }
         return $id;
     }

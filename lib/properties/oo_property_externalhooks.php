@@ -41,24 +41,18 @@ class oo_property_externalhooks extends oo_property_field {
 	            $target_id = $hook['destination'];
 	        } else {    
 	            $target_id = $hook['destination']->get_id();
-	            if (empty($target_id)) {
-	                $this->set_keep_dirty(true);
-	            }
 	        }
 	        $line = [
 	            'action'=>$hook['action'],
 	            'subaction'=>$hook['subaction'],
 	            'hook'=>$hook['hook'],
 	            'payload'=>$hook['payload'],
-	            'target_id'=>$target_id
+	            'target_id'=>$target_id,
+	            'destination'=>$hook['destination']
 	        ];
-	        if (!$this->keep_dirty) {
-	           $storage->entities['externalhooks'][] = $line;
-	        }
+	        $storage->entities['externalhooks'][] = $line;
 	    }
-	    if (!$this->keep_dirty) {
-	        $this->shadow = $this->owner->get_external_hooks();
-	    }
+	    $this->shadow = $this->owner->get_external_hooks();
 	}
 	
 	private function hook_in_array(array $hook,array $array) {
@@ -92,9 +86,7 @@ class oo_property_externalhooks extends oo_property_field {
 	
 	private function fill_target_id($target) {
 	    foreach($target as $entry) {
-	        if (empty($entry['target_id'] = $this->get_target_id($entry['destination']))) {
-	            $this->set_keep_dirty(true);
-	        }
+	        $entry['target_id'] = $this->get_target_id($entry['destination']);
 	    }
 	    return $target;
 	}
@@ -112,9 +104,7 @@ class oo_property_externalhooks extends oo_property_field {
 	        'NEW'=>$add,
 	        'REMOVED'=>$delete
 	    ];
-	    if (!$this->keep_dirty) {
-	       $storage->set_entity('externalhooks', $external_hooks);
-	       $this->shadow = $this->owner->get_external_hooks();
-	    }
+	    $storage->set_entity('externalhooks', $external_hooks);
+	    $this->shadow = $this->owner->get_external_hooks();
 	}
 }

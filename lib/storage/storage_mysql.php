@@ -22,7 +22,7 @@ class storage_mysql extends storage_base  {
             return;
         }
         foreach ($this->entities['needid_queries'] as $query) {
-            $query['fixed'][$query['id_field']] = $this->get_id();
+            $query['fixed'][$query['id_field']] = $this->caller->get_id();
             DB::table($query['table'])->insert($query['fixed']);
         }
     }

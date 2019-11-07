@@ -99,12 +99,7 @@ class oo_property extends \Sunhill\base {
 	 * @var bool
 	 */
 	protected $dirty=false;
-	
-	/**
-	 * Gibt an, ob eine Property nach einem update als dirty markiert bleiben muss
-	 */
-	protected $keep_dirty=false;
-	
+		
 	/**
 	 * Gibt den Initialiserungstatus der Property an. Ist der Wert false, wurde value noch nie ein Wert
 	 * zugeweisen, ist er true, wurde die Property entweder bereits zugeweisen oder geladen.
@@ -245,13 +240,6 @@ class oo_property extends \Sunhill\base {
 	    return $this->searchable;
 	}
 	
-	/**
-	 * Die Methode ist protected, da sie nur innerhalb von Properties aufgerufen werden darf
-	 * @param bool $value
-	 */
-	protected function set_keep_dirty(bool $value) {
-	    $this->keep_dirty = $value;
-	}
 	
 // ============================== Value Handling =====================================	
 	/**
@@ -545,16 +533,12 @@ class oo_property extends \Sunhill\base {
 
 // ================================= Update ====================================	
 	public function update(\Sunhill\Storage\storage_base $storage) {
-	    if ($this->dirty || $this->owner->get_needs_recommit()) {
+	    if ($this->dirty) {
             $diff = $this->get_diff_array(PD_KEEP);
 	        $this->get_owner()->check_for_hook('UPDATING_PROPERTY',$this->get_name(),$diff);
     	    $this->do_update($storage,$this->get_name());
     	    $this->get_owner()->check_for_hook('UPDATED_PROPERTY',$this->get_name(),$diff);    	    
-    	    if (!$this->keep_dirty) {
-    	        $this->dirty = false;
-    	    } else {
-    	        $this->keep_dirty = false; // Beim nächsten Mal neu zu entscheiden
-    	    }
+    	    $this->dirty = false;
 	    }
 	}
 	

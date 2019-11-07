@@ -117,7 +117,6 @@ abstract class storage_base  {
                 $id = $module->$chainname($id);
             }
         }
-        $this->execute_need_id_queries();
         return $id;
     }
     
@@ -178,4 +177,7 @@ abstract class storage_base  {
         return $result;
     }
     
+    public function add_needid_query(string $table,array $fixed,string $id_field) {
+        $this->caller->add_need_id_query($table, $fixed, $id_field);
+    }
 }

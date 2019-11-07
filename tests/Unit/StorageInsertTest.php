@@ -81,7 +81,7 @@ class StorageInsertTest extends StorageBase {
                 $object->childdatetime = '2019-11-24 01:11:00';
                 $object->childtext = 'Lorems Ipsums';
             },'childint',2345],
-            ['Sunhill\\Test\\ts_passthru',function($object) { // Simplefields mit Objekt ohne Simplefields am Ende
+ /*           ['Sunhill\\Test\\ts_passthru',function($object) { // Simplefields mit Objekt ohne Simplefields am Ende
                 $object->parentint = 234;
                 $object->parentchar = 'ABC';
                 $object->parentenum = 'TestA';
@@ -96,7 +96,7 @@ class StorageInsertTest extends StorageBase {
             },'testobject',234],
             ['Sunhill\\Test\\ts_referenceonly',function($object) {
                 $object->testoarray = [123,234,345];
-            },'testoarray[1]',234],
+            },'testoarray[1]',234], */
             ['Sunhill\\Test\\ts_testparent',function($object) { // Komplexere Simplefields
                 $object->parentint = 234;
                 $object->parentchar = 'ABC';

@@ -126,7 +126,7 @@ class hookable extends loggable {
 	                if (is_int($hook['destination']) || ($hook['destination'] !== $this)) {
 	                    $hook['action'] = $actionname;
 	                    $hook['subaction'] = $subactionname;
-	                    $hook['target_id'] = $hook['destination']->get_id();
+	                    $hook['target_id'] = is_int($hook['destination'])?$hook['destination']:$hook['destination']->get_id();
 	                    $result[] = $hook;
 	                }
 	            }

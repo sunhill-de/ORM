@@ -42,18 +42,31 @@ class storagemodule_mysql_objects extends storagemodule_base {
         $properties = $this->storage->get_caller()->get_properties_with_feature('objectid');
         foreach ($properties as $property) {
             $fieldname = $property->get_name();
-            if (is_null($this->storage->$fieldname)) {
+            if (is_null($property->value)) {
                 continue;
             }
             if (is_array($this->storage->$fieldname)) {
                 foreach ($this->storage->$fieldname as $index => $element) {
-                    $inserts[] = ['container_id'=>$id,'element_id'=>$element,'field'=>$fieldname,'index'=>$index];
+                    if (empty($element)) {
+                        $property->value->add_needid_query('objectobjectassigns',['container_id'=>$id,'field'=>$fieldname,'index'=>$index],'element_id');   
+                    } else {
+                        $inserts[] = ['container_id'=>$id,'element_id'=>$element,'field'=>$fieldname,'index'=>$index];
+                    }
                 }
             } else {
-                $inserts[] = ['container_id'=>$id,'element_id'=>$this->storage->$fieldname,'field'=>$fieldname,'index'=>0];
+                $element = $this->storage->$fieldname;
+                if (empty($element)) {
+                    if (is_a($property->value,'\\Sunhill\\Objects\\oo_object')) {
+                        $property->value->add_needid_query('objectobjectassigns',['container_id'=>$id,'field'=>$fieldname,'index'=>0],'element_id');
+                    }
+                } else {
+                    $inserts[] = ['container_id'=>$id,'element_id'=>$element,'field'=>$fieldname,'index'=>0];
+                }
             }
         }
-        DB::table('objectobjectassigns')->insert($inserts);
+        if (!empty($inserts)) {
+            DB::table('objectobjectassigns')->insert($inserts);
+        }
         return $id;
     }
     

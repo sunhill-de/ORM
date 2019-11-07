@@ -24,6 +24,9 @@ class FakeStorage extends \Sunhill\Storage\storage_base {
         return 1;
     }
     
+    public function execute_need_id_queries() {
+        
+    }
     
 }
 

@@ -82,4 +82,5 @@ abstract class storagemodule_base {
         // Normalerweise muss ein Property hier nix machen
         return $id;
     }
+    
 }

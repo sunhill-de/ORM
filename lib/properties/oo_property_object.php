@@ -57,16 +57,7 @@ class oo_property_object extends oo_property_field {
 	    if (is_int($this->value)) {
 	        $storage->set_entity($name,$this->value);
 	    } else if (is_object($this->value)){
-	        $id = $this->value->get_id();
-	        if (is_null($id)) {
-	            // Wir haben zirkuläre Referenzen, d.h. ein Objekt bezieht sich auf ein anderes Objekt, 
-	            // Welches noch nicht eingefügt wurde ($id = null)
-	            $this->owner->set_needs_recommit(); // Hier ist ein Recommit-Fällig
-	           // D.h. wir können die Objektreferenzen erst einfügen, wenn alle abhängigen Objekte
-	           // eingefügt wurden und eine ID haben.
-	        } else {
-	           $storage->set_entity($name,$this->value->get_id());
-	        }
+	        $storage->set_entity($name,$this->value->get_id());
 	    }
 	}
 	
