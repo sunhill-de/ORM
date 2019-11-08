@@ -290,7 +290,6 @@ class oo_object extends \Sunhill\propertieshaving {
 	                break;
 	            case 'calculated':
 	                $newobject->recalculate($name);
-	                continue;
 	                break;
 	            default:
 	                $newobject->$name = $this->$name;
