@@ -26,6 +26,11 @@ class searchtestA extends \Sunhill\Objects\oo_object {
     public function calculate_Acalc() {
         return $this->Aint."=".$this->Achar;
     }
+    
+    public function unify() {
+        $id = searchtestA::search()->where('Acalc','=','ABC')->first();
+        
+    }
 }
 
 class searchtestB extends searchtestA {
@@ -391,5 +396,12 @@ class ObjectSearchTest extends ObjectCommon
         ];
     }
     
-    
+    /**
+     * @group regression
+     */
+    public function testSearcRegression() {
+        $test = new searchtestA();
+        $test->unify();
+        $this->assertTrue(true);
+    }
 }
