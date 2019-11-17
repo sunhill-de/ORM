@@ -20,6 +20,8 @@ class query_builder {
     
     protected $next_table = 'b';
     
+    protected $order_by = '';
+    
     public function __construct() {
         
     }
@@ -53,7 +55,18 @@ class query_builder {
     }
     
     public function limit($delta,$limit) {
-        $this->limit = "$delta,$limit";    
+        $this->limit = "$delta,$limit";
+        return $this;
+    }
+    
+    public function order_by($field,$desc=false) {    
+        $property = ($this->calling_class)::get_property_info($field);        
+        $letter = $this->request_table($property,'=',0);
+        $this->order_by = ' order by '.$letter.'.'.$field;
+        if ($desc) {
+            $this->order_by .= ' desc';
+        }
+        return $this;
     }
     
     public function get() {
@@ -162,6 +175,14 @@ class query_builder {
     }
     
     private function postprocess_querystr() {
-        
+        if (!empty($this->order_by)) {
+            $result =  $this->order_by;
+        } else {
+            $result = ' order by a.id';
+        }
+        if (!empty($this->limit)) {
+            $result .= ' limit '.$this->limit;
+        }
+        return $result;
     }
 }

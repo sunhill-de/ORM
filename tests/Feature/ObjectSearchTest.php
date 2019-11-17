@@ -186,6 +186,42 @@ class ObjectSearchTest extends ObjectCommon
         $this->assertEquals([10,11,12,13,14,15],$result);
     }
     
+    /**
+     * @group order
+     */
+    public function testSearchWithNoConditionOrder() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestB::search()->order_by('Bchar')->get();
+        $this->assertEquals([10,14,11,12,13,15],$result);
+    }
+    
+    /**
+     * @group order
+     */
+    public function testSearchWithConditionOrder() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestB::search()->where('Bint','<',602)->order_by('Bchar',true)->get();
+        $this->assertEquals([11,10],$result);
+    }
+    
+    /**
+     * @group order
+     */
+    public function testSearchWithCombinedConditionOrder() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestB::search()->where('Bint','<',603)->where('Aint','<',502)->order_by('Bchar',true)->get();
+        $this->assertEquals([11,10],$result);
+    }
+    
+    /**
+     * @group limit
+     */
+    public function testSearchWithLimit() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestB::search()->limit(2,2)->get();
+        $this->assertEquals([12,13],$result);
+    }
+    
     public function searchtestCountSingleResult() {
         $this->prepare_tables();
         $result = \Tests\Feature\searchtestC::search()->count();
