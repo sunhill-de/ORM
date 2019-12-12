@@ -22,6 +22,8 @@ class query_builder {
     
     protected $order_by = '';
     
+    protected $grouping = true;
+    
     public function __construct() {
         
     }
@@ -104,6 +106,7 @@ class query_builder {
     
     public function count() {
        $this->searchfor = 'count(*) as id';
+       $this->grouping = false;
        return $this->execute_query();
     }
     
@@ -157,7 +160,7 @@ class query_builder {
             $first = false;
             $result .= $where['string'];
         }
-        return $result.' group by a.id';
+        return $result.($this->grouping?' group by a.id':'');
     }
     
     private function get_used_tables() {
