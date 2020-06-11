@@ -222,13 +222,22 @@ class ObjectSearchTest extends ObjectCommon
         $this->assertEquals([12,13],$result);
     }
     
-    public function searchtestCountSingleResult() {
+    public function testCountSingleResult() {
         $this->prepare_tables();
         $result = \Tests\Feature\searchtestC::search()->count();
         $this->assertEquals(1,$result);
     }
     
-    public function searchtestCountMultipleResult() {
+    /**
+     * @group bug
+     */
+    public function testCountWithObjectCondition() {
+        $this->prepare_tables();
+        $result = \Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count();
+        $this->assertEquals(2,$result);
+    }
+    
+    public function testCountMultipleResult() {
         $this->prepare_tables();
         $result = \Tests\Feature\searchtestB::search()->count();
         $this->assertEquals(6,$result);
