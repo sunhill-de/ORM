@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Test;
 use Illuminate\Support\Facades\DB;
+use Sunhill\Objects\oo_object;
 
-class testA extends \Sunhill\Objects\oo_object {
+class testA extends oo_object {
    
     public static $table_name = 'testA';
     
@@ -21,7 +20,7 @@ class testA extends \Sunhill\Objects\oo_object {
     
 }
 
-class testB extends \Sunhill\Objects\oo_object {
+class testB extends oo_object {
 
     public static $table_name = 'testB';
     
@@ -32,7 +31,7 @@ class testB extends \Sunhill\Objects\oo_object {
         
 }
 
-class testC extends \Sunhill\Objects\oo_object {
+class testC extends oo_object {
     
     public static $table_name = 'testC';
     
@@ -61,7 +60,7 @@ class testD extends \Sunhill\Test\ts_dummy {
     
 }
 
-class testE extends \Sunhill\Objects\oo_object {
+class testE extends oo_object {
 
     public static $table_name = 'testE';
     

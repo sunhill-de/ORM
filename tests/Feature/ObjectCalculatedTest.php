@@ -2,13 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Test;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_object;
-use Sunhill;
 
 class TestClass extends \Sunhill\Objects\oo_object {
 

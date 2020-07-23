@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Test;
 
 class ObjectTagTest extends ObjectCommon
 {

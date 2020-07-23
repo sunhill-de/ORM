@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use Sunhill\Test\sunhill_testcase_db;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Crawler;
 use Illuminate\Support\Facades\DB;
 
-class TagTest extends \Tests\sunhill_testcase_db
+class TagTest extends sunhill_testcase_db
 {
 	
 	use \Tests\DatabaseSetup;

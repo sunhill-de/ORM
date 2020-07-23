@@ -2,12 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use Sunhill\Test\sunhill_testcase_db;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-
-class ObjectCommon extends \Tests\sunhill_testcase_db
+class ObjectCommon extends sunhill_testcase_db
 {
     protected function setUp():void {
         parent::setUp();

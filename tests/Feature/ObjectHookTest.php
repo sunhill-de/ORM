@@ -2,11 +2,8 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Test;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 

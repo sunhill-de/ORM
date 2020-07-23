@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests;
+namespace Sunhill\Test;
 
 use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
 class sunhill_testcase_db extends TestCase {
     

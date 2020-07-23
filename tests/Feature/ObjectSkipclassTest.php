@@ -2,12 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Test;
+use Sunhill\Test\ts_dummy;
 
-class SkipClass extends \Sunhill\Test\ts_dummy {
+class SkipClass extends ts_dummy {
     
     public static $table_name = 'skipclasses';
 }

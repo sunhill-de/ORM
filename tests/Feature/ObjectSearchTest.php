@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use Tests\searchtestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Test;
 use Illuminate\Support\Facades\DB;
+use Sunhill\Objects\oo_object;
 
-class searchtestA extends \Sunhill\Objects\oo_object {
+class searchtestA extends oo_object {
    
     public static $table_name = 'searchtestA';
     
