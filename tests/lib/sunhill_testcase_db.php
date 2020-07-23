@@ -126,7 +126,7 @@ class sunhill_testcase_db extends TestCase {
         DB::statement($querystr);
     }
     
-    protected function seed() {
+    public function seed() {
         exec(dirname(__FILE__).'/../../application db:seed');
     }
     
