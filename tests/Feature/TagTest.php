@@ -24,7 +24,6 @@ class TagTest extends sunhill_testcase_db
 	protected function setUp():void {
 		parent::setUp();
 		$this->prepare_tables();
-		$this->seed();
 	//	$this->artisan('migrate:refresh', ['--seed'=>true]);
 	}
 	
@@ -34,7 +33,7 @@ class TagTest extends sunhill_testcase_db
 	 */
 	public function testStaticDeleteTagObjects() {
 	    $this->prepare_tables();
-	    $this->seed();
+	    $this->create_write_scenario();
 	    $object = new \Sunhill\Test\ts_dummy(); 
 	    $object->dummyint = 1;
 	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagA');
