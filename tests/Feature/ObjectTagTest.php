@@ -3,15 +3,17 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Sunhill\Objects\oo_object;
+use Sunhill\Objects\oo_tag;
+use Sunhill\Test\ts_dummy;
 
 class ObjectTagTest extends ObjectCommon
 {
-    
+        
     protected function prepare_tables() {
         parent::prepare_tables();
         $this->create_special_table('dummies');
-        $this->seed();
+        $this->create_write_scenario();
     }
         
     /**
@@ -19,20 +21,19 @@ class ObjectTagTest extends ObjectCommon
      */
     public function testTagObject($set,$expect,$create) {
         $this->prepare_tables();
-
-        $test = new \Sunhill\Test\ts_dummy();
+        $test = new ts_dummy();
         
         for ($i=0;$i<count($set);$i++) {
             if ($expect[$i]=='except') {
                 try {
-                    $tag = new \Sunhill\Objects\oo_tag($set[$i],$create);
+                    $tag = new oo_tag($set[$i],$create);
                 } catch (\Exception $e) {
                     $this->assertTrue(true);
                     return;
                 }
                 $this->fail();
             } else {
-                $tag = new \Sunhill\Objects\oo_tag($set[$i],$create);
+                $tag = new oo_tag($set[$i],$create);
             }
             $test->tags->stick($tag);
         }
@@ -41,9 +42,9 @@ class ObjectTagTest extends ObjectCommon
         for ($i=0;$i<count($expect);$i++) {
             $this->assertEquals($expect[$i],$test->tags[$i]);
         }
-        $reread =  new \Sunhill\Test\ts_dummy();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $reread =  new ts_dummy();
+        oo_object::flush_cache();
+        $reread = oo_object::load_object_of($test->get_id());
         for ($i=0;$i<count($expect);$i++) {
             $this->assertEquals($expect[$i],$reread->tags[$i]);
         }
@@ -51,7 +52,7 @@ class ObjectTagTest extends ObjectCommon
 
     public function TagProvider() {
         return [[['TagA'],['TagA'],false],
-                [['TagA.TagChildA'],['TagA.TagChildA'],false],
+                [['TagB.TagC'],['TagB.TagC'],false],
                 [['NewTag'],['NewTag'],true],
                 [['NewTag'],['except'],false],
                 [['TagA','TagB'],['TagA','TagB'],false]
@@ -64,29 +65,29 @@ class ObjectTagTest extends ObjectCommon
      */
     public function testChangeTags($init,$add,$delete,$expect,$changestr) {
         $this->prepare_tables();
-        $test = new \Sunhill\Test\ts_dummy();        
+        $test = new ts_dummy();        
         for ($i=0;$i<count($init);$i++) {
-            $tag = new \Sunhill\Objects\oo_tag($init[$i],true);
+            $tag = new oo_tag($init[$i],true);
             $test->tags->stick($tag);
         }
         $test->dummyint = 1;
         $test->commit();
         
-        \Sunhill\Objects\oo_object::flush_cache();
-        $read =  new \Sunhill\Test\ts_dummy();
-        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        oo_object::flush_cache();
+        $read =  new ts_dummy();
+        $read = oo_object::load_object_of($test->get_id());
         for ($i=0;$i<count($add);$i++) {
-            $tag = new \Sunhill\Objects\oo_tag($add[$i],true);
+            $tag = new oo_tag($add[$i],true);
             $read->tags->stick($tag);            
         }
         for ($i=0;$i<count($delete);$i++) {
-            $tag = new \Sunhill\Objects\oo_tag($delete[$i],true);
+            $tag = new oo_tag($delete[$i],true);
             $read->tags->remove($tag);            
         }
         $read->commit();
         
-        \Sunhill\Objects\oo_object::flush_cache();
-        $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        oo_object::flush_cache();
+        $reread = oo_object::load_object_of($test->get_id());
         
         $given_tags = array();
         for ($i=0;$i<count($reread->tags);$i++) {
@@ -103,22 +104,22 @@ class ObjectTagTest extends ObjectCommon
      */
     public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
         $this->prepare_tables();
-        $test = new \Sunhill\Test\ts_dummy();
+        $test = new ts_dummy();
         for ($i=0;$i<count($init);$i++) {
-            $tag = new \Sunhill\Objects\oo_tag($init[$i],true);
+            $tag = new oo_tag($init[$i],true);
             $test->tags->stick($tag);
         }
         $test->dummyint = 1;
         $test->commit();
         
-        \Sunhill\Objects\oo_object::flush_cache();
-        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        oo_object::flush_cache();
+        $read = oo_object::load_object_of($test->get_id());
         for ($i=0;$i<count($add);$i++) {
-            $tag = new \Sunhill\Objects\oo_tag($add[$i],true);
+            $tag = new oo_tag($add[$i],true);
             $read->tags->stick($tag);
         }
         for ($i=0;$i<count($delete);$i++) {
-            $tag = new \Sunhill\Objects\oo_tag($delete[$i],true);
+            $tag = new oo_tag($delete[$i],true);
             $read->tags->remove($tag);
         }
         $read->commit();
@@ -127,9 +128,11 @@ class ObjectTagTest extends ObjectCommon
     
     public function ChangeTagProvider() {
         return [
-            [['TagA','TagB'],['TagChildA'],[],['TagA','TagB','TagA.TagChildA'],'ADD:TagA.TagChildA'],
+            [['TagA','TagB'],['TagChildA'],[],['TagA','TagB','TagChildA'],'ADD:TagChildA'],
             [['TagA','TagB'],[],['TagA'],['TagB'],'REMOVED:TagA'],
-            [['TagA','TagB'],['TagChildA'],['TagA'],['TagB','TagA.TagChildA'],'ADD:TagA.TagChildAREMOVED:TagA']
+            [['TagA','TagB'],['TagChildA'],['TagA'],['TagB','TagChildA'],'ADD:TagChildAREMOVED:TagA'],
+            [['TagA'],['TagC'],[],['TagA','TagB.TagC'],'ADD:TagB.TagC'],
+            [['TagA','TagB.TagC'],[],['TagC'],['TagA'],'REMOVED:TagB.TagC'],
         ];
     }
 }

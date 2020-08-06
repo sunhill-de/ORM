@@ -4,8 +4,11 @@ namespace Sunhill\Test;
 
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class sunhill_testcase_db extends TestCase {
+    
+    use RefreshDatabase;
     
     /**
      * Speichert die Namen der Tabllen, die für den Betrieb des Frameworks benötigt werden
@@ -126,9 +129,6 @@ class sunhill_testcase_db extends TestCase {
         DB::statement($querystr);
     }
     
-    public function seed() {
-        exec(dirname(__FILE__).'/../../application db:seed');
-    }
     
     protected function create_write_scenario() {
         $this->insert_into('tags',['id','created_at','updated_at','name','options','parent_id'],
@@ -145,11 +145,11 @@ class sunhill_testcase_db extends TestCase {
                 [1,'TagA',1,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [2,'TagB',2,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [3,'TagC',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [4,'TagC.TagB',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
+                [4,'TagB.TagC',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [5,'TagD',4,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [6,'TagE',5,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
                 [7,'TagF',6,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-            ]);
+            ]); 
         $this->insert_into('attributes',['id','name','type','allowedobjects','property'],
             [
                 [1,'int_attribute','int',"\\Sunhill\\Test\\ts_dummy",''],

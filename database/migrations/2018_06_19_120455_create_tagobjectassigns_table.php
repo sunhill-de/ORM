@@ -1,11 +1,11 @@
 <?php
-
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class CreateTagobjectassignsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -16,7 +16,10 @@ class CreateTagobjectassignsTable extends Migration
         Schema::create('tagobjectassigns', function (Blueprint $table) {
             $table->integer('container_id');
             $table->integer('tag_id');
-            $table->primary(['container_id','tag_id']);
+            $table->primary([
+                'container_id',
+                'tag_id'
+            ]);
         });
     }
 

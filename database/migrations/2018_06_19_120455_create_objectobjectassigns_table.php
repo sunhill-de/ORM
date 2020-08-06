@@ -1,11 +1,11 @@
 <?php
-
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class CreateObjectobjectassignsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -16,9 +16,13 @@ class CreateObjectobjectassignsTable extends Migration
         Schema::create('objectobjectassigns', function (Blueprint $table) {
             $table->integer('container_id');
             $table->integer('element_id');
-            $table->string('field',50);
+            $table->string('field', 50);
             $table->integer('index');
-            $table->primary(['container_id','element_id','field']);
+            $table->primary([
+                'container_id',
+                'element_id',
+                'field'
+            ]);
         });
     }
 

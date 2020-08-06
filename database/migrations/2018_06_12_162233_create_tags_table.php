@@ -1,11 +1,11 @@
 <?php
-
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class CreateTagsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -18,8 +18,10 @@ class CreateTagsTable extends Migration
             $table->timestamps();
             $table->string('name');
             $table->integer('options');
-            $table->integer('parent_id')->unsigned()->nullable();
-            //$table->primary('id');
+            $table->integer('parent_id')
+                ->unsigned()
+                ->nullable();
+            // $table->primary('id');
             $table->index('name');
             $table->index('parent_id');
         });
