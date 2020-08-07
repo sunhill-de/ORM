@@ -203,4 +203,11 @@ class PropertyTest extends TestCase
 		$test->set_default(null);
 		$this->assertTrue(is_null($test->value));
 	}
+	
+	public function testAdditinalFields() {
+	    $test = new \Sunhill\Properties\oo_property(null);
+	    $test->set_additional('ABC')->set_another('DEF');
+	    $this->assertEquals('ABC',$test->get_additional());
+	    $this->assertEquals('DEF',$test->get_another());
+	}
 }

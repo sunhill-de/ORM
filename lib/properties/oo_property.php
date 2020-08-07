@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * @file oo_property.php
+ * Provides an access to a single property of an object 
+ * Lang de,en
+ * Reviewstatus: 2020-08-06
+ * Localization: incomplete
+ * Documentation: incomplete
+ * Tests: Unit/PropertyTest.php, Unit/PropertyValidateTest.php
+ * Coverage: unknown
+ */
+
 namespace Sunhill\Properties;
 
 /**
@@ -37,6 +48,11 @@ class InvalidValueException extends PropertyException {}
  */
 class oo_property extends \Sunhill\base {
 	
+    /**
+     * Properties get the possibility to add additinal fields (like property->set_additional)
+     */
+    private $additional_fields = [];
+    
     /**
      * Über das Feature-Array werden die Eigenschaften des Properties definiert. Features können über
      * has_feature() abgefragt werden
@@ -152,6 +168,27 @@ class oo_property extends \Sunhill\base {
 		}
 		$this->initialize();
 		$this->init_validator();
+	}
+	
+	/**
+	 * Extends the property with the possibility to deal with additional getters and setters
+	 * @param unknown $method
+	 * @param unknown $params
+	 * @return mixed|NULL|\Sunhill\Properties\oo_property
+	 */
+	public function __call($method,$params) {
+	    if (substr($method,0,4) == 'get_') {
+	        $name = substr($method,4);
+	        if (isset($this->additional_fields[$name])) {
+	            return $this->additional_fields[$name];
+	        } else {
+	            return null;
+	        }
+	    } else if (substr($method,0,4) == 'set_') {
+	        $name = substr($method,4);
+	        $this->additional_fields[$name] = $params[0];
+	        return $this;
+	    }
 	}
 	
 	/**
