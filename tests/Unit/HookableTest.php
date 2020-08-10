@@ -1,4 +1,11 @@
 <?php
+/**
+ *
+ * @file HookableTest.php
+ * Unittest for the class hookable
+ * Lang en
+ * Reviewstate: 2020-08-10
+ */
 
 namespace Tests\Unit;
 
