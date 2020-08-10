@@ -1,4 +1,11 @@
 <?php
+/**
+ * @file LoggableTest.php
+ * Unittest for the class loggable
+ * @todo obsolete test for a obsolete class?
+ * Lang en
+ * Reviewstate: 2020-08-10
+ */
 
 namespace Tests\Unit;
 
