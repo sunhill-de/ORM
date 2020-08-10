@@ -13,6 +13,8 @@ class TagsTableSeeder extends Seeder {
 		    ['id'=>4,'name'=>'TagD',0],
 		    ['id'=>5,'name'=>'TagE',0],
 		    ['id'=>6,'name'=>'TagF',0],		    
+		    ['id'=>7,'name'=>'TagG',6],
+		    ['id'=>8,'name'=>'TagE',7],
 		]);
 	}
 }
