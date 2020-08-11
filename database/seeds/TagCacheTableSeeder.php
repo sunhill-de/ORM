@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\DB;
 class TagCacheTableSeeder extends Seeder {
 	
 	public function run() {
-		DB::table('tagcache')->insert([
+	    DB::table('tagcache')->truncate();
+	    DB::table('tagcache')->insert([
 		    ['id'=>1,'name'=>'TagA','tag_id'=>1],
 		    ['id'=>2,'name'=>'TagB','tag_id'=>2],
 		    ['id'=>3,'name'=>'TagC','tag_id'=>3],

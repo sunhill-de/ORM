@@ -3,10 +3,11 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class SimpleObjectTableSeeder extends Seeder {
+class SimpleObjectsTableSeeder extends Seeder {
 	
 	public function run() {
-		DB::table('objects')->insert([
+	    DB::table('objects')->truncate();
+	    DB::table('objects')->insert([
 		    ['id'=>1,'classname'=>"\\Sunhill\\Test\\ts_dummy"],
 		    ['id'=>2,'classname'=>"\\Sunhill\\Test\\ts_dummy"],
 		    ['id'=>3,'classname'=>"\\Sunhill\\Test\\ts_dummy"],

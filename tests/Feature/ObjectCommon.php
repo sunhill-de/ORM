@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ObjectCommon extends sunhill_testcase_db
 {
-    protected function setUp():void {
+    public function setUp():void {
         parent::setUp();
 //        $this->prepare_tables();
     }

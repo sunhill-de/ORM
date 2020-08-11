@@ -23,6 +23,6 @@ class SimpleSeeder extends Seeder
         $this->call('SimpleStringObjectAssignsTableSeeder');
         $this->call('SimpleCachingTableSeeder');
         $this->call('SimpleAttributeValuesTableSeeder');
-        $this->call('ExternalhooksSeeder');
+        $this->call('ExternalhooksTableSeeder');
     }
 }

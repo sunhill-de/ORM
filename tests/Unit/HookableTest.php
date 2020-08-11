@@ -12,9 +12,9 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Crawler;
+use \Sunhill\hookable;
 
-class testhookable extends \Sunhill\hookable {
+class testhookable extends hookable {
 
     public $parent;
     

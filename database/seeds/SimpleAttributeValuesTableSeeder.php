@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 class SimpleAttributeValuesTableSeeder extends Seeder {
 	
     public function run() {
+        DB::table('attributevalues')->truncate();
         DB::table('attributevalues')->insert([
             [
                 'id'=>1,

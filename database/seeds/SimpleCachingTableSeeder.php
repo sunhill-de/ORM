@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 class SimpleCachingTableSeeder extends Seeder {
 	
     public function run() {
+        DB::table('caching')->truncate();
         DB::table('caching')->insert([
             [
                 'id'=>1,

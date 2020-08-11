@@ -20,7 +20,7 @@ class CreateExternalhooksTable extends Migration
             $table->string('action');
             $table->string('subaction');
             $table->string('hook');
-            $table->string('payload');
+            $table->string('payload')->nullable();
         });
     }
 

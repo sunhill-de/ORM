@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\DB;
 class SimpleTestparentsTableSeeder extends Seeder {
 	
 	public function run() {
-		DB::table('testparents')->insert([
+	    DB::table('testparents')->truncate();
+	    DB::table('testparents')->insert([
 		            [
 		                'id'=>5,
 		                'parentint'=>123,

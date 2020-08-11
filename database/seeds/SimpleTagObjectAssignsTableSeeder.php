@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 class SimpleTagObjectAssignsTableSeeder extends Seeder {
 	
 	public function run() {
+	    DB::table('tagobjectassigns')->truncate();
 	    DB::table('tagobjectassigns')->insert([
                     [
 		                'container_id'=>1,

@@ -1,65 +1,67 @@
 {
-	"name" : "sunhill/sunhill",
-	"description" : "Das Sunhill-Framework",
+	"name" : "laravel/laravel",
+	"type" : "project",
+	"description" : "The Laravel Framework.",
 	"keywords" : [
 		"framework",
-		"sunhill",
-		"objects",
-		"database"
+		"laravel"
 	],
-	"homepage" : "https://laravel-zero.com",
-	"type" : "library",
 	"license" : "MIT",
-	"support" : {
-		"issues" : "https://github.com/laravel-zero/laravel-zero/issues",
-		"source" : "https://github.com/laravel-zero/laravel-zero"
-	},
-	"authors" : [{
-			"name" : "Klaus Dimde",
-			"email" : "klaus@dimde.info"
-		}
-	],
 	"require" : {
-		"php" : "^7.1.3",
-		"illuminate/database" : "5.6.*",
-		"illuminate/log" : "5.6.*"
+		"php" : "^7.2.5",
+		"fideloper/proxy" : "^4.2",
+		"fruitcake/laravel-cors" : "^2.0",
+		"guzzlehttp/guzzle" : "^6.3",
+		"laravel/framework" : "^7.24",
+		"laravel/tinker" : "^2.0"
 	},
 	"require-dev" : {
-		"phpunit/phpunit" : "^7.1",
-		"laravel-zero/framework" : "*"
+		"facade/ignition" : "^2.0",
+		"fzaninotto/faker" : "^1.9.1",
+		"mockery/mockery" : "^1.3.1",
+		"nunomaduro/collision" : "^4.1",
+		"phpunit/phpunit" : "^8.5"
+	},
+	"config" : {
+		"optimize-autoloader" : true,
+		"preferred-install" : "dist",
+		"sort-packages" : true
+	},
+	"extra" : {
+		"laravel" : {}
 	},
 	"autoload" : {
 		"psr-4" : {
 			"App\\" : "app/",
-			"Sunhill\\Test\\" : [
-				"tests/lib",
-				"tests/objects"
-			],
-			"Sunhill\\Objects\\" : "lib/objects",
 			"Sunhill\\" : "lib",
-			"Tests\\" : "tests/lib",
+			"Sunhill\\Objects\\" : "lib/objects",
 			"Sunhill\\Properties\\" : "lib/properties",
 			"Sunhill\\Validators\\" : "lib/validators",
-			"Sunhill\\Storage\\" : "lib/storage",
-			"Sunhill\\Utils\\" : "lib/utils"
-		}
+			"Sunhill\\Utils\\" : "lib/utils",
+			"Sunhill\\Storage\\" : "lib/storage"
+		},
+		"classmap" : [
+			"database/seeds",
+			"database/factories"
+		]
 	},
 	"autoload-dev" : {
 		"psr-4" : {
-			"Tests\\" : "tests/"
+			"Tests\\" : "tests/",
+			"Sunhill\\Test\\" : [
+				"tests/lib",
+				"tests/objects"
+			]
 		}
-	},
-	"config" : {
-		"preferred-install" : "dist",
-		"sort-packages" : true,
-		"optimize-autoloader" : true,
-		"platform" : {
-			"ext-posix" : "0"
-		}
-	},
-	"scripts" : {
-		"post-create-project-cmd" : "@php application app:rename"
 	},
 	"minimum-stability" : "dev",
-	"prefer-stable" : true
+	"prefer-stable" : true,
+	"scripts" : {
+		"post-autoload-dump" : [
+			"Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+			"@php artisan package:discover --ansi"
+		],
+		"post-root-package-install" : "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+		"post-create-project-cmd" : "@php artisan key:generate --ansi"
+	}
 }

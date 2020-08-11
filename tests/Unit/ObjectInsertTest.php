@@ -1,42 +1,45 @@
 <?php
+/**
+ *
+ * @file ObjectInsertTest.php
+ * Unittest for insertion of objects
+ * Lang en
+ * Reviewstate: 2020-08-12
+ */
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Crawler;
-use Sunhill\Test\sunhill_testcase_db;
-use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
+use Sunhill\Objects\oo_object;
+use Sunhill\Test\ts_objectunit;
 
-class ObjectInsertTest extends sunhill_testcase_db
+class ObjectInsertTest extends TestCase
 {
 
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_special_table('passthrus');
-        $this->create_special_table('testparents');
-        $this->create_special_table('testchildren');
-        $this->create_special_table('referenceonlies');
-    }
+    use RefreshDatabase;
     
-    protected function prepare_read() {
-        $this->prepare_tables();
-        $this->create_load_scenario();
+    private $setup = false;
+    
+    public function setUp() : void {
+        parent::setUp();
+        if (!$this->setup) {
+            $this->seed('SimpleSeeder');
+            $this->setup = true;
+        }
     }
     
     public function testStorageCreation() {
-        $this->prepare_read();
-        $object = new \Sunhill\Test\ts_objectunit();
+        $object = new ts_objectunit();
         $object->intvalue = 666;
         $object->sarray[] = 'AAA';
         $object->sarray[] = 'BBB';
         $object->sarray[] = 'CCC';
-        $dummy1 = \Sunhill\Objects\oo_object::load_object_of(1);
-        $dummy2 = \Sunhill\Objects\oo_object::load_object_of(2);
-        $dummy3 = \Sunhill\Objects\oo_object::load_object_of(3);
-        $dummy4 = \Sunhill\Objects\oo_object::load_object_of(4);
+        $dummy1 = oo_object::load_object_of(1);
+        $dummy2 = oo_object::load_object_of(2);
+        $dummy3 = oo_object::load_object_of(3);
+        $dummy4 = oo_object::load_object_of(4);
         $object->objectvalue = $dummy1;
         $object->oarray[] = $dummy2;
         $object->oarray[] = $dummy3;
@@ -105,8 +108,7 @@ class ObjectInsertTest extends sunhill_testcase_db
     }
     
     public function testSimpleOnly() {
-        $this->prepare_read();
-        $object = new \Sunhill\Test\ts_objectunit();
+        $object = new ts_objectunit();
         $object->intvalue = 666;
         $object->commit();
         $this->assertEquals(666,$object->storage_values['intvalue']);

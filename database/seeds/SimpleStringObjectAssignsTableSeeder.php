@@ -3,9 +3,10 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class SimpleStringObjectsAssignsTableSeeder extends Seeder {
+class SimpleStringObjectAssignsTableSeeder extends Seeder {
 	
     public function run() {
+        DB::table('stringobjectassigns')->truncate();
         DB::table('stringobjectassigns')->insert([
             [
                 'container_id'=>5,

@@ -21,7 +21,7 @@ class TagTest extends sunhill_testcase_db
 	    $this->create_special_table('referenceonlies');
 	}
 	
-	protected function setUp():void {
+	public function setUp():void {
 		parent::setUp();
 		$this->prepare_tables();
 	//	$this->artisan('migrate:refresh', ['--seed'=>true]);

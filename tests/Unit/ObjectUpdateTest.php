@@ -5,25 +5,20 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Crawler;
-use Sunhill\Test\sunhill_testcase_db;
-use Illuminate\Support\Facades\DB;
 
-class ObjectUpdateTest extends sunhill_testcase_db
+class ObjectUpdateTest extends TestCase
 {
-
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_special_table('passthrus');
-        $this->create_special_table('testparents');
-        $this->create_special_table('testchildren');
-        $this->create_special_table('referenceonlies');
-    }
     
-    protected function prepare_read() {
-        $this->prepare_tables();
-        $this->create_load_scenario();
+    use RefreshDatabase;
+    
+    private $setup = false;
+    
+    public function setUp() : void {
+        parent::setUp();
+        if (!$this->setup) {
+            $this->seed('SimpleSeeder');
+            $this->setup = true;
+        }
     }
     
     /**
@@ -32,7 +27,6 @@ class ObjectUpdateTest extends sunhill_testcase_db
      * @param unknown $test_callback
      */
     public function testStorageUpdate($update_callback,$expectations) {
-        $this->prepare_read();
         \Sunhill\Objects\oo_object::flush_cache();
         $object = new \Sunhill\Test\ts_objectunit();
         $object->storage_values = [
@@ -248,7 +242,6 @@ class ObjectUpdateTest extends sunhill_testcase_db
     }
     
     public function testAttribute1() {
-        $this->prepare_read();
         \Sunhill\Objects\oo_object::flush_cache();
         $object = new \Sunhill\Test\ts_objectunit();
         $object->storage_values = [
@@ -282,7 +275,6 @@ class ObjectUpdateTest extends sunhill_testcase_db
     }
         
     public function testAttribute2() {
-        $this->prepare_read();
         \Sunhill\Objects\oo_object::flush_cache();
         $object = new \Sunhill\Test\ts_objectunit();
         $object->storage_values = [

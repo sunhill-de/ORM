@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 class AttributesTableSeeder extends Seeder {
 	
 	public function run() {
+	    DB::table('attributes')->truncate();
 	    DB::table('attributes')->insert([
 	        ['id'=>1,'name'=>'int_attribute','type'=>'int','allowedobjects'=>"\\Sunhill\\Test\\ts_dummy",'property'=>''],
 	        ['id'=>2,'name'=>'attribute1','type'=>'int','allowedobjects'=>"\\Sunhill\\Test\\ts_testparent",'property'=>''],
