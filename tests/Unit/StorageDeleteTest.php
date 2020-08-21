@@ -5,9 +5,8 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Crawler;
-use Tests\sunhill_testcase_db;
 use Illuminate\Support\Facades\DB;
+use Sunhill\Storage\storage_mysql;
 
 class StorageDeleteTest extends StorageBase
 {
@@ -21,13 +20,11 @@ class StorageDeleteTest extends StorageBase
      * @param unknown $field
      */
     public function testDelete($id,$class,$table,$field) {
-        $this->prepare_read();
         $object = new $class();
-        $changer = new \Sunhill\Storage\storage_mysql($object);
-        $before = empty(DB::table($table)->where($field,$id)->first());
+        $changer = new storage_mysql($object);
+        $this->assertDatabaseHas($table,[$field=>$id]);
         $changer->delete_object($id);        
-        $after = empty(DB::table($table)->where($field,$id)->first());
-        $this->assertEquals($before,!$after);
+        $this->assertDatabaseMissing($table,[$field=>$id]);
     }
     
     public function DeleteProvider() {

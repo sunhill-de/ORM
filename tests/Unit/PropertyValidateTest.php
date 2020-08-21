@@ -5,7 +5,11 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Objects\oo_property_object;
+use Sunhill\Properties\oo_property_object;
+use Sunhill\Properties\oo_property_array_of_objects;
+use Sunhill\Properties\oo_property_array_of_strings;
+use Sunhill\Properties\oo_property_enum;
+use Sunhill\Validators\ValidatorException;
 
 class PropertyValidateTest extends TestCase
 {
@@ -74,7 +78,7 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testObjectsPropertyPass() {
-    	$test = new \Sunhill\Properties\oo_property_object(null);
+    	$test = new oo_property_object(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
     	$object = new \Sunhill\Test\ts_testparent();
     	$object->parentint = 22;
@@ -83,25 +87,23 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testObjectsPropertyPassWithChild() {
-    	$test = new \Sunhill\Properties\oo_property_object(null);
+    	$test = new oo_property_object(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
     	$object = new \Sunhill\Test\ts_testchild();
     	$test->set_value($object);
     	$this->assertEquals($object,$test->get_value());
     }
     
-    /**
-     * @expectedException \Sunhill\Validators\ValidatorException
-     */
     public function testObjectsFail() {
-    	$test = new \Sunhill\Properties\oo_property_object(null);
+        $this->expectException(ValidatorException::class);
+        $test = new oo_property_object(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testchild']);
     	$object = new \Sunhill\Test\ts_testparent();
     	$test->set_value($object);
     }
     
     public function testArrayOfObjectsPropertyPass() {
-    	$test = new \Sunhill\Properties\oo_property_array_of_objects(null);
+    	$test = new oo_property_array_of_objects(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
     	$object = new \Sunhill\Test\ts_testparent();
     	$object->parentint = 22;
@@ -110,7 +112,7 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testArrayOfObjectsPropertyPassWithChild() {
-    	$test = new \Sunhill\Properties\oo_property_array_of_objects(null);
+    	$test = new oo_property_array_of_objects(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
     	$object = new \Sunhill\Test\ts_testchild();
     	$object->parentint = 23;
@@ -121,7 +123,7 @@ class PropertyValidateTest extends TestCase
      * @group reindex
      */
     public function testArrayOfObjectReindex() {
-        $test = new \Sunhill\Properties\oo_property_array_of_objects(null);
+        $test = new oo_property_array_of_objects(null);
         $test->set_allowed_objects(['\\Sunhill\\Test\\ts_testparent']);
         $object1 = new \Sunhill\Test\ts_testchild();
         $object1->parentint = 23;
@@ -134,18 +136,16 @@ class PropertyValidateTest extends TestCase
         
     }
     
-    /**
-     * @expectedException \Sunhill\Validators\ValidatorException
-     */
     public function testArrayOfObjectsFail() {
-    	$test = new \Sunhill\Properties\oo_property_array_of_objects(null);
+    	$this->expectException(ValidatorException::class);
+        $test = new oo_property_array_of_objects(null);
     	$test->set_allowed_objects(['\\Sunhill\\Test\\ts_testchild']);
     	$object = new \Sunhill\Test\ts_testparent();
     	$test->get_value()[] = $object;
     }
     
     public function testArrayOfString() {
-    	$test = new \Sunhill\Properties\oo_property_array_of_strings(null);
+    	$test = new oo_property_array_of_strings(null);
     	$test->get_value()[] = 'ABC';
     	$test->get_value()[] = 'DEF';
     	$hilf = $test->get_value();
@@ -158,7 +158,7 @@ class PropertyValidateTest extends TestCase
      * @param unknown $raise_exception
      */
     public function testEnum($test_value,$exception) {
-    	$test = new \Sunhill\Properties\oo_property_enum(null);
+    	$test = new oo_property_enum(null);
     	$test->set_enum_values(['A','B']);
     	$result = 0;
     	try {

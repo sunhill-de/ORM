@@ -53,7 +53,14 @@ class validator_base {
      */
     public function validate($test) {
         if (!$this->is_valid($test)) {
-            throw new ValidatorException(get_class($this).": The given value '".strval($test)."' is not valid.");
+            if (is_object($test)) {
+                $value = get_class($test);                
+            } else if (is_array($test)) {
+                $value = 'array';
+            } else {
+                $value = strval($test);
+            } 
+            throw new ValidatorException(get_class($this).": The given value '$value' is not valid.");
         }
         return $this->prepare($test);
     }

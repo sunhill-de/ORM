@@ -5,6 +5,8 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Sunhill\Properties\oo_property;
+use Sunhill\Objects\oo_object;
 
 class PropertyTest extends TestCase
 {
@@ -15,7 +17,7 @@ class PropertyTest extends TestCase
 	 */
 	public function testPropertyConstructor()
 	{
-		$test = new \Sunhill\Properties\oo_property(null);
+		$test = new oo_property(null);
 		$this->assertFalse(is_null($test));
 		return $test;
 	}
@@ -129,9 +131,9 @@ class PropertyTest extends TestCase
 	 * Testet, ob der Vergleich auf gleichheit auch für Objekte gilt
 	 */
 	public function testDirtyIfNoChangeWithObjects() {
-//		$object = new \Sunhill\Objects\oo_object();
-		$value = new \Sunhill\Objects\oo_object();
-		$test = new \Sunhill\Properties\oo_property(null);
+//		$object = new oo_object();
+		$value = new oo_object();
+		$test = new oo_property(null);
 		$test->set_value($value);
 		$test->commit();
 		$test->set_value($value);
@@ -142,7 +144,7 @@ class PropertyTest extends TestCase
 	 * Testet, ob commit mit Default korrekt ist
 	 */
 	public function testCommitUninitialiedWithDefault() {
-		$test = new \Sunhill\Properties\oo_property(null);
+	    $test = new oo_property(null);
 		$test->set_default('ERF');
 		$test->commit();
 		$this->assertEquals('ERF',$test->get_value());
@@ -150,19 +152,19 @@ class PropertyTest extends TestCase
 	
 	/**
 	 * Testet, ob commit ohne Default korrekt ist
-	 * @expectedException \Exception
 	 */
 	public function testCommitUninitialiedWithoutDefault() {
-		$test = new \Sunhill\Properties\oo_property(null);
+	    $this->expectException(\Exception::class);
+	    $test = new oo_property(null);
 		$test->commit();
 	}
 	
 	/**
 	 * Testet, ob eine Exception ausgelöst wird, wenn ein nicht initialisierter Wert gelesen wird
-	 * @expectedException \Exception
 	 */
 	public function testExceptionUninitialized() {
-		$test = new \Sunhill\Properties\oo_property(null);
+	    $this->expectException(\Exception::class);
+	    $test = new oo_property(null);
 		$wert = $test->get_value();
 	}
 	
@@ -170,7 +172,7 @@ class PropertyTest extends TestCase
 	 * Testet, ob das setzen von Null Werten korrekt gehandelt wird
 	 */
 	public function testSetNullDirty() {
-		$test = new \Sunhill\Properties\oo_property(null);
+		$test = new oo_property(null);
 		$test->set_value(null);
 		$this->assertTrue($test->get_dirty());
 		return $test;
@@ -190,7 +192,7 @@ class PropertyTest extends TestCase
 	 * Testet, ob das setzen von Null Werten korrekt gehandelt wird
 	 */
 	public function testSetToNullAgain() {
-		$test = new \Sunhill\Properties\oo_property(null);
+		$test = new oo_property(null);
 		$test->set_value('ABC');
 		$test->commit();
 		$test->set_value(null);
@@ -199,13 +201,13 @@ class PropertyTest extends TestCase
 	}
 	
 	public function testDefaultsNull() {
-		$test = new \Sunhill\Properties\oo_property(null);
+		$test = new oo_property(null);
 		$test->set_default(null);
 		$this->assertTrue(is_null($test->value));
 	}
 	
 	public function testAdditinalFields() {
-	    $test = new \Sunhill\Properties\oo_property(null);
+	    $test = new oo_property(null);
 	    $test->set_additional('ABC')->set_another('DEF');
 	    $this->assertEquals('ABC',$test->get_additional());
 	    $this->assertEquals('DEF',$test->get_another());

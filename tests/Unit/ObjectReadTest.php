@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\Test\ts_objectunit;
+use Sunhill\Objects\oo_object;
 
 class ObjectReadTest extends TestCase
 {
@@ -20,6 +21,7 @@ class ObjectReadTest extends TestCase
             $this->seed('SimpleSeeder');
             $this->setup = true;
         }
+        oo_object::flush_cache();
     }
         
     /**

@@ -18,6 +18,7 @@ class SimpleSeeder extends Seeder
         $this->call('SimpleDummiesTableSeeder');
         $this->call('SimpleTestparentsTableSeeder');
         $this->call('SimpleTestchildrenTableSeeder');
+        $this->call('SimplePassthrusTableSeeder');
         $this->call('SimpleTagObjectAssignsTableSeeder');
         $this->call('SimpleObjectObjectAssignsTableSeeder');
         $this->call('SimpleStringObjectAssignsTableSeeder');

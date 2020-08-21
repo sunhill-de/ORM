@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Sunhill\Objects\oo_object;
 
 class ObjectUpdateTest extends TestCase
 {
@@ -27,7 +28,7 @@ class ObjectUpdateTest extends TestCase
      * @param unknown $test_callback
      */
     public function testStorageUpdate($update_callback,$expectations) {
-        \Sunhill\Objects\oo_object::flush_cache();
+        oo_object::flush_cache();
         $object = new \Sunhill\Test\ts_objectunit();
         $object->storage_values = [
             'id'=>1,
