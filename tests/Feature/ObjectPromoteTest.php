@@ -4,18 +4,16 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Sunhill\Objects\oo_object;
 
-class ObjectPromoteTest extends ObjectCommon
+class ObjectPromoteTest extends TestCase
 {
-
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_special_table('passthrus');
-        $this->create_special_table('testparents');
-        $this->create_special_table('testchildren');
-        $this->create_special_table('secondlevelchildren');
-        $this->create_special_table('thirdlevelchildren');
+    
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
     }
     
     /**
@@ -37,7 +35,6 @@ class ObjectPromoteTest extends ObjectCommon
     }
     
     public function testOneStepPromotion() {
-        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_secondlevelchild;
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -68,8 +65,7 @@ class ObjectPromoteTest extends ObjectCommon
     }
     
     public function testTwoStepPromotion() {
-        $this->prepare_tables();
-        $test = new \Sunhill\Test\ts_passthru();
+         $test = new \Sunhill\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -95,11 +91,8 @@ class ObjectPromoteTest extends ObjectCommon
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
     }
     
-    /**
-     * @expectedException Sunhill\Objects\ObjectException
-     */
-    public function testWrongInhertiance() {
-        $this->prepare_tables();
+   public function testWrongInhertiance() {
+        $this->expectException(\Sunhill\Objects\ObjectException::class);
         $test = new \Sunhill\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -114,11 +107,8 @@ class ObjectPromoteTest extends ObjectCommon
         $new = $test->promote('\\Sunhill\\Test\\ts_testchild');        
     }
     
-    /**
-     * @expectedException \Sunhill\Objects\ObjectException
-     */
     public function testNotExistingClassInhertiance() {
-        $this->prepare_tables();
+        $this->expectException(\Sunhill\Objects\ObjectException::class);
         $test = new \Sunhill\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;

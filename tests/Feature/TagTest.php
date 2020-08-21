@@ -6,34 +6,24 @@ use Sunhill\Test\sunhill_testcase_db;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
+use Sunhill\Objects\oo_object;
 
-class TagTest extends sunhill_testcase_db
+class TagTest extends TestCase
 {
-	
-	use \Tests\DatabaseSetup;
-	
-	protected function prepare_tables() {
-	    parent::prepare_tables();
-	    $this->create_special_table('dummies');
-	    $this->create_special_table('passthrus');
-	    $this->create_special_table('testparents');
-	    $this->create_special_table('testchildren');
-	    $this->create_special_table('referenceonlies');
-	}
-	
-	public function setUp():void {
-		parent::setUp();
-		$this->prepare_tables();
-	//	$this->artisan('migrate:refresh', ['--seed'=>true]);
-	}
-	
+    
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
+    }
+    
+    
 	/**
 	 * @group static
      * Dieser Test wurde in Feature ausgelager, da er von update-commits abhängig ist
 	 */
 	public function testStaticDeleteTagObjects() {
-	    $this->prepare_tables();
-	    $this->create_write_scenario();
 	    $object = new \Sunhill\Test\ts_dummy(); 
 	    $object->dummyint = 1;
 	    $tag = \Sunhill\Objects\oo_tag::search_tag('TagA');

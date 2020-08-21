@@ -6,22 +6,23 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\Objects\oo_object;
 use Sunhill\Objects\oo_tag;
 use Sunhill\Test\ts_dummy;
+use Tests\TestCase;
 
-class ObjectTagTest extends ObjectCommon
+class ObjectTagTest extends TestCase
 {
-        
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_write_scenario();
+    
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
     }
-        
+    
+   
     /**
      * @dataProvider TagProvider
      */
     public function testTagObject($set,$expect,$create) {
-        $this->prepare_tables();
-        $test = new ts_dummy();
+         $test = new ts_dummy();
         
         for ($i=0;$i<count($set);$i++) {
             if ($expect[$i]=='except') {
@@ -64,7 +65,6 @@ class ObjectTagTest extends ObjectCommon
      * @group change
      */
     public function testChangeTags($init,$add,$delete,$expect,$changestr) {
-        $this->prepare_tables();
         $test = new ts_dummy();        
         for ($i=0;$i<count($init);$i++) {
             $tag = new oo_tag($init[$i],true);
@@ -103,7 +103,6 @@ class ObjectTagTest extends ObjectCommon
      * @group Trigger
      */
     public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
-        $this->prepare_tables();
         $test = new ts_dummy();
         for ($i=0;$i<count($init);$i++) {
             $tag = new oo_tag($init[$i],true);

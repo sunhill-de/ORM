@@ -4,18 +4,19 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Sunhill\Objects\oo_object;
+use Illuminate\Support\Facades\DB;
 
-class ObjectReReadTest extends ObjectCommon
+class ObjectReReadTest extends TestCase
 {
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_special_table('passthrus');
-        $this->create_special_table('testparents');
-        $this->create_special_table('testchildren');
-        $this->create_special_table('referenceonlies');
-        $this->create_special_table('secondlevelchildren');
+    
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
     }
+    
     
     /**
 	 * @dataProvider SimpleFieldProvider
@@ -26,8 +27,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @group simple
 	 */
 	public function testSimpleFields($classname,$init,$modify,$expect) {
-	    $this->prepare_tables();
-	    \Sunhill\Objects\oo_object::flush_cache();
+	    oo_object::flush_cache();
 	    $classname = 'Sunhill\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -47,10 +47,10 @@ class ObjectReReadTest extends ObjectCommon
 	        }
 	    }
 	    $init_object->commit();
-	    \Sunhill\Objects\oo_object::flush_cache();
+	    oo_object::flush_cache();
 	    
 // Read
-	    $read_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
+	    $read_object = oo_object::load_object_of($init_object->get_id());
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
 	            $this->assertEquals($value,$read_object->$key,"Wiederauslesen von Feld '$key' fehlgeschlagen.");
@@ -69,8 +69,8 @@ class ObjectReReadTest extends ObjectCommon
 	    }
 	    $read_object->commit();
 
-	    \Sunhill\Objects\oo_object::flush_cache();
-	    $reread_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
+	    oo_object::flush_cache();
+	    $reread_object = oo_object::load_object_of($init_object->get_id());
 	    if (!is_null($expect)) {
 	        foreach ($expect as $key => $value) {
 	            $this->assertEquals($value,$reread_object->$key,"Wiederauslesen nach Modify von Feld '$key' fehlgeschlagen.");
@@ -249,9 +249,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @group complex
 	 */
 	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
-	    $this->prepare_tables();
-	    \Sunhill\Objects\oo_object::flush_cache();
-	    $this->clear_system_tables();
+	    oo_object::flush_cache();
 	    $classname = 'Sunhill\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -272,9 +270,9 @@ class ObjectReReadTest extends ObjectCommon
 	    }
 	    $init_object->commit(); 
 	    $id = $init_object->get_id();
-	    \Sunhill\Objects\oo_object::flush_cache();
+	    oo_object::flush_cache();
 	    // Read
-	    $read_object = \Sunhill\Objects\oo_object::load_object_of($id);
+	    $read_object = oo_object::load_object_of($id);
 	    if (!is_null($read_callback)) {
 	        if (!$read_callback($read_object)) {
 	            $this->fail("Read_Callback fehlgeschlagen.");
@@ -288,8 +286,8 @@ class ObjectReReadTest extends ObjectCommon
 	    }
 	    $read_object->commit();
 
-	    \Sunhill\Objects\oo_object::flush_cache();
-	    $reread_object = \Sunhill\Objects\oo_object::load_object_of($init_object->get_id());
+	    oo_object::flush_cache();
+	    $reread_object = oo_object::load_object_of($init_object->get_id());
 	    if (!is_null($expect_callback)) {
 	        if (!$expect_callback($reread_object)) {
 	            $this->fail("Expect_Callback fehlgeschlagen.");
@@ -607,8 +605,7 @@ class ObjectReReadTest extends ObjectCommon
 	}
 	
 	public function testChildChange() {
-	       $this->prepare_tables();
-	       \Sunhill\Objects\oo_object::flush_cache();
+	       oo_object::flush_cache();
 	       $object = new \Sunhill\Test\ts_referenceonly();
 	       $child  = new \Sunhill\Test\ts_dummy();
 	       $object->testint = 123;
@@ -626,8 +623,7 @@ class ObjectReReadTest extends ObjectCommon
 	 * @group many
 	 */
 	public function testManyObjects() {
-	    $this->prepare_tables();
-	    \Sunhill\Objects\oo_object::flush_cache();
+	    oo_object::flush_cache();
 	    $sub = array();
 	    $main = array();
 	    for ($i=0;$i<100;$i++) {
@@ -641,7 +637,7 @@ class ObjectReReadTest extends ObjectCommon
 	            $id = $main[$i]->get_id();
 	        }
 	    }
-	    $obj = \Sunhill\Objects\oo_object::load_object_of($id);
+	    $obj = oo_object::load_object_of($id);
         $this->assertEquals(50,$obj->testobject->dummyint);
 	}
 }

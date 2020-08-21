@@ -4,10 +4,19 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Sunhill\Objects\oo_object;
 
-class ObjectReReadStampsTest extends ObjectCommon
+class ObjectReReadStampsTest extends TestCase
 {
-
+    
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
+    }
+    
+    
     public function testTimestamps() {
         $add = new \Sunhill\Test\ts_dummy();
         $add->dummyint = 123;
