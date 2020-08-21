@@ -5,19 +5,18 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Sunhill\Objects\oo_object;
+use Tests\TestCase;
 
-class ObjectDeleteTest extends ObjectCommon
+class ObjectDeleteTest extends TestCase
 {
- 
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('testchildren');
-        $this->create_special_table('testparents');
-        $this->create_special_table('dummies');
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
     }
     
     function testCantLoad() {
-        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_testchild;
         $test->parentchar='ABC';
         $test->parentint=123;

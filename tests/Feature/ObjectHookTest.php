@@ -4,17 +4,11 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Sunhill\Objects\oo_object;
+use Tests\TestCase;
 
-class Hooking extends Model {
-    protected $table = 'hookings';
-    
-    public $timestamps = false;
-    
-}
-    
-class HookingObject extends \Sunhill\Objects\oo_object  {
+class HookingObject extends oo_object  {
 
     public static $table_name = 'hookings';
     
@@ -36,10 +30,10 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     protected function field_changing($params) {
         if ($params['subaction'] == 'ofield') {
             if (is_int($params['FROM'])) {
-                $params['FROM'] = \Sunhill\Objects\oo_object::load_object_of($params['FROM']);
+                $params['FROM'] = oo_object::load_object_of($params['FROM']);
             }
             if (is_int($params['TO'])) {
-                $params['TO'] = \Sunhill\Objects\oo_object::load_object_of($params['TO']);
+                $params['TO'] = oo_object::load_object_of($params['TO']);
             }
         }
         if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
@@ -54,10 +48,10 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
     protected function field_changed($params) {
         if ($params['subaction'] == 'ofield') {
             if (is_int($params['FROM'])) {
-                $params['FROM'] = \Sunhill\Objects\oo_object::load_object_of($params['FROM']);
+                $params['FROM'] = oo_object::load_object_of($params['FROM']);
             }
             if (is_int($params['TO'])) {
-                $params['TO'] = \Sunhill\Objects\oo_object::load_object_of($params['TO']);
+                $params['TO'] = oo_object::load_object_of($params['TO']);
             }
         }
         if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
@@ -97,14 +91,14 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
             if (is_int($new)) {
-                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+                $new = oo_object::load_object_of($new);
             }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
             if (is_int($new)) {
-                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+                $new = oo_object::load_object_of($new);
             }
             $hilf .= $new->dummyint;
         }
@@ -115,14 +109,14 @@ class HookingObject extends \Sunhill\Objects\oo_object  {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
             if (is_int($new)) {
-                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+                $new = oo_object::load_object_of($new);
             }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
             if (is_int($new)) {
-                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+                $new = oo_object::load_object_of($new);
             }
             $hilf .= $new->dummyint;
         }
@@ -172,14 +166,14 @@ class HookingChild extends HookingObject {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
             if (is_int($new)) {
-                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+                $new = oo_object::load_object_of($new);
             }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
             if (is_int($new)) {
-                $new = \Sunhill\Objects\oo_object::load_object_of($new);
+                $new = oo_object::load_object_of($new);
             }
             $hilf .= $new->dummyint;
         }
@@ -188,15 +182,15 @@ class HookingChild extends HookingObject {
     
 }
 
-class ObjectHookTest extends ObjectCommon
+class ObjectHookTest extends TestCase
 {
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
     }
     
     protected function setupHookTables() {
-        $this->prepare_tables();
         DB::statement("drop table if exists hookings ");
         DB::statement("drop table if exists childhookings ");
         DB::statement("create table hookings (id int primary key,hooking_int int,hookstate varchar(100))");       
@@ -600,12 +594,12 @@ class ObjectHookTest extends ObjectCommon
      */
     public function testChildChangeArrayBothIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy1->get_id());
+        oo_object::flush_cache();
+        $readdummy = oo_object::load_object_of($dummy1->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $readtest = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        oo_object::flush_cache();
+        $readtest = oo_object::load_object_of($test->get_id());
         $this->assertEquals('(Cobjarray:123->234)',$readtest->get_hook_str());
     }
 }

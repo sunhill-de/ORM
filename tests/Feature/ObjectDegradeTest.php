@@ -5,20 +5,18 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Sunhill\Objects\oo_object;
+use Tests\TestCase;
 
-class ObjectDegradeTest extends ObjectCommon
+class ObjectDegradeTest extends TestCase
 {
-    public function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_special_table('thirdlevelchildren');
-        $this->create_special_table('secondlevelchildren');
-        $this->create_special_table('testparents');
-        $this->create_special_table('passthrus');
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
     }
     
     public function testOneStepDegration() {
-        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_thirdlevelchild;
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -48,7 +46,6 @@ class ObjectDegradeTest extends ObjectCommon
     }
     
     public function testTwoStepDegration() {
-        $this->prepare_tables();
         $test = new \Sunhill\Test\ts_thirdlevelchild;
         $test->parentchar='ABC';
         $test->parentint=123;

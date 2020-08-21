@@ -4,22 +4,16 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+use Sunhill\Objects\oo_object;
 
-class ObjectInsertTest extends ObjectCommon
+class ObjectInsertTest extends TestCase
 {
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_special_table('passthrus');
-        $this->create_special_table('testparents');
-        $this->create_special_table('testchildren');
-        $this->create_special_table('referenceonlies');
-        $this->create_special_table('secondlevelchildren');
-    }
-
-    protected function prepare_write() {
-        $this->prepare_tables();
-        $this->create_write_scenario();
+    
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
     }
     
     /**
@@ -32,7 +26,6 @@ class ObjectInsertTest extends ObjectCommon
      * @param unknown $expected
      */
     public function testInsertObject($class,$fields,$callback,$test,$expected) {
-        $this->prepare_write();
         $object = new $class();
         foreach ($fields as $field=>$value) {
             $object->$field = $value;
@@ -243,4 +236,30 @@ class ObjectInsertTest extends ObjectCommon
                                     },'childoarray[1]->dummyint',4444],
                                     ];
     }
+    
+    protected function get_field($loader,$fieldname) {
+        $match = '';
+        if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]->(?P<subfield>\w+)/',$fieldname,$match)) {
+            $name = $match['name'];
+            $subfield = $match['subfield'];
+            $index = $match['index'];
+            return $loader->$name[$index]->$subfield;
+        } else if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]\[(?P<index2>\w+)\]/',$fieldname,$match)) {
+            $name = $match['name'];
+            $index2 = $match['index2'];
+            $index = $match['index'];
+            return $loader->$name[$index][$index2];
+        } else if (preg_match('/(?P<name>\w+)->(?P<subfield>\w+)/',$fieldname,$match)) {
+            $name = $match['name'];
+            $subfield = $match['subfield'];
+            return $loader->$name->$subfield;
+        } if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]/',$fieldname,$match)){
+            $name = $match['name'];
+            $index = $match['index'];
+            return $loader->$name[$index];
+        }  else {
+            return $loader->$fieldname;
+        }
+    }
+    
 }

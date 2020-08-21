@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_object;
+use Tests\TestCase;
 
 class testA extends oo_object {
    
@@ -15,29 +16,6 @@ class testA extends oo_object {
         parent::setup_properties();
         self::integer('testint');
         self::varchar('testchar');
-        self::varchar('newfield');
-    }
-    
-}
-
-class testB extends oo_object {
-
-    public static $table_name = 'testB';
-    
-    protected static function setup_properties() {
-        parent::setup_properties();
-        self::integer('testint');
-    }
-        
-}
-
-class testC extends oo_object {
-    
-    public static $table_name = 'testC';
-    
-    protected static function setup_properties() {
-        parent::setup_properties();
-        self::varchar('testfield');
     }
     
 }
@@ -71,82 +49,80 @@ class testE extends oo_object {
     
 }
 
-class ObjectMigrateTest extends ObjectCommon
+class ObjectMigrateTest extends TestCase
 {
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_table('testA',['testint int','testchar varchar(255)']);
-        $this->create_table('testB',['testint int','testchar varchar(255)']);
-        $this->create_table('testC',['testfield int']);
-        $this->create_table('testD',[]);
-    }
     
-    /**
-     * @expectedException \Exception
-     */
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();
+    }
+        
     public function testSanity() {
-        $this->prepare_tables();
+        DB::statement('drop table if exists testA');
+        DB::statement('create table testA (id int primary key,testint int)');
+        $this->expectException(\Exception::class);
         $test = new testA();
         $test->testint = 123;
         $test->testchar = 'AAA';
-        $test->newfield = 'ABC';
         $test->commit();
     }
     
     public function testNewField() {
-        $this->prepare_tables();
+        DB::statement('drop table if exists testA');
+        DB::statement('create table testA (id int primary key,testint int)');
         testA::migrate();
         $test = new testA();
         $test->testint = 123;
         $test->testchar = 'AAA';
-        $test->newfield = 'ABC';
         $test->commit();
         
-        $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
-        $this->assertEquals('ABC',$reread->newfield);
+        $reread = oo_object::load_object_of($test->get_id());
+        $this->assertEquals('AAA',$reread->testchar);
     }
 
     public function testRemovedField1() {
-        $this->prepare_tables();
-        testB::migrate();
-        $test = new testB();
+        DB::statement('drop table if exists testA');
+        DB::statement('create table testA (id int primary key,testint int,testchar varchar(100),additional int)');
+        testA::migrate();
+        $test = new testA();
         $test->testint = 123;
         $test->commit();
         
-        $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        $reread = oo_object::load_object_of($test->get_id());
         $this->assertEquals(123,$reread->testint);
     }
     
-    /**
-     * @expectedException \Exception
-     */
     public function testRemovedField2() {
-        $this->prepare_tables();
-        testB::migrate();
-        $test = new testB();
+        DB::statement('drop table if exists testA');
+        DB::statement('create table testA (id int primary key,testint int,testchar varchar(100),additional int)');
+        $this->expectException(\Exception::class);
+        testA::migrate();
+        $test = new testA();
         $test->testint = 123;
         $test->commit();
-        DB::statement('select testchar from testB where id = '.$test->get_id());
+        DB::statement('select additional from testA where id = '.$test->get_id());
         $this->fail('Fehler wurde nicht ausgelöst');
     }
     
     public function testAlterType() {
-        $this->prepare_tables();
-        testC::migrate();
-        $test = new testC();
-        $test->testfield = 'ABC';
+        DB::statement('drop table if exists testA');
+        DB::statement('create table testA (id int primary key,testint int,testchar int,additional int)');
+        testA::migrate();
+        $test = new testA();
+        $test->testchar = 'ABC';
         $test->commit();
         
-        $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
-        $this->assertEquals('ABC',$reread->testfield);        
+        $reread = oo_object::load_object_of($test->get_id());
+        $this->assertEquals('ABC',$reread->testchar);        
     }
     
     /**
      * @dataProvider FieldTypeProvider
      */
     public function testFieldType($type,$init) {
-        $this->prepare_tables();
+        DB::statement('drop table if exists testD');
+        DB::statement("create table testD (id int primary key)");
         testD::$type = $type;
         testD::migrate();
         $test = new testD($type);
@@ -164,9 +140,8 @@ class ObjectMigrateTest extends ObjectCommon
      * @param unknown $init
      */
     public function testNewTable($type,$init) {
-        $this->prepare_tables();
         testD::$type = $type;
-        DB::statement('drop table testD');
+        DB::statement('drop table if exists testD');
         testD::migrate();
         $test = new testD($type);
         $test->dummyint = 1;
@@ -177,11 +152,8 @@ class ObjectMigrateTest extends ObjectCommon
         $this->assertEquals($read->testfield,$init);        
     }
     
-    /**
-     * @expectedException Illuminate\Database\QueryException
-     */
     public function testNewInheritedFields() {
-        $this->prepare_tables();
+        $this->expectException(\Illuminate\Database\QueryException::class);
         DB::statement('drop table testD');
         testD::$type = 'varchar';
         testD::migrate();
@@ -207,14 +179,16 @@ class ObjectMigrateTest extends ObjectCommon
     }
     
     public function testPassthru() {
+        DB::statement('drop table if exists testE');
+        DB::statement("create table testE (id int primary key)");
         testE::migrate();
         $test = new TestE();
         $dummy = new \Sunhill\Test\ts_dummy;
         $dummy->dummyint = 2;
         $test->testfield[] = $dummy;
         $test->commit();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        oo_object::flush_cache();
+        $read = oo_object::load_object_of($test->get_id());
         $this->assertEquals($read->testfield[0]->dummyint,2);
     }
 }
