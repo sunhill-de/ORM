@@ -5,14 +5,17 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
+use Sunhill\Objects\oo_object;
+use Sunhill\Test\ts_dummy;
 
-class ObjectAttributeTest extends ObjectCommon
+class ObjectAttributeTest extends TestCase
 {
     
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_write_scenario();
+    public function setUp():void {
+        parent::setUp();
+        $this->seed('SimpleSeeder');
+        oo_object::flush_cache();        
     }
     
     /**
@@ -22,22 +25,21 @@ class ObjectAttributeTest extends ObjectCommon
      * @param unknown $change
      */
     public function testSimpleAttribute($attributename,$init,$change,$exception) {
-        $this->prepare_tables();
         try {
-            $test = new \Sunhill\Test\ts_dummy();
+            $test = new ts_dummy();
             $test->$attributename = $init;
             $this->assertEquals($init,$test->$attributename);
             $test->dummyint = 123;
             $test->commit();
             
-            \Sunhill\Objects\oo_object::flush_cache();
-            $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+            oo_object::flush_cache();
+            $read = oo_object::load_object_of($test->get_id());
             $this->assertEquals($init,$read->$attributename);
             $read->$attributename = $change;
             $read->commit();
             
-            \Sunhill\Objects\oo_object::flush_cache();
-            $reread = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+            oo_object::flush_cache();
+            $reread = oo_object::load_object_of($test->get_id());
             $this->assertEquals($change,$reread->$attributename);
         } catch (\Exception $e) {
             if ($exception) {
@@ -54,12 +56,9 @@ class ObjectAttributeTest extends ObjectCommon
         ];
     }
     
-    /**
-     * @expectedException \Sunhill\Properties\AttributeException
-     */
     public function testInvalidAttribute() {
-        $this->prepare_tables();
-        $test = new \Sunhill\Test\ts_dummy();
+        $this->expectException(\Sunhill\Properties\AttributeException::class);
+        $test = new ts_dummy();
         $test->attribute1 = 2;
     }
     
