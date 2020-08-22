@@ -9,7 +9,6 @@ use Tests\DBTestCase;
 class RegressionTest extends DBTestCase
 {
     public function testRegeression1() {
-	   $this->prepare_tables();
        $test = new \Sunhill\Test\ts_referenceonly();
 	   $obj1 = new \Sunhill\Test\ts_dummy();
 	   $obj1->dummyint = 1;
@@ -44,8 +43,6 @@ class RegressionTest extends DBTestCase
 	}
 	
 	public function testRegression2() {
-	    $this->prepare_tables();
-	    
 	    $test = new \Sunhill\Test\ts_dummy();
 	    $test->dummyint = 1;
 	    $tag = new \Sunhill\Objects\oo_tag('TagA',true);
@@ -64,7 +61,6 @@ class RegressionTest extends DBTestCase
 	}
 
 	public function testRegression3() {
-	    $this->prepare_tables();
 	    $test = new \Sunhill\Test\ts_dummy();
 	    $test->dummyint = 3;
 	    $test->commit();
