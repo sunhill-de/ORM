@@ -20,7 +20,7 @@ trait TraversableArray {
      * @return mixed
      */
     public function current (  ) {
-        return $this->get_fields()[array_keys($this->fields)[$this->pointer]];
+        return $this->get_fields()[array_keys($this->get_fields())[$this->pointer]];
     }
     
     /**
@@ -67,39 +67,28 @@ trait TraversableArray {
             // Yes, is the a change at all?
             if ($value !== $this->offsetGet($offset)) {
                 // Yes, do we need to fire a trigger?
-                if (method_exists($this,'element_changing') || method_exists($this,'element_changed')) {
-                    // Yes, build a descriptor
-                    $descriptor = new descriptor();
-                    $descriptor->from = $this->offsetGet($offset);
-                    $descriptor->to = $value;
-                    $descriptor->index = $offset;
-                }
                 if (method_exists($this,'element_changing')) {
                     // Do we have a changing trigger?
-                    $this->element_changing($descriptor);
+                    $oldvalue = $this->offsetGet($offset);
+                    $this->element_changing($oldvalue,$value,$offset);
+                }
+                $this->element_change($offset,$value);
+                if (method_exists($this,'element_changed')) {
+                    // Do we need to fire a changed trigger?
+                    $this->element_changed($oldvalue,$value,$offset);
                 }
             }
         } else {
             // No, it's a previously unset element
-            if (method_exists($this,'element_changing') || method_exists($this,'element_changed')) {
-                $descriptor = new descriptor();
-                $descriptor->from = null;
-                $descriptor->to = $value;
-                $descriptor->index = $offset;
-            }
             if (method_exists($this,'element_changing')) {
-                $this->element_changing($descriptor);
+                $this->element_changing(null,$value,$offset);
             }            
-        }
-        if (isset($offset)) {
-            $this->element_change($offset,$value);
-        } else {
             $this->element_append($value);
+            if (method_exists($this,'element_changed')) {
+                // Do we need to fire a changed trigger?
+                $this->element_changed(null,$value,$offset);
+            }
         }
-        if (method_exists($this,'element_changed')) {
-            // Do we need to fire a changed trigger?
-            $this->element_changed($descriptor);
-        }        
     }
     
     /**
@@ -108,18 +97,13 @@ trait TraversableArray {
      */
     public function offsetUnset($offset) {
         if ($this->offsetExists($offset)) {
-            if (method_exists($this,'element_changing') || method_exists($this,'element_changed')) {
-                $descriptor = new descriptor();
-                $descriptor->from = $this->offsetGet($offset);
-                $descriptor->to = null;
-                $descriptor->index = $offset;
-            }
+            $oldvalue = $this->offsetGet($offset);
             if (method_exists($this,'element_changing')) {
-                $this->element_changing($descriptor);
+                $this->element_changing($oldvalue,null,$offset);
             }
             $this->element_unset($offset);
             if (method_exists($this,'element_changed')) {
-                $this->element_changed($descriptor);
+                $this->element_changing($oldvalue,null,$offset);
             }
         }
     }

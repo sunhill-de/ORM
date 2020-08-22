@@ -35,12 +35,18 @@ class example_traversablearray2 implements \ArrayAccess,\Countable,\Iterator {
          unset($this->otherfields[$offset]);
      }
      
-     protected function element_changing($descriptor) {
-        $this->flag = 'changing:'.$descriptor->from."=>".$descriptor->to;        
+     protected function element_changing($from,$to,$offset) {
+         $from = is_null($from)?$from:"null";
+         $to = is_null($to)?$to:"null";
+         $offset = is_null($offset)?$offset:"null";
+         $this->flag .= "changing:$from=>$to($offset)";        
      }
      
-     protected function element_changed($descriptor) {
-         $this->flag = 'changed:'.$descriptor->from."=>".$descriptor->to;         
+     protected function element_changed($from,$to,$offset) {
+         $from = is_null($from)?$from:"null";
+         $to = is_null($to)?$to:"null";
+         $offset = is_null($offset)?$offset:"null";
+         $this->flag .= "changed:$from=>$to($offset)";
      }
      
 }
@@ -53,33 +59,38 @@ class TraitTraversableArrayTest extends TestCase
         $test[] = 'A';
         $test[] = 'B';
         $this->assertEquals(2,count($test));
-        return $test;
     }
     
     /**
-     * @depends testSimpleTraversableArray_count
      * @param unknown $test
      */
-    public function testSimpleTraversableArray_index($test) {
+    public function testSimpleTraversableArray_index() {
+        $test = new example_traversablearray1();
+        $test[] = 'A';
+        $test[] = 'B';
         $this->assertEquals('A',$test[0]);
         return $test;
     }
     
     /**
-     * @depends testSimpleTraversableArray_count
      * @param unknown $test
      */
-    public function testSimpleTraversableArray_elementset($test) {
+    public function testSimpleTraversableArray_elementset() {
+        $test = new example_traversablearray1();
+        $test[] = 'A';
+        $test[] = 'B';
         $test[1] = 'C';
         $this->assertEquals('C',$test[1]);
         return $test;
     }
     
     /**
-     * @depends testSimpleTraversableArray_count
      * @param unknown $test
      */
-    public function testSimpleTraversableArray_unset($test) {
+    public function testSimpleTraversableArray_unset() {
+        $test = new example_traversablearray1();
+        $test[] = 'A';
+        $test[] = 'B';
         unset($test[0]);
         $this->assertEquals(1,count($test));
         return $test;
@@ -87,10 +98,12 @@ class TraitTraversableArrayTest extends TestCase
     
     
     /**
-     * @depends testSimpleTraversableArray_count
      * @param unknown $test
      */
-    public function testSimpleTraversableArray_foreach($test) {
+    public function testSimpleTraversableArray_foreach() {
+        $test = new example_traversablearray1();
+        $test[] = 'A';
+        $test[] = 'B';
         $result = '';
         foreach ($test as $key) {
             $result .= $key;
@@ -108,29 +121,35 @@ class TraitTraversableArrayTest extends TestCase
     }
     
     /**
-     * @depends testComplexTraversableArray_count
      * @param unknown $test
      */
-    public function testComplexTraversableArray_index($test) {
+    public function testComplexTraversableArray_index() {
+        $test = new example_traversablearray2();
+        $test[] = 'A';
+        $test[] = 'B';
         $this->assertEquals('A',$test[0]);
         return $test;
     }
     
     /**
-     * @depends testComplexTraversableArray_count
      * @param unknown $test
      */
-    public function testComplexTraversableArray_elementset($test) {
+    public function testComplexTraversableArray_elementset() {
+        $test = new example_traversablearray2();
+        $test[] = 'A';
+        $test[] = 'B';
         $test[1] = 'C';
         $this->assertEquals('C',$test[1]);
         return $test;
     }
     
     /**
-     * @depends testComplexTraversableArray_count
      * @param unknown $test
      */
-    public function testComplexTraversableArray_unset($test) {
+    public function testComplexTraversableArray_unset() {
+        $test = new example_traversablearray2();
+        $test[] = 'A';
+        $test[] = 'B';
         unset($test[0]);
         $this->assertEquals(1,count($test));
         return $test;
@@ -138,10 +157,12 @@ class TraitTraversableArrayTest extends TestCase
     
     
     /**
-     * @depends testComplexTraversableArray_count
      * @param unknown $test
      */
-    public function testComplexTraversableArray_foreach($test) {
+    public function testComplexTraversableArray_foreach() {
+        $test = new example_traversablearray2();
+        $test[] = 'A';
+        $test[] = 'B';
         $result = '';
         foreach ($test as $key) {
             $result .= $key;
