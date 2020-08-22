@@ -5,16 +5,11 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Sunhill\Objects\oo_object;
 
-class ObjectCacheTest extends TestCase
+class ObjectCacheTest extends DBTestCase
 {
-
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-    }
     
     public function testGetClassOf() {
         $this->assertEquals('\\Sunhill\\Test\\ts_dummy',oo_object::get_class_name_of(1));    

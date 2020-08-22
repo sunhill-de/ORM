@@ -5,18 +5,12 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Sunhill\Objects\oo_object;
 use Sunhill\Test\ts_dummy;
 
-class ObjectAttributeTest extends TestCase
+class ObjectAttributeTest extends DBTestCase
 {
-    
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();        
-    }
     
     /**
      * @dataProvider AttributeProvider

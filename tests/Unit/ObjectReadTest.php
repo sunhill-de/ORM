@@ -2,28 +2,15 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\Test\ts_objectunit;
 use Sunhill\Objects\oo_object;
 
-class ObjectReadTest extends TestCase
+class ObjectReadTest extends DBTestCase
 {
 
-    use RefreshDatabase;
-    
-    private $setup = false;
-    
-    public function setUp() : void {
-        parent::setUp();
-        if (!$this->setup) {
-            $this->seed('SimpleSeeder');
-            $this->setup = true;
-        }
-        oo_object::flush_cache();
-    }
-        
     /**
      * @group load
      * @return \Sunhill\Test\ts_objectunit

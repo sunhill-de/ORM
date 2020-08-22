@@ -4,15 +4,10 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\DBTestCase;
 
-class RegressionTest extends ObjectCommon
+class RegressionTest extends DBTestCase
 {
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('referenceonlies');
-        $this->create_special_table('dummies');
-    }
-    
     public function testRegeression1() {
 	   $this->prepare_tables();
        $test = new \Sunhill\Test\ts_referenceonly();

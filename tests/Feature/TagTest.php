@@ -2,23 +2,15 @@
 
 namespace Tests\Feature;
 
-use Sunhill\Test\sunhill_testcase_db;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Sunhill\Objects\oo_object;
-
-class TagTest extends TestCase
+ 
+class TagTest extends DBTestCase
 {
-    
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
-    
-    
+       
 	/**
 	 * @group static
      * Dieser Test wurde in Feature ausgelager, da er von update-commits abhängig ist

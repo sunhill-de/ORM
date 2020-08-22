@@ -10,26 +10,13 @@
 namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Sunhill\Objects\oo_object;
 use Sunhill\Test\ts_objectunit;
 
-class ObjectInsertTest extends TestCase
+class ObjectInsertTest extends DBTestCase
 {
-
-    use RefreshDatabase;
-    
-    private $setup = false;
-    
-    public function setUp() : void {
-        parent::setUp();
-        if (!$this->setup) {
-            $this->seed('SimpleSeeder');
-            $this->setup = true;
-        }
-    }
-    
+   
     public function testStorageCreation() {
         $object = new ts_objectunit();
         $object->intvalue = 666;

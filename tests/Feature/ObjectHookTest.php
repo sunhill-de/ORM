@@ -3,10 +3,9 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_object;
-use Tests\TestCase;
+use Tests\DBTestCase;
 
 class HookingObject extends oo_object  {
 
@@ -182,14 +181,8 @@ class HookingChild extends HookingObject {
     
 }
 
-class ObjectHookTest extends TestCase
+class ObjectHookTest extends DBTestCase
 {
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
-    
     protected function setupHookTables() {
         DB::statement("drop table if exists hookings ");
         DB::statement("drop table if exists childhookings ");

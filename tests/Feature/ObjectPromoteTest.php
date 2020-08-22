@@ -4,17 +4,11 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Sunhill\Objects\oo_object;
 
-class ObjectPromoteTest extends TestCase
+class ObjectPromoteTest extends DBTestCase
 {
-    
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
     
     /**
      * @dataProvider InheritanceProvider

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_object;
-use Tests\TestCase;
+use Tests\DBTestCase;
 
 class searchtestA extends oo_object {
    
@@ -63,125 +63,25 @@ class searchtestC extends searchtestB {
 
 }
 
-class ObjectSearchTest extends ObjectCommon
+class ObjectSearchTest extends DBTestCase
 {
-    protected function prepare_tables() {
-        parent::prepare_tables();
-        $this->create_special_table('dummies');
-        $this->create_table('searchtestA', ['Aint int,Anosearch int,Achar varchar(255)']);
-        $this->create_table('searchtestB', ['Bint int,Bchar varchar(255)']);
-        $this->create_table('searchtestC', []);
-        
-        $dummy_str = '\Sunhill\Test\ts_dummy';
-        $this->insert_into('objects',['id','classname','created_at','updated_at'],
-            [
-                // 4 x Dummies für diverse Arrays
-                [1,$dummy_str,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [2,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [3,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [4,"\\Sunhill\\Test\\ts_dummy",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
 
-                [5,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [6,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [7,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [8,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [9,"\\Tests\\Feature\\searchtestA",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                
-                [10,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [11,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [12,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [13,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [14,"\\Tests\\Feature\\searchtestB",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                
-                [15,"\\Tests\\Feature\\searchtestC",'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-            ]);
-        $this->insert_into('dummies',['id','dummyint'],
-            [[1,123],[2,234],[3,345],[4,456]]);
-        $this->insert_into('searchtestA',['id','Aint','Anosearch','Achar'],
-            [
-                [5,111,1,'ABC'],[6,222,1,'ADE'],[7,333,1,'BCC'],[8,990,1,'XYZ'],[9,999,1,'XCX'],
-                [10,500,1,'GGG'],[11,501,1,'ABC'],[12,502,1,'GGT'],[13,502,1,'GGZ'],[14,503,1,'GTG'],
-                [15,503,1,'GGG']
-            ]);
-        $this->insert_into('searchtestB',['id','Bint','Bchar'],
-            [
-                [10,111,'ABC'],[11,601,'BBB'],[12,602,'CCC'],[13,602,'DDC'],[14,603,'ADD'],
-                [15,603,'GGG']
-            ]);
-        $this->insert_into('searchtestC',['id'],[[15]]);
-        $this->insert_into('caching',['id','object_id','fieldname','value'],
-            [
-                [1,5,'Acalc','111=ABC'], 
-                [2,6,'Acalc','222=ADE'],
-                [3,7,'Acalc','333=BCC'],
-                [4,8,'Acalc','990=XYZ'],
-                [5,9,'Acalc','999=XCX'],
-                [6,10,'Acalc','500=GGG'],
-                [7,11,'Acalc','501=GGF'],
-                [8,12,'Acalc','502=GGT'],
-                [9,13,'Acalc','502=GGZ'],
-                [10,14,'Acalc','503=GTG'],
-                [11,15,'Acalc','503=GGG'],
-                [12,10,'Bcalc','111=ABC'],
-                [13,11,'Bcalc','601=BBB'],
-                [14,12,'Bcalc','602=CCC'],
-                [15,13,'Bcalc','602=DDC'],
-                [16,14,'Bcalc','603=ADD'],
-                [17,15,'Bcalc','603=GGG'],
-            ]);
-        $this->insert_into('tags',['id','created_at','updated_at','name','options','parent_id'],
-            [
-                [1,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagA',0,0], 
-                [2,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagB',0,0],
-                [3,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagC',0,2],
-                [4,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagD',0,0],
-                [5,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagE',0,0],
-                [6,'2019-05-15 10:00:00','2019-05-15 10:00:00','TagF',0,0],
-            ]);
-        $this->insert_into('tagcache',['id','name','tag_id','created_at','updated_at'],
-            [
-                [1,'TagA',1,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [2,'TagB',2,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [3,'TagC',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [4,'TagC.TagB',3,'2019-05-15 10:00:00','2019-05-15 10:00:00'],                
-                [5,'TagD',4,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [6,'TagE',5,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-                [7,'TagF',6,'2019-05-15 10:00:00','2019-05-15 10:00:00'],
-            ]);
-        $this->insert_into('tagobjectassigns',['container_id','tag_id'],
-            [
-                [5,1],[5,2],[5,5], // testA(5)->TagA,TagB,TagE
-                [6,1],[6,3],[6,6]  // testA(6)->TagA,TagC.TagB,TagF
-            ]);
-        $this->insert_into('objectobjectassigns',['container_id','element_id','field','index'],
-            [
-                [7,1, 'Aobject',0],
-                [8,2, 'Aobject',0],
-                [13,1,'Aobject',0],
-                [13,1,'Bobject',0],
-                [9,3, 'Aoarray',0],
-                [9,4, 'Aoarray',1],
-                [13,4, 'Boarray',0],
-            ]);
-        $this->insert_into('stringobjectassigns',['container_id','element_id','field','index'],
-            [
-                [7,'testA','Asarray',0],
-                [7,'testB','Asarray',1],
-                [8,'testA','Asarray',0],
-                [8,'testC','Asarray',1],
-                [13,'testA','Bsarray',0],
-                [13,'testC','Asarray',0],                
-            ]);
+    protected function do_migration() {
+        $this->artisan('migrate:fresh',['--path'=>'database/migrations/']);
+        $this->artisan('migrate',['--path'=>'database/migrations/common']);
+        $this->artisan('migrate',['--path'=>'database/migrations/searchtests']);
     }
     
+    protected function do_seeding() {
+        $this->seed('SearchSeeder');
+    }
+        
     public function testSearchWithNoConditionSingleResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestC::search()->get();
         $this->assertEquals(15,$result);
     }
     
     public function testSearchWithNoConditionMultipleResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestB::search()->get();
         $this->assertEquals([10,11,12,13,14,15],$result);
     }
@@ -190,7 +90,6 @@ class ObjectSearchTest extends ObjectCommon
      * @group order
      */
     public function testSearchWithNoConditionOrder() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestB::search()->order_by('Bchar')->get();
         $this->assertEquals([10,14,11,12,13,15],$result);
     }
@@ -199,7 +98,6 @@ class ObjectSearchTest extends ObjectCommon
      * @group order
      */
     public function testSearchWithConditionOrder() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestB::search()->where('Bint','<',602)->order_by('Bchar',true)->get();
         $this->assertEquals([11,10],$result);
     }
@@ -208,7 +106,6 @@ class ObjectSearchTest extends ObjectCommon
      * @group order
      */
     public function testSearchWithCombinedConditionOrder() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestB::search()->where('Bint','<',603)->where('Aint','<',502)->order_by('Bchar',true)->get();
         $this->assertEquals([11,10],$result);
     }
@@ -217,13 +114,11 @@ class ObjectSearchTest extends ObjectCommon
      * @group limit
      */
     public function testSearchWithLimit() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestB::search()->limit(2,2)->get();
         $this->assertEquals([12,13],$result);
     }
     
     public function testCountSingleResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestC::search()->count();
         $this->assertEquals(1,$result);
     }
@@ -232,22 +127,17 @@ class ObjectSearchTest extends ObjectCommon
      * @group bug
      */
     public function testCountWithObjectCondition() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count();
         $this->assertEquals(2,$result);
     }
     
     public function testCountMultipleResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestB::search()->count();
         $this->assertEquals(6,$result);
     }
     
-    /**
-     * @expectedException \Sunhill\QueryException
-     */
     public function testFailSearch() {
-        $this->prepare_tables();
+        $this->expectException(\Sunhill\QueryException::class);
         searchtestA::search()->where('Anosearch','=',1)->get();
     }
   
@@ -255,7 +145,6 @@ class ObjectSearchTest extends ObjectCommon
      * @dataProvider SimpleProvider
      */
     public function testSimpleSearchIDs($searchclass,$field,$relation,$value,$expect) {
-        $this->prepare_tables();
         $classname = "\\Tests\\Feature\\".$searchclass;
         $result = $classname::search()->where($field,$relation,$value)->get();
         $this->assertEquals($expect,$result);
@@ -337,7 +226,6 @@ class ObjectSearchTest extends ObjectCommon
     }
     
     public function testPassObject() {
-        $this->prepare_tables();
         $test = \Sunhill\Objects\oo_object::load_object_of(1);
         $result = \Tests\Feature\searchtestA::search()->where('Aobject','=',$test)->get();
         $this->assertEquals([7,13],$result);
@@ -345,8 +233,7 @@ class ObjectSearchTest extends ObjectCommon
     }
     
     public function testGetFirst() {
-        $this->prepare_tables();
-        $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first();
+         $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first();
         $this->assertEquals(5,$result);        
     }
     
@@ -354,7 +241,6 @@ class ObjectSearchTest extends ObjectCommon
      * @group Focus
      */
     public function testGetFirstWithOneResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->first();
         $this->assertEquals(5,$result);
     }
@@ -363,13 +249,11 @@ class ObjectSearchTest extends ObjectCommon
      * @group Focus
      */
     public function testGetFirstWithNoResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->first();
         $this->assertEquals(null,$result);
     }
     
     public function testGetFirstObject() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first_object();
         $this->assertEquals(5,$result->get_id());
     }
@@ -378,7 +262,6 @@ class ObjectSearchTest extends ObjectCommon
      * @group Focus
      */
     public function testGetFirstObjectWithNoResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->first_object();
         $this->assertEquals(null,$result);
     }
@@ -387,13 +270,11 @@ class ObjectSearchTest extends ObjectCommon
      * @group Focus
      */
     public function testGetFirstObjectWithOneResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->first_object();
         $this->assertEquals(5,$result->get_id());
     }
     
     public function testGetObjects() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->get_objects();
         $this->assertEquals([5,11],[$result[0]->get_id(),$result[1]->get_id()]);
     }
@@ -402,7 +283,6 @@ class ObjectSearchTest extends ObjectCommon
      * @group Focus
      */
     public function testGetObjectsWithOneResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->get_objects();
         $this->assertEquals(5,$result);
     }
@@ -411,7 +291,6 @@ class ObjectSearchTest extends ObjectCommon
      * @group Focus
      */
     public function testGetObjectsWithNoResult() {
-        $this->prepare_tables();
         $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->get_objects();
         $this->assertEquals(null,$result);
     }
@@ -421,8 +300,7 @@ class ObjectSearchTest extends ObjectCommon
      * @group complex
      */
     public function testComplexSearchIDs($searchclass,$field1,$relation1,$value1,$field2,$relation2,$value2,$expect) {
-        $this->prepare_tables();
-        $classname = "\\Tests\\Feature\\".$searchclass;
+         $classname = "\\Tests\\Feature\\".$searchclass;
         $result = $classname::search()->where($field1,$relation1,$value1)->where($field2,$relation2,$value2)->get();
         $this->assertEquals($expect,$result);
     }

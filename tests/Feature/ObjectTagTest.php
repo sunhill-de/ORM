@@ -6,18 +6,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\Objects\oo_object;
 use Sunhill\Objects\oo_tag;
 use Sunhill\Test\ts_dummy;
-use Tests\TestCase;
+use Tests\DBTestCase;
 
-class ObjectTagTest extends TestCase
+class ObjectTagTest extends DBTestCase
 {
     
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
-    
-   
     /**
      * @dataProvider TagProvider
      */

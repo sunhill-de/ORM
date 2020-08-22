@@ -6,16 +6,10 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_object;
-use Tests\TestCase;
+use Tests\DBTestCase;
 
-class ObjectDeleteTest extends TestCase
+class ObjectDeleteTest extends DBTestCase
 {
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
-    
     function testCantLoad() {
         $test = new \Sunhill\Test\ts_testchild;
         $test->parentchar='ABC';

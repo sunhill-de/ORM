@@ -4,20 +4,13 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Sunhill\Objects\oo_object;
 use Illuminate\Support\Facades\DB;
 
-class ObjectReReadTest extends TestCase
+class ObjectReReadTest extends DBTestCase
 {
-    
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
-    
-    
+        
     /**
 	 * @dataProvider SimpleFieldProvider
 	 * @param string $classname

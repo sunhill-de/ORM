@@ -2,25 +2,13 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\Objects\oo_object;
 
-class ObjectUpdateTest extends TestCase
+class ObjectUpdateTest extends DBTestCase
 {
-    
-    use RefreshDatabase;
-    
-    private $setup = false;
-    
-    public function setUp() : void {
-        parent::setUp();
-        if (!$this->setup) {
-            $this->seed('SimpleSeeder');
-            $this->setup = true;
-        }
-    }
     
     /**
      * @dataProvider UpdateProvider

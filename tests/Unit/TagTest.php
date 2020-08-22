@@ -2,26 +2,16 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_tag;
 use Sunhill\Objects\oo_object;
 
-class TagTest extends TestCase
+class TagTest extends DBTestCase
 {
 	
-    use RefreshDatabase;
-    
-    private $setup = false;
-    
-    public function setUp() : void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
-    
 	public function testLoadTag()
     {
         $tag = new oo_tag(1); 

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_object;
-use Tests\TestCase;
+use Tests\DBTestCase;
 
 class testA extends oo_object {
    
@@ -49,15 +49,9 @@ class testE extends oo_object {
     
 }
 
-class ObjectMigrateTest extends TestCase
+class ObjectMigrateTest extends DBTestCase
 {
     
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
-        
     public function testSanity() {
         DB::statement('drop table if exists testA');
         DB::statement('create table testA (id int primary key,testint int)');

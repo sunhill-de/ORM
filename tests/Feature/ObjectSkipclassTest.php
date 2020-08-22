@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\Test\ts_dummy;
-use Tests\TestCase;
+use Tests\DBTestCase;
 use Sunhill\Objects\oo_object;
 use Illuminate\Support\Facades\DB;
 
@@ -14,13 +14,11 @@ class SkipClass extends ts_dummy {
     public static $table_name = 'skipclasses';
 }
 
-class ObjectSkipclassTest extends TestCase
+class ObjectSkipclassTest extends DBTestCase
 {
     
     public function setUp():void {
         parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
         DB::statement('drop table if exists skipclasses');
         DB::statement("create table skipclasses (id int primary key)");
     }

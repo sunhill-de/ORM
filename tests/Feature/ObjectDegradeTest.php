@@ -3,18 +3,12 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_object;
-use Tests\TestCase;
+use Tests\DBTestCase;
 
-class ObjectDegradeTest extends TestCase
+class ObjectDegradeTest extends DBTestCase
 {
-    public function setUp():void {
-        parent::setUp();
-        $this->seed('SimpleSeeder');
-        oo_object::flush_cache();
-    }
     
     public function testOneStepDegration() {
         $test = new \Sunhill\Test\ts_thirdlevelchild;
