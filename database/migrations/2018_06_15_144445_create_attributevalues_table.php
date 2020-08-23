@@ -14,11 +14,11 @@ class CreateAttributeValuesTable extends Migration
     public function up()
     {
         Schema::create('attributevalues', function (Blueprint $table) {
-            $table->increments('id');
             $table->integer('attribute_id');
             $table->integer('object_id');
             $table->string('value');
             $table->text('textvalue');
+            $table->primary(['attribute_id','object_id']);
             $table->timestamps();
         });
     }

@@ -11,8 +11,7 @@ class storagemodule_mysql_attributes extends storagemodule_base {
             $attribute_name = $value->name;
             $this->storage->entities['attributes'][$attribute_name] = 
               [
-                 'attribute_id'=>$value->attribute_id,
-                 'value_id'=>$value->id,
+                  'attribute_id'=>$value->attribute_id,
                   'object_id'=>$id,
                   'value'=>$value->value,
                   'textvalue'=>$value->textvalue,
@@ -30,7 +29,7 @@ class storagemodule_mysql_attributes extends storagemodule_base {
             return $id;
         }
         foreach ($this->storage->entities['attributes'] as $attribute) {
-            $insert = ['attribute_id'=>$attribute['attribute_id'],
+            $insert = [   'attribute_id'=>$attribute['attribute_id'],
                           'object_id'=>$id,
                           'value'=>$attribute['value'],
                           'textvalue'=>$attribute['textvalue']];
@@ -45,11 +44,10 @@ class storagemodule_mysql_attributes extends storagemodule_base {
             return $id;
         }
         foreach($this->storage->entities['attributes'] as $attribute) {
-            $updates = ['attribute_id'=>$attribute['attribute_id'],
-                'object_id'=>$id,
+            $updates = [
                 'value'=>$attribute['value']['TO'],
                 'textvalue'=>$attribute['textvalue']['TO']];            
-            DB::table('attributevalues')->where('id',$attribute['value_id'])->update($updates);
+            DB::table('attributevalues')->where('object_id',$id)->where('attribute_id',$attribute['attribute_id'])->update($updates);
         }
         return $id;
     }

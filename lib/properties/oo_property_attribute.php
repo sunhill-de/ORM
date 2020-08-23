@@ -18,8 +18,6 @@ class oo_property_attribute extends oo_property {
 	
     protected $attribute_id;
     
-    protected $value_id;
-    
     protected $attribute_name;
 
     protected $attribute_type;
@@ -66,7 +64,6 @@ class oo_property_attribute extends oo_property {
 	    $this->allowed_objects = $loader->entities['attributes'][$name]['allowedobjects'];
 	    $this->attribute_type = $loader->entities['attributes'][$name]['type'];
 	    $this->property = $loader->entities['attributes'][$name]['property'];
-	    $this->value_id = $loader->entities['attributes'][$name]['value_id'];
 	}
 	
 	/**
@@ -89,15 +86,6 @@ class oo_property_attribute extends oo_property {
         ];
         $this->insert_value($storage);        
 	}
-
-	/**
-	 * Trägt die ID für den Attribut-Wert nach, da dieser erst nach dem Einfügen feststeht.
-	 * {@inheritDoc}
-	 * @see \Sunhill\Properties\oo_property::inserted()
-	 */
-	public function inserted(\Sunhill\Storage\storage_base $storage) {
-	    $this->value_id = $storage->entities['attributes'][$this->attribute_name]['value_id'];
-	}
 	
 	protected function insert_value(\Sunhill\Storage\storage_base $storage) {
 	   $storage->entities['attributes'][$this->attribute_name]['value'] = $this->value;    
@@ -116,7 +104,6 @@ class oo_property_attribute extends oo_property {
 	public function get_diff_array(int $type=PD_VALUE) {
         $result = [
             'attribute_id'=>$this->attribute_id,
-            'value_id'=>$this->value_id,
             'object_id'=>$this->owner->get_id(),
             'name'=>'general_attribute',
             'allowedobjects'=>"\\Sunhill\\Objects\\oo_object",
