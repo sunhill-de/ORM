@@ -10,4 +10,4 @@ composer.lock
 /doc/latex
 /doc/html
 /doc/coverage
-.phpunit*
+/.phpunit*
