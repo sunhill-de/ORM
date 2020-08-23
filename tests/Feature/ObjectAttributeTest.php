@@ -46,7 +46,10 @@ class ObjectAttributeTest extends DBTestCase
     
     public function AttributeProvider() {
         return [
-            ['int_attribute',1,2,false]
+            ['int_attribute',1,2,false],
+            ['char_attribute','ABC','DEF',false],
+            ['float_attribute',1.3,2.5,false],
+            ['text_attribute','Lorem ipsum','lari fari',false]
         ];
     }
     
