@@ -15,7 +15,7 @@ class CreateTagcacheTable extends Migration
     {
         Schema::create('tagcache', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name',150);
             $table->integer('tag_id');
             $table->timestamps();
             // $table->primary('id');
