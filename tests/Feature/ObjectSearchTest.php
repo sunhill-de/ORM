@@ -118,6 +118,9 @@ class ObjectSearchTest extends DBTestCase
         $this->assertEquals([12,13],$result);
     }
     
+    /**
+     * @group count
+     */
     public function testCountSingleResult() {
         $result = \Tests\Feature\searchtestC::search()->count();
         $this->assertEquals(1,$result);
@@ -125,12 +128,16 @@ class ObjectSearchTest extends DBTestCase
     
     /**
      * @group bug
+     * @group count
      */
     public function testCountWithObjectCondition() {
         $result = \Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count();
         $this->assertEquals(2,$result);
     }
     
+    /**
+     * @group count
+     */   
     public function testCountMultipleResult() {
         $result = \Tests\Feature\searchtestB::search()->count();
         $this->assertEquals(6,$result);
@@ -192,7 +199,7 @@ class ObjectSearchTest extends DBTestCase
             ["searchtestA",'Acalc','ends with','ADE',6], 
              
             ["searchtestA",'tags','has','TagA',[5,6]],
-            ["searchtestA",'tags','has','TagC.TagB',6],
+            ["searchtestA",'tags','has','TagB.TagC',6],
             ["searchtestA",'tags','has','TagD',null],
             ["searchtestA",'tags','has not','TagA',[7,8,9,10,11,12,13,14,15]],
             ["searchtestA",'tags','one of',['TagE','TagF'],[5,6]],

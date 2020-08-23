@@ -107,6 +107,7 @@ class query_builder {
     public function count() {
        $this->searchfor = 'count(*) as id';
        $this->grouping = false;
+       $this->order_by = '';
        return $this->execute_query();
     }
     
@@ -181,7 +182,8 @@ class query_builder {
         if (!empty($this->order_by)) {
             $result =  $this->order_by;
         } else {
-            $result = ' order by a.id';
+            $result = '';
+   //         $result = ' order by a.id';
         }
         if (!empty($this->limit)) {
             $result .= ' limit '.$this->limit;
