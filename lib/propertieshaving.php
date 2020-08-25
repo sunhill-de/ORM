@@ -6,6 +6,7 @@
 namespace Sunhill;
 
 use Sunhill\Properties\PropertyException;
+use Sunhill\Search\query_builder;
 
 /**
  * Abgeleitete Exception die im Zusammenhang mit Properties stehen

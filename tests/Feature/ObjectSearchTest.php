@@ -144,7 +144,7 @@ class ObjectSearchTest extends DBTestCase
     }
     
     public function testFailSearch() {
-        $this->expectException(\Sunhill\QueryException::class);
+        $this->expectException(\Sunhill\Search\QueryException::class);
         searchtestA::search()->where('Anosearch','=',1)->get();
     }
   
