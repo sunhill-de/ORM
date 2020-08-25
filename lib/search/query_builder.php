@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill;
+namespace Sunhill\Search;
 
 use Illuminate\Support\Facades\DB;
 
@@ -8,6 +8,8 @@ class QueryException extends \Exception {}
 
 class query_builder {
 
+    protected $query_parts = [];
+    
     protected $calling_class;
     
     protected $limit = '';
@@ -18,14 +20,78 @@ class query_builder {
     
     protected $used_tables = array();
     
-    protected $next_table = 'b';
+    protected $next_table = 'a';
     
     protected $order_by = '';
     
     protected $grouping = true;
     
-    public function __construct() {
-        
+    /**
+     * Creates a new query object and passes the calling object class over
+     */
+    public function __construct(string $classname='') {
+        if (!empty($classname)) {
+            $this->set_calling_class($classname);
+        }
+    }
+    
+    /**
+     * Since a search is initiazied by a specific class, the class is set here 
+     * @param unknown $calling_class
+     * @return \Sunhill\Search\query_builder
+     */
+    public function set_calling_class($calling_class) {
+        $this->calling_class = $calling_class;
+        return $this;
+    }
+
+    /**
+     * Returns the calling class
+     * @return unknown
+     */
+    public function get_calling_class() {
+        return $this->calling_class;    
+    }
+    
+    /**
+     * Returns the part of the query identified by $part_id
+     * @param string $part_id
+     * @return string|unknown
+     */
+    protected function get_query_part(string $part_id) {
+        return is_set($this->query_parts[$part_id])?$this->query_parts[$part_id]:'';
+    }
+    
+    /**
+     * Sets a new query part identified by $part_id
+     * @param string $part_id
+     * @param query_atom $part
+     */
+    protected function set_query_part(string $part_id,query_atom $part) {
+        if (!is_set($this->query_parts[$part_id])) {
+            // This part is not set yet, so just set it
+            $this->query_parts[$part_id] = $part;
+        } else {
+            // This part is already set, so decide what to do
+            if ($part->is_singleton()) {
+                // replace a singleton
+                $this->query_parts[$part_id] = $part;
+            } else {
+                
+            }
+        }
+    }
+    
+    /**
+     * Enters the passed table into the used_tables array and returns the given letter
+     * @param string $table_name
+     * @return string
+     */
+    public function get_table(string $table_name) {
+        if (!isset($this->used_tables[$table_name])) {
+            $this->used_tables[$this->next_table] = $table_name;
+        }         
+        return $this->used_tables[$table_name];
     }
     
     public function where($field,$relation,$value) {
@@ -71,6 +137,13 @@ class query_builder {
         return $this;
     }
     
+    protected function finalize() {
+        $query_str =  
+                $this->get_query_part('target').
+                $this->get_tables();
+        
+    }
+    
     public function get() {
         return $this->execute_query();
     }
@@ -109,12 +182,6 @@ class query_builder {
        $this->grouping = false;
        $this->order_by = '';
        return $this->execute_query();
-    }
-    
-    public function set_calling_class($calling_class) {
-        $this->calling_class = $calling_class;
-        $this->used_tables[$calling_class::$table_name] = array('letter'=>'a');
-        return $this;
     }
     
 // ********************* Query-Management  ****************************
