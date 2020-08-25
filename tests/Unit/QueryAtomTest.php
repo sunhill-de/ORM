@@ -55,5 +55,17 @@ class SearchAtomTest extends TestCase
         $test->link($test3,'-');
         $this->assertEquals('A+B-C',$test->get_query_part());
     }
-    
+ 
+    public function testExceptionLinking() {
+        $this->expectException(\Sunhill\Search\QueryException::class);
+        $dummy = new query_builder();
+        $test2 = new test_query_atom($dummy);
+        $test2->pub_set_singleton(true);
+        $test2->set_value('B');
+        $test = new test_query_atom($dummy);
+        $test->pub_set_singleton(true);
+        $test->set_value('A');
+        $test->link($test2,'+');
+        
+    }
 }
