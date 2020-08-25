@@ -12,15 +12,17 @@ class query_builder {
     
     protected $calling_class;
     
+    protected $used_tables = array();
+    
+    protected $next_table = 'a';
+    
+    
+    
     protected $limit = '';
     
     protected $where = array();
     
     protected $searchfor = 'a.id';
-    
-    protected $used_tables = array();
-    
-    protected $next_table = 'a';
     
     protected $order_by = '';
     
@@ -59,7 +61,7 @@ class query_builder {
      * @return string|unknown
      */
     protected function get_query_part(string $part_id) {
-        return is_set($this->query_parts[$part_id])?$this->query_parts[$part_id]:'';
+        return isset($this->query_parts[$part_id])?$this->query_parts[$part_id]:'';
     }
     
     /**
@@ -68,7 +70,7 @@ class query_builder {
      * @param query_atom $part
      */
     protected function set_query_part(string $part_id,query_atom $part) {
-        if (!is_set($this->query_parts[$part_id])) {
+        if (!isset($this->query_parts[$part_id])) {
             // This part is not set yet, so just set it
             $this->query_parts[$part_id] = $part;
         } else {
@@ -89,7 +91,7 @@ class query_builder {
      */
     public function get_table(string $table_name) {
         if (!isset($this->used_tables[$table_name])) {
-            $this->used_tables[$this->next_table] = $table_name;
+            $this->used_tables[$table_name] = $this->next_table++;
         }         
         return $this->used_tables[$table_name];
     }
@@ -139,13 +141,26 @@ class query_builder {
     
     protected function finalize() {
         $query_str =  
-                $this->get_query_part('target').
-                $this->get_tables();
+                $this->get_query_part('target');
+        return $query_str;
         
     }
     
-    public function get() {
-        return $this->execute_query();
+    protected function prepare_query(bool $dump) {
+        $query_str = $this->finalize();
+        if ($dump) {
+            return $query_str;
+        } else {
+            return $this->execute_query();
+        }        
+    }
+    
+    /**
+     * Returns all result of this query
+     */
+    public function get(bool $dump=false) {
+        $this->set_query_part('target', new query_target_id($this));
+        return $this->prepare_query($dump);
     }
     
     public function first() {

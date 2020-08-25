@@ -8,7 +8,7 @@ abstract class query_target extends query_atom {
     
     public function __construct(query_builder $parent_query) {
         parent::__construct($parent_query);
-        $this->table_id = $parent_query->get_table($parent_query->get)
+        $this->table_id = $parent_query->get_table($parent_query->get_calling_class()::$table_name);
     }
     
 }
