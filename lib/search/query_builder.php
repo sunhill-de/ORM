@@ -61,7 +61,7 @@ class query_builder {
      * @return string|unknown
      */
     protected function get_query_part(string $part_id) {
-        return isset($this->query_parts[$part_id])?$this->query_parts[$part_id]:'';
+        return isset($this->query_parts[$part_id])?$this->query_parts[$part_id]->get_query_part():'';
     }
     
     /**
@@ -139,9 +139,23 @@ class query_builder {
         return $this;
     }
     
+    protected function get_tables() {
+        $first = true;
+        $result = ' from ';
+        foreach ($this->used_tables as $table_name => $alias) {
+            if (!$first) {
+                $result .= ' inner join ';
+            }
+            $first = false;
+            $result .= $table_name.' as '.$alias;
+        }
+        return $result;
+    }
+    
     protected function finalize() {
         $query_str =  
-                $this->get_query_part('target');
+                $this->get_query_part('target').
+                $this->get_tables();
         return $query_str;
         
     }
