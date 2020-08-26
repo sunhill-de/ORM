@@ -3,6 +3,7 @@
 namespace Sunhill\Search;
 
 use Illuminate\Support\Facades\DB;
+use Sunhill\Utils\objectlist;
 
 class QueryException extends \Exception {}
 
@@ -139,6 +140,10 @@ class query_builder {
         return $this;
     }
     
+    /**
+     * Returns the used tables for this query. All tables are joined as inner joins
+     * @return string
+     */
     protected function get_tables() {
         $first = true;
         $result = ' from ';
@@ -152,10 +157,15 @@ class query_builder {
         return $result;
     }
     
+    /**
+     * Assembles the queryparts togeteher and return the pure query-string
+     * @return string
+     */
     protected function finalize() {
         $query_str =  
                 $this->get_query_part('target').
-                $this->get_tables();
+                $this->get_tables().
+                $this->get_query_part('limit');
         return $query_str;
         
     }
@@ -174,16 +184,34 @@ class query_builder {
      */
     public function get(bool $dump=false) {
         $this->set_query_part('target', new query_target_id($this));
+        return $this->postprocess_results($this->prepare_query($dump));
+    }
+    
+    public function count(bool $dump=false) {
+        $this->set_query_part('target', new query_target_count($this));
         return $this->prepare_query($dump);
     }
     
-    public function first() {
-        $this->limit = '0,1';
-        $result = $this->execute_query();
-        if (is_array($result)) {
-            return $result[0];
+    public function first(bool $dump=false) {
+        $this->set_query_part('target', new query_target_id($this));
+        $this->set_query_part('limit', new query_limit($this,0,1));
+        return $this->postprocess_results($this->prepare_query($dump));
+    }
+    
+    /**
+     * Converts the database result into a objectlist 
+     * @param unknown $result
+     * @return unknown
+     */
+    protected function postprocess_results($result) {
+        if (is_string($result)) {
+            return $result; // We requested a dump
         } else {
-            return $result;
+            $return = new objectlist();
+            foreach ($result as $entry) {
+                $return[] = $entry->id;
+            }
+            return $return;
         }
     }
     
@@ -204,13 +232,6 @@ class query_builder {
     
     public function first_object() {
         return \Sunhill\Objects\oo_object::load_object_of($this->first());
-    }
-    
-    public function count() {
-       $this->searchfor = 'count(*) as id';
-       $this->grouping = false;
-       $this->order_by = '';
-       return $this->execute_query();
     }
     
 // ********************* Query-Management  ****************************

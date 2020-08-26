@@ -14,6 +14,11 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals('callingclass',$query->get_calling_class());
     }
     
+    public function testSetCallingViaConstructorClass() {
+        $query = new query_builder('callingclass');
+        $this->assertEquals('callingclass',$query->get_calling_class());
+    }
+    
     public function testGetNextTable() {
         $query = new query_builder();
         $letter = $query->get_table('testtable');
@@ -21,9 +26,23 @@ class QueryBuilderTest extends TestCase
         $this->assertNotEquals($letter, $query->get_table('anothertable'));
     }
     
-    public function testSimpleQuery() {
+    public function testSimpleCountQuery() {
         $query = new query_builder('\Sunhill\Objects\oo_object');
-        $result = $query->get(true);
+        $result = $query->count(true);
         $this->assertEquals('select count(a.id) from objects as a',$result);
     }
+    
+    public function testSimpleIDQuery() {
+        $query = new query_builder('\Sunhill\Objects\oo_object');
+        $result = $query->get(true);
+        $this->assertEquals('select a.id from objects as a',$result);
+    }
+
+    public function testSimpleFirstQuery() {
+        $query = new query_builder('\Sunhill\Objects\oo_object');
+        $result = $query->first(true);
+        $this->assertEquals('select a.id from objects as a limit 0,1',$result);
+    }
+    
+    
 }
