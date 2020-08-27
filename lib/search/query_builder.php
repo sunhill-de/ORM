@@ -60,7 +60,7 @@ class query_builder {
      * @param string $part_id
      * @param query_atom $part
      */
-    protected function set_query_part(string $part_id,query_atom $part) {
+    protected function set_query_part(string $part_id,query_atom $part,$connection=null) {
         if (!isset($this->query_parts[$part_id])) {
             // This part is not set yet, so just set it
             $this->query_parts[$part_id] = $part;
@@ -70,7 +70,7 @@ class query_builder {
                 // replace a singleton
                 $this->query_parts[$part_id] = $part;
             } else {
-                
+                $this->query_parts[$part_id]->link($part,$connection);                
             }
         }
     }
@@ -87,7 +87,7 @@ class query_builder {
         return $this->used_tables[$table_name];
     }
     
-    public function where($field,$relation,$value=null) {
+    protected function get_where_part($field,$relation,$value) {
         if (!isset($value)) {
             $value = $relation;
             $relation = '=';
@@ -101,30 +101,42 @@ class query_builder {
         }
         switch ($property->type) {
             case 'tags':
-                $this->set_query_part('where', new query_where_tag($this,$property,$relation,$value));
+                $part = new query_where_tag($this,$property,$relation,$value);
                 break;
             case 'attribute_char':
             case 'attribute_float':
             case 'attribute_int':
             case 'attribute_float':
-                $this->set_query_part('where', new query_where_attribute($this,$field,$relation,$value));
+                $part = new query_where_attribute($this,$field,$relation,$value);
                 break;
             case 'array_of_objects':
-                $this->set_query_part('where', new query_where_array_of_objects($this,$field,$relation,$value));
+                $part = new query_where_array_of_objects($this,$field,$relation,$value);
                 break;
             case 'array_of_strings':
-                $this->set_query_part('where', new query_where_array_of_string($this,$field,$relation,$value));
+                $part = new query_where_array_of_string($this,$field,$relation,$value);
                 break;
             case 'calculated':
-                $this->set_query_part('where', new query_where_calculated($this,$field,$relation,$value));
+                $part = new query_where_calculated($this,$field,$relation,$value);
                 break;
             case 'object':
-                $this->set_query_part('where', new query_where_object($this,$field,$relation,$value));
+                $part = new query_where_object($this,$field,$relation,$value);
                 break;
             default:
-                $this->set_query_part('where', new query_where_simple($this,$property,$relation,$value));
+                $part = new query_where_simple($this,$property,$relation,$value);
                 break;
         }
+        return $part;
+    }
+    
+    public function where($field,$relation,$value=null) {
+        $part = $this->get_where_part($field,$relation,$value);
+        $this->set_query_part('where',$part,'and');
+        return $this;
+    }
+    
+    public function orWhere($field,$relation,$value=null) {
+        $part = $this->get_where_part($field,$relation,$value);
+        $this->set_query_part('where',$part,'or');
         return $this;
     }
     

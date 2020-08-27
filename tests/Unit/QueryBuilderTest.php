@@ -47,6 +47,12 @@ class QueryBuilderTest extends TestCase
     public function testSimpleWhere() {
         $query = new query_builder('\Sunhill\Test\ts_dummy');
         $result = $query->where('dummyint','=',1)->get(true);
-        $this->assertEquals('select a.id from dummies as a where a.dummyint = 1',$result);
+        $this->assertEquals("select a.id from dummies as a where a.dummyint = '1'",$result);
+    }
+    
+    public function testCombinedWhere() {
+        $query = new query_builder('\Sunhill\Test\ts_testparent');
+        $result = $query->where('parentint','=',1)->where('parentchar','=','ABC')->get(true);
+        $this->assertEquals("select a.id from testparents as a where a.parentint = '1' and a.parentchar = 'ABC'",$result);
     }
 }

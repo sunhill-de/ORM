@@ -71,7 +71,10 @@ abstract class query_where extends query_atom {
     }
     
     public function get_query_part() {
-        $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' '.$this->relation.' '.$this->value;
+        $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' '.$this->relation." '".$this->value."'";
+        if (isset($this->next)) {
+            $result .= ' '.$this->connection.=$this->next->get_query_part();
+        }
         return $result;
     }
     

@@ -14,9 +14,9 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
     protected static $property_definitions;
     protected static function setup_properties() {
 		parent::setup_properties();
-		self::integer('parentint');
-		self::varchar('parentchar');
-		self::float('parentfloat');
+		self::integer('parentint')->searchable();
+		self::varchar('parentchar')->searchable();
+		self::float('parentfloat')->searchable();
 		self::text('parenttext');
 		self::datetime('parentdatetime');
 		self::date('parentdate');
