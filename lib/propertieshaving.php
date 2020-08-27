@@ -399,6 +399,15 @@ class propertieshaving extends hookable {
 	    return $property;
 	}
 	
+	public static function get_property_object($name) {
+	    static::initialize_properties();
+	    if (isset(static::$property_definitions[$name])) {
+	        return static::$property_definitions[$name];
+	    } else {
+	        return null;
+	    }
+	}
+	
 	/**
 	 * Liefert alle Properties zurück, die ein bestimmtes Feature haben
 	 * @param string $feature, wenn ungleich null, werden nur die Properties zurückgegeben, die ein bestimmtes Feature haben

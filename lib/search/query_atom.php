@@ -8,6 +8,8 @@ abstract class query_atom {
     
     protected $next;
     
+    protected $prev;
+    
     protected $is_singleton = false;
     
     protected $order = 0;
@@ -18,6 +20,10 @@ abstract class query_atom {
      */
     public function __construct(query_builder $parent_query) {
         $this->parent_query = $parent_query;
+    }
+    
+    public function set_prev(query_atom $prev) {
+        $this->prev = $prev;
     }
     
     /**
@@ -31,6 +37,7 @@ abstract class query_atom {
         }
         if (is_null($this->next)) {
             $this->next = $next;
+            $next->set_prev($this);
             $this->connection = $connection;            
         } else {
             $this->next->link($next,$connection);

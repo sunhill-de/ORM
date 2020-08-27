@@ -4,8 +4,10 @@ namespace Sunhill\Search;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\Utils\objectlist;
+use Sunhill\Objects\oo_object;
+use Sunhill\SunhillException;
 
-class QueryException extends \Exception {}
+class QueryException extends SunhillException {}
 
 class query_builder {
 
@@ -16,18 +18,6 @@ class query_builder {
     protected $used_tables = array();
     
     protected $next_table = 'a';
-    
-    
-    
-    protected $limit = '';
-    
-    protected $where = array();
-    
-    protected $searchfor = 'a.id';
-    
-    protected $order_by = '';
-    
-    protected $grouping = true;
     
     /**
      * Creates a new query object and passes the calling object class over
@@ -97,49 +87,58 @@ class query_builder {
         return $this->used_tables[$table_name];
     }
     
-    public function where($field,$relation,$value) {
-        $property = ($this->calling_class)::get_property_info($field);
-        if (!$property->get_searchable()) {
-            throw new QueryException("Nach dem Feld '$field' kann nicht gesucht werden.");
+    public function where($field,$relation,$value=null) {
+        if (!isset($value)) {
+            $value = $relation;
+            $relation = '=';
         }
-        $this->add_where($property,$relation,$value);
-        return $this;
-    }
-
-    private function add_where($property,$relation,$value,$connection='and') {
-        $letter = $this->request_table($property,$relation,$value);
-        $where = array('connect'=>$connection,'string'=>$property->get_where($relation,$value,$letter));
-        $this->where[] = $where;
-    }
-
-    private function request_table($property,$relation,$value) {
-        $table_name = $property->get_table_name($relation,$value);
-        if (empty($table_name)) {
-            return 'zz';
+        $property = ($this->calling_class)::get_property_object($field);
+        if (is_null($property)) {
+            throw new QueryException("The field '$field' is not found.");
         }
-        if (!isset($this->used_tables[$table_name])) {
-            $letter= $this->next_table++;
-            $table_join = $property->get_table_join($relation,$value,$letter);
-            $this->used_tables[$table_name] = array('letter'=>$letter,'join'=>$table_join);
+        if (! $property->get_searchable()) {
+            throw new QueryException("The field '$field' is not searchable.");
         }
-        return $this->used_tables[$table_name]['letter'];
-    }
-    
-    public function limit($delta,$limit) {
-        $this->limit = "$delta,$limit";
+        switch ($property->type) {
+            case 'tags':
+                $this->set_query_part('where', new query_where_tag($this,$property,$relation,$value));
+                break;
+            case 'attribute_char':
+            case 'attribute_float':
+            case 'attribute_int':
+            case 'attribute_float':
+                $this->set_query_part('where', new query_where_attribute($this,$field,$relation,$value));
+                break;
+            case 'array_of_objects':
+                $this->set_query_part('where', new query_where_array_of_objects($this,$field,$relation,$value));
+                break;
+            case 'array_of_strings':
+                $this->set_query_part('where', new query_where_array_of_string($this,$field,$relation,$value));
+                break;
+            case 'calculated':
+                $this->set_query_part('where', new query_where_calculated($this,$field,$relation,$value));
+                break;
+            case 'object':
+                $this->set_query_part('where', new query_where_object($this,$field,$relation,$value));
+                break;
+            default:
+                $this->set_query_part('where', new query_where_simple($this,$property,$relation,$value));
+                break;
+        }
         return $this;
     }
     
     public function order_by($field,$desc=false) {    
-        $property = ($this->calling_class)::get_property_info($field);        
-        $letter = $this->request_table($property,'=',0);
-        $this->order_by = ' order by '.$letter.'.'.$field;
-        if ($desc) {
-            $this->order_by .= ' desc';
-        }
+        $this->set_query_part('order', new query_order($this,$field,$desc));
         return $this;
     }
     
+    public function limit($delta,$limit) {
+        $this->set_query_part('limit', new query_limit($this,$delta,$limit));
+        return $this;
+    }
+    
+// ****************** Query finalizations ***********************    
     /**
      * Returns the used tables for this query. All tables are joined as inner joins
      * @return string
@@ -162,10 +161,12 @@ class query_builder {
      * @return string
      */
     protected function finalize() {
-        $query_str =  
-                $this->get_query_part('target').
-                $this->get_tables().
-                $this->get_query_part('limit');
+        $query_str =
+        $this->get_query_part('target').
+        $this->get_tables().
+        $this->get_query_part('where').
+        $this->get_query_part('order').
+        $this->get_query_part('limit');
         return $query_str;
         
     }
@@ -176,7 +177,7 @@ class query_builder {
             return $query_str;
         } else {
             return $this->execute_query();
-        }        
+        }
     }
     
     /**
@@ -187,15 +188,44 @@ class query_builder {
         return $this->postprocess_results($this->prepare_query($dump));
     }
     
+    /**
+     * Returns the count of entries of this query
+     * @param bool $dump
+     * @return string|NULL|\Sunhill\Search\unknown|NULL[]
+     */
     public function count(bool $dump=false) {
         $this->set_query_part('target', new query_target_count($this));
         return $this->prepare_query($dump);
     }
     
+    /**
+     * Returns the first entry of the query
+     * @param bool $dump
+     * @return \Sunhill\Search\unknown
+     */
     public function first(bool $dump=false) {
         $this->set_query_part('target', new query_target_id($this));
         $this->set_query_part('limit', new query_limit($this,0,1));
         return $this->postprocess_results($this->prepare_query($dump));
+    }
+    
+    public function load() {
+        $result = $this->load_if_exists();        
+        if (empty($result)) {
+            throw new QueryException("load() expects at least one result. Non returned");
+        }
+        return $result;
+    }
+    
+    public function load_if_exists() {
+        $this->set_query_part('target', new query_target_id($this));
+        $this->set_query_part('limit', new query_limit($this,0,1));
+        $result = $this->prepare_query($dump);
+        if (!empty($result)) {
+            return oo_object::load_object_if($result[0]->id);       
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -215,96 +245,9 @@ class query_builder {
         }
     }
     
-    public function get_objects() {
-        $query = $this->get();
-        if (empty($query)) {
-            return null;
-        } else if (is_array($query)) {
-            $result = array();
-            foreach ($query as $id) {
-                $result[] = \Sunhill\Objects\oo_object::load_object_of($id);
-            }
-            return $result;            
-        } else {
-            return $query;
-        }
-    }
-    
-    public function first_object() {
-        return \Sunhill\Objects\oo_object::load_object_of($this->first());
-    }
-    
 // ********************* Query-Management  ****************************
-    protected function execute_query() {
-        if (empty($this->where)) {
-            $querystr = $this->get_all_querystr();
-        } else {
-            $querystr = $this->get_where_querystr();
-        }
-        $querystr .= $this->postprocess_querystr();
-        return $this->postprocess_result(DB::select(DB::raw($querystr)));
+    protected function execute_query(string $querystr) {
+        return DB::select(DB::raw($querystr));
     }
     
-    /**
-     * Bearbeitet die von DB::select kommenden Ergebnisse nach 
-     * @param unknown $result
-     * @return NULL|unknown|NULL[]
-     */
-    private function postprocess_result($result) {
-        if (empty($result)) {
-            return null;
-        } else if (count($result) == 1) {
-            return $result[0]->id;
-        } else {
-            $return = array();
-            foreach ($result as $id) {
-                $return[] = $id->id;
-            }
-            return $return;
-        }        
-    }
-    
-    private function get_all_querystr() {
-        return 'select '.$this->searchfor.' from '.$this->calling_class::$table_name." as a";    
-    }
-    
-    private function get_where_querystr() {
-        $result = 'select '.$this->searchfor.' from '.$this->get_used_tables().' where ';
-        $first = true;
-        foreach ($this->where as $where) {
-            if (!$first) {
-                $result .= ' '.$where['connect'].' ';
-            }
-            $first = false;
-            $result .= $where['string'];
-        }
-        return $result.($this->grouping?' group by a.id':'');
-    }
-    
-    private function get_used_tables() {
-        $result = $this->calling_class::$table_name." as a";
-        foreach ($this->used_tables as $table => $info) {            
-            if ($info['letter'] !== 'a') {
-                if (is_string($info['join'])) {
-                    $result .= ' inner join '.$table.' as '.$info['letter'].' '.$info['join'];                    
-                } else {
-                    $result .= $info['join']->get_special_join($info['letter']);
-                }
-            }
-        }
-        return $result;
-    }
-    
-    private function postprocess_querystr() {
-        if (!empty($this->order_by)) {
-            $result =  $this->order_by;
-        } else {
-            $result = '';
-   //         $result = ' order by a.id';
-        }
-        if (!empty($this->limit)) {
-            $result .= ' limit '.$this->limit;
-        }
-        return $result;
-    }
 }

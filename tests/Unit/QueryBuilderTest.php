@@ -44,5 +44,9 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals('select a.id from objects as a limit 0,1',$result);
     }
     
-    
+    public function testSimpleWhere() {
+        $query = new query_builder('\Sunhill\Test\ts_dummy');
+        $result = $query->where('dummyint','=',1)->get(true);
+        $this->assertEquals('select a.id from dummies as a where a.dummyint = 1',$result);
+    }
 }
