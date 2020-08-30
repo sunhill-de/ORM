@@ -4,6 +4,7 @@ namespace Sunhill\Search;
 
 use Illuminate\Database\QueryException;
 use Sunhill\Properties\oo_property;
+use Illuminate\Support\Facades\DB;
 
 /**
  * An abstract base class for where parts in a query. It provides a check for allowed relations and stores the required field for the query
@@ -71,11 +72,24 @@ abstract class query_where extends query_atom {
     }
     
     public function get_query_part() {
-        $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' '.$this->relation." '".$this->value."'";
+        if ($this->relation == 'in') {
+            $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' in (';
+            $first = true;
+            foreach ($this->value as $value) {
+                $result .= ($first?'':',').$this->escape($value);
+                $first = false;
+            }
+            $result .= ')';
+        } else {
+            $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' '.$this->relation." ".$this->escape($this->value);
+        }
         if (isset($this->next)) {
             $result .= ' '.$this->connection.=$this->next->get_query_part();
         }
         return $result;
     }
     
+    protected function escape(string $sample) {
+        return DB::connection()->getPdo()->quote($sample);
+    }
 }

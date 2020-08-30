@@ -26,33 +26,84 @@ class QueryBuilderTest extends TestCase
         $this->assertNotEquals($letter, $query->get_table('anothertable'));
     }
     
-    public function testSimpleCountQuery() {
-        $query = new query_builder('\Sunhill\Objects\oo_object');
-        $result = $query->count(true);
-        $this->assertEquals('select count(a.id) from objects as a',$result);
+    /**
+     * @dataProvider QueryProvider
+     * @param unknown $class
+     * @param unknown $query_callback
+     * @param unknown $expect
+     * @param unknown $except
+     */
+    public function testQuery($class,$query_callback,$expect,$except) {
+        $query = new query_builder($class);
+        try {
+            $result = $query_callback($query);
+        } catch (\Exception $e) {
+            if (!$except) {
+                $this->fail("Unexpected exception: ".$e->getMessage());
+            } else {
+                $this->assertTrue(true);
+                return;
+            }
+        }
+        if ($except) {
+            $this->fail("Expected exception not raised.");
+        }
+        $this->assertEquals($expect,$result);
     }
     
-    public function testSimpleIDQuery() {
-        $query = new query_builder('\Sunhill\Objects\oo_object');
-        $result = $query->get(true);
-        $this->assertEquals('select a.id from objects as a',$result);
-    }
-
-    public function testSimpleFirstQuery() {
-        $query = new query_builder('\Sunhill\Objects\oo_object');
-        $result = $query->first(true);
-        $this->assertEquals('select a.id from objects as a limit 0,1',$result);
-    }
-    
-    public function testSimpleWhere() {
-        $query = new query_builder('\Sunhill\Test\ts_dummy');
-        $result = $query->where('dummyint','=',1)->get(true);
-        $this->assertEquals("select a.id from dummies as a where a.dummyint = '1'",$result);
-    }
-    
-    public function testCombinedWhere() {
-        $query = new query_builder('\Sunhill\Test\ts_testparent');
-        $result = $query->where('parentint','=',1)->where('parentchar','=','ABC')->get(true);
-        $this->assertEquals("select a.id from testparents as a where a.parentint = '1' and a.parentchar = 'ABC'",$result);
+    public function QueryProvider() {
+        return [
+            ['\Sunhill\Objects\oo_object', // Test simple count
+                function($query) {
+                return $query->count(true); 
+                },'select count(a.id) from objects as a',false
+            ],
+            ['\Sunhill\Objects\oo_object', // Test simple get
+                function($query) {
+                    return $query->get(true);
+                },'select a.id from objects as a',false
+            ],
+            ['\Sunhill\Objects\oo_object', // Test simple first
+                function($query) {
+                    return $query->first(true);
+                },'select a.id from objects as a limit 0,1',false
+            ],
+            ['\Sunhill\Test\ts_dummy', // test simple where
+                function($query) {
+                    return $query->where('dummyint','=',1)->get(true);
+                },"select a.id from dummies as a where a.dummyint = '1'",false
+            ],
+            ['\Sunhill\Test\ts_dummy', // test simple where
+                function($query) {
+                    return $query->where('dummyint','in',[1,2,3])->get(true);
+                },"select a.id from dummies as a where a.dummyint in ('1','2','3')",false
+            ],
+            ['\Sunhill\Test\ts_dummy', // test simple where with default relation =
+                function($query) {
+                    return $query->where('dummyint',1)->get(true);
+                },"select a.id from dummies as a where a.dummyint = '1'",false
+            ],
+            ['\Sunhill\Test\ts_testparent', // test and-combined where
+                function($query) {
+                    return $query->where('parentint','=',1)->where('parentchar','=','ABC')->get(true);
+                },"select a.id from testparents as a where a.parentint = '1' and a.parentchar = 'ABC'",false
+            ],
+            ['\Sunhill\Test\ts_testchild', // test and-combined where in child
+                function($query) {
+                    return $query->where('childint','=',1)->where('childchar','=','ABC')->get(true);
+                },"select a.id from testchildren as a where a.childint = '1' and a.childchar = 'ABC'",false
+            ],
+            ['\Sunhill\Test\ts_testchild', // test and-combined where of children with parent properties
+                function($query) {
+                    return $query->where('parentint','=',1)->where('parentchar','=','ABC')->get(true);
+                },"select b.id from testparents as a inner join testchildren as b where a.parentint = '1' and a.parentchar = 'ABC'",false
+            ],
+            ['\Sunhill\Test\ts_testchild', // test and-combined where of children with mixed properties
+                function($query) {
+                    return $query->where('parentint','=',1)->where('childchar','=','ABC')->get(true);
+                },"select b.id from testparents as a inner join testchildren as b where a.parentint = '1' and b.childchar = 'ABC'",false
+            ],
+                
+        ];    
     }
 }

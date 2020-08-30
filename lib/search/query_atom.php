@@ -14,6 +14,8 @@ abstract class query_atom {
     
     protected $order = 0;
     
+    protected $connection;
+    
     /**
      * Creates a new query_atom and passes the parent query over
      * @param query_builder $parent_query

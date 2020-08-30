@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Objects\oo_object;
 use Tests\DBTestCase;
+use Sunhill\Utils\objectlist;
 
 class searchtestA extends oo_object {
    
@@ -75,14 +76,22 @@ class ObjectSearchTest extends DBTestCase
     protected function do_seeding() {
         $this->seed('SearchSeeder');
     }
-        
+    
+    protected function simplify_result(objectlist $result) {
+        $return = [];
+        for($i=0;$i<count($result);$i++) {
+            $return[] = $result[$i]->get_id($i);
+        }
+        return $return;
+    }
+    
     public function testSearchWithNoConditionSingleResult() {
-        $result = \Tests\Feature\searchtestC::search()->get();
-        $this->assertEquals(15,$result);
+        $result = $this->simplify_result(\Tests\Feature\searchtestC::search()->get());
+        $this->assertEquals([15],$result);
     }
     
     public function testSearchWithNoConditionMultipleResult() {
-        $result = \Tests\Feature\searchtestB::search()->get();
+        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->get());
         $this->assertEquals([10,11,12,13,14,15],$result);
     }
     
@@ -90,7 +99,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithNoConditionOrder() {
-        $result = \Tests\Feature\searchtestB::search()->order_by('Bchar')->get();
+        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->order_by('Bchar')->get());
         $this->assertEquals([10,14,11,12,13,15],$result);
     }
     
@@ -98,7 +107,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithConditionOrder() {
-        $result = \Tests\Feature\searchtestB::search()->where('Bint','<',602)->order_by('Bchar',true)->get();
+        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->where('Bint','<',602)->order_by('Bchar','desc')->get());
         $this->assertEquals([11,10],$result);
     }
     
@@ -106,7 +115,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithCombinedConditionOrder() {
-        $result = \Tests\Feature\searchtestB::search()->where('Bint','<',603)->where('Aint','<',502)->order_by('Bchar',true)->get();
+        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->where('Bint','<',603)->where('Aint','<',502)->order_by('Bchar',true)->get());
         $this->assertEquals([11,10],$result);
     }
     
@@ -114,7 +123,7 @@ class ObjectSearchTest extends DBTestCase
      * @group limit
      */
     public function testSearchWithLimit() {
-        $result = \Tests\Feature\searchtestB::search()->limit(2,2)->get();
+        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->limit(2,2)->get());
         $this->assertEquals([12,13],$result);
     }
     
@@ -131,7 +140,7 @@ class ObjectSearchTest extends DBTestCase
      * @group count
      */
     public function testCountWithObjectCondition() {
-        $result = \Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count();
+        $result = $this->simplify_result(\Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count());
         $this->assertEquals(2,$result);
     }
     
@@ -139,7 +148,7 @@ class ObjectSearchTest extends DBTestCase
      * @group count
      */   
     public function testCountMultipleResult() {
-        $result = \Tests\Feature\searchtestB::search()->count();
+        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->count());
         $this->assertEquals(6,$result);
     }
     

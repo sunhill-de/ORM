@@ -7,9 +7,9 @@ class ts_testchild extends ts_testparent {
     protected static $property_definitions;
     protected static function setup_properties() {
 	    parent::setup_properties();
-	    self::integer('childint');
-	    self::varchar('childchar');
-	    self::float('childfloat');
+	    self::integer('childint')->searchable();
+	    self::varchar('childchar')->searchable();
+	    self::float('childfloat')->searchable();
 	    self::text('childtext');
 	    self::datetime('childdatetime');
 	    self::date('childdate');
