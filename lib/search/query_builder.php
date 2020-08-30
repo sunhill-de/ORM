@@ -140,8 +140,8 @@ class query_builder {
         return $this;
     }
     
-    public function order_by($field,$desc=false) {    
-        $this->set_query_part('order', new query_order($this,$field,$desc));
+    public function order_by($field,$asc=true) {    
+        $this->set_query_part('order', new query_order($this,$field,$asc));
         return $this;
     }
     
@@ -188,7 +188,7 @@ class query_builder {
         if ($dump) {
             return $query_str;
         } else {
-            return $this->execute_query();
+            return $this->execute_query($query_str);
         }
     }
     
@@ -207,7 +207,8 @@ class query_builder {
      */
     public function count(bool $dump=false) {
         $this->set_query_part('target', new query_target_count($this));
-        return $this->prepare_query($dump);
+        $result = $this->prepare_query($dump);
+        return $result[0]->count;
     }
     
     /**
