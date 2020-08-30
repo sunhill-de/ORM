@@ -70,7 +70,7 @@ class query_builder {
                 // replace a singleton
                 $this->query_parts[$part_id] = $part;
             } else {
-                $this->query_parts[$part_id]->link($part,$connection);                
+                $this->query_parts[$part_id]->link($part,$connection);
             }
         }
     }
@@ -161,9 +161,17 @@ class query_builder {
         foreach ($this->used_tables as $table_name => $alias) {
             if (!$first) {
                 $result .= ' inner join ';
+            } else {
+                if (count($this->used_tables) > 1) {
+                    $this->set_query_part('group',new query_group($this,$alias));
+                }
+                $master_alias = $alias;
+            }
+            $result .= $table_name.' as '.$alias;
+            if (!$first) {
+                $result .= " on $alias.id = $master_alias.id";
             }
             $first = false;
-            $result .= $table_name.' as '.$alias;
         }
         return $result;
     }
@@ -177,8 +185,10 @@ class query_builder {
         $this->get_query_part('target').
         $this->get_tables().
         $this->get_query_part('where').
+        $this->get_query_part('group').
         $this->get_query_part('order').
         $this->get_query_part('limit');
+ 
         return $query_str;
         
     }
