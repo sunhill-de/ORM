@@ -140,7 +140,7 @@ class ObjectSearchTest extends DBTestCase
      * @group count
      */
     public function testCountWithObjectCondition() {
-        $result = $this->simplify_result(\Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count());
+        $result = \Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count();
         $this->assertEquals(2,$result);
     }
     
@@ -148,7 +148,7 @@ class ObjectSearchTest extends DBTestCase
      * @group count
      */   
     public function testCountMultipleResult() {
-        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->count());
+        $result = \Tests\Feature\searchtestB::search()->count();
         $this->assertEquals(6,$result);
     }
     
@@ -159,6 +159,7 @@ class ObjectSearchTest extends DBTestCase
   
     /**
      * @dataProvider SimpleProvider
+     * @group simple
      */
     public function testSimpleSearchIDs($searchclass,$field,$relation,$value,$expect) {
         $classname = "\\Tests\\Feature\\".$searchclass;
@@ -173,6 +174,7 @@ class ObjectSearchTest extends DBTestCase
             ["searchtestA",'Aint','<',300,[5,6]],
             ["searchtestA",'Aint','>',900,[8,9]],
             ["searchtestB",'Bint','<>',602,[10,11,14,15]],
+            ["searchtestB",'Bint','!=',602,[10,11,14,15]],
             ["searchtestA",'Aint','<',502,[5,6,7,10,11]],
             ["searchtestC",'Bint','=',603,[15]],
             ["searchtestA",'Aint','in',[111,222],[5,6]],

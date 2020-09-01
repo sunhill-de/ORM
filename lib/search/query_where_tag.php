@@ -2,29 +2,41 @@
 
 namespace Sunhill\Search;
 
-abstract class query_where_tag extends query_where {
+use Sunhill\Properties\oo_property;
+
+class query_where_tag extends query_where_array {
     
-    protected $field;
+    protected function get_assoc_table() {
+        return 'objectobjectassigns';
+    }
     
-    protected $relation;
+    protected function get_assoc_field() {
+        return 'element_id';
+    }
     
-    protected $value;
-    
-    protected $allowed_relations = ['has','has not','one of','all of','none of'];
-    
-    public function __construct(query_builder $parent_query,string $field,string $relation,string $value) {
-        parent::__construct($parent_query);
-        if (!$this->is_allowed_relation($relation)) {
-            throw new QueryException("'$relation' is not an allowed relation in this context.");
+    protected function get_element_id_list($value) {
+        if (is_int($value)) {
+            return ' = '.$this->escape($value);
+        } else if (is_string($value)) {
+            return ' in (select tag_id from tagcache where name = '.$this->escape($value).')';
+        } else if (is_array($value)) {
+            $itemlist = '';
+            $first = true;
+            foreach ($value as $items) {
+                if (!$first) {
+                    $itemlist .',';
+                }
+                $first = false;
+                $itemlist .= $this->escape($items);
+            }
+            
+            if (is_int($value[0])) {
+                return ' in ('.$itemlist.')';
+            } else if (is_string($value[0])) {
+                return ' in (select tag_id from tagcache where name in ('.$itemlist.'))';
+            }
         }
     }
+       
     
-    /**
-     * Checks, if this relation is allowed in this context
-     * @param string $relation
-     * @return boolean true, if its an allowed relation, otherwise false
-     */
-    protected function is_allowed_relation(string $relation) {
-        return in_array($relation,$this->allowed_relations);
-    }
 }

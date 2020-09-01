@@ -107,19 +107,19 @@ class query_builder {
             case 'attribute_float':
             case 'attribute_int':
             case 'attribute_float':
-                $part = new query_where_attribute($this,$field,$relation,$value);
+                $part = new query_where_attribute($this,$property,$relation,$value);
                 break;
             case 'array_of_objects':
-                $part = new query_where_array_of_objects($this,$field,$relation,$value);
+                $part = new query_where_array_of_objects($this,$property,$relation,$value);
                 break;
             case 'array_of_strings':
-                $part = new query_where_array_of_string($this,$field,$relation,$value);
+                $part = new query_where_array_of_strings($this,$property,$relation,$value);
                 break;
-            case 'calculated':
-                $part = new query_where_calculated($this,$field,$relation,$value);
+            case 'varchar':
+                $part = new query_where_string($this,$property,$relation,$value);
                 break;
             case 'object':
-                $part = new query_where_object($this,$field,$relation,$value);
+                $part = new query_where_object($this,$property,$relation,$value);
                 break;
             default:
                 $part = new query_where_simple($this,$property,$relation,$value);
@@ -162,9 +162,6 @@ class query_builder {
             if (!$first) {
                 $result .= ' inner join ';
             } else {
-                if (count($this->used_tables) > 1) {
-                    $this->set_query_part('group',new query_group($this,$alias));
-                }
                 $master_alias = $alias;
             }
             $result .= $table_name.' as '.$alias;
