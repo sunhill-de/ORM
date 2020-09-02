@@ -41,6 +41,7 @@ abstract class query_where_array extends query_where {
                     $result .= ' a.id not in (select container_id from tagobjectassigns)';
                     break;
                 case 'all of':
+                    $result .= ' 1';
                     break;
             }
             return $result;

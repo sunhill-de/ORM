@@ -35,7 +35,13 @@ abstract class query_where extends query_atom {
     
     protected $parent_query;
     
-    public function __construct(query_builder $parent_query,oo_property $field,string $relation,$value=null) {
+    public function __construct(query_builder $parent_query,oo_property $field,$relation,$value=null) {
+        if (is_null($value)) {
+            if (!isset($this->allowed_relations[$relation]) || ($this->allowed_relations[$relation] !== 'unary')) {
+                $value = $relation;
+                $relation = '=';                
+            }
+        }
         parent::__construct($parent_query);
         if (!$this->is_allowed_relation($relation,$value)) {
             throw new QueryException("'$relation' is not an allowed relation in this context.");

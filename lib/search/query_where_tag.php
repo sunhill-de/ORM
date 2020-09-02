@@ -7,11 +7,11 @@ use Sunhill\Properties\oo_property;
 class query_where_tag extends query_where_array {
     
     protected function get_assoc_table() {
-        return 'objectobjectassigns';
+        return 'tagobjectassigns';
     }
     
     protected function get_assoc_field() {
-        return 'element_id';
+        return 'tag_id';
     }
     
     protected function get_element_id_list($value) {
@@ -24,7 +24,7 @@ class query_where_tag extends query_where_array {
             $first = true;
             foreach ($value as $items) {
                 if (!$first) {
-                    $itemlist .',';
+                    $itemlist .= ',';
                 }
                 $first = false;
                 $itemlist .= $this->escape($items);

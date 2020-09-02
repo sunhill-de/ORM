@@ -31,7 +31,7 @@ class query_where_array_of_objects extends query_where_array {
                 }
                 $first = false;
             }
-            return $result;
+            return $result.')';
         }
     }
     

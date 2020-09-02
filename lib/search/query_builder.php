@@ -88,10 +88,6 @@ class query_builder {
     }
     
     protected function get_where_part($field,$relation,$value) {
-        if (!isset($value)) {
-            $value = $relation;
-            $relation = '=';
-        }
         $property = ($this->calling_class)::get_property_object($field);
         if (is_null($property)) {
             throw new QueryException("The field '$field' is not found.");
@@ -120,6 +116,9 @@ class query_builder {
                 break;
             case 'object':
                 $part = new query_where_object($this,$property,$relation,$value);
+                break;
+            case 'calculated':
+                $part = new query_where_calculated($this,$property,$relation,$value);
                 break;
             default:
                 $part = new query_where_simple($this,$property,$relation,$value);

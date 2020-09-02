@@ -56,6 +56,6 @@ class query_where_object extends query_where {
                 }
                 $first = false;
             }
-            return $result;
+            return $result.')';
         }
 }
