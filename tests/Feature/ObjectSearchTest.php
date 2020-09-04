@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 use Sunhill\Objects\oo_object;
 use Tests\DBTestCase;
 use Sunhill\Utils\objectlist;
@@ -66,15 +66,15 @@ class searchtestC extends searchtestB {
 
 class ObjectSearchTest extends DBTestCase
 {
-
+    
     protected function do_migration() {
-        $this->artisan('migrate:fresh',['--path'=>'database/migrations/']);
-        $this->artisan('migrate',['--path'=>'database/migrations/common']);
-        $this->artisan('migrate',['--path'=>'database/migrations/searchtests']);
+        Artisan::call('migrate:fresh --path=database/migrations/');
+        Artisan::call('migrate --path=database/migrations/common');
+        Artisan::call('migrate --path=database/migrations/searchtests');
     }
     
     protected function do_seeding() {
-        $this->seed('SearchSeeder');
+        Artisan::call('db:seed --class=SearchSeeder');
     }
     
     protected function simplify_result(objectlist $result) {

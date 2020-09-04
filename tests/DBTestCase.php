@@ -10,10 +10,15 @@ abstract class DBTestCase extends TestCase
 
     use RefreshDatabase;
     
+    protected static $db_inited = false;
+    
     public function setUp():void {
         parent::setUp();
-        $this->do_migration();
-        $this->do_seeding();
+        if (!static::$db_inited) {
+            static::$db_inited = true;
+            $this->do_migration();
+            $this->do_seeding();
+        }
         oo_object::flush_cache();
     }
     
