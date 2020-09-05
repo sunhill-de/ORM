@@ -97,50 +97,5 @@ class oo_property_object extends oo_property_field {
 	        $to->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
 	    }
 	}
-
-	public function get_table_name($relation,$where) {
-        return '';
-	}
-	
-	protected function get_individual_where($relation,$value,$letter) {
-	    switch ($relation) {
-	        case '=':
-	            if (is_null($value)) {
-                    return "a.id not in (select zz.container_id from objectobjectassigns as zz where zz.field = '".$this->get_name()."')";
-	            } else {
-	                if (!is_int($value)) {
-	                    $value = $value->get_id();
-	                }
-	                return "a.id in (select zz.container_id from objectobjectassigns as zz where zz.field = '".$this->get_name().
-	                       "' and zz.element_id = ".$this->escape($value).")"; break;
-	            }
-	        case 'in':
-	            $result = "a.id in (select zz.container_id from objectobjectassigns as zz where zz.field = '".$this->get_name().
-	                      "' and zz.element_id in (";
-	            $first = true;
-	            foreach ($value as $single_value) {
-	                if (!is_int($single_value)) {
-	                    $single_value = $single_value->get_id();
-	                }
-	                if (!$first) {
-	                    $result .= ',';
-	                }
-	                $result .= $single_value;
-	                $first = false;
-	            }
-	            return $result.'))'; 
-	            break;
-	    }
-	}
-	
-	protected function is_allowed_relation(string $relation,$value) {
-	    switch ($relation) {
-	        case '=':
-	        case 'in':
-                return true;
-	        default:
-	            return false;
-	    }
-	}
 	
 }
