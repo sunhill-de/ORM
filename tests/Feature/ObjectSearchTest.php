@@ -243,6 +243,9 @@ class ObjectSearchTest extends DBTestCase
         ];
     }
     
+    /**
+     * @group object
+     */
     public function testPassObject() {
         $test = \Sunhill\Objects\oo_object::load_object_of(1);
         $result = $this->simplify_result(\Tests\Feature\searchtestA::search()->where('Aobject','=',$test)->get());
@@ -271,48 +274,6 @@ class ObjectSearchTest extends DBTestCase
         $this->assertEquals(null,$result);
     }
     
-    public function testGetFirstObject() {
-        $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first_object();
-        $this->assertEquals(5,$result->get_id());
-    }
-    
-    /**
-     * @group Focus
-     */
-    public function testGetFirstObjectWithNoResult() {
-        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->first_object();
-        $this->assertEquals(null,$result);
-    }
-    
-    /**
-     * @group Focus
-     */
-    public function testGetFirstObjectWithOneResult() {
-        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->first_object();
-        $this->assertEquals(5,$result->get_id());
-    }
-    
-    public function testGetObjects() {
-        $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->get_objects();
-        $this->assertEquals([5,11],[$result[0]->get_id(),$result[1]->get_id()]);
-    }
-
-    /**
-     * @group Focus
-     */
-    public function testGetObjectsWithOneResult() {
-        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->get_objects();
-        $this->assertEquals(5,$result);
-    }
-    
-    /**
-     * @group Focus
-     */
-    public function testGetObjectsWithNoResult() {
-        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->get_objects();
-        $this->assertEquals(null,$result);
-    }
-    
     /**
      * @dataProvider ComplexProvider
      * @group complex
@@ -327,7 +288,7 @@ class ObjectSearchTest extends DBTestCase
         return [
             ["searchtestA",'Aint','<',300,'Aint','<>','222',[5]],
             ["searchtestA",'Aint','<',300,'Achar','=','ABC',[5]],
-            ["searchtestB",'Aint','>',300,'Bint','=','602',[12,13]],
+            ["searchtestB",'Aint','>',300,'Bint','=','602',[12,13]], 
             ["searchtestA",'tags','has','TagA','Aint','<>',222,[5]],
             ["searchtestA",'tags','has','TagA','tags','has','TagC',[6]],
             ["searchtestA",'Acalc','<>','111=ABC','tags','has','TagA',[6]],

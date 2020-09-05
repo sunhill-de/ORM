@@ -36,8 +36,7 @@ abstract class query_where extends query_atom {
     protected $parent_query;
     
     public function __construct(query_builder $parent_query,oo_property $field,$relation,$value=null) {
-        if (is_null($value)) {
-            if (!isset($this->allowed_relations[$relation]) || ($this->allowed_relations[$relation] !== 'unary')) {
+            if (!isset($this->allowed_relations[$relation])) {
                 $value = $relation;
                 $relation = '=';                
             }
@@ -81,6 +80,8 @@ abstract class query_where extends query_atom {
                 break;
             case 'unary':
                 return true;
+            case 'object':
+                return is_object($value)||is_int($value)||is_null($value);
         }
     }
     
@@ -92,7 +93,7 @@ abstract class query_where extends query_atom {
         }
     }
     
-    public function get_query_part() {
+    protected function get_this_where_part() {
         if ($this->relation == 'in') {
             $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' in (';
             $first = true;
@@ -104,6 +105,11 @@ abstract class query_where extends query_atom {
         } else {
             $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' '.$this->relation." ".$this->escape($this->value);
         }
+        return $result;
+    }
+    
+    public function get_query_part() {
+        $result = $this->get_this_where_part();
         if (isset($this->next)) {
             $result .= ' '.$this->connection.=$this->next->get_query_part();
         }

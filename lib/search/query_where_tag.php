@@ -38,5 +38,12 @@ class query_where_tag extends query_where_array {
         }
     }
        
+    protected function get_element($element) {
+        if (is_int($element)) {
+            return ' = '.$this->escape($element);
+        } else if (is_string($element)) {
+            return ' in (select tag_id from tagcache where name = '.$this->escape($element).')';
+        }
+    }
     
 }

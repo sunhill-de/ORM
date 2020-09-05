@@ -6,20 +6,29 @@ class query_where_object extends query_where {
     
     protected $allowed_relations = 
         [
-            '='=>'scalar',
-            '!='=>'scalar',
-            '<>'=>'scalar',
+            '='=>'object',
+            '!='=>'object',
+            '<>'=>'object',
             'in'=>'array',            
         ];
     
-        public function get_query_part() {
+        protected function get_value() {
+            if (is_int($this->value)) {
+                return $this->escape($this->value);
+            } else {
+                return $this->escape($this->value->get_id());
+            }
+        }
+        
+        public function get_this_where_part() {
             $result = $this->get_query_prefix();
             switch ($this->relation) {
                 case '=':
                     if (is_null($this->value)) {
                         $result .= " a.id not in (select container_id from objectobjectassigns where field = '".$this->field."')";
                     } else {
-                        $result .= " a.id in (select container_id from objectobjectassigns where field = '".$this->field."' and element_id = '".$this->value."')";
+                        $value = $this->get_value();
+                        $result .= " a.id in (select container_id from objectobjectassigns where field = '".$this->field."' and element_id = $value)";
                     }
                     break;
                 case '<>':
@@ -27,7 +36,8 @@ class query_where_object extends query_where {
                     if (is_null($this->value)) {
                         $result .= " a.id in (select container_id from objectobjectassigns where field = '".$this->field."')";
                     } else {
-                        $result .= " a.id not in (select container_id from objectobjectassigns where field = '".$this->field."' and element_id = '".$this->value."')";                        
+                        $value = $this->get_value();
+                        $result .= " a.id not in (select container_id from objectobjectassigns where field = '".$this->field."' and element_id = $value)";                        
                     }
                     break;
                 case 'in':

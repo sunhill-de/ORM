@@ -28,5 +28,9 @@ class query_where_array_of_strings extends query_where_array {
             return $result.')'." and field = '".$this->field."'";
         }
     }
+
+    protected function get_element($element) {
+        return ' = '.$this->escape($element)." and field = '".$this->field."'";
+    }
     
 }

@@ -29,7 +29,7 @@ class query_where_string extends query_where {
             'contains'=>'scalar',
         ];
     
-     public function get_query_part() {
+     public function get_this_where_part() {
          $result = $this->get_query_prefix()." ";
          switch ($this->relation) {
              case 'begins with':
@@ -46,7 +46,7 @@ class query_where_string extends query_where {
                  return $result.$this->field." like ".$this->escape($this->value);
                  break;
              default:
-                 return parent::get_query_part();
+                 return parent::get_this_where_part();
          }
         return $result;
     }

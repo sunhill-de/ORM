@@ -35,4 +35,14 @@ class query_where_array_of_objects extends query_where_array {
         }
     }
     
+    protected function get_element($element) {
+        if (is_int($element)) {
+            return ' = '.$this->escape($element);
+        } else if (is_object($element)) {
+            return ' = '.$this->escape($element->get_id());
+        }
+    }
+    
+    
+    
 }
