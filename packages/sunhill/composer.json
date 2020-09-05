@@ -1,0 +1,19 @@
+{
+    "name": "sunhill/sunhill",
+    "description": "The sunhill framework - A ORM extension to laravel",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Klaus Dimde",
+            "email": "klaus@dimde.info"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+      "psr-4": {
+          "Sunhill\\": "src/lib"
+      }
+    }
+}
