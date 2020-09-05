@@ -733,5 +733,25 @@ class oo_object extends \Sunhill\propertieshaving {
 	    }
 	}
 	
+	/**
+	 * Traverses all classes in the hirachy and combines the static property $name in one resulting array
+	 *
+	 * @param string $name
+	 * @return array
+	 */
+	public static function get_hirarchic_array(string $name)
+	{
+	    if (! property_exists(get_called_class(), $name)) {
+	        throw new SunhillException("The property '$name' doesn't exists.");
+	    }
+	    $result = [];
+	    $pointer = get_called_class();
+	    do {
+	        $result = array_merge($result, $pointer::$$name);
+	        $pointer = get_parent_class($pointer);
+	    } while (property_exists($pointer, $name)); // at least oo_object shouldn't define it
+	    return $result;
+	}
+	
 	
 }
