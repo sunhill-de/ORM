@@ -214,20 +214,48 @@ class query_builder {
     public function count(bool $dump=false) {
         $this->set_query_part('target', new query_target_count($this));
         $result = $this->prepare_query($dump);
-        return $result[0]->count;
+        if ($dump) {
+            return $result;
+        } else {
+            return $result[0]->count;
+        }
     }
     
     /**
      * Returns the first entry of the query
+     * @deprecated Should be replaces by ->first_id() or ->load()
      * @param bool $dump
      * @return \Sunhill\Search\unknown
      */
     public function first(bool $dump=false) {
-        $this->set_query_part('target', new query_target_id($this));
-        $this->set_query_part('limit', new query_limit($this,0,1));
-        return $this->postprocess_results($this->prepare_query($dump));
+        return $this->first_id($dump);
     }
     
+    /**
+     * Alias of ->first()
+     * @param bool $dump
+     * @return \Sunhill\Search\unknown
+     */
+    public function first_id(bool $dump=false) {
+        $this->set_query_part('target', new query_target_id($this));
+        $this->set_query_part('limit', new query_limit($this,0,1));
+        $result = $this->prepare_query($dump);
+        if ($dump) {
+            return $result;
+        } else {
+            if (empty($result)) {
+                return null;
+            } else {
+                return $result[0]->id;
+            }
+        }
+    }
+    
+    /**
+     * returns the loaded first entry of the query. If it doesn't exist it raises an exception
+     * @throws QueryException
+     * @return NULL
+     */
     public function load() {
         $result = $this->load_if_exists();        
         if (empty($result)) {
@@ -236,6 +264,10 @@ class query_builder {
         return $result;
     }
     
+    /**
+     * return the laoded first entry of the query or null if it doesn't exist
+     * @return unknown|NULL
+     */
     public function load_if_exists() {
         $this->set_query_part('target', new query_target_id($this));
         $this->set_query_part('limit', new query_limit($this,0,1));

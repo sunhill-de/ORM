@@ -14,9 +14,9 @@ class query_where_array_of_objects extends query_where_array {
     
     protected function get_element_id_list($value) {
         if (is_int($value)) {
-            return ' = '.$this->escape($value);
+            return ' = '.$this->escape($value)." and field = '".$this->field."'";
         } else if (is_object($value)) {
-            return ' = '.$this->escape($value->get_id());
+            return ' = '.$this->escape($value->get_id())." and field = '".$this->field."'";
         } else if (is_array($value)) {
             $result = ' in (';
             $first = true;
@@ -31,7 +31,7 @@ class query_where_array_of_objects extends query_where_array {
                 }
                 $first = false;
             }
-            return $result.')';
+            return $result.')'." and field = '".$this->field."'";
         }
     }
     

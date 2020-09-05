@@ -22,6 +22,14 @@ abstract class DBTestCase extends TestCase
         oo_object::flush_cache();
     }
     
+    /**
+     * At least once per test it has to be rebuilt
+     */
+    public static function setUpBeforeClass() : void {
+        parent::setUpBeforeClass();
+        static::$db_inited = false;
+    }
+    
     protected function do_migration() {
         $this->artisan('migrate:fresh',['--path'=>'database/migrations/']);
         $this->artisan('migrate',['--path'=>'database/migrations/common']);

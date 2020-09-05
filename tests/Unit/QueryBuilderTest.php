@@ -56,7 +56,7 @@ class QueryBuilderTest extends TestCase
             ['\Sunhill\Objects\oo_object', // Test simple count
                 function($query) {
                 return $query->count(true); 
-                },'select count(a.id) from objects as a',false
+                },'select count(a.id) as count from objects as a',false
             ],
             ['\Sunhill\Objects\oo_object', // Test simple get
                 function($query) {
@@ -96,12 +96,12 @@ class QueryBuilderTest extends TestCase
             ['\Sunhill\Test\ts_testchild', // test and-combined where of children with parent properties
                 function($query) {
                     return $query->where('parentint','=',1)->where('parentchar','=','ABC')->get(true);
-                },"select b.id from testparents as a inner join testchildren as b where a.parentint = '1' and a.parentchar = 'ABC'",false
+                },"select b.id from testparents as a inner join testchildren as b on b.id = a.id where a.parentint = '1' and a.parentchar = 'ABC'",false
             ],
             ['\Sunhill\Test\ts_testchild', // test and-combined where of children with mixed properties
                 function($query) {
                     return $query->where('parentint','=',1)->where('childchar','=','ABC')->get(true);
-                },"select b.id from testparents as a inner join testchildren as b where a.parentint = '1' and b.childchar = 'ABC'",false
+                },"select b.id from testparents as a inner join testchildren as b on b.id = a.id where a.parentint = '1' and b.childchar = 'ABC'",false
             ],
                 
         ];    

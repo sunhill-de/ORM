@@ -35,11 +35,11 @@ abstract class query_where_array extends query_where {
                     break;
                 case 'has any':
                 case 'not empty':
-                    $result .= ' a.id in (select container_id from tagobjectassigns)';
+                    $result .= ' a.id in (select container_id from '.$this->get_assoc_table().')';
                     break;
                 case 'has none':
                 case 'empty':
-                    $result .= ' a.id not in (select container_id from tagobjectassigns)';
+                    $result .= ' a.id not in (select container_id from '.$this->get_assoc_table().')';
                     break;
                 case 'all of':
                     $result .= ' ('.$this->get_all_of_part().')';

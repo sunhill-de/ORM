@@ -36,6 +36,7 @@ abstract class query_where extends query_atom {
     protected $parent_query;
     
     public function __construct(query_builder $parent_query,oo_property $field,$relation,$value=null) {
+        if (is_null($value)) {
             if (!isset($this->allowed_relations[$relation])) {
                 $value = $relation;
                 $relation = '=';                
