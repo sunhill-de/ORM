@@ -1,8 +1,8 @@
 <?php
 
-namespace Sunhill\Search;
+namespace Sunhill\ORM\Search;
 
-use Sunhill\Properties\oo_property;
+use Sunhill\ORM\Properties\oo_property;
 
 class query_where_tag extends query_where_array {
     

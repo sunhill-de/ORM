@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\DBTestCase;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 
 class ObjectReadTest extends DBTestCase
 {
@@ -18,7 +18,7 @@ class ObjectReadTest extends DBTestCase
      * @param unknown $expected_value
      */
     public function testRead(int $id,string $variable,$expected_value) {
-        $object = \Sunhill\Objects\oo_object::load_object_of($id);
+        $object = \Sunhill\ORM\Objects\oo_object::load_object_of($id);
         $this->assertEquals($expected_value,$this->get_field($object,$variable));
     }
     

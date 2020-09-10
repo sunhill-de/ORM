@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Crawler;
-use Sunhill\Test\sunhill_testcase_db;
+use Sunhill\ORM\Test\sunhill_testcase_db;
 use Illuminate\Support\Facades\DB;
 
 class StorageBase extends TestCase

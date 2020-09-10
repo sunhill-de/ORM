@@ -1,10 +1,10 @@
 <?php
 
-namespace Sunhill\Test;
+namespace Sunhill\ORM\Test;
 
-use Sunhill\Objects;
+use Sunhill\ORM\Objects;
 
-class FakeStorage extends \Sunhill\Storage\storage_base {
+class FakeStorage extends \Sunhill\ORM\Storage\storage_base {
     
     protected function execute_chain(string $chainname,int $id, $payload=null) {
         switch ($chainname) {
@@ -30,7 +30,7 @@ class FakeStorage extends \Sunhill\Storage\storage_base {
     
 }
 
-class ts_objectunit extends \Sunhill\Objects\oo_object {
+class ts_objectunit extends \Sunhill\ORM\Objects\oo_object {
 	
     public static $table_name = 'objectunits';
 
@@ -43,9 +43,9 @@ class ts_objectunit extends \Sunhill\Objects\oo_object {
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('intvalue');
-        self::object('objectvalue')->set_allowed_objects(['\Sunhill\test\ts_dummy'])->set_default(null);
+        self::object('objectvalue')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy'])->set_default(null);
         self::arrayofstrings('sarray');
-        self::arrayofobjects('oarray')->set_allowed_objects(['\Sunhill\Test\ts_dummy']);
+        self::arrayofobjects('oarray')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy']);
         self::calculated('calcvalue');
     }
 

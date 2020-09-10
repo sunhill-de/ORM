@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 use Tests\DBTestCase;
 
 class TestClass extends oo_object {
@@ -40,7 +40,7 @@ class ObjectCalculatedTest extends DBTestCase
     }
     
     public function testFailWritingCalculated() {
-        $this->expectException(\Sunhill\Objects\ObjectException::class);
+        $this->expectException(\Sunhill\ORM\Objects\ObjectException::class);
         $test = new TestClass;
         $test->calcfield = 'DEF';
     }
@@ -59,8 +59,8 @@ class ObjectCalculatedTest extends DBTestCase
         $test->dummyint = 1;
         $test->set_return('ABC');
         $test->commit();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
         $read->set_return('DEF');
         $read->commit();
         $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->get_id())->where('fieldname','=','calcfield')->first();
@@ -72,8 +72,8 @@ class ObjectCalculatedTest extends DBTestCase
         $test->dummyint = 1;
         $test->set_return('ABC');
         $test->commit();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
         $this->assertEquals('ABC',$read->calcfield);
         $read->set_return('DEF');
         $this->assertEquals('DEF',$read->calcfield);

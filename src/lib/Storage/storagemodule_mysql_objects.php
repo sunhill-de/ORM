@@ -1,4 +1,4 @@
-<?php namespace Sunhill\Storage;
+<?php namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 
@@ -12,7 +12,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
     /**
      * Läd die Objektreferenzen des übergebenen Objektes und speichert diese im Storage-Objekt
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::load()
+     * @see \Sunhill\ORM\Storagestoragemodule_base::load()
      */
     public function load(int $id) {
         $references = DB::table('objectobjectassigns')->where('container_id','=',$id)->orderBy('index','asc')->get();
@@ -35,7 +35,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
     /**
      * Speichert aus dem Storage die Objektrefernzen in der Datenbank
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::insert()
+     * @see \Sunhill\ORM\Storage\storagemodule_base::insert()
      */
     public function insert(int $id) {
         $inserts = [];
@@ -56,7 +56,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
             } else {
                 $element = $this->storage->$fieldname;
                 if (empty($element)) {
-                    if (is_a($property->value,'\\Sunhill\\Objects\\oo_object')) {
+                    if (is_a($property->value,'\\Sunhill\\ORM\\Objects\\oo_object')) {
                         $property->value->add_needid_query('objectobjectassigns',['container_id'=>$id,'field'=>$fieldname,'index'=>0],'element_id');
                     }
                 } else {
@@ -73,7 +73,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
     /**
      * Bringt die Objektreferenzen in der Datenbank auf den neusten Stand
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::update()
+     * @see \Sunhill\ORM\Storage\storagemodule_base::update()
      */
     public function update(int $id) {
         $properties = $this->storage->filter_storage('objectid');
@@ -116,7 +116,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
     /**
      * Löscht aus der Datenbank die Objektreferenzen
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::delete()
+     * @see \Sunhill\ORM\Storage\storagemodule_base::delete()
      */
     public function delete(int $id) {
         DB::table('objectobjectassigns')->where('container_id','=',$id)->delete();
@@ -125,7 +125,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
     /**
      * Löscht die höhergestellten Tabellen
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::degrade()
+     * @see \Sunhill\ORM\Storage\storagemodule_base::degrade()
      */
     public function degrade(int $id,array $degration_info) {
         $properties = $this->storage->filter_storage('objectid');

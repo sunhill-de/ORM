@@ -1,10 +1,10 @@
 <?php
 
-namespace Sunhill\Search;
+namespace Sunhill\ORM\Search;
 
-use Sunhill\Properties\oo_property;
+use Sunhill\ORM\Properties\oo_property;
 use Illuminate\Support\Facades\DB;
-use Sunhill\Search\QueryException;
+use Sunhill\ORM\Search\QueryException;
 
 /**
  * An abstract base class for where parts in a query. It provides a check for allowed relations and stores the required field for the query

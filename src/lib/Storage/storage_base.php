@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Storage;
+namespace Sunhill\ORM\Storage;
 
 /**
  * Alle Exceptions innhalb der Storages und ihrer Module sollten von StorageException abgeleitet werden
@@ -25,7 +25,7 @@ abstract class storage_base  {
     
     /** 
      * Speichert das aufrufende Objekt
-     * @var \Sunhill\Objects\oo_object
+     * @var \Sunhill\ORM\Objects\oo_object
      */
     protected $caller;
     
@@ -40,7 +40,7 @@ abstract class storage_base  {
      * Konstruktor, übernimmt das aufrufende Objekt als Parameter.
      * @param unknown $caller
      */
-    public function __construct(\Sunhill\Objects\oo_object $caller) {
+    public function __construct(\Sunhill\ORM\Objects\oo_object $caller) {
         $this->caller = $caller;    
     }
     
@@ -55,7 +55,7 @@ abstract class storage_base  {
     
     /**
      * Liefert das aufrufende Objekt zurück
-     * @return \Sunhill\Objects\oo_object
+     * @return \Sunhill\ORM\Objects\oo_object
      */
     public function get_caller() {
         return $this->caller;    
@@ -101,7 +101,7 @@ abstract class storage_base  {
         $method_name = 'prepare_'.$chainname;
         $module_list = [];
         foreach ($this->modules as $module_name) {
-            $full_name = "\\Sunhill\\Storage\\storagemodule_".$module_name;
+            $full_name = "\\Sunhill\\ORM\\Storage\\storagemodule_".$module_name;
             $module = new $full_name($this);
             if (isset($payload)) {
                 $module->$method_name($id,$payload);

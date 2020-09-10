@@ -4,7 +4,7 @@
  * Definiert das Objekt loggable
  */
 
-namespace Sunhill;
+namespace Sunhill\ORM;
 
 use Illuminate\Support\Facades\Log;
 

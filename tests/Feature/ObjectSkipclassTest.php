@@ -4,9 +4,9 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Test\ts_dummy;
+use Sunhill\ORM\Test\ts_dummy;
 use Tests\DBTestCase;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 use Illuminate\Support\Facades\DB;
 
 class SkipClass extends ts_dummy {

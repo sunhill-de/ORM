@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\DBTestCase;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 use Illuminate\Support\Facades\DB;
 
 class ObjectReReadTest extends DBTestCase
@@ -21,7 +21,7 @@ class ObjectReReadTest extends DBTestCase
 	 */
 	public function testSimpleFields($classname,$init,$modify,$expect) {
 	    oo_object::flush_cache();
-	    $classname = 'Sunhill\\Test\\'.$classname;
+	    $classname = 'Sunhill\\ORM\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
@@ -243,7 +243,7 @@ class ObjectReReadTest extends DBTestCase
 	 */
 	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
 	    oo_object::flush_cache();
-	    $classname = 'Sunhill\\Test\\'.$classname;
+	    $classname = 'Sunhill\\ORM\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
@@ -303,9 +303,9 @@ class ObjectReReadTest extends DBTestCase
 	                'parentenum'=>'testA'
 	            ],
 	            function($object) {
-	                $add1 = new \Sunhill\Test\ts_dummy();
-	                $add2 = new \Sunhill\Test\ts_dummy();
-	                $add3 = new \Sunhill\Test\ts_dummy();
+	                $add1 = new \Sunhill\ORM\Test\ts_dummy();
+	                $add2 = new \Sunhill\ORM\Test\ts_dummy();
+	                $add3 = new \Sunhill\ORM\Test\ts_dummy();
 	                $add1->dummyint = 1234;
 	                $add2->dummyint = 2345;
 	                $add3->dummyint = 3456;
@@ -328,8 +328,8 @@ class ObjectReReadTest extends DBTestCase
 	                ($object->parentsarray[count($object->parentsarray)-1] == 'DCB');
 	            },
 	            function($object) {
-	                $add1 = new \Sunhill\Test\ts_dummy();
-	                $add2 = new \Sunhill\Test\ts_dummy();
+	                $add1 = new \Sunhill\ORM\Test\ts_dummy();
+	                $add2 = new \Sunhill\ORM\Test\ts_dummy();
 	                $add1->dummyint = 4321;
 	                $add2->dummyint = 5432;
 	                $object->parentobject = $add1;
@@ -374,12 +374,12 @@ class ObjectReReadTest extends DBTestCase
 	                    'childenum'=>'testB'
 	                ],
 	                function($object) {
-	                    $add1 = new \Sunhill\Test\ts_dummy();
-	                    $add2 = new \Sunhill\Test\ts_dummy();
-	                    $add3 = new \Sunhill\Test\ts_dummy();
-	                    $add4 = new \Sunhill\Test\ts_dummy();
-	                    $add5 = new \Sunhill\Test\ts_dummy();
-	                    $add6 = new \Sunhill\Test\ts_dummy();
+	                    $add1 = new \Sunhill\ORM\Test\ts_dummy();
+	                    $add2 = new \Sunhill\ORM\Test\ts_dummy();
+	                    $add3 = new \Sunhill\ORM\Test\ts_dummy();
+	                    $add4 = new \Sunhill\ORM\Test\ts_dummy();
+	                    $add5 = new \Sunhill\ORM\Test\ts_dummy();
+	                    $add6 = new \Sunhill\ORM\Test\ts_dummy();
 	                    $add1->dummyint = 1234;
 	                    $add2->dummyint = 2345;
 	                    $add3->dummyint = 3456;
@@ -420,10 +420,10 @@ class ObjectReReadTest extends DBTestCase
 	                    ($object->childsarray[count($object->childsarray)-1] == 'FED');
 	                },
 	                function($object) {
-	                    $add1 = new \Sunhill\Test\ts_dummy();
-	                    $add2 = new \Sunhill\Test\ts_dummy();
-	                    $add3 = new \Sunhill\Test\ts_dummy();
-	                    $add4 = new \Sunhill\Test\ts_dummy();
+	                    $add1 = new \Sunhill\ORM\Test\ts_dummy();
+	                    $add2 = new \Sunhill\ORM\Test\ts_dummy();
+	                    $add3 = new \Sunhill\ORM\Test\ts_dummy();
+	                    $add4 = new \Sunhill\ORM\Test\ts_dummy();
 	                    $add1->dummyint = 4321;
 	                    $add2->dummyint = 5432;
 	                    $add3->dummyint = 6543;
@@ -471,7 +471,7 @@ class ObjectReReadTest extends DBTestCase
 	                    'ts_referenceonly',
 	                    ['testint'=>1234],
 	                    function($object) {
-	                        $add1 = new \Sunhill\Test\ts_dummy();
+	                        $add1 = new \Sunhill\ORM\Test\ts_dummy();
 	                        $add1->dummyint = 4321;
 	                        $object->testobject = $add1;
 	                        $object->testoarray[] = $add1;
@@ -504,7 +504,7 @@ class ObjectReReadTest extends DBTestCase
 	                    'ts_referenceonly',
 	                    ['testint'=>1234],
 	                    function($object) {
-	                        $add1 = new \Sunhill\Test\ts_referenceonly();
+	                        $add1 = new \Sunhill\ORM\Test\ts_referenceonly();
 	                        $add1->testint = 4321;
 	                        $add1->testobject = $object;
 	                        $object->testobject = $add1;
@@ -529,7 +529,7 @@ class ObjectReReadTest extends DBTestCase
 	                        'ts_referenceonly',
 	                        ['testint'=>1234],
 	                        function($object) {
-	                            $add1 = new \Sunhill\Test\ts_dummy();
+	                            $add1 = new \Sunhill\ORM\Test\ts_dummy();
 	                            $add1->dummyint = 4321;
 	                            $object->testobject = $add1;
 	                            return true;
@@ -538,7 +538,7 @@ class ObjectReReadTest extends DBTestCase
 	                            return ($object->testint == 1234) && ($object->testobject->dummyint == 4321);
 	                        },
 	                        function($object) { // Modify Callback
-	                            $add1 = new \Sunhill\Test\ts_dummy();
+	                            $add1 = new \Sunhill\ORM\Test\ts_dummy();
 	                            $add1->dummyint = 1111;
 	                            $object->testobject = $add1;
 	                            return true;
@@ -553,7 +553,7 @@ class ObjectReReadTest extends DBTestCase
 	                        'ts_referenceonly',
 	                        ['testint'=>1234],
 	                        function($object) {
-	                            $add1 = new \Sunhill\Test\ts_dummy();
+	                            $add1 = new \Sunhill\ORM\Test\ts_dummy();
 	                            $add1->dummyint = 4321;
 	                            $object->testobject = $add1;
 	                            return true;
@@ -574,7 +574,7 @@ class ObjectReReadTest extends DBTestCase
 	                            'ts_referenceonly',
 	                            ['testint'=>1234],
 	                            function($object) {
-	                                $add1 = new \Sunhill\Test\ts_dummy();
+	                                $add1 = new \Sunhill\ORM\Test\ts_dummy();
 	                                $add1->dummyint = 4321;
 	                                $object->testobject = $add1;
 	                                return true;
@@ -599,15 +599,15 @@ class ObjectReReadTest extends DBTestCase
 	
 	public function testChildChange() {
 	       oo_object::flush_cache();
-	       $object = new \Sunhill\Test\ts_referenceonly();
-	       $child  = new \Sunhill\Test\ts_dummy();
+	       $object = new \Sunhill\ORM\Test\ts_referenceonly();
+	       $child  = new \Sunhill\ORM\Test\ts_dummy();
 	       $object->testint = 123;
 	       $child->dummyint = 234;
 	       $object->testobject = $child;
 	       $object->commit();
 	       $child->dummyint = 666;
 	       $child->commit();
-	       $read = \Sunhill\Objects\oo_object::load_object_of($object->get_id());
+	       $read = \Sunhill\ORM\Objects\oo_object::load_object_of($object->get_id());
 	       $this->assertEquals(666,$read->testobject->dummyint);
 	       
 	}
@@ -620,9 +620,9 @@ class ObjectReReadTest extends DBTestCase
 	    $sub = array();
 	    $main = array();
 	    for ($i=0;$i<100;$i++) {
-	        $sub[$i] = new \Sunhill\Test\ts_dummy();
+	        $sub[$i] = new \Sunhill\ORM\Test\ts_dummy();
 	        $sub[$i]->dummyint = $i;
-	        $main[$i] = new \Sunhill\Test\ts_referenceonly();
+	        $main[$i] = new \Sunhill\ORM\Test\ts_referenceonly();
 	        $main[$i]->testobject = $sub[$i];
 	        $main[$i]->testint = $i+100;
 	        $main[$i]->commit();

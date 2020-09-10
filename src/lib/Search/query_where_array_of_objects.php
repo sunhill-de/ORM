@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Search;
+namespace Sunhill\ORM\Search;
 
 class query_where_array_of_objects extends query_where_array {
 

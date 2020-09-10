@@ -1,4 +1,4 @@
-<?php namespace Sunhill\Storage;
+<?php namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 
@@ -62,7 +62,7 @@ class storagemodule_mysql_strings extends storagemodule_base {
     /**
      * Löscht die höhergestellten Tabellen
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::degrade()
+     * @see \Sunhill\ORM\Storagestoragemodule_base::degrade()
      */
     public function degrade(int $id,array $degration_info) {
         $properties = $this->storage->filter_storage('strings');

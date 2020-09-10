@@ -1,10 +1,10 @@
 <?php
 
-namespace Sunhill\Test;
+namespace Sunhill\ORM\Test;
 
-use Sunhill\Objects;
+use Sunhill\ORM\Objects\oo_object;
 
-class ts_dummy extends \Sunhill\Objects\oo_object {
+class ts_dummy extends oo_object {
 	
     public static $table_name = 'dummies';
     

@@ -6,8 +6,8 @@ use Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Sunhill\Objects\oo_tag;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_tag;
+use Sunhill\ORM\Objects\oo_object;
 
 class TagTest extends DBTestCase
 {
@@ -208,7 +208,7 @@ class TagTest extends DBTestCase
 	 * @group static
 	 */
 	public function testStaticOrphans() {
-	    $object = new \Sunhill\Test\ts_dummy();
+	    $object = new \Sunhill\ORM\Test\ts_dummy();
 	    $object->dummyint = 1;
 	    $tag = oo_tag::search_tag('TagB.TagC');
 	    $object->tags->stick($tag);

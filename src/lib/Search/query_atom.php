@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Search;
+namespace Sunhill\ORM\Search;
 
 abstract class query_atom {
     

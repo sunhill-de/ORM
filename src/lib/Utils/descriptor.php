@@ -10,9 +10,9 @@
  * Tests: Unit/UtilDescriptorTest.php
  * Coverage: unknown
  */
-namespace Sunhill\Utils;
+namespace Sunhill\ORM\Utils;
 
-use Sunhill\SunhillException;
+use Sunhill\ORM\SunhillException;
 
 class DescriptorException extends SunhillException {}
 

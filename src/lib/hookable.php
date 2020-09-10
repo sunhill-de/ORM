@@ -3,7 +3,7 @@
  * @file hookable.php
  * Definiert die Klasse hookable
  */
-namespace Sunhill;
+namespace Sunhill\ORM;
 
 /**
  * Basisklasse für Klassen, die Hooks benutzen
@@ -105,7 +105,7 @@ class hookable extends loggable {
                 $destination = $descriptor['destination'];
                 $hook = $descriptor['hook'];
 	            if (is_int($destination)) {
-	                $destination = \Sunhill\Objects\oo_object::load_object_of($descriptor['destination']);
+	                $destination = \Sunhill\ORM\Objects\oo_object::load_object_of($descriptor['destination']);
 	            }
 	            if (!isset($params)) {
 	                $params = array();

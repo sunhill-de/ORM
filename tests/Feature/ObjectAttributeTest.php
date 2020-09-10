@@ -6,8 +6,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\DBTestCase;
-use Sunhill\Objects\oo_object;
-use Sunhill\Test\ts_dummy;
+use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Test\ts_dummy;
 
 class ObjectAttributeTest extends DBTestCase
 {
@@ -54,7 +54,7 @@ class ObjectAttributeTest extends DBTestCase
     }
     
     public function testInvalidAttribute() {
-        $this->expectException(\Sunhill\Properties\AttributeException::class);
+        $this->expectException(\Sunhill\ORM\Properties\AttributeException::class);
         $test = new ts_dummy();
         $test->attribute1 = 2;
     }

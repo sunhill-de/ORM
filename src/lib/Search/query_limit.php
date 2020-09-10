@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Search;
+namespace Sunhill\ORM\Search;
 
 class query_limit extends query_atom {
     

@@ -1,6 +1,6 @@
 {
-	"name" : "sunhill/sunhill",
-	"description" : "The sunhill framework - A ORM extension to laravel",
+	"name" : "sunhill/ORM",
+	"description" : "The sunhill ORM extension to laravel",
 	"type" : "library",
 	"license" : "MIT",
 	"authors" : [{
@@ -11,14 +11,21 @@
 	"minimum-stability" : "dev",
 	"autoload" : {
 		"psr-4" : {
-			"Sunhill\\Test\\" : ["tests", "tests/lib", "tests/objects"],
-			"Sunhill\\" : ["src/lib", "src"]
+			"Sunhill\\ORM\\Test\\" : [
+				"tests",
+				"tests/lib",
+				"tests/objects"
+			],
+			"Sunhill\\ORM\\" : [
+				"src/lib",
+				"src"
+			]
 		}
 	},
 	"extra" : {
 		"laravel" : {
 			"providers" : [
-				"Sunhill\\SunhillServiceProvider"
+				"Sunhill\\ORM\\SunhillServiceProvider"
 			]
 		}
 	}

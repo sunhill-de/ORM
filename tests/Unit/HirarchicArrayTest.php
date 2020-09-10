@@ -2,7 +2,7 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 
 class parent_object extends oo_object
 {
@@ -57,7 +57,7 @@ class HirarchicArrayTest extends TestCase
 
     public function testNotExistingArray()
     {
-        $this->expectException(\Sunhill\SunhillException::class);
+        $this->expectException(\Sunhill\ORM\SunhillException::class);
         $hilf = child_object::get_hirarchic_array('non_existing');
     }
 

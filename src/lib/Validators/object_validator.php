@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Validators;
+namespace Sunhill\ORM\Validators;
 
 class object_validator extends validator_base {
     

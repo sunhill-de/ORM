@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Properties;
+namespace Sunhill\ORM\Properties;
 
 
 class oo_property_field extends oo_property {

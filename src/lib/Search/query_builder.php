@@ -1,11 +1,11 @@
 <?php
 
-namespace Sunhill\Search;
+namespace Sunhill\ORM\Search;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\Utils\objectlist;
-use Sunhill\Objects\oo_object;
-use Sunhill\SunhillException;
+use Sunhill\ORM\Utils\objectlist;
+use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\SunhillException;
 
 class QueryException extends SunhillException {}
 
@@ -31,7 +31,7 @@ class query_builder {
     /**
      * Since a search is initiazied by a specific class, the class is set here 
      * @param unknown $calling_class
-     * @return \Sunhill\Search\query_builder
+     * @return \Sunhill\ORM\Search\query_builder
      */
     public function set_calling_class($calling_class) {
         $this->calling_class = $calling_class;
@@ -209,7 +209,7 @@ class query_builder {
     /**
      * Returns the count of entries of this query
      * @param bool $dump
-     * @return string|NULL|\Sunhill\Search\unknown|NULL[]
+     * @return string|NULL|\Sunhill\ORM\Search\unknown|NULL[]
      */
     public function count(bool $dump=false) {
         $this->set_query_part('target', new query_target_count($this));
@@ -225,7 +225,7 @@ class query_builder {
      * Returns the first entry of the query
      * @deprecated Should be replaces by ->first_id() or ->load()
      * @param bool $dump
-     * @return \Sunhill\Search\unknown
+     * @return \Sunhill\ORM\Search\unknown
      */
     public function first(bool $dump=false) {
         return $this->first_id($dump);
@@ -234,7 +234,7 @@ class query_builder {
     /**
      * Alias of ->first()
      * @param bool $dump
-     * @return \Sunhill\Search\unknown
+     * @return \Sunhill\ORM\Search\unknown
      */
     public function first_id(bool $dump=false) {
         $this->set_query_part('target', new query_target_id($this));

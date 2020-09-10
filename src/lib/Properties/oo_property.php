@@ -11,7 +11,7 @@
  * Coverage: unknown
  */
 
-namespace Sunhill\Properties;
+namespace Sunhill\ORM\Properties;
 
 /**
  * @todo Muss das wirklich sein, oder kann man das auf das Storage auslagern
@@ -32,7 +32,7 @@ define ('PD_KEEP',3);  // Ist das Objekt bereits geladen, gib dies zurück, anso
  * @author lokal
  *
  */
-class PropertyException extends \Sunhill\SunhillException {}
+class PropertyException extends \Sunhill\ORM\SunhillException {}
 
 /**
  * Die Exception für ungültige Wertzuweisungen an dieses Property
@@ -46,7 +46,7 @@ class InvalidValueException extends PropertyException {}
  * @author lokal
  *
  */
-class oo_property extends \Sunhill\base {
+class oo_property extends \Sunhill\ORM\base {
 	
     /**
      * Properties get the possibility to add additinal fields (like property->set_additional)
@@ -137,7 +137,7 @@ class oo_property extends \Sunhill\base {
 	
 	/**
 	 * Speichert das validator-Objekt
-	 * @var \Sunhill\Validators\validator_base
+	 * @var \Sunhill\ORM\Validators\validator_base
 	 */
 	protected $validator;
 	
@@ -174,7 +174,7 @@ class oo_property extends \Sunhill\base {
 	 * Extends the property with the possibility to deal with additional getters and setters
 	 * @param unknown $method
 	 * @param unknown $params
-	 * @return mixed|NULL|\Sunhill\Properties\oo_property
+	 * @return mixed|NULL|\Sunhill\ORM\Properties\oo_property
 	 */
 	public function __call($method,$params) {
 	    if (substr($method,0,4) == 'get_') {
@@ -203,7 +203,7 @@ class oo_property extends \Sunhill\base {
 	 * @throws PropertyException Wenn es den Validator nicht gibt
 	 */
 	protected function init_validator() {
-	    $validator_name = "\\Sunhill\\Validators\\".$this->validator_name;
+	    $validator_name = "\\Sunhill\\ORM\\Validators\\".$this->validator_name;
 	    if (!class_exists($validator_name)) {
 	        throw new PropertyException("Unbekannter Validator '".$this->validator_name."' aufgerufen.");
 	    }
@@ -284,7 +284,7 @@ class oo_property extends \Sunhill\base {
 	 * @param unknown $value
 	 * @param unknown $index
 	 * @throws PropertyException
-	 * @return \Sunhill\Properties\oo_property
+	 * @return \Sunhill\ORM\Properties\oo_property
 	 */
 	final public function set_value($value,$index=null) {
 		if ($this->read_only) {
@@ -396,7 +396,7 @@ class oo_property extends \Sunhill\base {
 	 * FROM ist der alte Wert
 	 * TO ist der neue Wert
 	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\Properties\oo_property[]
+	 * @return void[]|\Sunhill\ORM\Properties\oo_property[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
 	    return array('FROM'=>$this->get_diff_entry($this->shadow,$type),
@@ -455,11 +455,11 @@ class oo_property extends \Sunhill\base {
 	    return in_array($test,$this->features);
 	}
 	
-	public function deleting(\Sunhill\Storage\storage_base $storage) {
+	public function deleting(\Sunhill\ORM\Storage\storage_base $storage) {
 	    
 	}
 	
-	public function deleted(\Sunhill\Storage\storage_base $storage) {
+	public function deleted(\Sunhill\ORM\Storage\storage_base $storage) {
 	    
 	}
 	
@@ -471,9 +471,9 @@ class oo_property extends \Sunhill\base {
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert aus dem Storage zu lesen
 	 * Ruft wiederrum die überschreibbare Methode do_load auf, die property-Individuelle Dinge erledigen kann
-	 * @param \Sunhill\Storage\storage_load $loader
+	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 */
-	final public function load(\Sunhill\Storage\storage_base $loader) {
+	final public function load(\Sunhill\ORM\Storage\storage_base $loader) {
 	    $name = $this->get_name();
         $this->do_load($loader,$name);
 	    $this->initialized = true; 
@@ -482,26 +482,26 @@ class oo_property extends \Sunhill\base {
 
 	/**
 	 * Individuell überschreibbare Methode, die dem Property erlaub, besondere Lademethoden zu verwenden
-	 * @param \Sunhill\Storage\storage_load $loader
+	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
+	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {
 	    $this->value = $loader->$name;
 	}
 
 	/**
 	 * Wird aufgerufen, bevor das Property geladen wird
-	 * @param \Sunhill\Storage\storage_base $storage
+	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
-	public function loading(\Sunhill\Storage\storage_base $storage) {
+	public function loading(\Sunhill\ORM\Storage\storage_base $storage) {
 	    // Macht nix
 	}
 	
 	/**
 	 * Wird aufgerufen, nachdem das Property geladen ist
-	 * @param \Sunhill\Storage\storage_base $storage
+	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
-	public function loaded(\Sunhill\Storage\storage_base $storage) {
+	public function loaded(\Sunhill\ORM\Storage\storage_base $storage) {
 	    // Macht nix
 	}
 	
@@ -509,39 +509,39 @@ class oo_property extends \Sunhill\base {
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert in das Storage zu schreiben
 	 */
-	public function insert(\Sunhill\Storage\storage_base $storage) {
+	public function insert(\Sunhill\ORM\Storage\storage_base $storage) {
 	    $this->do_insert($storage,$this->get_name());
 	    $this->dirty = false;	    
 	}
 	
 	/**
 	 * Individuell überschreibbare Methode, die dem Property erlaub, besondere Speichermethoden zu verwenden
-	 * @param \Sunhill\Storage\storage_insert $storage
+	 * @param \Sunhill\ORM\Storage\storage_insert $storage
 	 * @param string $tablename
 	 * @param string $name
 	 */
-	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
 	    $storage->set_entity($name, $this->value);
 	}
 	
     /**
      * Wird vor dem Einfügen aufgerufen
-     * @param \Sunhill\Storage\storage_base $storage
+     * @param \Sunhill\ORM\Storage\storage_base $storage
      */
-	public function inserting(\Sunhill\Storage\storage_base $storage) {
+	public function inserting(\Sunhill\ORM\Storage\storage_base $storage) {
         // Macht nix	    
 	}
 	
 	/**
 	 * Wird nach dem Einfügen aufgerufen
-	 * @param \Sunhill\Storage\storage_base $storage
+	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
-	public function inserted(\Sunhill\Storage\storage_base $storage) {
+	public function inserted(\Sunhill\ORM\Storage\storage_base $storage) {
 	    // Macht nix
 	}
 
 // ================================= Update ====================================	
-	public function update(\Sunhill\Storage\storage_base $storage) {
+	public function update(\Sunhill\ORM\Storage\storage_base $storage) {
 	    if ($this->dirty) {
             $diff = $this->get_diff_array(PD_KEEP);
 	        $this->get_owner()->check_for_hook('UPDATING_PROPERTY',$this->get_name(),$diff);
@@ -551,24 +551,24 @@ class oo_property extends \Sunhill\base {
 	    }
 	}
 	
-	protected function do_update(\Sunhill\Storage\storage_base $storage,string $name) {
+	protected function do_update(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
         $diff = $this->get_diff_array(PD_ID);
 	    $storage->set_entity($name,$diff);	    
 	}
 	
     /**
      * Wird aufgerufen, bevor das Update stattfindet
-     * @param \Sunhill\Storage\storage_base $storage
+     * @param \Sunhill\ORM\Storage\storage_base $storage
      */
-	public function updating(\Sunhill\Storage\storage_base $storage) {
+	public function updating(\Sunhill\ORM\Storage\storage_base $storage) {
 	    // Macht nix
 	}
 	
     /**
      * Wird aufgerufen, nachdem das Update stattgefunden hat
-     * @param \Sunhill\Storage\storage_base $storage
+     * @param \Sunhill\ORM\Storage\storage_base $storage
      */
-	public function updated(\Sunhill\Storage\storage_base $storage) {
+	public function updated(\Sunhill\ORM\Storage\storage_base $storage) {
 	   // Macht nix
 	}
 	

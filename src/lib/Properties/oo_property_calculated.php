@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Properties;
+namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +15,7 @@ class oo_property_calculated extends oo_property_field {
 //	protected $initialized = true;
 	
 	protected function do_set_value($value) {
-	    throw new \Sunhill\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
+	    throw new \Sunhill\ORM\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
 	}
 	
 	/**
@@ -39,7 +39,7 @@ class oo_property_calculated extends oo_property_field {
 	    return true;
 	}
 	
-	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
 	    if (!$this->initialized) {
 	        $this->recalculate();
 	    }

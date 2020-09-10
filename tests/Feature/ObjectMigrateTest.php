@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 use Tests\DBTestCase;
 
 class testA extends oo_object {
@@ -20,7 +20,7 @@ class testA extends oo_object {
     
 }
 
-class testD extends \Sunhill\Test\ts_dummy {
+class testD extends \Sunhill\ORM\Test\ts_dummy {
 
     public static $table_name = 'testD';
     
@@ -44,7 +44,7 @@ class testE extends oo_object {
     
     protected static function setup_properties() {
         parent::setup_properties();
-        self::arrayofobjects('testfield')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"]);
+        self::arrayofobjects('testfield')->set_allowed_objects(["\Sunhill\ORM\Test\\ts_dummy"]);
     }
     
 }
@@ -123,8 +123,8 @@ class ObjectMigrateTest extends DBTestCase
         $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
         $this->assertEquals($read->testfield,$init);
     }
 
@@ -141,8 +141,8 @@ class ObjectMigrateTest extends DBTestCase
         $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
         $this->assertEquals($read->testfield,$init);        
     }
     
@@ -177,7 +177,7 @@ class ObjectMigrateTest extends DBTestCase
         DB::statement("create table testE (id int primary key)");
         testE::migrate();
         $test = new TestE();
-        $dummy = new \Sunhill\Test\ts_dummy;
+        $dummy = new \Sunhill\ORM\Test\ts_dummy;
         $dummy->dummyint = 2;
         $test->testfield[] = $dummy;
         $test->commit();

@@ -1,10 +1,10 @@
 <?php
 
-namespace Sunhill\Objects;
+namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\base;
-use Sunhill\SunhillException;
+use Sunhill\ORM\base;
+use Sunhill\ORM\SunhillException;
 
 require_once(dirname(__FILE__).'/../base.php');
 
@@ -12,7 +12,7 @@ require_once(dirname(__FILE__).'/../base.php');
  * Exception, die innerhalb eines Objektes ausgelöst werden
  * @author lokal
  */
-class ObjectException extends \Sunhill\SunhillException {}
+class ObjectException extends \Sunhill\ORM\SunhillException {}
 
 /**
  * Diese Exception wird geworfen, wenn eine unbekannte Property angefordert wird
@@ -27,7 +27,7 @@ class UnknownPropertyException extends ObjectException {}
  * @author lokal
  * Als Nachkomme von hookable 
  */
-class oo_object extends \Sunhill\propertieshaving {
+class oo_object extends \Sunhill\ORM\propertieshaving {
 
     /**
      * Statische Variable, die den Namen der Datenbanktabelle definiert.
@@ -67,9 +67,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	/**
 	 * Die Einträge werden der Reihe nach abgearbeitet
-	 * @param \Sunhill\Storage\storage_base $storage
+	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
-	protected function execute_need_id_queries(\Sunhill\Storage\storage_base $storage) {
+	protected function execute_need_id_queries(\Sunhill\ORM\Storage\storage_base $storage) {
 	    $storage->entities['needid_queries'] = $this->needid_queries;
 	    $storage->execute_need_id_queries();
 	}
@@ -77,7 +77,7 @@ class oo_object extends \Sunhill\propertieshaving {
 // ============================ Storagefunktionen =======================================	
 	/**
 	 * Liefert das aktuelle Storage zurück oder erzeugt eines, wenn es ein solches noch nicht gibt.
-	 * @return \Sunhill\Storage\storage_base
+	 * @return \Sunhill\ORM\Storage\storage_base
 	 */
 	final protected function get_storage() {
 	    return $this->create_storage();
@@ -85,10 +85,10 @@ class oo_object extends \Sunhill\propertieshaving {
 	
 	/**
 	 * Erzeugt ein Storage. Defaultmäßig ist es das mysql-Storage. Diese methode kann für Debug-Zwecke überschrieben werden
-	 * @return \Sunhill\Storage\storage_mysql
+	 * @return \Sunhill\ORM\Storage\storage_mysql
 	 */
 	protected function create_storage() {
-	    return new \Sunhill\Storage\storage_mysql($this);
+	    return new \Sunhill\ORM\Storage\storage_mysql($this);
 	}
 	    
 // ================================ Laden ========================================	
@@ -114,7 +114,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	/**
 	 * Läd das Objekt aus dem Storage.
 	 * {@inheritDoc}
-	 * @see \Sunhill\propertieshaving::do_load()
+	 * @see \Sunhill\ORM\propertieshaving::do_load()
 	 */
 	protected function do_load() {
 	    if (!$this->is_loading()) {
@@ -133,7 +133,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	/**
 	 * Da die Anzahl der Attribute vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
 	 */
-	protected function load_attributes(\Sunhill\Storage\storage_base $storage) {
+	protected function load_attributes(\Sunhill\ORM\Storage\storage_base $storage) {
 	    if (empty($storage->get_entity('attributes'))) {
 	        return;
 	    }
@@ -151,7 +151,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	/**
 	 * Da die Anzahl der externen Hooks vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
 	 */
-	protected function load_external_hooks(\Sunhill\Storage\storage_base $storage) {
+	protected function load_external_hooks(\Sunhill\ORM\Storage\storage_base $storage) {
 	}
 	
 // ========================= Einfügen =============================	
@@ -224,9 +224,9 @@ class oo_object extends \Sunhill\propertieshaving {
 	/**
 	 * Ruft für jede Property die durch $action definierte Methode auf und übergibt dieser das Storage
 	 * @param string $action
-	 * @param \Sunhill\Storage\storage_base $storage
+	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
-	protected function walk_properties(string $action,\Sunhill\Storage\storage_base $storage) {
+	protected function walk_properties(string $action,\Sunhill\ORM\Storage\storage_base $storage) {
 	    $properties = $this->get_properties_with_feature();
 	    foreach ($properties as $property) {
 	        $property->$action($storage);
@@ -386,7 +386,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	     }
 	     do {
 	         $parent_class_names[] = $parent_class_name;
-	         if (($parent_class_name == 'Sunhill\\Objects\\oo_object')) {
+	         if (($parent_class_name == 'Sunhill\\ORM\\Objects\\oo_object')) {
 	             if (!$full) {
 	                array_shift($parent_class_names);
 	             }
@@ -429,7 +429,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	}
 	
 	protected function handle_unknown_property($name,$value) {
-	    if ($attribute = \Sunhill\Properties\oo_property_attribute::search($name)) {
+	    if ($attribute = \Sunhill\ORM\Properties\oo_property_attribute::search($name)) {
 	        return $this->add_attribute($attribute,$value);
 	    } else {
 	        return parent::handle_unknown_property($name, $value);
@@ -467,7 +467,7 @@ class oo_object extends \Sunhill\propertieshaving {
 	        }
 	    }
 	    if (!$allowed) {
-	        throw new \Sunhill\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
+	        throw new \Sunhill\ORM\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
 	    }	    
 	}
 	// ***************** Statische Methoden ***************************	

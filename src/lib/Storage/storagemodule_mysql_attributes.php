@@ -1,4 +1,4 @@
-<?php namespace Sunhill\Storage;
+<?php namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 

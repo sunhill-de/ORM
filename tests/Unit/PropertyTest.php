@@ -5,8 +5,8 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Properties\oo_property;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Properties\oo_property;
+use Sunhill\ORM\Objects\oo_object;
 
 class PropertyTest extends TestCase
 {

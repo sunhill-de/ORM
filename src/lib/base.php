@@ -4,7 +4,7 @@
  * Beinhaltet die Basisklasse und Basisexception für das Sunhill-Framework
  */
 
-namespace Sunhill;
+namespace Sunhill\ORM;
 
 
 /**

@@ -1,9 +1,9 @@
 <?php
 
-namespace Sunhill\Properties;
+namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\Objects\oo_tag;
+use Sunhill\ORM\Objects\oo_tag;
 
 /**
  * Diese Klasse repräsentiert die Property "Tags". Hier werden die Tags eines Objektes gespeichert.
@@ -46,7 +46,7 @@ class oo_property_tags extends oo_property_arraybase {
 	/**
 	 * Fügt ein neues Tag in die Liste ein
 	 * @param oo_tag|int|string $tag
-	 * @return void|\Sunhill\Properties\oo_property_tags
+	 * @return void|\Sunhill\ORM\Properties\oo_property_tags
 	 * @todo Hier könnte man auch über ein Lazy-Loading nachdenken, falls es überhaupt Performancegewinn bringt
 	 */
 	public function stick($tag) {
@@ -64,7 +64,7 @@ class oo_property_tags extends oo_property_arraybase {
 	/**
 	 * Fügt ein neues Tag in die Liste ein
 	 * @param oo_tag|int|string $tag
-	 * @return void|\Sunhill\Properties\oo_property_tags
+	 * @return void|\Sunhill\ORM\Properties\oo_property_tags
 	 */
 	public function remove($tag) {
         $tag = $this->get_tag($tag);
@@ -83,10 +83,10 @@ class oo_property_tags extends oo_property_arraybase {
 
 	/**
 	 * Testet, ob sich das Tag bereits in der Liste befindet
-	 * @param \Sunhill\Objects\oo_object $test
+	 * @param \Sunhill\ORM\Objects\oo_object $test
 	 * @return boolean
 	 */
-	protected function is_duplicate(\Sunhill\Objects\oo_tag $test) {
+	protected function is_duplicate(\Sunhill\ORM\Objects\oo_tag $test) {
 	    foreach ($this->value as $listed) {
 	        if ($listed->get_id() == $test->get_id()) {
 	            return $test;
@@ -104,18 +104,18 @@ class oo_property_tags extends oo_property_arraybase {
 	 * @return oo_tag
 	 */
 	protected function get_tag($tag) {
-	    if (is_a($tag,"\\Sunhill\\Objects\\oo_tag")) {
+	    if (is_a($tag,"\\Sunhill\\ORM\\Objects\\oo_tag")) {
 	        return $tag; // Trivial, ist bereits ein Objekt
 	    } else if (is_int($tag)) {
-	        return \Sunhill\Objects\oo_tag::load_tag($tag); // Tag mit der ID laden
+	        return \Sunhill\ORM\Objects\oo_tag::load_tag($tag); // Tag mit der ID laden
 	    } else if (is_string($tag)) {
 	        if ($this->add_missing) {
-	            return \Sunhill\Objects\oo_tag::search_or_add_tag($tag);
+	            return \Sunhill\ORM\Objects\oo_tag::search_or_add_tag($tag);
 	        } else {
-	            return \Sunhill\Objects\oo_tag::search_tag($tag);
+	            return \Sunhill\ORM\Objects\oo_tag::search_tag($tag);
 	        }
 	    }
-	    throw new \Sunhill\Objects\TagException("Unbekannter Typ für ein Tag.");
+	    throw new \Sunhill\ORM\Objects\TagException("Unbekannter Typ für ein Tag.");
 	}
 
 	
@@ -125,7 +125,7 @@ class oo_property_tags extends oo_property_arraybase {
 	    return $value;
 	}
 	
-	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
 	    $result = [];
 	    foreach ($this->value as $tag) {
 	        if (is_int($tag)) {
@@ -137,7 +137,7 @@ class oo_property_tags extends oo_property_arraybase {
 	    $storage->set_entity('tags',$result);
 	}
 	
-	protected function do_load(\Sunhill\Storage\storage_base $loader,$name)  {
+	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name)  {
 	    if (empty($loader->entities['tags'])) {
 	        return;
 	    }
@@ -149,7 +149,7 @@ class oo_property_tags extends oo_property_arraybase {
     /**
      * Überschriebene Methode, die bei Tags den Typ respektiert und zurück gibt
      * {@inheritDoc}
-     * @see \Sunhill\Properties\oo_property::get_diff_entry()
+     * @see \Sunhill\ORM\Properties\oo_property::get_diff_entry()
      */
 	protected function get_diff_entry($tag,$type) {
 	    switch ($type) {

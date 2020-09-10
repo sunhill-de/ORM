@@ -3,8 +3,8 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Sunhill\Search\query_builder;
-use Sunhill\Search\query_atom;
+use Sunhill\ORM\Search\query_builder;
+use Sunhill\ORM\Search\query_atom;
 
 class test_query_atom extends query_atom {
     
@@ -57,7 +57,7 @@ class SearchAtomTest extends TestCase
     }
  
     public function testExceptionLinking() {
-        $this->expectException(\Sunhill\Search\QueryException::class);
+        $this->expectException(\Sunhill\ORM\Search\QueryException::class);
         $dummy = new query_builder();
         $test2 = new test_query_atom($dummy);
         $test2->pub_set_singleton(true);

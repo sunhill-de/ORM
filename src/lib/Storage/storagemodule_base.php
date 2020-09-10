@@ -1,4 +1,4 @@
-<?php namespace Sunhill\Storage;
+<?php namespace Sunhill\ORM\Storage;
 
 /**
  * Die abstrakte Klasse ist die gemeinsame Grundlage für StorageModule

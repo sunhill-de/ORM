@@ -11,8 +11,8 @@ namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\DBTestCase;
-use Sunhill\Objects\oo_object;
-use Sunhill\Test\ts_objectunit;
+use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Test\ts_objectunit;
 
 class ObjectInsertTest extends DBTestCase
 {

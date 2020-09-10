@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Properties;
+namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 
@@ -54,10 +54,10 @@ class oo_property_attribute extends oo_property {
 // ===================================== Laden ===========================================	
 	/**
 	 * Individuell überschreibbare Methode, die dem Property erlaub, besondere Lademethoden zu verwenden
-	 * @param \Sunhill\Storage\storage_load $loader
+	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {	    
+	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {	    
 	    $this->attribute_name = $name;
 	    $this->attribute_id = $loader->entities['attributes'][$name]['attribute_id'];	    
 	    $this->value = $this->extract_value($loader);
@@ -69,14 +69,14 @@ class oo_property_attribute extends oo_property {
 	/**
 	 * Ermittelt den Wert des Attributs aus dem Storage. Defaultmäßig ist dies value, muss von Textattributen
 	 * überschrieben werden.
-	 * @param \Sunhill\Storage\storage_base $loader
+	 * @param \Sunhill\ORM\Storage\storage_base $loader
 	 */
-	protected function extract_value(\Sunhill\Storage\storage_base $loader) {
+	protected function extract_value(\Sunhill\ORM\Storage\storage_base $loader) {
 	    return $this->value = $loader->entities['attributes'][$this->attribute_name]['value'];    
 	}
 
 // ============================ Einfügen ========================================	
-	protected function do_insert(\Sunhill\Storage\storage_base $storage,$name) {
+	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,$name) {
         $storage->entities['attributes'][$name] = [
             'name'=>$this->attribute_name,
             'attribute_id'=>$this->attribute_id,
@@ -87,7 +87,7 @@ class oo_property_attribute extends oo_property {
         $this->insert_value($storage);        
 	}
 	
-	protected function insert_value(\Sunhill\Storage\storage_base $storage) {
+	protected function insert_value(\Sunhill\ORM\Storage\storage_base $storage) {
 	   $storage->entities['attributes'][$this->attribute_name]['value'] = $this->value;    
 	   $storage->entities['attributes'][$this->attribute_name]['textvalue'] = '';
 	}
@@ -99,7 +99,7 @@ class oo_property_attribute extends oo_property {
 	 * FROM ist der alte Wert
 	 * TO ist der neue Wert
 	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\Properties\oo_property[]
+	 * @return void[]|\Sunhill\ORM\Properties\oo_property[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
         $result = [

@@ -11,7 +11,7 @@
  * Coverage: unknown
  */
 
-namespace Sunhill\Validators;
+namespace Sunhill\ORM\Validators;
 
 /**
  * Exception that is raised by validators
@@ -49,7 +49,7 @@ class validator_base {
      * Performs the validation and raises an exception if its not valid
      * @param unknown $test
      * @throws ValidatorException
-     * @return \Sunhill\Validators\unknown
+     * @return \Sunhill\ORM\Validators\unknown
      */
     public function validate($test) {
         if (!$this->is_valid($test)) {
@@ -68,7 +68,7 @@ class validator_base {
     /**
      * Checks only if the @param $test is valid without raising an exception
      * @param unknown $test
-     * @return \Sunhill\Validators\boolean,
+     * @return \Sunhill\ORM\Validators\boolean,
      */
     public function check_validity($test) {
         return $this->is_valid($test);

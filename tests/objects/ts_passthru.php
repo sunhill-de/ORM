@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Test;
+namespace Sunhill\ORM\Test;
 
 class ts_passthru extends ts_testparent {
 

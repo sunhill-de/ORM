@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Validators;
+namespace Sunhill\ORM\Validators;
 
 class date_validator extends datetime_validator {
     

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Test;
+namespace Sunhill\ORM\Test;
 
 class ts_secondlevelchild extends ts_passthru {
     public static $table_name = 'secondlevelchildren';

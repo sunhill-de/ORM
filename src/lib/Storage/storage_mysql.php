@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Storage;
+namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 

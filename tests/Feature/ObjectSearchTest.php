@@ -5,9 +5,9 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 use Tests\DBTestCase;
-use Sunhill\Utils\objectlist;
+use Sunhill\ORM\Utils\objectlist;
 
 class searchtestA extends oo_object {
    
@@ -153,7 +153,7 @@ class ObjectSearchTest extends DBTestCase
     }
     
     public function testFailSearch() {
-        $this->expectException(\Sunhill\Search\QueryException::class);
+        $this->expectException(\Sunhill\ORM\Search\QueryException::class);
         searchtestA::search()->where('Anosearch','=',1)->get();
     }
   
@@ -247,7 +247,7 @@ class ObjectSearchTest extends DBTestCase
      * @group object
      */
     public function testPassObject() {
-        $test = \Sunhill\Objects\oo_object::load_object_of(1);
+        $test = \Sunhill\ORM\Objects\oo_object::load_object_of(1);
         $result = $this->simplify_result(\Tests\Feature\searchtestA::search()->where('Aobject','=',$test)->get());
         $this->assertEquals([7,13],$result);
         

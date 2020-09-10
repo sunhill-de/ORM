@@ -1,8 +1,8 @@
 <?php
 
-namespace Sunhill\Traits;
+namespace Sunhill\ORM\Traits;
 
-use Sunhill\Utils\descriptor;
+use Sunhill\ORM\Utils\descriptor;
 
 /**
  * Implements the trait "TraversableArray" which provides a combination of the Interfaces countable, array_access and Iterator

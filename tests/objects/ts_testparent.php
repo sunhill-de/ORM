@@ -1,10 +1,10 @@
 <?php
 
-namespace Sunhill\Test;
+namespace Sunhill\ORM\Test;
 
-use Sunhill\Objects;
+use Sunhill\ORM\Objects;
 
-class ts_testparent extends \Sunhill\Objects\oo_object {
+class ts_testparent extends \Sunhill\ORM\Objects\oo_object {
     public static $table_name = 'testparents';
     
     public static $flag = '';
@@ -22,9 +22,9 @@ class ts_testparent extends \Sunhill\Objects\oo_object {
 		self::date('parentdate');
 		self::time('parenttime');
 		self::enum('parentenum')->set_values(['testA','testB','testC']);
-		self::object('parentobject')->set_allowed_objects(['\Sunhill\test\ts_dummy'])->set_default(null);
+		self::object('parentobject')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy'])->set_default(null);
 		self::arrayofstrings('parentsarray');
-		self::arrayofobjects('parentoarray')->set_allowed_objects(['\Sunhill\Test\ts_dummy']);
+		self::arrayofobjects('parentoarray')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy']);
 		self::calculated('parentcalc');
 	}
 	

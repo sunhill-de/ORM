@@ -8,8 +8,8 @@ namespace Tests\Unit;
  * dependencies: FilesystemComplexTestCase
  */
 use Tests\DBTestCase;
-use Sunhill\Utils\objectlist;
-use Sunhill\Test\ts_dummy;
+use Sunhill\ORM\Utils\objectlist;
+use Sunhill\ORM\Test\ts_dummy;
 
 class UtilObjectlistTest extends DBTestCase
 {
@@ -91,7 +91,7 @@ class UtilObjectlistTest extends DBTestCase
     public function testAddObject_array_mixed()
     {
         $test = new objectlist();
-        $dummy = \Sunhill\Objects\oo_object::load_object_of(1);
+        $dummy = \Sunhill\ORM\Objects\oo_object::load_object_of(1);
         $test[] = $dummy;
         $test[] = 2;
         $test[] = 3;
@@ -126,15 +126,15 @@ class UtilObjectlistTest extends DBTestCase
     public function testGetClass()
     {
         $test = $this->get_mixed_test();
-        $this->assertEquals('\Sunhill\Test\ts_dummy', $test->get_class(0));
+        $this->assertEquals('\Sunhill\ORM\Test\ts_dummy', $test->get_class(0));
     }
 
     public function testGetDistinctClasses()
     {
         $test = $this->get_mixed_test();
         $this->assertEquals([
-            '\Sunhill\Test\ts_dummy',
-            '\Sunhill\Test\ts_testparent'
+            '\Sunhill\ORM\Test\ts_dummy',
+            '\Sunhill\ORM\Test\ts_testparent'
         ], $test->get_distinct_classes());
     }
 
@@ -161,7 +161,7 @@ class UtilObjectlistTest extends DBTestCase
     public function testFilterClass_withchildren()
     {
         $test = $this->get_filter_test();
-        $test->filter_class('\Sunhill\Test\ts_testparent', true);
+        $test->filter_class('\Sunhill\ORM\Test\ts_testparent', true);
         $this->assertEquals([
             5,6,7
         ], $this->get_id_list($test));
@@ -170,7 +170,7 @@ class UtilObjectlistTest extends DBTestCase
     public function testFilterClass_withoutchildren()
     {
         $test = $this->get_filter_test();
-        $test->filter_class('\Sunhill\Test\ts_testparent', false);
+        $test->filter_class('\Sunhill\ORM\Test\ts_testparent', false);
         $this->assertEquals([
             5,
         ], $this->get_id_list($test));
@@ -179,14 +179,14 @@ class UtilObjectlistTest extends DBTestCase
     public function testRemoveClass_withchildren()
     {
         $test = $this->get_filter_test();
-        $test->remove_class('\Sunhill\Test\ts_testparent', true);
+        $test->remove_class('\Sunhill\ORM\Test\ts_testparent', true);
         $this->assertEquals([1,2], $this->get_id_list($test));
     }
 
     public function testRemoveClass_withoutchildren()
     {
         $test = $this->get_filter_test();
-        $test->remove_class('\Sunhill\Test\ts_testparent', false);
+        $test->remove_class('\Sunhill\ORM\Test\ts_testparent', false);
         $this->assertEquals([1,6,2,7], $this->get_id_list($test));
     }
 }

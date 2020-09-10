@@ -8,8 +8,8 @@ namespace Tests\Unit;
  * dependencies: FilemanagerTestCase
  */
 use Tests\TestCase;
-use Sunhill\Utils\descriptor;
-use Sunhill\Utils\DescriptorException;
+use Sunhill\ORM\Utils\descriptor;
+use Sunhill\ORM\Utils\DescriptorException;
 
 class test_descriptor extends descriptor {
     

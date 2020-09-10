@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Properties;
+namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +28,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    return $this->type;
 	}
 	
-	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
+	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {
 	    $references = $loader->$name;
 	    if (empty($references)) {
 	        return;
@@ -40,12 +40,12 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	
 	protected function &do_get_indexed_value($index) {
 	    if (is_int($this->value[$index])) {
-	        $this->value[$index] = \Sunhill\Objects\oo_object::load_object_of($this->value[$index]);
+	        $this->value[$index] = \Sunhill\ORM\Objects\oo_object::load_object_of($this->value[$index]);
 	    }
 	    return $this->value[$index];
 	}
 	
-	protected function do_insert(\Sunhill\Storage\storage_base $storage,string $name) {
+	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
 	    $result = [];
 	    foreach ($this->value as $index => $value) {
 	        if (is_int($value)) {
@@ -57,14 +57,14 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    $storage->set_entity($name,$result);
 	}
 	
-	public function inserting(\Sunhill\Storage\storage_base $storage) {
+	public function inserting(\Sunhill\ORM\Storage\storage_base $storage) {
 	    if (!empty($this->value)) {
 	        foreach ($this->value as $index=>$element) {
 	            if (!is_int($element)) {
 	                $element->commit();
-	            } else if (\Sunhill\Objects\oo_object::is_cached($element)) {
+	            } else if (\Sunhill\ORM\Objects\oo_object::is_cached($element)) {
 	                // Wenn es im Cache ist, kann es per seiteneffekt manipuliert worden sein
-	                $this->value[$index] = \Sunhill\Objects\oo_object::load_object_of($element);	
+	                $this->value[$index] = \Sunhill\ORM\Objects\oo_object::load_object_of($element);	
 	                $this->value[$index]->commit();
 	            }
 	        }
@@ -87,7 +87,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	 * FROM ist der alte Wert
 	 * TO ist der neue Wert
 	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\Properties\oo_property[]
+	 * @return void[]|\Sunhill\ORM\Properties\oo_property[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
 	    $diff = parent::get_diff_array($type);
@@ -107,7 +107,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	    }
 	}
 	
-	public function updating(\Sunhill\Storage\storage_base $storage) {
+	public function updating(\Sunhill\ORM\Storage\storage_base $storage) {
 	    $this->inserting($storage);
 	}
 	

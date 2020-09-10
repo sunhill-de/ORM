@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Sunhill\Objects\oo_object;
-use Sunhill\Objects\oo_tag;
-use Sunhill\Test\ts_dummy;
+use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_tag;
+use Sunhill\ORM\Test\ts_dummy;
 use Tests\DBTestCase;
 
 class ObjectTagTest extends DBTestCase

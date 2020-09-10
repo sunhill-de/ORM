@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Sunhill\Traits\TraversableArray;
+use Sunhill\ORM\Traits\TraversableArray;
 
 class example_traversablearray1 implements \ArrayAccess,\Countable,\Iterator {
     

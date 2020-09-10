@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Search;
+namespace Sunhill\ORM\Search;
 
 class query_group extends query_atom {
     

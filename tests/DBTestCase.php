@@ -3,7 +3,7 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 
 abstract class DBTestCase extends TestCase
 {

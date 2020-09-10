@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Properties;
+namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 
@@ -14,9 +14,9 @@ class oo_property_externalhooks extends oo_property_field {
     /**
      * Läd Externe Hooks aus dem Storage
      * {@inheritDoc}
-     * @see \Sunhill\Properties\oo_property::do_load()
+     * @see \Sunhill\ORM\Properties\oo_property::do_load()
      */
-	protected function do_load(\Sunhill\Storage\storage_base $loader,$name) {
+	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {
         $hooks = $loader->get_entity('externalhooks');
         if (empty($hooks)) {
             return;
@@ -35,7 +35,7 @@ class oo_property_externalhooks extends oo_property_field {
 	    }	    
 	}
 	
-	protected function do_insert(\Sunhill\Storage\storage_base $storage,$name) {	    
+	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,$name) {	    
 	    foreach ($this->owner->get_external_hooks() as $hook) {
 	        if (is_int($hook['destination'])) {
 	            $target_id = $hook['destination'];
@@ -97,7 +97,7 @@ class oo_property_externalhooks extends oo_property_field {
 	    return $target;
 	}
 	
-	protected function do_update(\Sunhill\Storage\storage_base $storage,$name) {
+	protected function do_update(\Sunhill\ORM\Storage\storage_base $storage,$name) {
 	    $add = $this->hook_in_a_not_b($this->owner->get_external_hooks(),$this->shadow);
 	    $delete = $this->hook_in_a_not_b($this->shadow,$this->owner->get_external_hooks());
 	    $add = $this->fill_target_id($add);

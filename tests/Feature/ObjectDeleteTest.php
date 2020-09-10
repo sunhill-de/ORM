@@ -5,13 +5,13 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 use Tests\DBTestCase;
 
 class ObjectDeleteTest extends DBTestCase
 {
     function testCantLoad() {
-        $test = new \Sunhill\Test\ts_testchild;
+        $test = new \Sunhill\ORM\Test\ts_testchild;
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -28,7 +28,7 @@ class ObjectDeleteTest extends DBTestCase
         $test->childdate='2011-01-01';
         $test->childtime='11:11:11';
         $test->childenum='testA';
-        $add = new \Sunhill\Test\ts_dummy();
+        $add = new \Sunhill\ORM\Test\ts_dummy();
         $add->dummyint = 123;
         $test->parentobject = $add;
         $test->parentoarray[] = $add;
@@ -38,9 +38,9 @@ class ObjectDeleteTest extends DBTestCase
         $test->childsarray[] = 'TEST';
         $test->commit();
         $id = $test->get_id();
-        $read = \Sunhill\Objects\oo_object::load_object_of($id);
+        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($id);
         $read->delete(); 
-        $this->assertFalse(\Sunhill\Objects\oo_object::load_object_of($id));
+        $this->assertFalse(\Sunhill\ORM\Objects\oo_object::load_object_of($id));
         return $id;
     }
     

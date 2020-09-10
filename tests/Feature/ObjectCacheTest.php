@@ -6,13 +6,13 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\DBTestCase;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 
 class ObjectCacheTest extends DBTestCase
 {
     
     public function testGetClassOf() {
-        $this->assertEquals('\\Sunhill\\Test\\ts_dummy',oo_object::get_class_name_of(1));    
+        $this->assertEquals('\\Sunhill\\ORM\\Test\\ts_dummy',oo_object::get_class_name_of(1));    
     }
     
     public function testIsNotCached() {
@@ -27,7 +27,7 @@ class ObjectCacheTest extends DBTestCase
         if (!$first) {
             $this->fail('Objekt nicht gefunden.');
         }
-        $this->assertTrue(\Sunhill\Objects\oo_object::is_cached(1));        
+        $this->assertTrue(\Sunhill\ORM\Objects\oo_object::is_cached(1));        
     }
     
     /**
@@ -54,7 +54,7 @@ class ObjectCacheTest extends DBTestCase
     public function testLoadMethod() {
         oo_object::flush_cache();
         $first  = oo_object::load_object_of(1);
-        $second = new \Sunhill\Test\ts_dummy();
+        $second = new \Sunhill\ORM\Test\ts_dummy();
         $second = oo_object::load_object_of(1);
         $second->dummyint = 2;
         $this->assertEquals($first->dummyint,$second->dummyint);
@@ -65,7 +65,7 @@ class ObjectCacheTest extends DBTestCase
      */
     public function testLoadMethodInsertCache() {
         oo_object::flush_cache();
-        $second = new \Sunhill\Test\ts_dummy();
+        $second = new \Sunhill\ORM\Test\ts_dummy();
         $second = oo_object::load_object_of(1);
         $this->assertTrue(oo_object::is_cached(1));
     }
@@ -75,7 +75,7 @@ class ObjectCacheTest extends DBTestCase
      */
     public function testLoadMethodChange() {
         oo_object::flush_cache();
-        $first = new \Sunhill\Test\ts_dummy();
+        $first = new \Sunhill\ORM\Test\ts_dummy();
         $first = oo_object::load_object_of(1);
         $second = oo_object::load_object_of(1);
         $second->dummyint = 2;
@@ -87,9 +87,9 @@ class ObjectCacheTest extends DBTestCase
      */
     public function testLoadMethodChange2() {
         oo_object::flush_cache();
-        $first = new \Sunhill\Test\ts_dummy();
+        $first = new \Sunhill\ORM\Test\ts_dummy();
         $first = oo_object::load_object_of(1);
-        $second = new \Sunhill\Test\ts_dummy();
+        $second = new \Sunhill\ORM\Test\ts_dummy();
         $second = oo_object::load_object_of(1);
         $second->dummyint = 2;
         $this->assertEquals($first->dummyint,$second->dummyint);

@@ -3,10 +3,10 @@
  * @file propertieshaving.php
  * Definiert die Klassen PropertiesHavingException und propertieshaving
  */
-namespace Sunhill;
+namespace Sunhill\ORM;
 
-use Sunhill\Properties\PropertyException;
-use Sunhill\Search\query_builder;
+use Sunhill\ORM\Properties\PropertyException;
+use Sunhill\ORM\Search\query_builder;
 
 /**
  * Abgeleitete Exception die im Zusammenhang mit Properties stehen
@@ -384,7 +384,7 @@ class propertieshaving extends hookable {
 	}
 	
 	protected static function create_property($name,$type) {
-	    $property_name = '\Sunhill\Properties\oo_property_'.$type;
+	    $property_name = '\Sunhill\ORM\Properties\oo_property_'.$type;
 	    $property = new $property_name();
 	    $property->set_name($name);
 	    $property->set_type($type);

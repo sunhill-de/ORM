@@ -1,4 +1,4 @@
-<?php namespace Sunhill\Storage;
+<?php namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +13,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
      * Läd aus der Datenbanktabelle externalhooks als zur id $id passenden externen Hooks und
      * schreibt diese in das entities Feld des Storages.
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::load()
+     * @see \Sunhill\ORM\Storagestoragemodule_base::load()
      */
     public function load(int $id) {
         $hooks = DB::table('externalhooks')->where('container_id','=',$id)->get();
@@ -34,7 +34,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
      * Liest aus dem entity-Feld des Storages die Informationen über externe Hooks und fügt diese in die
      * Datenbanktabelle externalhooks ein. 
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::insert()
+     * @see \Sunhill\ORM\Storagestoragemodule_base::insert()
      */
     public function insert(int $id) {
         $lines = [];
@@ -71,7 +71,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
      * Liest aus dem entity-Feld des Storages die Subfelder für externe Hooks NEW und REMOVED
      * Die neuen werden eingefügt, die alten gelöscht.
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::update()
+     * @see \Sunhill\ORM\Storagestoragemodule_base::update()
      */
     public function update(int $id) {
         if (empty($this->storage->entities['externalhooks'])) {
@@ -113,7 +113,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
     /**
      * Löscht aus der Tabelle externalhooks alle Referenzen auf die übergebene ID $id
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::delete()
+     * @see \Sunhill\ORM\Storagestoragemodule_base::delete()
      */
     public function delete(int $id) {
         DB::table('externalhooks')->where('container_id',$id)->orWhere('target_id',$id)->delete();

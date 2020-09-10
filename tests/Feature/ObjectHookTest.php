@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
-use Sunhill\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_object;
 use Tests\DBTestCase;
 
 class HookingObject extends oo_object  {
@@ -17,9 +17,9 @@ class HookingObject extends oo_object  {
         parent::setup_properties();
         self::integer('hooking_int')->set_default(0);
         self::varchar('hookstate')->set_default('');
-        self::object('ofield')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
+        self::object('ofield')->set_allowed_objects(['\\Sunhill\\ORM\\Test\\ts_dummy']);
         self::arrayofstrings('strarray');
-        self::arrayofobjects('objarray')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
+        self::arrayofobjects('objarray')->set_allowed_objects(['\\Sunhill\\ORM\\Test\\ts_dummy']);
     }
     
     protected function setup_hooks() {
@@ -35,7 +35,7 @@ class HookingObject extends oo_object  {
                 $params['TO'] = oo_object::load_object_of($params['TO']);
             }
         }
-        if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
+        if (is_a($params['FROM'],'\\Sunhill\\ORM\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Test\\ts_dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
             $this->hookstate = '(ofield:'.$from.'=>'.$to.')';
@@ -53,7 +53,7 @@ class HookingObject extends oo_object  {
                 $params['TO'] = oo_object::load_object_of($params['TO']);
             }
         }
-        if (is_a($params['FROM'],'\\Sunhill\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\Test\\ts_dummy') ) {
+        if (is_a($params['FROM'],'\\Sunhill\\ORM\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Test\\ts_dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
             self::$hook_str = '(ofield:'.$from.'=>'.$to.')';
@@ -147,7 +147,7 @@ class HookingChild extends HookingObject {
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('childhooking_int')->set_default(0);
-        self::arrayofobjects('childhooking_oarray')->set_allowed_objects(['\\Sunhill\\Test\\ts_dummy']);
+        self::arrayofobjects('childhooking_oarray')->set_allowed_objects(['\\Sunhill\\ORM\\Test\\ts_dummy']);
     }
     
     protected function setup_hooks() {
@@ -201,8 +201,8 @@ class ObjectHookTest extends DBTestCase
         $test = $init_hook();
         $test->commit();
         
-        \Sunhill\Objects\oo_object::flush_cache();
-        $read = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
         $change_hook($read);
         $read->commit();
         
@@ -278,14 +278,14 @@ class ObjectHookTest extends DBTestCase
             },
             function($change,$postfix='ING') {
                 $change->add_hook('UPDATING_PROPERTY','field_changing','ofield');
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 123;
                 $change->ofield = $dummy;
             },'(ofield:NULL=>123)'],
             
             [function() { // Test bei Objekt-Felder
                 $result = new HookingObject();
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 123;
                 $result->ofield = $dummy;
                 return $result;
@@ -297,21 +297,21 @@ class ObjectHookTest extends DBTestCase
 
             [function() {// Test bei Objekt-Array, Eintrag hinzugefügt
                 $result = new HookingObject();
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 123;
                 $result->objarray[] = $dummy;
                 return $result;
             },
             function($change,$postfix='ING') {
                 $change->add_hook('UPDATING_PROPERTY','oarray_changing','objarray');
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 345;
                 $change->objarray[] = $dummy;
             },'(oarray:NEW:345 REMOVED:)'],
             
             [function() { // Test bei String-Array, Eintrag entfernt
                 $result = new HookingObject();
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 345;
                 $result->objarray[] = $dummy;
                 return $result;
@@ -323,9 +323,9 @@ class ObjectHookTest extends DBTestCase
             
             [function() { // Test bei Object-Array, Eintrag entfernt
                 $result = new HookingObject();
-                $dummy1 = new \Sunhill\Test\ts_dummy();
+                $dummy1 = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy1->dummyint = 345;
-                $dummy2 = new \Sunhill\Test\ts_dummy();
+                $dummy2 = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy2->dummyint = 456;
                 $result->objarray[] = $dummy1;
                 $result->objarray[] = $dummy2;
@@ -377,14 +377,14 @@ class ObjectHookTest extends DBTestCase
             },
             function($change,$postfix='ED') {
                 $change->add_hook('UPDAT'.$postfix.'_PROPERTY','field_changed','ofield');
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 123;
                 $change->ofield = $dummy;
             },'(ofield:NULL=>123)'],
             
             [function() { // Test bei Objekt-Felder
                 $result = new HookingObject();
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 123;
                 $result->ofield = $dummy;
                 return $result;
@@ -396,21 +396,21 @@ class ObjectHookTest extends DBTestCase
             
             [function() {// Test bei Objekt-Array, Eintrag hinzugefügt
                 $result = new HookingObject();
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 123;
                 $result->objarray[] = $dummy;
                 return $result;
             },
             function($change,$postfix='ED') {
                 $change->add_hook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 345;
                 $change->objarray[] = $dummy;
             },'(oarray:NEW:345 REMOVED:)'],
             
             [function() { // Test bei String-Array, Eintrag entfernt
                 $result = new HookingObject();
-                $dummy = new \Sunhill\Test\ts_dummy();
+                $dummy = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy->dummyint = 345;
                 $result->objarray[] = $dummy;
                 return $result;
@@ -422,9 +422,9 @@ class ObjectHookTest extends DBTestCase
             
             [function() { // Test bei Object-Array, Eintrag entfernt
                 $result = new HookingObject();
-                $dummy1 = new \Sunhill\Test\ts_dummy();
+                $dummy1 = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy1->dummyint = 345;
-                $dummy2 = new \Sunhill\Test\ts_dummy();
+                $dummy2 = new \Sunhill\ORM\Test\ts_dummy();
                 $dummy2->dummyint = 456;
                 $result->objarray[] = $dummy1;
                 $result->objarray[] = $dummy2;
@@ -460,9 +460,9 @@ class ObjectHookTest extends DBTestCase
         $this->setupHookTables();
         $test = new HookingChild();
         $test::$child_hookstr = '';
-        $dummy1 = new \Sunhill\Test\ts_dummy();
+        $dummy1 = new \Sunhill\ORM\Test\ts_dummy();
         $dummy1->dummyint = 345;
-        $dummy2 = new \Sunhill\Test\ts_dummy();
+        $dummy2 = new \Sunhill\ORM\Test\ts_dummy();
         $dummy2->dummyint = 456;
         $test->objarray[] = $dummy1;
         $test->objarray[] = $dummy2;
@@ -479,9 +479,9 @@ class ObjectHookTest extends DBTestCase
         $this->setupHookTables();
         $test = new HookingChild();
         $test::$child_hookstr = '';
-        $dummy1 = new \Sunhill\Test\ts_dummy();
+        $dummy1 = new \Sunhill\ORM\Test\ts_dummy();
         $dummy1->dummyint = 345;
-        $dummy2 = new \Sunhill\Test\ts_dummy();
+        $dummy2 = new \Sunhill\ORM\Test\ts_dummy();
         $dummy2->dummyint = 456;
         $test->childhooking_oarray[] = $dummy1;
         $test->childhooking_oarray[] = $dummy2;
@@ -493,7 +493,7 @@ class ObjectHookTest extends DBTestCase
     
     private function prepare_object_test() {
         $this->setupHookTables();
-        $dummy = new \Sunhill\Test\ts_dummy();
+        $dummy = new \Sunhill\ORM\Test\ts_dummy();
         $dummy->dummyint = 123;
         $dummy->commit();
         $test = new HookingObject();
@@ -518,10 +518,10 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeObjectIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
-        \Sunhill\Objects\oo_object::flush_cache();
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
         // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
-        \Sunhill\Objects\oo_object::load_id_called($test->get_id(), $test);
-        $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy->get_id());
+        \Sunhill\ORM\Objects\oo_object::load_id_called($test->get_id(), $test);
+        $readdummy = \Sunhill\ORM\Objects\oo_object::load_object_of($dummy->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
         $this->assertEquals('(Cofield:123->234)',$test->get_hook_str());
@@ -533,21 +533,21 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeObjectBothIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy->get_id());
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        $readdummy = \Sunhill\ORM\Objects\oo_object::load_object_of($dummy->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
-        \Sunhill\Objects\oo_object::flush_cache();
-        $readtest = \Sunhill\Objects\oo_object::load_object_of($test->get_id());
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        $readtest = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
         $this->assertEquals('(Cofield:123->234)',$readtest->get_hook_str());
         
     }
     
     private function prepare_array_test() {
         $this->setupHookTables();
-        $dummy1 = new \Sunhill\Test\ts_dummy();
+        $dummy1 = new \Sunhill\ORM\Test\ts_dummy();
         $dummy1->dummyint = 123;
-        $dummy2 = new \Sunhill\Test\ts_dummy();
+        $dummy2 = new \Sunhill\ORM\Test\ts_dummy();
         $dummy2->dummyint = 666;
         $test = new HookingObject();
         $test->add_hook('UPDATED_PROPERTY', 'arraychild_changed', 'objarray.dummyint');
@@ -573,10 +573,10 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeArrayIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
-        \Sunhill\Objects\oo_object::flush_cache();
+        \Sunhill\ORM\Objects\oo_object::flush_cache();
         // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
-        \Sunhill\Objects\oo_object::load_id_called($test->get_id(), $test);
-        $readdummy = \Sunhill\Objects\oo_object::load_object_of($dummy1->get_id());
+        \Sunhill\ORM\Objects\oo_object::load_id_called($test->get_id(), $test);
+        $readdummy = \Sunhill\ORM\Objects\oo_object::load_object_of($dummy1->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
         $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());        

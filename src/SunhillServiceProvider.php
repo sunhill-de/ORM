@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill;
+namespace Sunhill\ORM;
 
 use Illuminate\Support\ServiceProvider;
 

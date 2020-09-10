@@ -1,4 +1,4 @@
-<?php namespace Sunhill\Storage;
+<?php namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 
@@ -41,8 +41,8 @@ class storagemodule_mysql_simple extends storagemodule_base {
         $id = $this->store_core();
         $fields = $this->storage->filter_storage('simple','class');
         foreach ($this->storage->get_inheritance() as $inheritance) {
-            if ($inheritance == "Sunhill\\Objects\\oo_object") {
-                continue;
+            if ($inheritance == "Sunhill\\ORM\\Objects\\oo_object") {
+                return $id;
             }
             $table = $inheritance::$table_name;
             if (!isset($fields[$inheritance])) {
@@ -94,7 +94,7 @@ class storagemodule_mysql_simple extends storagemodule_base {
     /**
      * Löscht die höhergestellten Tabellen 
      * {@inheritDoc}
-     * @see \Sunhill\Storage\storagemodule_base::degrade()
+     * @see \Sunhill\ORM\Storagestoragemodule_base::degrade()
      */
     public function degrade(int $id,array $degration_info) {
         DB::table('objects')->where('id',$id)->update(['classname'=>$degration_info['newclass']]);

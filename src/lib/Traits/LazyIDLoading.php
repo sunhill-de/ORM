@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\Traits;
+namespace Sunhill\ORM\Traits;
 
 /**
  * Kapselt für property_object und property_array_of_objects die Methoden, die für die Lazy-ID Behandlung
@@ -25,9 +25,9 @@ trait LazyIDLoading {
     protected function commit_child_if_loaded($child) {
         if (!empty($child)) {
             if (is_numeric($child)) {
-                if (\Sunhill\Objects\oo_object::is_cached($child)) {
+                if (\Sunhill\ORM\Objects\oo_object::is_cached($child)) {
                     // Wenn es im Cache ist, kann es per seiteneffekt manipuliert worden sein
-                    $child = \Sunhill\Objects\oo_object::load_object_of($child);
+                    $child = \Sunhill\ORM\Objects\oo_object::load_object_of($child);
                 } else {
                     return; // Weder geladen noch im Cache
                 }
