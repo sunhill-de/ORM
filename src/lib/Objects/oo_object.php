@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * @file oo_object.php
+ * Provides the core object of the orm system named oo_object
+ * Lang en
+ * Reviewstatus: 2020-09-11
+ * Localization: unknown
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ */
 namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
@@ -9,36 +18,51 @@ use Sunhill\ORM\SunhillException;
 require_once(dirname(__FILE__).'/../base.php');
 
 /**
- * Exception, die innerhalb eines Objektes ausgelöst werden
+ * Baseclass for errors that raise inside of oo_object
  * @author lokal
  */
 class ObjectException extends \Sunhill\ORM\SunhillException {}
 
 /**
- * Diese Exception wird geworfen, wenn eine unbekannte Property angefordert wird
+ * This exception indicates that an unknown property was requested
  */
 class UnknownPropertyException extends ObjectException {}
 
 /**
- * Die zentrale Klasse des sunhill-Frameworks. Alle Klassen in der sunhill-Objecthirarchie müssen direkt oder
- * indirekt von oo_object abgeleitet werden. Interationen mit den anderen Klassen der Frameworks sollten nach
- * Möglichkeit in den abgeleiteten Klassen nicht statt finden müssen. Weiterhin sollten direkte Datenbank
- * Zugriffe vermieden werden, sondern statt dessen über ein Storage erfolgen.  
+ * As the central class of the ORM system oo_object provides the basic function for
+ * - loading and storing
+ * - creating and erasing
+ * - searching
+ * Policy:
+ * - No direct database interaction. Should be handled by the storages
  * @author lokal
- * Als Nachkomme von hookable 
  */
 class oo_object extends \Sunhill\ORM\propertieshaving {
 
     /**
-     * Statische Variable, die den Namen der Datenbanktabelle definiert.
-     * @todo Aufgrund der Datenbankkapselung müsste diese irgendwie in die Storages ausgelagert werden
+     * Static variable that stores the name of the database table.
+     * @todo This should be moved to the storages in a later step
      * @var string
      */
     public static $table_name = 'objects';
     
-
-        /**
-     * Hier werden die Queries gespeichert, die erst ausgeführt werden können, wenn das Objekt eine ID besitzt
+    /**
+     * An internal name of a single object of this class. This name is used in the object and class manager to refer to the classes
+     * @var string
+     */
+    public static $object_name = 'object';
+    
+    public static $object_infos = [
+        'name'=>'object',       // A repetition of static:$object_name @todo see above
+        'table'=>'objects',     // A repitition of static:$table_name
+        'name_s'=>'object',     // A human readable name in singular
+        'name_p'=>'objects',    // A human readable name in plural
+        'description'=>'Baseclass of all other classes in the ORM system. An oo_object should\'t be initiated directly',
+        'options'=>0,           // Reserved for later purposes
+    ];
+    
+    /**
+     * Internal storage for queries that have to be executed later when this object has an id
      * @var array
      */
     protected $needid_queries = [];
@@ -263,6 +287,7 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	
 	/**
 	 * Die eigentliche Promovierung
+	 * @todo Has an direct database access
 	 * @param String $newclass
 	 */
 	private function promotion(String $newclass) {
@@ -476,6 +501,7 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 		
 	/**
 	 * Ermittelt den Klassennamen von dem Object mit der ID $id
+	 * @todo move the functionality to the object manager
 	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll
 	 * @return string Der Klassenname
 	 */
