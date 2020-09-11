@@ -1,5 +1,5 @@
 {
-	"name" : "sunhill/ORM",
+	"name" : "sunhill/orm",
 	"description" : "The sunhill ORM extension to laravel",
 	"type" : "library",
 	"license" : "MIT",
