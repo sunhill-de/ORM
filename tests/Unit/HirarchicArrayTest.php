@@ -1,7 +1,7 @@
 <?php
-namespace Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit;
 
-use Tests\TestCase;
+use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Objects\oo_object;
 
 class parent_object extends oo_object

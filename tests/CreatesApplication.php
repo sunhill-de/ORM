@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Sunhill\ORM\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 

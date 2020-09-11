@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit;
 
-use Tests\TestCase;
+use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Traits\TraversableArray;
 
 class example_traversablearray1 implements \ArrayAccess,\Countable,\Iterator {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Feature;
+namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\DBTestCase;
+use Sunhill\ORM\Tests\DBTestCase;
 
 class RegressionTest extends DBTestCase
 {

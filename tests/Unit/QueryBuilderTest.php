@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit;
 
-use Tests\TestCase;
+use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Search\query_builder;
 use Sunhill\ORM\Search\query_atom;
 

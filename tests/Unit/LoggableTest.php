@@ -7,9 +7,9 @@
  * Reviewstate: 2020-08-10
  */
 
-namespace Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit;
 
-use Tests\TestCase;
+use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\ORM\loggable;
 

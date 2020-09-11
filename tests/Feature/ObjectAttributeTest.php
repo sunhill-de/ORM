@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Feature;
+namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Tests\DBTestCase;
+use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Test\ts_dummy;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Sunhill\ORM\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Objects\oo_object;

@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit;
 
 /**
  *
@@ -7,7 +7,7 @@ namespace Tests\Unit;
  * lang: en
  * dependencies: FilemanagerTestCase
  */
-use Tests\TestCase;
+use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Utils\descriptor;
 use Sunhill\ORM\Utils\DescriptorException;
 
@@ -35,7 +35,7 @@ class test_descriptor extends descriptor {
     }
 }
 
-class UtilDescriptorTest extends \Tests\TestCase
+class UtilDescriptorTest extends TestCase
 {
 
     public function testSetGet()

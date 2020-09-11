@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit;
 
 /**
  *
@@ -7,7 +7,7 @@ namespace Tests\Unit;
  * lang: en
  * dependencies: FilesystemComplexTestCase
  */
-use Tests\DBTestCase;
+use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Test\ts_dummy;
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Feature;
+namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Sunhill\ORM\Objects\oo_object;
-use Tests\DBTestCase;
+use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Utils\objectlist;
 
 class searchtestA extends oo_object {
@@ -19,8 +19,8 @@ class searchtestA extends oo_object {
         self::integer('Anosearch');
         self::varchar('Achar')->searchable();
         self::calculated('Acalc')->searchable();
-        self::object('Aobject')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
-        self::arrayofobjects('Aoarray')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
+        self::object('Aobject')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::arrayofobjects('Aoarray')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
         self::arrayofstrings('Asarray')->searchable();
     }
     
@@ -43,9 +43,9 @@ class searchtestB extends searchtestA {
         self::integer('Bint')->searchable();
         self::varchar('Bchar')->searchable();
         self::calculated('Bcalc')->searchable();
-        self::object('Bobject')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
+        self::object('Bobject')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
         self::arrayofstrings('Bsarray')->searchable();
-        self::arrayofobjects('Boarray')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
+        self::arrayofobjects('Boarray')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
     }
     
     public function calculate_Bcalc() {
@@ -59,7 +59,7 @@ class searchtestC extends searchtestB {
     
     protected static function setup_properties() {
         parent::setup_properties();
-        self::object('Cobject')->set_allowed_objects(["\\Sunhill\\Test\\ts_dummy"])->searchable();
+        self::object('Cobject')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
     }
 
 }
@@ -86,12 +86,12 @@ class ObjectSearchTest extends DBTestCase
     }
     
     public function testSearchWithNoConditionSingleResult() {
-        $result = $this->simplify_result(\Tests\Feature\searchtestC::search()->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestC::search()->get());
         $this->assertEquals([15],$result);
     }
     
     public function testSearchWithNoConditionMultipleResult() {
-        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->get());
         $this->assertEquals([10,11,12,13,14,15],$result);
     }
     
@@ -99,7 +99,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithNoConditionOrder() {
-        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->order_by('Bchar')->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->order_by('Bchar')->get());
         $this->assertEquals([10,14,11,12,13,15],$result);
     }
     
@@ -107,7 +107,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithConditionOrder() {
-        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->where('Bint','<',602)->order_by('Bchar','desc')->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->where('Bint','<',602)->order_by('Bchar','desc')->get());
         $this->assertEquals([11,10],$result);
     }
     
@@ -115,7 +115,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithCombinedConditionOrder() {
-        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->where('Bint','<',603)->where('Aint','<',502)->order_by('Bchar',false)->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->where('Bint','<',603)->where('Aint','<',502)->order_by('Bchar',false)->get());
         $this->assertEquals([11,10],$result);
     }
     
@@ -123,7 +123,7 @@ class ObjectSearchTest extends DBTestCase
      * @group limit
      */
     public function testSearchWithLimit() {
-        $result = $this->simplify_result(\Tests\Feature\searchtestB::search()->limit(2,2)->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->limit(2,2)->get());
         $this->assertEquals([12,13],$result);
     }
     
@@ -131,7 +131,7 @@ class ObjectSearchTest extends DBTestCase
      * @group count
      */
     public function testCountSingleResult() {
-        $result = \Tests\Feature\searchtestC::search()->count();
+        $result = \Sunhill\ORM\Tests\Feature\searchtestC::search()->count();
         $this->assertEquals(1,$result);
     }
     
@@ -140,7 +140,7 @@ class ObjectSearchTest extends DBTestCase
      * @group count
      */
     public function testCountWithObjectCondition() {
-        $result = \Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count();
+        $result = \Sunhill\ORM\Tests\Feature\searchtestA::search()->where('Aobject','=',1)->count();
         $this->assertEquals(2,$result);
     }
     
@@ -148,7 +148,7 @@ class ObjectSearchTest extends DBTestCase
      * @group count
      */   
     public function testCountMultipleResult() {
-        $result = \Tests\Feature\searchtestB::search()->count();
+        $result = \Sunhill\ORM\Tests\Feature\searchtestB::search()->count();
         $this->assertEquals(6,$result);
     }
     
@@ -162,7 +162,7 @@ class ObjectSearchTest extends DBTestCase
      * @group simple
      */
     public function testSimpleSearchIDs($searchclass,$field,$relation,$value,$expect) {
-        $classname = "\\Tests\\Feature\\".$searchclass;
+        $classname = "\\Sunhill\\ORM\\Tests\\Feature\\".$searchclass;
         $result = $this->simplify_result($classname::search()->where($field,$relation,$value)->get());
         $this->assertEquals($expect,$result);
     }
@@ -248,13 +248,13 @@ class ObjectSearchTest extends DBTestCase
      */
     public function testPassObject() {
         $test = \Sunhill\ORM\Objects\oo_object::load_object_of(1);
-        $result = $this->simplify_result(\Tests\Feature\searchtestA::search()->where('Aobject','=',$test)->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestA::search()->where('Aobject','=',$test)->get());
         $this->assertEquals([7,13],$result);
         
     }
     
     public function testGetFirst() {
-         $result = \Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first();
+         $result = \Sunhill\ORM\Tests\Feature\searchtestA::search()->where('Achar','=','ABC')->first();
         $this->assertEquals(5,$result);        
     }
     
@@ -262,7 +262,7 @@ class ObjectSearchTest extends DBTestCase
      * @group Focus
      */
     public function testGetFirstWithOneResult() {
-        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','111')->first();
+        $result = \Sunhill\ORM\Tests\Feature\searchtestA::search()->where('Aint','=','111')->first();
         $this->assertEquals(5,$result);
     }
     
@@ -270,7 +270,7 @@ class ObjectSearchTest extends DBTestCase
      * @group Focus
      */
     public function testGetFirstWithNoResult() {
-        $result = \Tests\Feature\searchtestA::search()->where('Aint','=','666')->first();
+        $result = \Sunhill\ORM\Tests\Feature\searchtestA::search()->where('Aint','=','666')->first();
         $this->assertEquals(null,$result);
     }
     
@@ -279,7 +279,7 @@ class ObjectSearchTest extends DBTestCase
      * @group complex
      */
     public function testComplexSearchIDs($searchclass,$field1,$relation1,$value1,$field2,$relation2,$value2,$expect) {
-         $classname = "\\Tests\\Feature\\".$searchclass;
+         $classname = "\\Sunhill\\ORM\\Tests\\Feature\\".$searchclass;
          $result = $this->simplify_result($classname::search()->where($field1,$relation1,$value1)->where($field2,$relation2,$value2)->get());
         $this->assertEquals($expect,$result);
     }

@@ -16,6 +16,11 @@
 				"tests/lib",
 				"tests/objects"
 			],
+			"Sunhill\\ORM\\Tests\\" : [
+				"tests",
+				"tests/lib",
+				"tests/objects"
+			],
 			"Sunhill\\ORM\\" : [
 				"src/lib",
 				"src"

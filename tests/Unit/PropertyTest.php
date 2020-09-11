@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit;
 
-use Tests\TestCase;
+use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Properties\oo_property;

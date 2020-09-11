@@ -7,10 +7,10 @@
  * Reviewstate: 2020-08-12
  */
 
-namespace Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\DBTestCase;
+use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Test\ts_objectunit;
 

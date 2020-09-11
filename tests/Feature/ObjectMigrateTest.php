@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Feature;
+namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
-use Tests\DBTestCase;
+use Sunhill\ORM\Tests\DBTestCase;
 
 class testA extends oo_object {
    
