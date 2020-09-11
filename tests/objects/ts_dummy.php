@@ -1,12 +1,34 @@
 <?php
-
+/**
+ * @file ts_dummy.php
+ * Provides the test object ts_dummy that only has an integer as property
+ * Lang en
+ * Reviewstatus: 2020-09-11
+ * Localization: unknown
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ */
 namespace Sunhill\ORM\Test;
 
 use Sunhill\ORM\Objects\oo_object;
 
+/**
+ * Only for testing purposes
+ * @author klaus
+ */
 class ts_dummy extends oo_object {
 	
     public static $table_name = 'dummies';
+    
+    public static $object_infos = [
+        'name'=>'dummy',       // A repetition of static:$object_name @todo see above
+        'table'=>'dummies',     // A repitition of static:$table_name
+        'name_s'=>'dummy object',     // A human readable name in singular
+        'name_p'=>'dummy objects',    // A human readable name in plural
+        'description'=>'A dummy test object class that only provides an integer',
+        'options'=>0,           // Reserved for later purposes
+    ];
     
     public $changestr = '';
     
