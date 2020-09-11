@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * @file oo_tag.php
+ * Provides the object oo_tag
+ * Lang en
+ * Reviewstatus: 2020-09-11
+ * Localization: unknown
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ */
 namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
