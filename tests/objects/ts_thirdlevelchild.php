@@ -4,6 +4,14 @@ namespace Sunhill\ORM\Test;
 
 class ts_thirdlevelchild extends ts_secondlevelchild {
     public static $table_name = 'thirdlevelchildren';
+    public static $object_infos = [
+        'name'=>'thiredlevelchild',       // A repetition of static:$object_name @todo see above
+        'table'=>'thridlevelchildren',     // A repitition of static:$table_name
+        'name_s'=>'third level child',     // A human readable name in singular
+        'name_p'=>'third level children',    // A human readable name in plural
+        'description'=>'Another test class. A derrived class with all some properties',
+        'options'=>0,           // Reserved for later purposes
+    ];
     
     protected static $property_definitions;
     protected static function setup_properties() {

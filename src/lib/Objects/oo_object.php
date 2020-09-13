@@ -46,12 +46,6 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
      */
     public static $table_name = 'objects';
     
-    /**
-     * An internal name of a single object of this class. This name is used in the object and class manager to refer to the classes
-     * @var string
-     */
-    public static $object_name = 'object';
-    
     public static $object_infos = [
         'name'=>'object',       // A repetition of static:$object_name @todo see above
         'table'=>'objects',     // A repitition of static:$table_name

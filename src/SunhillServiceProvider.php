@@ -13,6 +13,7 @@ class SunhillServiceProvider extends ServiceProvider
     
     public function boot()
     {
+        $this->app->singleton()
     if ($this->app->runningInConsole()) {
 
       if (! class_exists('CreateAttributesTable')) {

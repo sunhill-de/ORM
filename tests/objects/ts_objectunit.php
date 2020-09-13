@@ -34,6 +34,14 @@ class ts_objectunit extends \Sunhill\ORM\Objects\oo_object {
 	
     public static $table_name = 'objectunits';
 
+    public static $object_infos = [
+        'name'=>'objectunit',       // A repetition of static:$object_name @todo see above
+        'table'=>'objectunits',     // A repitition of static:$table_name
+        'name_s'=>'object unit',     // A human readable name in singular
+        'name_p'=>'object units',    // A human readable name in plural
+        'description'=>'Another test class',
+        'options'=>0,           // Reserved for later purposes
+    ];
     public $storage_values;
     
     protected function create_storage() {
