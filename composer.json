@@ -31,7 +31,10 @@
 		"laravel" : {
 			"providers" : [
 				"Sunhill\\ORM\\SunhillServiceProvider"
-			]
+			],
+			"aliases": {
+				"Classes": "Sunhill\\ORM\\Fascades\\Classes"
+			}
 		}
 	}
 }

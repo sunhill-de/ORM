@@ -152,7 +152,7 @@ class class_manager {
             if (!$this->cache_exists()) {
                 $this->create_cache();
             }
-            $this->classes = require_once($this->cache_file());
+            $this->classes = require($this->cache_file());
         }
     }
     
