@@ -31,34 +31,34 @@ class ManagerClassesTest extends DBTestCase
      * @depends testFlushCache
      */
     public function testNumberOfClasses($test) {
-        $this->assertEquals(CLASS_COUNT,$test->get_class_count());
-        return $test;
+        $this->assertTrue(CLASS_COUNT<=($count=$test->get_class_count()));
+        return $count;
     }
     
     /**
-     * @depends testFlushCache
+     * @depends testNumberOfClasses
      */
-    public function testNumberOfClassesViaApp($test) {
+    public function testNumberOfClassesViaApp($count) {
         $manager = app('\Sunhill\ORM\Managers\class_manager');
-        $this->assertEquals(CLASS_COUNT,$manager->get_class_count());
-        return $test;
+        $this->assertEquals($count,$manager->get_class_count());
+        return $count;
     }
     
     /**
-     * @depends testFlushCache
+     * @depends testNumberOfClasses
      */
-    public function testNumberOfClassesViaAlias($test) {
+    public function testNumberOfClassesViaAlias($count) {
         $manager = app('classes');
-        $this->assertEquals(CLASS_COUNT,$manager->get_class_count());
-        return $test;
+        $this->assertEquals($count,$manager->get_class_count());
+        return $count;
     }
     
     /**
-     * @depends testFlushCache
+     * @depends testNumberOfClasses
      */
-    public function testNumberOfClassesViaFascade($test) {
-        $this->assertEquals(CLASS_COUNT,Classes::get_class_count());
-        return $test;
+    public function testNumberOfClassesViaFascade($count) {
+        $this->assertEquals($count,$count = Classes::get_class_count());
+        return $count;
     }
     
     public function testSearchClassNoField() {
