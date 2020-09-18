@@ -33,6 +33,10 @@ class UnknownPropertyException extends ObjectException {}
  * - loading and storing
  * - creating and erasing
  * - searching
+ * Glossary:
+ * - tags: A tag is an additional single word information that helps in grouping orm objects
+ * - property: A property is a single entity of information of a single orm object (like an integer, string or date)
+ * 
  * Policy:
  * - No direct database interaction. Should be handled by the storages
  * @author lokal
@@ -62,7 +66,8 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
     protected $needid_queries = [];
     
     /**
-     * Konstruktor für Objekte. Initialisiert interne properties und ruft ansonsten den geerbten Kontruktor auf
+     * Constructor for all orm classes. As a child of properties_having it calls its derrived constructor wich in turn initializes the properties.
+     * Additionally it defines a few own intenal properties (tags and externalhooks)
      */
 	public function __construct() {
 	    parent::__construct();
@@ -533,6 +538,9 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	    }
 	}
 	
+	/**
+	 * Clears the object cache
+	 */
 	public static function flush_cache() {
 	    self::$objectcache = array();
 	}
@@ -638,8 +646,8 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	}
 	
 	/**
-	 * Prüft, ob die Zieltabelle überhaupt existiert.
-	 * @return boolean
+	 * Check if the table of this object exists at all
+	 * @return boolean true, of the table exists otherwise false
 	 */
 	private static function table_exists() {
 	    $tables = DB::select(DB::raw("SHOW TABLES LIKE '".static::$table_name."'"));
