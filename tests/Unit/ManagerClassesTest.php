@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Unit;
 
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\class_manager;
-use Sunhill\ORM\Fascades\Classes;
+use Sunhill\ORM\Facades\Classes;
 
 define('CLASS_COUNT',8);
 
