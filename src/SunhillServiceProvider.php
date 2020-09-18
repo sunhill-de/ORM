@@ -15,6 +15,7 @@ class SunhillServiceProvider extends ServiceProvider
     
     public function boot()
     {
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang','ORM',);
         if ($this->app->runningInConsole()) {
 
           if (! class_exists('CreateAttributesTable')) {
