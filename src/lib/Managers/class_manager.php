@@ -12,6 +12,7 @@
 namespace Sunhill\ORM\Managers;
 
 use \Sunhill\ORM\SunhillException;
+use Illuminate\Support\Facades\Lang;
 
 /**
  * This class provides methods to access information about the availble orm classes. 
@@ -22,6 +23,8 @@ use \Sunhill\ORM\SunhillException;
  */
 class class_manager {
  
+    private static $translatable = [/*'name_s','name_p','description'*/];
+    
     /**
      * Stores the information about the classes
      * @var array|null
@@ -162,6 +165,49 @@ class class_manager {
     public function get_class_count() {
         $this->check_cache();
         return count($this->classes);       
+    }
+    
+    private function check_class(string $name) {
+        if (!isset($this->classes[$name])) {
+            throw new SunhillException("The class '$name' doesn't exists.");
+        }
+    }
+    
+    private function translate(string $class,string $item) {
+        return Lang::get('ORM:testfiles.'.$class.'_'.$item);
+    }
+    
+    /**
+     * Searches for the class named '$name'
+     * @param string $name
+     * @param unknown $field
+     * @throws SunhillException
+     * @return unknown
+     */
+    public function get_class(string $name,$field=null) {
+        $this->check_cache();
+        $this->check_class($name);
+        $class = $this->classes[$name];
+        if (is_null($field)) {
+                return $class;
+        } else {
+            if (in_array($field,static::$translatable)) {
+                return $this->translate($name,$field);
+            } else if (isset($class[$field])) {
+                return $class[$field];                    
+            } else {
+                throw new SunhillException("The class '$name' doesn't export '$field'.");
+            }
+        }
+    }
+    
+    /**
+     * Return the table of class '$name'. Alias for get_class($name,'table')
+     * @param string $name
+     * @return unknown
+     */
+    public function get_table_of_class(string $name) {
+        return $this->get_class($name,'table');        
     }
     
 }

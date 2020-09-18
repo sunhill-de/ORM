@@ -5,6 +5,7 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\class_manager;
 use Sunhill\ORM\Facades\Classes;
+use \Sunhill\ORM\SunhillException;
 
 define('CLASS_COUNT',8);
 
@@ -60,5 +61,27 @@ class ManagerClassesTest extends DBTestCase
         return $test;
     }
     
+    public function testSearchClassNoField() {
+        $this->assertEquals('dummies',Classes::get_class('dummy')['table']);
+    }
     
+    public function testSearchClassField() {
+        $this->assertEquals('dummies',Classes::get_class('dummy','table'));
+    }
+    
+    public function testSearchClassNotExists() {
+        $this->expectException(SunhillException::class);
+        Classes::get_class('notexistsing');
+    }
+    
+    public function testSearchClassNotExistingField() {
+        $this->expectException(SunhillException::class);
+        Classes::get_class('dummy','nonexisting');
+    }
+
+/**    
+    public function testSearchClassWithTranslation() {
+        $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));
+    }
+*/    
 }
