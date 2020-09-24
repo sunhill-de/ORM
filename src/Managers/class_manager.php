@@ -184,6 +184,15 @@ class class_manager {
         return count($this->classes);       
     }
 
+    /**
+     * Returns a treversable associative array of all registered classes
+     * @return unknown
+     */
+    public function get_all_classes() {
+        $this->check_cache();
+        return $this->classes;
+    }
+    
 // *************************** Informations about a specific class **************************    
     private function normalize_namespace(string $namespace) : string {
         $namespace = str_replace("\\\\","\\",$namespace);
@@ -236,19 +245,37 @@ class class_manager {
      * @throws SunhillException
      * @return unknown
      */
-    public function get_class(string $name,$field=null) {
+    public function get_class($name,$field=null) {
         $this->check_cache();
-        $this->check_class($name);
-        $class = $this->classes[$name];
-        if (is_null($field)) {
-                return $class;
+        if (is_int($name)) {
+            if ($name < 0) {
+                throw new SunhillException("Invalid Index '$name'");
+            }
+            $i=0;
+            foreach ($this->classes as $class_name => $info) {
+                if ($i==$name) {
+                    if (is_null($field)) {
+                        return $info;
+                    } else {
+                        return $info->$field;                        
+                    }
+                }
+                $i++;
+            }
+            throw new SunhillException("Invalid index '$name'");
         } else {
-            if (in_array($field,static::$translatable)) {
-                return $this->translate($name,$field);
-            } else if ($class->is_defined($field)) {
-                return $class->$field;                    
+            $this->check_class($name);
+            $class = $this->classes[$name];
+            if (is_null($field)) {
+                    return $class;
             } else {
-                throw new SunhillException("The class '$name' doesn't export '$field'.");
+                if (in_array($field,static::$translatable)) {
+                    return $this->translate($name,$field);
+                } else if ($class->is_defined($field)) {
+                    return $class->$field;                    
+                } else {
+                    throw new SunhillException("The class '$name' doesn't export '$field'.");
+                }
             }
         }
     }

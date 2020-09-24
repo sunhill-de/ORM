@@ -61,24 +61,42 @@ class ManagerClassesTest extends DBTestCase
         return $count;
     }
     
-    public function testSearchClassNoField() {
-        $this->assertEquals('dummies',Classes::get_class('dummy')->table);
+    /**
+     * @dataProvider GetClassProvider
+     * @param unknown $class
+     * @param unknown $subfield
+     * @param unknown $field
+     * @param unknown $expect
+     */
+    public function testGetClass($class,$subfield,$field,$expect) {
+        if ($expect == 'except') {
+            try {
+                $this->get_field(Classes::get_class($class,$field),$subfield);
+            } catch (\Exception $e) {
+                $this->assertTrue(true);
+                return;
+            }
+            $this->fail("Expected exception not raised");
+        } else {
+            $this->assertEquals($expect,$this->get_field(Classes::get_class($class,$field),$subfield));
+        }
     }
     
-    public function testSearchClassField() {
-        $this->assertEquals('dummies',Classes::get_class('dummy','table'));
+    public function GetClassProvider() {
+        return [
+            ['dummy','table',null,'dummies'],       // Get Field indirect
+            ['dummy',null,'table','dummies'],       // Get Field direct
+            ['notexisting',null,null,'except'],     // Class not existing
+            ['dummy',null,'notexisting','except'],  // Field not exported
+            [-1,null,'table','except'],             // Invalid Index
+            [1000,null,'table','except'],           // Invalid Index
+            [0,null,'table','dummies'],             // Get table by index direct
+            [0,'table',null,'dummies'],             // Get table by index indirect
+            [1,null,'table','objectunits'],         // Get table by index direct
+            [1,'table',null,'objectunits'],         // Get table by index indirect
+        ];    
     }
     
-    public function testSearchClassNotExists() {
-        $this->expectException(SunhillException::class);
-        Classes::get_class('notexistsing');
-    }
-    
-    public function testSearchClassNotExistingField() {
-        $this->expectException(SunhillException::class);
-        Classes::get_class('dummy','nonexisting');
-    }
-
     /**
      * @dataProvider SearchClassProvider
      * @param unknown $search

@@ -38,8 +38,10 @@ abstract class TestCase extends BaseTestCase
             $name = $match['name'];
             $index = $match['index'];
             return $loader->$name[$index];
-        }  else {
+        }  else if (is_string($fieldname)){
             return $loader->$fieldname;
+        } else {
+            return $loader;
         }
     }
     
