@@ -122,6 +122,14 @@ class descriptor implements \Iterator
     }
 
     /**
+     * Checks, if the descriptor has the field with the name $name
+     * @param string $name
+     */
+    public function is_defined(string $name) {
+        return isset($this->fields[$name]);
+    }
+    
+    /**
      * Catch all for method so we can implement set_xxx, get_xxx
      */
     public function &__call(string $name, array $params)

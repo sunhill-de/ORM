@@ -145,4 +145,11 @@ class UtilDescriptorTest extends TestCase
     public function testPostTrigger(test_descriptor $test) {
         $this->assertEquals('ABC=>CBA',$test->flag);
     }
+    
+    public function testHasKey() {
+        $test = new descriptor();
+        $test->abc = 'abc';
+        $this->assertTrue($test->is_defined('abc'));
+        $this->assertFalse($test->is_defined('notdefined'));
+    }
 }
