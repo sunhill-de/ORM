@@ -79,6 +79,22 @@ class ManagerClassesTest extends DBTestCase
         Classes::get_class('dummy','nonexisting');
     }
 
+    /**
+     * @dataProvider SearchClassProvider;
+     * @param unknown $search
+     */
+    public function testSearchClassViaName($expect,$search) {
+        $this->assertEquals($expect,Classes::search_class($search));
+    }
+    
+    public function SearchClassProvider() {
+        return [
+            ['dummy','dummy'],
+            ['dummy','\\Sunhill\\ORM\\Test\\dummy'],
+            [null,'notexisting'],
+            [null,'\\Sunhill\\ORM\\Test\\nonexisting'],
+        ];
+    }
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));

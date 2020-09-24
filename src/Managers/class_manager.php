@@ -13,6 +13,7 @@ namespace Sunhill\ORM\Managers;
 
 use \Sunhill\ORM\SunhillException;
 use Illuminate\Support\Facades\Lang;
+use Sunhill\ORM\Utils\descriptor;
 
 /**
  * This class provides methods to access information about the availble orm classes. 
@@ -30,7 +31,8 @@ class class_manager {
      * @var array|null
      */
     private $classes=null;
-    
+
+// ******************************** Cache-Management ***************************************    
     /**
      * Return the full path to the class cache file
      * @return string 
@@ -155,16 +157,55 @@ class class_manager {
             if (!$this->cache_exists()) {
                 $this->create_cache();
             }
-            $this->classes = require($this->cache_file());
+            $this->load_cache_file();
+         }
+    }
+
+    /**
+     * Loads the cache file and tranlates it into a desciptor array
+     */
+    private function load_cache_file() {
+        $classes = require($this->cache_file());
+        foreach ($classes as $name => $info) {
+            $descriptor = new descriptor();
+            foreach ($info as $key => $value) {
+                $descriptor->$key = $value;
+            }
+            $this->classes[$name] = $descriptor;
         }
     }
     
+// *************************** General class informations ===============================    
     /**
      * Returns the number of registered classes
      */
     public function get_class_count() {
         $this->check_cache();
         return count($this->classes);       
+    }
+
+// *************************** Informations about a specific class **************************    
+    /**
+     * This method returns the name of the class or null
+     * If $needle is a string with backslashes it searches the correspending class name
+     * If $needle is a string without backslahes it just returns the name
+     * @param string $needle
+     */
+    public function search_class(string $needle) {
+        if (strpos('\\',$needle)) {
+            foreach ($this->classes as $name => $info) {
+                if ($info->class === $needle) {
+                    return $info->class->name;
+                }
+            }
+            return null;
+        }  else {
+            if (isset($this->classes[$needle])) {
+                return $needle;
+            } else {
+                return null;
+            }
+        }
     }
     
     private function check_class(string $name) {

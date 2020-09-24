@@ -11,6 +11,10 @@ class SunhillServiceProvider extends ServiceProvider
     {
         $this->app->singleton(class_manager::class, function () { return new class_manager(); } );
         $this->app->alias(class_manager::class,'classes');
+        $this->app->singleton(object_manager::class, function () { return new object_manager(); } );
+        $this->app->alias(object_manager::class,'objects');
+        $this->app->singleton(tag_manager::class, function () { return new tag_manager(); } );
+        $this->app->alias(tag_manager::class,'classes');
     }
     
     public function boot()

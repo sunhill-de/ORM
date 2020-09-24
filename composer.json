@@ -21,10 +21,7 @@
 				"tests/lib",
 				"tests/objects"
 			],
-			"Sunhill\\ORM\\" : [
-				"src/lib",
-				"src"
-			]
+			"Sunhill\\ORM\\" : "src"
 		}
 	},
 	"extra" : {
@@ -32,8 +29,8 @@
 			"providers" : [
 				"Sunhill\\ORM\\SunhillServiceProvider"
 			],
-			"aliases": {
-				"Classes": "Sunhill\\ORM\\Facades\\Classes"
+			"aliases" : {
+				"Classes" : "Sunhill\\ORM\\Facades\\Classes"
 			}
 		}
 	}
