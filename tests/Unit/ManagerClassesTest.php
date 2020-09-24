@@ -62,7 +62,7 @@ class ManagerClassesTest extends DBTestCase
     }
     
     public function testSearchClassNoField() {
-        $this->assertEquals('dummies',Classes::get_class('dummy')['table']);
+        $this->assertEquals('dummies',Classes::get_class('dummy')->table);
     }
     
     public function testSearchClassField() {
@@ -80,7 +80,7 @@ class ManagerClassesTest extends DBTestCase
     }
 
     /**
-     * @dataProvider SearchClassProvider;
+     * @dataProvider SearchClassProvider
      * @param unknown $search
      */
     public function testSearchClassViaName($expect,$search) {
@@ -90,9 +90,11 @@ class ManagerClassesTest extends DBTestCase
     public function SearchClassProvider() {
         return [
             ['dummy','dummy'],
-            ['dummy','\\Sunhill\\ORM\\Test\\dummy'],
+            ['dummy','\\Sunhill\\ORM\\Test\\ts_dummy'],
+            ['dummy','Sunhill\\ORM\\Test\\ts_dummy'],
             [null,'notexisting'],
             [null,'\\Sunhill\\ORM\\Test\\nonexisting'],
+            [null,'Sunhill\\ORM\\Test\\nonexisting'],
         ];
     }
 /**    

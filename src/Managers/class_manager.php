@@ -99,7 +99,7 @@ class class_manager {
      * @param string $class The full name of a class that points to a descendant of oo_object
      */
     private function get_class_info(string $class) {
-        $result = ['class'=>$class];
+        $result = ['class'=>addslashes($class)];
         foreach ($class::$object_infos as $key => $value) {
             $result[$key] = $value;
         }
@@ -185,6 +185,15 @@ class class_manager {
     }
 
 // *************************** Informations about a specific class **************************    
+    private function normalize_namespace(string $namespace) : string {
+        $namespace = str_replace("\\\\","\\",$namespace);
+        if (strpos($namespace,'\\') == 0) {
+            return substr($namespace,1);
+        } else {
+            return $namespace;
+        }
+    }
+
     /**
      * This method returns the name of the class or null
      * If $needle is a string with backslashes it searches the correspending class name
@@ -192,10 +201,12 @@ class class_manager {
      * @param string $needle
      */
     public function search_class(string $needle) {
-        if (strpos('\\',$needle)) {
+        $this->check_cache();
+        if (strpos($needle,'\\') !== false) {
+            $needle = $this->normalize_namespace($needle);
             foreach ($this->classes as $name => $info) {
                 if ($info->class === $needle) {
-                    return $info->class->name;
+                    return $info->name;
                 }
             }
             return null;
@@ -234,8 +245,8 @@ class class_manager {
         } else {
             if (in_array($field,static::$translatable)) {
                 return $this->translate($name,$field);
-            } else if (isset($class[$field])) {
-                return $class[$field];                    
+            } else if ($class->is_defined($field)) {
+                return $class->$field;                    
             } else {
                 throw new SunhillException("The class '$name' doesn't export '$field'.");
             }

@@ -4,6 +4,8 @@ namespace Sunhill\ORM;
 
 use Illuminate\Support\ServiceProvider;
 use \Sunhill\ORM\Managers\class_manager;
+use \Sunhill\ORM\Managers\object_manager;
+use \Sunhill\ORM\Managers\tag_manager;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -14,7 +16,7 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->singleton(object_manager::class, function () { return new object_manager(); } );
         $this->app->alias(object_manager::class,'objects');
         $this->app->singleton(tag_manager::class, function () { return new tag_manager(); } );
-        $this->app->alias(tag_manager::class,'classes');
+        $this->app->alias(tag_manager::class,'tags');
     }
     
     public function boot()
