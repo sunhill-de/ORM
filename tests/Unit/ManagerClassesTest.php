@@ -132,6 +132,69 @@ class ManagerClassesTest extends DBTestCase
             ['testchild','testparent']
         ];
     }
+    
+    /**
+     * @dataProvider GetChildrenOfClassProvider
+     * @param unknown $test_class
+     * @param unknown $expect
+     */
+    public function testGetChildrenOfClass($test_class,$level,$expect) {
+        $this->assertEquals($expect,Classes::get_children_of_class($test_class,$level));    
+    }
+    
+    public function GetChildrenOfClassProvider() {
+        return [
+                ['dummy',-1,[]],
+                ['secondlevelchild',-1,['thirdlevelchild'=>[]]],
+                ['testparent',-1,['passthru'=>['secondlevelchild'=>['thirdlevelchild'=>[]]],'testchild'=>[]]],
+                ['testparent',1,['passthru'=>[],'testchild'=>[]]],
+       ];
+    }
+    
+    /**
+     * @dataProvider GetClassTreeProvider
+     */
+    public function testGetClassTree($test_class,$expect) {
+        if (is_null($test_class)) {
+            $this->assertEquals($expect,Classes::get_class_tree());
+        } else {
+            $this->assertEquals($expect,Classes::get_class_tree($test_class));
+        }
+    }
+    
+    public function GetClassTreeProvider() {
+        return [
+            [null,
+                ['object'=>
+                    [
+                        'dummy'=>[],
+                        'objectunit'=>[],
+                        'referenceonly'=>[],
+                        'testparent'=>[
+                            'passthru'=>[
+                                'secondlevelchild'=>[
+                                    'thirdlevelchild'=>[]
+                                ]
+                            ],
+                            'testchild'=>[]
+                        ]
+                    ]    
+                ]                
+            ],
+            ['testparent',
+                        ['testparent'=>[
+                            'passthru'=>[
+                                'secondlevelchild'=>[
+                                    'thirdlevelchild'=>[]
+                                ]
+                            ],
+                            'testchild'=>[]
+                        ]]
+            ],
+            ['dummy',['dummy'=>[]]],
+            
+        ];
+    }
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));

@@ -206,8 +206,8 @@ class class_manager {
      * Example: 
      * ['oo_object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
      */
-    public function get_class_tree() {
-        
+    public function get_class_tree(string $class = 'object') {
+        return [$class=>$this->get_children_of_class($class)];
     }
     
 // *************************** Informations about a specific class **************************    
@@ -237,7 +237,7 @@ class class_manager {
             }
             return null;
         }  else {
-            if (isset($this->classes[$needle])) {
+            if (isset($this->classes[$needle]) || ($needle === 'object')) {
                 return $needle;
             } else {
                 return null;
@@ -246,9 +246,10 @@ class class_manager {
     }
     
     private function check_class(string $name) {
-        if (!isset($this->classes[$name])) {
+        if (!isset($this->classes[$name]) && ($name !== 'object')) {
             throw new SunhillException("The class '$name' doesn't exists.");
         }
+        return $name;
     }
     
     private function translate(string $class,string $item) {
@@ -303,6 +304,7 @@ class class_manager {
      * @return unknown
      */
     public function get_table_of_class(string $name) {
+        $name = $this->check_class($this->search_class($name));
         return $this->get_class($name,'table');        
     }
     
@@ -312,6 +314,30 @@ class class_manager {
      * @return unknown
      */
     public function get_parent_of_class(string $name) {
+        $name = $this->check_class($this->search_class($name));
         return $this->get_class($name,'parent');
     }
+
+    /**
+     * Return an associative array of the children of the passed class. The array is in the form
+     *  name_of_child=>[list_of_children_of_this_child]
+     * @param string $name Name of the class to which all children should be searched. Default=object
+     * @param int $level search children only to this depth. -1 means search all children. Default=-1
+     */
+    public function get_children_of_class(string $name='object',int $level=-1) : array {
+        $name = $this->check_class($this->search_class($name));
+        $this->check_cache();
+        $result = [];
+        if (!$level) { // We reached top level
+            return $result;
+        }
+        foreach ($this->classes as $class_name => $info) {
+            if ($info->parent === $name) {
+                $result[$class_name] = $this->get_children_of_class($class_name,$level-1);
+            }
+        }
+        return $result;
+    }
+    
+    
 }
