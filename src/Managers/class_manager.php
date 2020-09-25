@@ -15,13 +15,18 @@ use \Sunhill\ORM\SunhillException;
 use Illuminate\Support\Facades\Lang;
 use Sunhill\ORM\Utils\descriptor;
 
-/**
- * This class provides methods to access information about the availble orm classes. 
- * The routines consist of:
- * - cache management (flush_cache, create_cache)
- * @author klaus
- *
- */
+ /**
+  * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
+  * the installed objectclasses. At this time there is no kind of registration of new objectclasses, they are just put
+  * in one (or perhaps more) directory. Therefore the warpper needs to access this (these) directory and read 
+  * out the single objectclasses. 
+  * The problem is that objectclasses a called by namespace and autoloader and there is no sufficient method to 
+  * get the installed objectclasses at the momement, so we have to read out the specific directories.
+  * Definition of objectclass:
+  * A descendand of \Sunhill\ORM\Objects\oo_object which represents a storable dataobject
+  * @author lokal
+  *
+  */
 class class_manager {
  
     private static $translatable = [/*'name_s','name_p','description'*/];
@@ -103,6 +108,8 @@ class class_manager {
         foreach ($class::$object_infos as $key => $value) {
             $result[$key] = $value;
         }
+        $parent = get_parent_class($class);
+        $result['parent'] = $parent::$object_infos['name'];
         return $result;
     }
     
@@ -191,6 +198,16 @@ class class_manager {
     public function get_all_classes() {
         $this->check_cache();
         return $this->classes;
+    }
+    
+    /**
+     * Returns an array with the root oo_object. Each entry is an array with the name of the
+     * class as key and its children as another array. 
+     * Example: 
+     * ['oo_object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
+     */
+    public function get_class_tree() {
+        
     }
     
 // *************************** Informations about a specific class **************************    
@@ -289,4 +306,12 @@ class class_manager {
         return $this->get_class($name,'table');        
     }
     
+    /**
+     * Return the parent of class '$name'. Alias for get_class($name,'parent')
+     * @param string $name
+     * @return unknown
+     */
+    public function get_parent_of_class(string $name) {
+        return $this->get_class($name,'parent');
+    }
 }

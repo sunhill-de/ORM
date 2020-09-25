@@ -115,6 +115,23 @@ class ManagerClassesTest extends DBTestCase
             [null,'Sunhill\\ORM\\Test\\nonexisting'],
         ];
     }
+    
+    /**
+     * @dataProvider ClassParentProvider
+     * @param unknown $test_class
+     * @param unknown $expect
+     */
+    public function testClassParent($test_class,$expect) {
+        $this->assertEquals($expect,Classes::get_parent_of_class($test_class));
+    }
+    
+    public function ClassParentProvider() {
+        return [
+            ['dummy','object'],
+            ['testparent','object'],
+            ['testchild','testparent']
+        ];
+    }
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));
