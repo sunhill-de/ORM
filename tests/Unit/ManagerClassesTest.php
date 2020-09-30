@@ -132,6 +132,37 @@ class ManagerClassesTest extends DBTestCase
             ['testchild','testparent']
         ];
     }
+    
+    public function testGetClassTreeRoot() {
+        $this->assertEquals(
+            ['object'=>[
+                'dummy'=>[],
+                'objectunit'=>[],
+                'referenceonly'=>[],
+                'testparent'=>[
+                    'testchild'=>[],
+                    'passthru'=>[
+                        'secondlevelchild'=>[
+                            'thirdlevelchild'=>[]
+                        ]
+                    ]
+                ]
+            ]],Classes::get_class_tree());    
+    }
+    
+    public function testGetClassTreeClass() {
+        $this->assertEquals([
+            'testparent'=>[
+                'testchild'=>[],
+                'passthru'=>[
+                    'secondlevelchild'=>[
+                        'thirdlevelchild'=>[]
+                    ]
+                ]
+            ]
+       ],Classes::get_class_tree('testparent'));
+    }
+    
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));

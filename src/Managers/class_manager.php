@@ -204,10 +204,16 @@ class class_manager {
      * Returns an array with the root oo_object. Each entry is an array with the name of the
      * class as key and its children as another array. 
      * Example: 
-     * ['oo_object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
+     * ['object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
      */
-    public function get_class_tree() {
-        
+    public function get_class_tree(string $root='object') {
+        $result = [];
+        foreach ($this->classes as $name => $info) {
+            if ($info->parent == $root) {
+                $result[$name] = $this->get_class_tree($name);
+            }
+        }
+        return [$root=>$result];
     }
     
 // *************************** Informations about a specific class **************************    
