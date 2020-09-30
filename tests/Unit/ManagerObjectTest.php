@@ -16,43 +16,65 @@ use Illuminate\Support\Facades\DB;
 
 class ManagerObjectTest extends DBTestCase
 {
-    
-    public function testObjectCountNoFilter() {
+    public function testCountObjectsViaClass() {
         $count = DB::table('objects')->select(DB::raw('count(*) as count'))->first();
-        $this->assertEquals($count->count,object_manager::count());
+        $test = new object_manager();
+        $this->assertEquals($count->count,$test->count());
+        return $count->count;
     }
-
+    
+    /**
+     * @depends testCountObjectsViaClass
+     * @return unknown
+     */
+    public function testCountObjectsViaApp($count) {
+        $manager = app('\Sunhill\ORM\Managers\object_manager');
+        $this->assertEquals($count,$manager->count());
+        return $count;
+    }
+    
+    /**
+     * @depends testCountObjectsViaClass
+     * @return unknown
+     */
+    public function testCountObjectsViaFacade($count) {
+        $this->assertEquals($count,Objects::count());
+    }
+        
     public function testObjectCountNamespaceFilter() {
         $count = DB::table('dummies')->select(DB::raw('count(*) as count'))->first();
-        $this->assertEquals($count->count,object_manager::count(['class'=>'\Sunhill\ORM\Test\dummies']));
+        $this->assertEquals($count->count,Objects::count(['class'=>'Sunhill\ORM\Test\ts_dummy']));
     }
 
-    public function testObject
+    public function testObjectCountNameFilter() {
+        $count = DB::table('dummies')->select(DB::raw('count(*) as count'))->first();
+        $this->assertEquals($count->count,Objects::count('dummy'));
+    }
+       
     public function testObjectCountClassFilter_nochildren() {
-        $count1 = DB::table('persons')->select(DB::raw('count(*) as count'))->first();
-        $count2 = DB::table('aquaintances')->select(DB::raw('count(*) as count'))->first();
-        $this->assertEquals($count1->count-$count2->count,object_manager::count(['namespace'=>'\Manager\Objects\dummies'],true));
+        $count1 = DB::table('testparents')->select(DB::raw('count(*) as count'))->first();
+        $count2 = DB::table('testchildren')->select(DB::raw('count(*) as count'))->first();
+        $this->assertEquals($count1->count-$count2->count,Objects::count('testparent',true));
     }
 
     public function testObjectListNoFilter() {
-        $list = object_manager::get_object_list();
+        $list = Objects::get_object_list();
         $count = DB::table('objects')->select(DB::raw('count(*) as count'))->first();
         $this->assertEquals($count->count,count($list));
     }
 
     public function testObjectListClassFilter() {
-        $list = object_manager::get_object_list(['class'=>'\Manager\Objects\dummies']);
-        $this->assertEquals(ID_PERSON2,$list[1]->get_id());
-        $count = DB::table('persons')->select(DB::raw('count(*) as count'))->first();
+        $list = Objects::get_object_list('dummy');
+        $this->assertEquals(2,$list[1]->get_id());
+        $count = DB::table('dummies')->select(DB::raw('count(*) as count'))->first();
         $this->assertEquals($count->count,count($list));
     }
 
     public function testObjectListClassFilter_nochildren() {
-        $this->setup_scenario();
-        $list = object_manager::get_object_list(['class'=>'\Manager\Objects\person'],true);
-        $this->assertEquals(ID_PERSON2,$list[1]->get_id());
-        $count1 = DB::table('persons')->select(DB::raw('count(*) as count'))->first();
-        $count2 = DB::table('aquaintances')->select(DB::raw('count(*) as count'))->first();
+        $list = Objects::get_object_list('testparent',true);
+        $this->assertEquals(5,$list[0]->get_id());
+        $count1 = DB::table('testparents')->select(DB::raw('count(*) as count'))->first();
+        $count2 = DB::table('testchildren')->select(DB::raw('count(*) as count'))->first();
         $this->assertEquals($count1->count-$count2->count,count($list));
     }
 

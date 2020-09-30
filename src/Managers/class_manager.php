@@ -217,7 +217,12 @@ class class_manager {
     }
     
 // *************************** Informations about a specific class **************************    
-    private function normalize_namespace(string $namespace) : string {
+    /**
+     * Normalizes the passed namespace (removes heading \ and double backslashes)
+     * @param string $namespace
+     * @return string
+     */
+    public function normalize_namespace(string $namespace) : string {
         $namespace = str_replace("\\\\","\\",$namespace);
         if (strpos($namespace,'\\') == 0) {
             return substr($namespace,1);
@@ -319,5 +324,14 @@ class class_manager {
      */
     public function get_parent_of_class(string $name) {
         return $this->get_class($name,'parent');
+    }
+    
+    /**
+     * Return the full qualified namespace name of the class 'name'. Alias for get_class($name,'class')
+     * @param string $name
+     * @return unknown
+     */
+    public function get_namespace_of_class(string $name) {
+        return $this->get_class($name,'class');        
     }
 }
