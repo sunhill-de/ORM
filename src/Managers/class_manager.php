@@ -254,14 +254,19 @@ class class_manager {
      * Returns an array with the root oo_object. Each entry is an array with the name of the
      * class as key and its children as another array. 
      * Example: 
-     * ['oo_object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
+     * ['object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
      */
     public function get_class_tree(string $class = 'object') {
         return [$class=>$this->get_children_of_class($class)];
     }
     
 // *************************** Informations about a specific class **************************    
-    private function normalize_namespace(string $namespace) : string {
+    /**
+     * Normalizes the passed namespace (removes heading \ and double backslashes)
+     * @param string $namespace
+     * @return string
+     */
+    public function normalize_namespace(string $namespace) : string {
         $namespace = str_replace("\\\\","\\",$namespace);
         if (strpos($namespace,'\\') == 0) {
             return substr($namespace,1);
@@ -409,4 +414,12 @@ class class_manager {
         return $this->get_properties_of_class($class)->$property;        
     }
     
+    /**
+     * Return the full qualified namespace name of the class 'name'. Alias for get_class($name,'class')
+     * @param string $name
+     * @return unknown
+     */
+    public function get_namespace_of_class(string $name) {
+        return $this->get_class($name,'class');        
+    }
 }

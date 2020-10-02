@@ -208,7 +208,37 @@ class ManagerClassesTest extends DBTestCase
     }
     
     public function testGetClassProperty() {
-        $this->assertEquals('dummyint',Classes::get_property_of_class('dummy','dummyint')->name);    
+        $this->assertEquals('dummyint',Classes::get_property_of_class('dummy','dummyint')->name);
+    }
+
+    public function testGetClassTreeRoot() {
+        $this->assertEquals(
+            ['object'=>[
+                'dummy'=>[],
+                'objectunit'=>[],
+                'referenceonly'=>[],
+                'testparent'=>[
+                    'testchild'=>[],
+                    'passthru'=>[
+                        'secondlevelchild'=>[
+                            'thirdlevelchild'=>[]
+                        ]
+                    ]
+                ]
+            ]],Classes::get_class_tree());    
+    }
+    
+    public function testGetClassTreeClass() {
+        $this->assertEquals([
+            'testparent'=>[
+                'testchild'=>[],
+                'passthru'=>[
+                    'secondlevelchild'=>[
+                        'thirdlevelchild'=>[]
+                    ]
+                ]
+            ]
+       ],Classes::get_class_tree('testparent'));
     }
     
 /**    

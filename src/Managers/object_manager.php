@@ -14,11 +14,27 @@
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\Facades\Classes;
 
 class ObjectManagerException extends SunhillException {}
 
 class object_manager  {
  
+    protected function search_class_namespace($condition) {
+        if (is_array($condition)) {
+            if (isset($condition['class'])) {
+                $condition = $condition['class'];
+            } else if (isset($condition['name'])) {
+                $condition = $condition['name'];
+            }
+        }
+        $class = Classes::search_class($condition); // Mock me in tests
+        if (is_null($class)) {
+            throw new ObjectManagerException("Class '$condition' not found.");
+        }
+        return Classes::get_namespace_of_class($class);
+    }
+    
 		/**
 		 * Counts the number of objects depending on $condition
 		 * if $condition is null, then every object is counted
@@ -32,20 +48,13 @@ class object_manager  {
 		public function count($condition=null,bool $nochildren=false) {
 			if (is_null($condition)) {
 				return $this->get_raw_count();
-			} else if (is_array($condition)){
-				if (isset($condition['class'])) {
-					$class = $condition['class'];
-					if (!class_exists($class)) {
-						throw new ObjectManagerException("Unknown class '$class'");
-					}
-					if (!$nochildren) {
-						return $this->get_count_for_class($class);
-					} else {
-						return $this->get_count_for_single_class($class);
-					}
-				} else {
-					throw new ObjectManagerException("Unknown condition.");
-				}
+			} else {
+                $namespace = $this->search_class_namespace($condition);
+                if (!$nochildren) {
+                    return $this->get_count_for_class($namespace);
+                } else {
+                    return $this->get_count_for_single_class($namespace);
+                }
 			}
 		}
 
@@ -54,45 +63,29 @@ class object_manager  {
 			return $count->count;
 		}
 
-		private static function get_count_for_class(string $class) {
+		private function get_count_for_class(string $class) {
 			$count = DB::table($class::$table_name)->select(DB::raw('count(*) as count'))->first();
 			return $count->count;
 		}
 
-		private static function get_count_for_single_class(string $class) {
+		private function get_count_for_single_class(string $class) {
 			return static::get_object_list(['class'=>$class],true)->count();
 		}
 
 		/**
 		 * Returns a list of objects that match to the given condition
 		 */
-		public static function get_object_list($condition=['class'=>'\Sunhill\ORM\Objects\oo_object'],bool $nochildren=false) {
-			if (isset($condition['class'])) {
-				$class = $condition['class'];
-			} else {
-				throw new ObjectManagerException("Can't list without classname.");
-			}
-			$objects = static::convert($class::search()->get());
+		public function get_object_list($condition='object',bool $nochildren=false) {
+		    if ($condition == 'object') {
+		        $class = 'Sunhill\ORM\Objects\oo_object';
+		    } else {
+		      $class = $this->search_class_namespace($condition);
+		    }
+		    $objects = $class::search()->get();
 			if ($nochildren) {
 				$objects->filter_class($class,false);
 			}
 			return $objects;
 		}
 
-		/**
-		 * Takes the result of an /Sunhill/query_builder and converts it into a object_list
-		 * @todo when objectlist is moved to sunnhill, this function is depecrated or obsolete
-		 */
-		public static function convert($query_result) {
-			$result = new \Manager\Utils\objectlist();
-			if (is_int($query_result)) {
-				$result[] = $query_result;
-
-			} else if (is_array($query_result)) {
-				foreach ($query_result as $id) {
-					$result[] = $id;
-				}
-			}
-			return $result;
-		}
  }
