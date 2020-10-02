@@ -9,14 +9,28 @@ class ComposerStaticInit9cc0240c12377df0f73107bca70a6cea
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
-            'Sunhill\\' => 8,
+            'Sunhill\\ORM\\Tests\\' => 18,
+            'Sunhill\\ORM\\Test\\' => 17,
+            'Sunhill\\ORM\\' => 12,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Sunhill\\' => 
+        'Sunhill\\ORM\\Tests\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/lib',
+            0 => __DIR__ . '/../..' . '/tests',
+            1 => __DIR__ . '/../..' . '/tests/lib',
+            2 => __DIR__ . '/../..' . '/tests/objects',
+        ),
+        'Sunhill\\ORM\\Test\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
+            1 => __DIR__ . '/../..' . '/tests/lib',
+            2 => __DIR__ . '/../..' . '/tests/objects',
+        ),
+        'Sunhill\\ORM\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
         ),
     );
 

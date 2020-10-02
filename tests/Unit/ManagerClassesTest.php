@@ -11,6 +11,29 @@ define('CLASS_COUNT',8);
 
 class ManagerClassesTest extends DBTestCase
 {
+   
+    protected function checkArrays($expect,$test) {
+        foreach ($expect as $key => $value) {
+            if (!array_key_exists($key, $test)) {
+                return false;
+            }
+            if (is_array($value)) {
+                if (!$this->checkArrays($value,$test[$key])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    protected function assertArrayContains($expect,$test) {
+        if (!$this->checkArrays($expect,$test)) {
+            $this->fail("The expected array is not contained in the passed one");
+            return;
+        }
+        $this->assertTrue(true);
+    }
+    
     public function testFlushCache() {
         $test = new class_manager();
         $test->flush_cache();
@@ -163,9 +186,9 @@ class ManagerClassesTest extends DBTestCase
      */
     public function testGetClassTree($test_class,$expect) {
         if (is_null($test_class)) {
-            $this->assertEquals($expect,Classes::get_class_tree());
+            $this->assertArrayContains($expect,Classes::get_class_tree());
         } else {
-            $this->assertEquals($expect,Classes::get_class_tree($test_class));
+            $this->assertArrayContains($expect,Classes::get_class_tree($test_class));
         }
     }
     
@@ -212,7 +235,7 @@ class ManagerClassesTest extends DBTestCase
     }
 
     public function testGetClassTreeRoot() {
-        $this->assertEquals(
+        $this->assertArrayContains(
             ['object'=>[
                 'dummy'=>[],
                 'objectunit'=>[],
