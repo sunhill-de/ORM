@@ -422,4 +422,10 @@ class class_manager {
     public function get_namespace_of_class(string $name) {
         return $this->get_class($name,'class');        
     }
+    
+    public function create_object(string $class) {
+        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        $result = new $namespace();
+        return $result;
+    }
 }

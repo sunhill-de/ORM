@@ -264,6 +264,16 @@ class ManagerClassesTest extends DBTestCase
        ],Classes::get_class_tree('testparent'));
     }
     
+    public function testCreateObjectViaName() {
+        $test = Classes::create_object('testparent');
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Test\ts_testparent'));
+    }
+    
+    public function testCreateObjectViaNamespace() {
+        $test = Classes::create_object('Sunhill\ORM\Test\ts_testparent');
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Test\ts_testparent'));
+    }
+    
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));
