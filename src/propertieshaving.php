@@ -421,7 +421,10 @@ class propertieshaving extends hookable {
 	        $group = 'get_'.$group;
 	    }
 	    if (empty(static::$property_definitions)) {
-	        return $result;
+	        static::setup_properties();
+	        if (empty(static::$property_definitions)) {
+	            return $result;
+	        }
 	    }
 	    foreach (static::$property_definitions as $name => $property) {
 	        if (empty($feature)) { // Gibt es Features zu berücksichgigen

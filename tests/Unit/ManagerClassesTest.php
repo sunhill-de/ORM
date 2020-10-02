@@ -90,13 +90,20 @@ class ManagerClassesTest extends DBTestCase
             ['dummy',null,'notexisting','except'],  // Field not exported
             [-1,null,'table','except'],             // Invalid Index
             [1000,null,'table','except'],           // Invalid Index
-            [0,null,'table','dummies'],             // Get table by index direct
-            [0,'table',null,'dummies'],             // Get table by index indirect
-            [1,null,'table','objectunits'],         // Get table by index direct
-            [1,'table',null,'objectunits'],         // Get table by index indirect
         ];    
     }
     
+    public function testDummyTable() {
+        $classes = Classes::get_all_classes();
+        $i=0;
+        foreach ($classes as $class=>$info) {
+            if ($class === 'dummy') {
+                $dummyid = $i;
+            }
+            $i++;
+        }
+        $this->assertEquals('dummies',Classes::get_class($dummyid,'table'));        
+    }
     /**
      * @dataProvider SearchClassProvider
      * @param unknown $search
@@ -144,7 +151,7 @@ class ManagerClassesTest extends DBTestCase
     
     public function GetChildrenOfClassProvider() {
         return [
-                ['dummy',-1,[]],
+                ['referenceonly',-1,[]],
                 ['secondlevelchild',-1,['thirdlevelchild'=>[]]],
                 ['testparent',-1,['passthru'=>['secondlevelchild'=>['thirdlevelchild'=>[]]],'testchild'=>[]]],
                 ['testparent',1,['passthru'=>[],'testchild'=>[]]],
@@ -195,6 +202,15 @@ class ManagerClassesTest extends DBTestCase
             
         ];
     }
+
+    public function testGetClassProperties() {
+        $this->assertEquals('dummyint',Classes::get_properties_of_class('dummy')->dummyint->name);
+    }
+    
+    public function testGetClassProperty() {
+        $this->assertEquals('dummyint',Classes::get_property_of_class('dummy','dummyint')->name);    
+    }
+    
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));

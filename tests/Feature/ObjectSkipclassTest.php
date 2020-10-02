@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 class SkipClass extends ts_dummy {
     
+    public static $object_infos = [
+        'name'=>'SkipClass',            // A repetition of static:$object_name @todo see above
+        'table'=>'skipclasses',         // A repitition of static:$table_name
+        'name_s'=>'skip class object',   // A human readable name in singular
+        'name_p'=>'skip class objects',  // A human readable name in plural
+        'description'=>'Only for Skip Class tests',
+        'options'=>0,               // Reserved for later purposes
+    ];
+    
     public static $table_name = 'skipclasses';
 }
 

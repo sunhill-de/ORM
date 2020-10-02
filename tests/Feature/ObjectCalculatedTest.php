@@ -10,6 +10,14 @@ use Sunhill\ORM\Tests\DBTestCase;
 
 class TestClass extends oo_object {
 
+    public static $object_infos = [
+        'name'=>'TestClass',            // A repetition of static:$object_name @todo see above
+        'table'=>'dummies',         // A repitition of static:$table_name
+        'name_s'=>'Hookingtest A object',   // A human readable name in singular
+        'name_p'=>'Hookingtest A objects',  // A human readable name in plural
+        'description'=>'For hooking tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
     public static $table_name = 'dummies';
     
     public $return = 'ABC';

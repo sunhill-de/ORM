@@ -109,8 +109,22 @@ class class_manager {
             $result[$key] = $value;
         }
         $parent = get_parent_class($class);
-        $result['parent'] = $parent::$object_infos['name'];
+        if ($class !== 'object') { // Strange infinite loop bug
+            $result['parent'] = $parent::$object_infos['name'];
+        }
+        $result['properties'] = $this->get_class_properties($class);
         return $result;
+    }
+    
+    private function get_class_properties(string $class) {
+        $properties = $class::static_get_properties_with_feature();
+        $result = [];
+        foreach ($properties as $name => $descriptor) {
+            if ($name !== 'tags') {
+                $result[$name] = $descriptor;
+            }
+        }
+        return $result;        
     }
     
     /**
@@ -128,7 +142,31 @@ class class_manager {
             $class_info = $this->get_class_info($class);
             fputs($file,'    "'.$class_info['name'].'"=>['."\n");
             foreach ($class_info as $key => $value) {
-                fputs($file,'        "'.$key.'"=>"'.$value.'",'."\n");
+                if ($key == 'properties') {
+                   fputs($file,'        "properties"=>['."\n");
+                   foreach ($value as $prop_name => $property) {
+                      $features = $property->get_static_attributes();
+                      fputs($file,'          "'.$prop_name.'"=>['."\n");
+                      foreach ($features as $feat_key => $feat_value) {
+                          fputs($file,'             "'.$feat_key.'"=>');
+                          if (is_bool($feat_value)) {
+                              fputs($file,($feat_value?'true':'false').','."\n");
+                          } else if (is_scalar($feat_value)) {
+                              fputs($file,'"'.$feat_value.'",'."\n");
+                          } else if (is_array($feat_value)) {
+                              fputs($file,'[');
+                              foreach ($feat_value as $single_value) {
+                                  fputs($file,'"'.$single_value.'",');
+                              }
+                              fputs($file,'],'."\n");
+                          }
+                      }
+                      fputs($file,'             ],'."\n");
+                   }
+                   fputs($file,'        ],'."\n");
+                } else {
+                    fputs($file,'        "'.$key.'"=>"'.$value.'",'."\n");
+                }
             }
             fputs($file,"    ],\n");
         }
@@ -176,7 +214,19 @@ class class_manager {
         foreach ($classes as $name => $info) {
             $descriptor = new descriptor();
             foreach ($info as $key => $value) {
-                $descriptor->$key = $value;
+                if (is_array($value)) {
+                    foreach ($value as $subkey => $subvalue) {
+                        if (is_array($subvalue)) {
+                            foreach ($subvalue as $subsubkey => $subsubvalue) {
+                                $descriptor->$key->$subkey->$subsubkey = $subsubvalue;
+                            }
+                        } else {
+                            $descriptor->$key->$subkey = $subvalue;
+                        }
+                    }
+                } else {
+                    $descriptor->$key = $value;
+                }
             }
             $this->classes[$name] = $descriptor;
         }
@@ -339,5 +389,24 @@ class class_manager {
         return $result;
     }
     
+    /**
+     * Returns all properties of the given class
+     * @param string $class The class to search for properties
+     * @return descriptor of all properties
+     */
+    public function get_properties_of_class(string $class) {
+        $name = $this->check_class($this->search_class($class));
+        return $this->get_class($name,'properties');        
+    }
+    
+    /**
+     * Return only the descriptor of a given property of a given class
+     * @param string $class The class to search for the property
+     * @param string $property The property to search for
+     * @return descriptor of this property
+     */
+    public function get_property_of_class(string $class,string $property) {        
+        return $this->get_properties_of_class($class)->$property;        
+    }
     
 }

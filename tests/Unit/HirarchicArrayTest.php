@@ -7,6 +7,15 @@ use Sunhill\ORM\Objects\oo_object;
 class parent_object extends oo_object
 {
 
+    public static $object_infos = [
+        'name'=>'parent_object',            // A repetition of static:$object_name @todo see above
+        'table'=>'none',         // A repitition of static:$table_name
+        'name_s'=>'parent objects',   // A human readable name in singular
+        'name_p'=>'parent objects',  // A human readable name in plural
+        'description'=>'Only for hirarchic array tests',
+        'options'=>0,               // Reserved for later purposes
+    ];
+    
     protected static $test_array = [
         'A' => '1',
         'B' => '2'
@@ -21,6 +30,15 @@ class parent_object extends oo_object
 class child_object extends parent_object
 {
 
+    public static $object_infos = [
+        'name'=>'child_object',            // A repetition of static:$object_name @todo see above
+        'table'=>'none',         // A repitition of static:$table_name
+        'name_s'=>'child objects',   // A human readable name in singular
+        'name_p'=>'child objects',  // A human readable name in plural
+        'description'=>'Only for hirarchic array tests',
+        'options'=>0,               // Reserved for later purposes
+    ];
+    
     protected static $test_array = [
         'C' => '3',
         'D' => '4'
