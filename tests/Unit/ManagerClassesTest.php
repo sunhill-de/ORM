@@ -274,6 +274,72 @@ class ManagerClassesTest extends DBTestCase
         $this->assertTrue(is_a($test,'Sunhill\ORM\Test\ts_testparent'));
     }
     
+    /**
+     * @dataProvider IsAProvider
+     * @group IsA
+     */
+    public function testIsA($test,$param,$expect) {
+        $test = new $test();
+        $this->assertEquals($expect,Classes::is_a($test,$param));
+    }
+        
+    public function IsAProvider() {
+        return [
+            ['Sunhill\ORM\Test\ts_testparent','testparent',true],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',true],
+            ['Sunhill\ORM\Test\ts_testchild','testparent',true],
+            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',true],
+            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
+            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+        ];
+    }
+    
+    /**
+     * @dataProvider IsAClassProvider
+     * @group IsA
+     */
+    public function testIsAClass($test,$param,$expect) {
+        $test = new $test();
+        $this->assertEquals($expect,Classes::is_a_class($test,$param));
+    }
+    
+    public function IsAClassProvider() {
+        return [
+            ['Sunhill\ORM\Test\ts_testparent','testparent',true],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',true],
+            ['Sunhill\ORM\Test\ts_testchild','testparent',false],
+            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',false],
+            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
+            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+        ];
+    }
+    
+    /**
+     * @dataProvider IsSubclassOfProvider
+     * @group IsA
+     */
+    public function testIsSubclassOf($test,$param,$expect) {
+        $test = new $test();
+        $this->assertEquals($expect,Classes::is_subclass_of($test,$param));
+    }
+        
+    public function IsSubclassOfProvider() {
+        return [
+            ['Sunhill\ORM\Test\ts_testparent','testparent',false],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',false],
+            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
+            ['Sunhill\ORM\Test\ts_testchild','testparent',true],
+            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',true],
+            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+        ];
+    }
+    
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));

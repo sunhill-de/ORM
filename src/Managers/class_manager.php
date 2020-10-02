@@ -423,9 +423,29 @@ class class_manager {
         return $this->get_class($name,'class');        
     }
     
+    /**
+     * Creates an instance of the passes class
+     * @param string $class is either the namespace or the class name 
+     * @return oo_object The created instance of $class
+     */
     public function create_object(string $class) {
         $namespace = $this->get_namespace_of_class($this->search_class($class));
         $result = new $namespace();
         return $result;
+    }
+    
+    public function is_a($test,$class) {
+        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        return is_a($test,$namespace);
+    }
+    
+    public function is_a_class($test,$class) {
+        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        return is_a($test,$namespace) && !is_subclass_of($test,$namespace);
+    }
+    
+    public function is_subclass_of($test,$class) {
+        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        return is_subclass_of($test,$namespace);        
     }
 }
