@@ -16,9 +16,6 @@ use Illuminate\Support\Facades\DB;
 
 class ManagerObjectTest extends DBTestCase
 {
-<<<<<<< HEAD
-    
-=======
     public function testCountObjectsViaClass() {
         $count = DB::table('objects')->select(DB::raw('count(*) as count'))->first();
         $test = new object_manager();
@@ -81,5 +78,4 @@ class ManagerObjectTest extends DBTestCase
         $this->assertEquals($count1->count-$count2->count,count($list));
     }
 
->>>>>>> f671a69e830178ecd3f8e3202a7a1056a27990dc
 }

@@ -3,17 +3,6 @@
 namespace Tests\Unit;
 
 use Sunhill\ORM\Tests\DBTestCase;
-<<<<<<< HEAD
-use Sunhill\ORM\Facades\Tags;
-use \Sunhill\ORM\SunhillException;
-use Sunhill\ORM\Managers\tag_manager;
-use PHPUnit\Framework\MockObject\Matcher\Parameters;
-use Illuminate\Support\Facades\DB;
-
-class ManagerTagTest extends DBTestCase
-{
-
-=======
 use Sunhill\ORM\Managers\tag_manager;
 use Sunhill\ORM\Facades\Tags;
 use \Sunhill\ORM\SunhillException;
@@ -295,5 +284,4 @@ class ManagerTagTest extends DBTestCase
         $this->assertNull($result);
     }
          
->>>>>>> f671a69e830178ecd3f8e3202a7a1056a27990dc
 }
