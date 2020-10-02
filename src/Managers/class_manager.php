@@ -434,16 +434,34 @@ class class_manager {
         return $result;
     }
     
+    /**
+     * The reimplementation of is_a() that works with class names too
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
     public function is_a($test,$class) {
         $namespace = $this->get_namespace_of_class($this->search_class($class));
         return is_a($test,$namespace);
     }
     
+    /**
+     * Returns true is $test is exactly a $class and not of its children
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
     public function is_a_class($test,$class) {
         $namespace = $this->get_namespace_of_class($this->search_class($class));
         return is_a($test,$namespace) && !is_subclass_of($test,$namespace);
     }
-    
+
+    /**
+     * The reimplementation of is_subclass_of() that works with class names too
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
     public function is_subclass_of($test,$class) {
         $namespace = $this->get_namespace_of_class($this->search_class($class));
         return is_subclass_of($test,$namespace);        
