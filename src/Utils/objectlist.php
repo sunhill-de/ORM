@@ -169,8 +169,14 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
         return $result;
     }
 
+    /**
+     * It removes all objects from the list that are not a $class or (depending on $children) a child of $class
+     * @param string $class is either the name of the class or its namespace
+     * @param bool $children if this parameter is true, also all children of $class a kept otherwise removed too
+     */
     public function filter_class(string $class, bool $children = true)
     {
+        $class = Classes::get_namespace_of_class(Classes::search_class($class));
         $shadow_items = [];
         $shadow_classes = [];
         for ($i = 0; $i < count($this->items); $i ++) {
@@ -190,8 +196,14 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
         $this->class_cache = $shadow_classes;
     }
 
+    /**
+     * It removes all objects from the list that are a $class or (depending on $children) a child of $class
+     * @param string $class is either the name of the class or its namespace
+     * @param bool $children if this parameter is true, also all children of $class a removed otherwise kept
+     */
     public function remove_class(string $class, bool $children = true)
     {
+        $class = Classes::get_namespace_of_class(Classes::search_class($class));
         $shadow_items = [];
         $shadow_classes = [];
         for ($i = 0; $i < count($this->items); $i ++) {
