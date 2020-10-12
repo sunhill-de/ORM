@@ -12,6 +12,13 @@ define('CLASS_COUNT',8);
 class ManagerClassesTest extends DBTestCase
 {
    
+    /**
+     * The following two methods are helpers to test if one array is contained in another
+     * @todo Move to another class?
+     * @param unknown $expect
+     * @param unknown $test
+     * @return boolean
+     */
     protected function checkArrays($expect,$test) {
         foreach ($expect as $key => $value) {
             if (!array_key_exists($key, $test)) {
@@ -79,9 +86,19 @@ class ManagerClassesTest extends DBTestCase
     /**
      * @depends testNumberOfClasses
      */
-    public function testNumberOfClassesViaFascade($count) {
+    public function testNumberOfClassesViaFacade($count) {
         $this->assertEquals($count,$count = Classes::get_class_count());
         return $count;
+    }
+    
+    /**
+     * @depends testNumberOfClassesViaFacade
+     */
+    public function testAddObjectDir($count) {
+        Classes::flush_cache();
+        Classes::add_class_dir(dirname(__FILE__).'/../objects');
+        Classes::create_cache();
+        $this->assertEquals($count,Classes::get_class_count());
     }
     
     /**

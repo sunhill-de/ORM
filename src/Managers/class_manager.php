@@ -32,6 +32,12 @@ class class_manager {
     private static $translatable = [/*'name_s','name_p','description'*/];
     
     /**
+     * Stores all directories, that coinatin classes
+     * @var array
+     */
+    private $class_dirs = [];
+    
+    /**
      * Stores the information about the classes
      * @var array|null
      */
@@ -65,6 +71,7 @@ class class_manager {
                 throw new SunhillException("Can't delete the class cache.");
             }
         }
+        $this->class_dirs = [];
     }
 
     /**
@@ -181,7 +188,7 @@ class class_manager {
     public function create_cache($class_dir=null) {
         if (is_null($class_dir)) {
             // If not passes, set class dir to default
-            $class_dir = [base_path('objects')];
+            $class_dir = $this->class_dirs;
         } else if (is_string($class_dir)) {
             $class_dir = [$class_dir];
         } else if (!is_array($class_dir)) {
@@ -230,6 +237,18 @@ class class_manager {
             }
             $this->classes[$name] = $descriptor;
         }
+    }
+    
+    /**
+     * Add a single dir to the class manager, to build the class cache from
+     * @param string $path
+     * @throws SunhillException
+     */
+    public function add_class_dir(string $path) {
+        if (!file_exists($path)) {
+            throw new SunhillException("The passed class directory '$path' doesn't exists.");
+        }
+        $this->object_dirs[] = $path;
     }
     
 // *************************** General class informations ===============================    
