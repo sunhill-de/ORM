@@ -3,7 +3,7 @@
 namespace Sunhill\ORM\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Facades\Objects;
 
 abstract class DBTestCase extends TestCase
 {
@@ -19,7 +19,7 @@ abstract class DBTestCase extends TestCase
             $this->do_migration();
             $this->do_seeding();
         }
-        oo_object::flush_cache();
+        Objects::flush_cache();
     }
     
     /**

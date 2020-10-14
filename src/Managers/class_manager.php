@@ -14,6 +14,7 @@ namespace Sunhill\ORM\Managers;
 use \Sunhill\ORM\SunhillException;
 use Illuminate\Support\Facades\Lang;
 use Sunhill\ORM\Utils\descriptor;
+use Sunhill\ORM\Objects\oo_object;
 
  /**
   * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
@@ -23,7 +24,7 @@ use Sunhill\ORM\Utils\descriptor;
   * The problem is that objectclasses a called by namespace and autoloader and there is no sufficient method to 
   * get the installed objectclasses at the momement, so we have to read out the specific directories.
   * Definition of objectclass:
-  * A descendand of \Sunhill\ORM\Objects\oo_object which represents a storable dataobject
+  * A descendand of Sunhill\ORM\Objects\oo_object which represents a storable dataobject
   * @author lokal
   *
   */
@@ -355,21 +356,26 @@ class class_manager {
                 $i++;
             }
             throw new SunhillException("Invalid index '$name'");
-        } else {
-            $this->check_class($name);
-            $class = $this->classes[$name];
-            if (is_null($field)) {
-                    return $class;
+        } else if (is_object($name)) {
+            if (is_a($name,oo_object::class)) {
+                $name = $name::$object_infos['name'];
             } else {
-                if (in_array($field,static::$translatable)) {
-                    return $this->translate($name,$field);
-                } else if ($class->is_defined($field)) {
-                    return $class->$field;                    
-                } else {
-                    throw new SunhillException("The class '$name' doesn't export '$field'.");
-                }
+                throw new SunhillException("Invalid object passed to get_class: ".get_class($name));
             }
-        }
+        } 
+        $this->check_class($name);
+        $class = $this->classes[$name];
+        if (is_null($field)) {
+            return $class;
+        } else {
+            if (in_array($field,static::$translatable)) {
+                return $this->translate($name,$field);
+            } else if ($class->is_defined($field)) {
+                return $class->$field;
+            } else {
+                throw new SunhillException("The class '$name' doesn't export '$field'.");
+            }
+        }        
     }
     
     /**

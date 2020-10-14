@@ -5,7 +5,8 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\class_manager;
 use Sunhill\ORM\Facades\Classes;
-use \Sunhill\ORM\SunhillException;
+use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\Test\ts_dummy;
 
 define('CLASS_COUNT',8);
 
@@ -131,6 +132,17 @@ class ManagerClassesTest extends DBTestCase
             [-1,null,'table','except'],             // Invalid Index
             [1000,null,'table','except'],           // Invalid Index
         ];    
+    }
+    
+    public function testGetClassWithObject() {
+        $test = new ts_dummy();
+        $this->assertEquals('dummy',Classes::get_class($test,'name'));
+    }
+    
+    public function testGetClassWithObjectFail() {
+        $this->expectException(SunhillException::class);
+        $test = new \stdClass();
+        Classes::get_class($test,'name');
     }
     
     public function testDummyTable() {

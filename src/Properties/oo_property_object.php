@@ -3,6 +3,7 @@
 namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Facades\Objects;
 
 require_once('property_traits.php');
 
@@ -43,7 +44,7 @@ class oo_property_object extends oo_property_field {
 	 */
 	protected function &do_get_value() {
 	    if (is_int($this->value)) {
-	        $this->value = \Sunhill\ORM\Objects\oo_object::load_object_of($this->value);
+	        $this->value = Objects::load($this->value);
 	    }
         return $this->value;	    
 	}

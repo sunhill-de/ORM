@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Utils\descriptor;
 use Sunhill\ORM\Objects\oo_tag;
 
+define('TagNamespace','Sunhill\ORM\Objects\oo_tag');
+
 class tag_manager {
  
     /**
@@ -188,7 +190,7 @@ class tag_manager {
       * @return descriptor
       */
      public function find_tag($tag) {
-         if (is_a($tag,'\Sunhill\ORM\Objects\oo_tag')) {
+         if (is_a($tag,TagNamespace)) {
              return $this->get_tag($tag->id);
          } else if (is_int($tag)) {
              // It should be the ID of the Tag

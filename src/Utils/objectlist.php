@@ -9,6 +9,7 @@ namespace Sunhill\ORM\Utils;
 
 use Sunhill\ORM\SunhillException;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\oo_object;
 
 class ObjectListException extends SunhillException
@@ -83,7 +84,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
             throw new ObjectListException("Invalid index '$index'");
         }
         if (is_int($this->items[$index])) {
-            $this->items[$index] = oo_object::load_object_of($this->items[$index]);
+            $this->items[$index] = Objects::load($this->items[$index]);
         }
         return $this->items[$index];
     }

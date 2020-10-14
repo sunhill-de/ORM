@@ -13,6 +13,7 @@ namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\loggable;
+use Sunhill\ORM\Facades\Objects;
 
 define('TO_LEAFABLE',0x0001);
 
@@ -251,7 +252,7 @@ class oo_tag extends loggable {
 	}
 	
 	private function delete_child($object_id) {
-	    $object = oo_object::load_object_of($object_id);
+	    $object = Objects::load($object_id);
 	    $object->tags->remove($this);
 	    $object->commit();
 	}
@@ -264,7 +265,7 @@ class oo_tag extends loggable {
 	 * Läd ein Tag mit der übergebenen ID
 	 * Statischer Wrapper von oo_tag()->load()
 	 * @param int $id
-	 * @return \Sunhill\ORM\Objects\oo_tag
+	 * @return oo_tag
 	 */
 	public static function load_tag(int $id) {
 	   $result = new oo_tag($id);
@@ -304,7 +305,7 @@ class oo_tag extends loggable {
 	 * Gibt das Tag zurück, wenn genau eines gefunden wurde
 	 * Gibt ein Array von tags zurück, wenn mehrere gefunden wurden
 	 * @param string $tag
-	 * @return NULL|\Sunhill\ORM\Objects\oo_tag|\Sunhill\ORM\Objects\oo_tag[]
+	 * @return NULL|oo_tag
 	 */
 	public static function search_tag(string $tag) {
 	    $results = DB::table('tagcache')->where('name','=',$tag)->get();

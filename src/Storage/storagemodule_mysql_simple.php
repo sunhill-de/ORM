@@ -1,6 +1,8 @@
 <?php namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Objects;
 
 class storagemodule_mysql_simple extends storagemodule_base {
     

@@ -2,6 +2,9 @@
 
 namespace Sunhill\ORM\Storage;
 
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Objects\oo_object;
+
 /**
  * Alle Exceptions innhalb der Storages und ihrer Module sollten von StorageException abgeleitet werden
  * @author Klaus
@@ -25,7 +28,7 @@ abstract class storage_base  {
     
     /** 
      * Speichert das aufrufende Objekt
-     * @var \Sunhill\ORM\Objects\oo_object
+     * @var oo_object
      */
     protected $caller;
     
@@ -40,7 +43,7 @@ abstract class storage_base  {
      * Konstruktor, übernimmt das aufrufende Objekt als Parameter.
      * @param unknown $caller
      */
-    public function __construct(\Sunhill\ORM\Objects\oo_object $caller) {
+    public function __construct(oo_object $caller) {
         $this->caller = $caller;    
     }
     
@@ -55,7 +58,7 @@ abstract class storage_base  {
     
     /**
      * Liefert das aufrufende Objekt zurück
-     * @return \Sunhill\ORM\Objects\oo_object
+     * @return oo_object
      */
     public function get_caller() {
         return $this->caller;    
