@@ -498,19 +498,6 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	
 	private static $objectcache = array();
 		
-	/**
-	 * Ermittelt den Klassennamen von dem Object mit der ID $id
-	 * @todo move the functionality to the object manager
-	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll
-	 * @return string Der Klassenname
-	 */
-	public static function get_class_name_of($id) {
-	    $object = DB::table('objects')->where('id','=',$id)->first(); 
-	    if (empty($object)) {
-	        return false;
-	    }
-	    return $object->classname;
-	}
 	
 	/**
 	 * Diese Methode wird von $this->load() aufgerufen, wenn ein Objekt über den lader geladen wurde. Sie soll das Objekt in den Cache eintragen

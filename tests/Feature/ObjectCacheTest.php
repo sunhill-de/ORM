@@ -12,7 +12,7 @@ class ObjectCacheTest extends DBTestCase
 {
     
     public function testGetClassOf() {
-        $this->assertEquals('\\Sunhill\\ORM\\Test\\ts_dummy',oo_object::get_class_name_of(1));    
+        $this->assertEquals('dummy',oo_object::get_class_name_of(1));    
     }
     
     public function testIsNotCached() {
@@ -27,7 +27,7 @@ class ObjectCacheTest extends DBTestCase
         if (!$first) {
             $this->fail('Objekt nicht gefunden.');
         }
-        $this->assertTrue(\Sunhill\ORM\Objects\oo_object::is_cached(1));        
+        $this->assertTrue(oo_object::is_cached(1));        
     }
     
     /**

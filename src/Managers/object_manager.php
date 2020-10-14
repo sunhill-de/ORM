@@ -9,6 +9,7 @@
  * Documentation: unknown
  * Tests: unknown
  * Coverage: unknown
+ * Depenencies: class_manager
  */
  namespace Sunhill\ORM\Managers;
 
@@ -88,4 +89,32 @@ class object_manager  {
 			return $objects;
 		}
 
+		/**
+		 * Returns the name of the class with the passed $id.
+		 * @param int $id ID of the object we want to know the class name of
+		 * @return string The name (not the namespace!) of the class
+		 */
+		public function get_class_name_of(int $id) {
+		    $object = $this->get_class_namespace_of($id); 
+		    DB::table('objects')->where('id','=',$id)->first();
+		    if (empty($object)) {
+		        return false;
+		    }
+		    return $object->classname;
+		}
+
+		/**
+		 * Returns the namespace of the class with the passed $id.
+		 * @param int $id ID of the object we want to know the class name of
+		 * @return string The namespace of the class
+		 */
+		public function get_class_namespace_of(int $id) {
+		    $object = DB::table('objects')->where('id','=',$id)->first();
+		    if (empty($object)) {
+		        return false;
+		    }
+		    return Classes::get_namespace_of_class($object->classname);
+		}
+		
+		
  }
