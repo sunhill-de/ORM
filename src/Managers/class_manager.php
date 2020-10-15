@@ -320,7 +320,56 @@ class class_manager {
         }
     }
     
-    private function check_class(string $name) {
+    /**
+     * Returns the (internal) name of the class. It doesn't matter how the class is passed (name, namespace, object or index)
+     * @param unknown $test Could be either a string, an object or an integer
+     */
+    public function get_class_name($test) {
+        if (is_int($test)) {
+            return $this->get_classname_with_index($test);
+        } else if (is_string($test)) {
+            if (strpos($test,'\\') !== false) {
+                // We have a namespace
+                return $test::$object_infos['name'];
+            } else {
+                return $test;
+            }
+        } else if (is_object($test)) {
+            if (is_a($test,oo_object::class)) {
+                return $test::$object_infos['name'];
+            } else {
+                throw new SunhillException("Invalid object passed to get_class: ".get_class($test));
+            }            
+        } else {
+            throw new SunhillException("Unknown type for get_class_name()");
+        }
+    }
+    
+    /**
+     * Returns the class with the number $index
+     * @param int $index The number of the wanted class
+     * @retval string
+     */
+    private function get_classname_with_index(int $index) {
+        if ($index < 0) {
+            throw new SunhillException("Invalid Index '$index'");
+        }
+        $i=0;
+        foreach ($this->classes as $class_name => $info) {
+            if ($i==$index) {
+                return $class_name;
+            }
+            $i++;
+        }
+        throw new SunhillException("Invalid index '$index'");        
+    }
+    
+    /**
+     * Tests if this class is in the class cache
+     * @param unknown $test The class to test
+     */
+    private function check_class($test) {
+        $name = $this->get_class_name($test);
         if (!isset($this->classes[$name]) && ($name !== 'object')) {
             throw new SunhillException("The class '$name' doesn't exists.");
         }
@@ -338,31 +387,9 @@ class class_manager {
      * @throws SunhillException
      * @return unknown
      */
-    public function get_class($name,$field=null) {
+    public function get_class($test,$field=null) {
         $this->check_cache();
-        if (is_int($name)) {
-            if ($name < 0) {
-                throw new SunhillException("Invalid Index '$name'");
-            }
-            $i=0;
-            foreach ($this->classes as $class_name => $info) {
-                if ($i==$name) {
-                    if (is_null($field)) {
-                        return $info;
-                    } else {
-                        return $info->$field;                        
-                    }
-                }
-                $i++;
-            }
-            throw new SunhillException("Invalid index '$name'");
-        } else if (is_object($name)) {
-            if (is_a($name,oo_object::class)) {
-                $name = $name::$object_infos['name'];
-            } else {
-                throw new SunhillException("Invalid object passed to get_class: ".get_class($name));
-            }
-        } 
+        $name = $this->get_class_name($test);
         $this->check_class($name);
         $class = $this->classes[$name];
         if (is_null($field)) {

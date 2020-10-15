@@ -103,6 +103,39 @@ class ManagerClassesTest extends DBTestCase
     }
     
     /**
+     * @dataProvider GetClassnameProvider
+     * @param unknown $test
+     * @param unknown $expect
+     */
+    public function testGetClassname($test,$expect) {
+        if (is_callable($test)) {
+            $test = $test();
+        } 
+        if ($expect == 'except') {
+            try {
+                Classes::get_class_name($test);
+            } catch (\Exception $e) {
+                $this->assertTrue(true);
+                return;
+            }
+            $this->fail("Expected exception not raised");
+        } else {
+            $this->assertEquals($expect,Classes::get_class_name($test));
+        }        
+    }
+    
+    public function GetClassnameProvider() {
+        return [
+            ['dummy','dummy'],
+            ['Sunhill\ORM\Test\ts_dummy','dummy'],
+            [-1,'except'],
+            [1000,'except'],
+            [function() { return new ts_dummy(); },'dummy'],
+            [function() { return new \stdClass(); },'except'],
+        ];
+    }
+    
+    /**
      * @dataProvider GetClassProvider
      * @param unknown $class
      * @param unknown $subfield
