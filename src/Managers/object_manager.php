@@ -98,8 +98,7 @@ class object_manager  {
 		 * @return string The name (not the namespace!) of the class
 		 */
 		public function get_class_name_of(int $id) {
-		    $object = $this->get_class_namespace_of($id); 
-		    DB::table('objects')->where('id','=',$id)->first();
+		    $object = DB::table('objects')->where('id','=',$id)->first();
 		    if (empty($object)) {
 		        return false;
 		    }

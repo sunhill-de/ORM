@@ -34,7 +34,7 @@ class ObjectDegradeTest extends DBTestCase
         $new = $test->degrade('Sunhill\\ORM\\Test\\ts_secondlevelchild');
         $new->commit();
         
-       Objects::flush_cache();
+        Objects::flush_cache();
         $read = Objects::load($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
         $this->assertEquals('secondlevelchild',Objects::get_class_name_of($id));
@@ -65,7 +65,7 @@ class ObjectDegradeTest extends DBTestCase
         $id = $test->get_id();
         $new = $test->degrade('Sunhill\\ORM\\Test\\ts_testparent');
         $new->commit();
-       Objects::flush_cache();
+        Objects::flush_cache();
         $read = Objects::load($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
         $this->assertEquals('testparent',Objects::get_class_name_of($id));

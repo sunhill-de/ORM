@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\base;
 use Sunhill\ORM\SunhillException;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Classes;
 
 require_once(dirname(__FILE__).'/../base.php');
 
@@ -370,7 +371,9 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	}
 	
 	protected function degration(String $newclass) {
-	    $newobject = new $newclass; // Neues Objekt erzeugen
+	    $newclass = Classes::get_class_name($newclass);
+	    $namespace = Classes::get_namespace_of_class($newclass);
+	    $newobject = new $namespace; // Neues Objekt erzeugen
 	    $storage = $this->get_storage();
 	    $class_diff = $this->get_class_diff($this,$newobject);
 	    $this->get_affected_fields($storage, $class_diff);
