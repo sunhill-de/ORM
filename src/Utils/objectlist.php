@@ -8,6 +8,8 @@
 namespace Sunhill\ORM\Utils;
 
 use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Classes;
 
 class ObjectListException extends SunhillException
 {
