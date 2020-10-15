@@ -4,6 +4,10 @@ namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_tag;
+use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Objects\TagException;
+use Sunhill\ORM\Storage\storage_base;
 
 /**
  * Diese Klasse repräsentiert die Property "Tags". Hier werden die Tags eines Objektes gespeichert.
@@ -82,11 +86,11 @@ class oo_property_tags extends oo_property_arraybase {
 	}
 
 	/**
-	 * Testet, ob sich das Tag bereits in der Liste befindet
-	 * @param \Sunhill\ORM\Objects\oo_object $test
+	 * Tests if this tag is already in the list
+	 * @param oo_object $test
 	 * @return boolean
 	 */
-	protected function is_duplicate(\Sunhill\ORM\Objects\oo_tag $test) {
+	protected function is_duplicate(oo_tag $test) {
 	    foreach ($this->value as $listed) {
 	        if ($listed->get_id() == $test->get_id()) {
 	            return $test;
@@ -104,18 +108,18 @@ class oo_property_tags extends oo_property_arraybase {
 	 * @return oo_tag
 	 */
 	protected function get_tag($tag) {
-	    if (is_a($tag,"\\Sunhill\\ORM\\Objects\\oo_tag")) {
+	    if (is_a($tag,oo_tag::class)) {
 	        return $tag; // Trivial, ist bereits ein Objekt
 	    } else if (is_int($tag)) {
-	        return \Sunhill\ORM\Objects\oo_tag::load_tag($tag); // Tag mit der ID laden
+	        return oo_tag::load_tag($tag); // Tag mit der ID laden
 	    } else if (is_string($tag)) {
 	        if ($this->add_missing) {
-	            return \Sunhill\ORM\Objects\oo_tag::search_or_add_tag($tag);
+	            return oo_tag::search_or_add_tag($tag);
 	        } else {
-	            return \Sunhill\ORM\Objects\oo_tag::search_tag($tag);
+	            return oo_tag::search_tag($tag);
 	        }
 	    }
-	    throw new \Sunhill\ORM\Objects\TagException("Unbekannter Typ für ein Tag.");
+	    throw new TagException("Unbekannter Typ für ein Tag.");
 	}
 
 	
@@ -125,7 +129,7 @@ class oo_property_tags extends oo_property_arraybase {
 	    return $value;
 	}
 	
-	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
+	protected function do_insert(storage_base $storage,string $name) {
 	    $result = [];
 	    foreach ($this->value as $tag) {
 	        if (is_int($tag)) {
@@ -137,7 +141,7 @@ class oo_property_tags extends oo_property_arraybase {
 	    $storage->set_entity('tags',$result);
 	}
 	
-	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name)  {
+	protected function do_load(storage_base $loader,$name)  {
 	    if (empty($loader->entities['tags'])) {
 	        return;
 	    }

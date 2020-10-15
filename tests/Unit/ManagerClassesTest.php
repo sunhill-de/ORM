@@ -5,13 +5,21 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\class_manager;
 use Sunhill\ORM\Facades\Classes;
-use \Sunhill\ORM\SunhillException;
+use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\Test\ts_dummy;
 
 define('CLASS_COUNT',8);
 
 class ManagerClassesTest extends DBTestCase
 {
    
+    /**
+     * The following two methods are helpers to test if one array is contained in another
+     * @todo Move to another class?
+     * @param unknown $expect
+     * @param unknown $test
+     * @return boolean
+     */
     protected function checkArrays($expect,$test) {
         foreach ($expect as $key => $value) {
             if (!array_key_exists($key, $test)) {
@@ -79,9 +87,52 @@ class ManagerClassesTest extends DBTestCase
     /**
      * @depends testNumberOfClasses
      */
-    public function testNumberOfClassesViaFascade($count) {
+    public function testNumberOfClassesViaFacade($count) {
         $this->assertEquals($count,$count = Classes::get_class_count());
         return $count;
+    }
+    
+    /**
+     * @depends testNumberOfClassesViaFacade
+     */
+    public function testAddObjectDir($count) {
+        Classes::flush_cache();
+        Classes::add_class_dir(dirname(__FILE__).'/../objects');
+        Classes::create_cache();
+        $this->assertEquals($count,Classes::get_class_count());
+    }
+    
+    /**
+     * @dataProvider GetClassnameProvider
+     * @param unknown $test
+     * @param unknown $expect
+     */
+    public function testGetClassname($test,$expect) {
+        if (is_callable($test)) {
+            $test = $test();
+        } 
+        if ($expect == 'except') {
+            try {
+                Classes::get_class_name($test);
+            } catch (\Exception $e) {
+                $this->assertTrue(true);
+                return;
+            }
+            $this->fail("Expected exception not raised");
+        } else {
+            $this->assertEquals($expect,Classes::get_class_name($test));
+        }        
+    }
+    
+    public function GetClassnameProvider() {
+        return [
+            ['dummy','dummy'],
+            ['Sunhill\ORM\Test\ts_dummy','dummy'],
+            [-1,'except'],
+            [1000,'except'],
+            [function() { return new ts_dummy(); },'dummy'],
+            [function() { return new \stdClass(); },'except'],
+        ];
     }
     
     /**
@@ -114,6 +165,17 @@ class ManagerClassesTest extends DBTestCase
             [-1,null,'table','except'],             // Invalid Index
             [1000,null,'table','except'],           // Invalid Index
         ];    
+    }
+    
+    public function testGetClassWithObject() {
+        $test = new ts_dummy();
+        $this->assertEquals('dummy',Classes::get_class($test,'name'));
+    }
+    
+    public function testGetClassWithObjectFail() {
+        $this->expectException(SunhillException::class);
+        $test = new \stdClass();
+        Classes::get_class($test,'name');
     }
     
     public function testDummyTable() {

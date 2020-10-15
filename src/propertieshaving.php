@@ -124,7 +124,7 @@ class propertieshaving extends hookable {
 	}
 // ==================================== Loading =========================================
 	
-	protected function load($id) {
+	public function load($id) {
 	    $this->check_validity();
 	    if ($result = $this->check_cache($id)) {
 	        $this->set_state('invalid');

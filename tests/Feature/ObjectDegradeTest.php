@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectDegradeTest extends DBTestCase
 {
@@ -33,10 +34,10 @@ class ObjectDegradeTest extends DBTestCase
         $new = $test->degrade('Sunhill\\ORM\\Test\\ts_secondlevelchild');
         $new->commit();
         
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($id);
+        Objects::flush_cache();
+        $read = Objects::load($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
-        $this->assertEquals('Sunhill\\ORM\\Test\ts_secondlevelchild',\Sunhill\ORM\Objects\oo_object::get_class_name_of($id));
+        $this->assertEquals('secondlevelchild',Objects::get_class_name_of($id));
     }
     
     public function testTwoStepDegration() {
@@ -64,10 +65,10 @@ class ObjectDegradeTest extends DBTestCase
         $id = $test->get_id();
         $new = $test->degrade('Sunhill\\ORM\\Test\\ts_testparent');
         $new->commit();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($id);
+        Objects::flush_cache();
+        $read = Objects::load($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
-        $this->assertEquals('Sunhill\\ORM\\Test\ts_testparent',\Sunhill\ORM\Objects\oo_object::get_class_name_of($id));
+        $this->assertEquals('testparent',Objects::get_class_name_of($id));
         return $test;
     }
        

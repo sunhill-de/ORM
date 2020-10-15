@@ -7,6 +7,7 @@ use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Objects\oo_tag;
 use Sunhill\ORM\Test\ts_dummy;
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectTagTest extends DBTestCase
 {
@@ -37,8 +38,8 @@ class ObjectTagTest extends DBTestCase
             $this->assertEquals($expect[$i],$test->tags[$i]);
         }
         $reread =  new ts_dummy();
-        oo_object::flush_cache();
-        $reread = oo_object::load_object_of($test->get_id());
+        Objects::flush_cache();
+        $reread = Objects::load($test->get_id());
         for ($i=0;$i<count($expect);$i++) {
             $this->assertEquals($expect[$i],$reread->tags[$i]);
         }
@@ -66,9 +67,9 @@ class ObjectTagTest extends DBTestCase
         $test->dummyint = 1;
         $test->commit();
         
-        oo_object::flush_cache();
+        Objects::flush_cache();
         $read =  new ts_dummy();
-        $read = oo_object::load_object_of($test->get_id());
+        $read = Objects::load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new oo_tag($add[$i],true);
             $read->tags->stick($tag);            
@@ -79,8 +80,8 @@ class ObjectTagTest extends DBTestCase
         }
         $read->commit();
         
-        oo_object::flush_cache();
-        $reread = oo_object::load_object_of($test->get_id());
+        Objects::flush_cache();
+        $reread = Objects::load($test->get_id());
         
         $given_tags = array();
         for ($i=0;$i<count($reread->tags);$i++) {
@@ -104,8 +105,8 @@ class ObjectTagTest extends DBTestCase
         $test->dummyint = 1;
         $test->commit();
         
-        oo_object::flush_cache();
-        $read = oo_object::load_object_of($test->get_id());
+        Objects::flush_cache();
+        $read = Objects::load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
             $tag = new oo_tag($add[$i],true);
             $read->tags->stick($tag);

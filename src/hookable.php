@@ -5,6 +5,8 @@
  */
 namespace Sunhill\ORM;
 
+use Sunhill\ORM\Facades\Objects;
+
 /**
  * Basisklasse für Klassen, die Hooks benutzen
  * Folgende Hooks werden vordefiniert:
@@ -105,7 +107,7 @@ class hookable extends loggable {
                 $destination = $descriptor['destination'];
                 $hook = $descriptor['hook'];
 	            if (is_int($destination)) {
-	                $destination = \Sunhill\ORM\Objects\oo_object::load_object_of($descriptor['destination']);
+	                $destination = Objects::load($descriptor['destination']);
 	            }
 	            if (!isset($params)) {
 	                $params = array();

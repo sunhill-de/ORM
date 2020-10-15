@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectInsertTest extends DBTestCase
 {
@@ -29,7 +30,7 @@ class ObjectInsertTest extends DBTestCase
         }
         $object->commit();
         
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($object->get_id());
+        $read = Objects::load($object->get_id());
         $this->assertEquals($expected,$this->get_field($read, $test));
     }
     

@@ -3,6 +3,7 @@
 namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Facades\Objects;
 
 class oo_property_array_of_objects extends oo_property_arraybase {
 
@@ -40,7 +41,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	
 	protected function &do_get_indexed_value($index) {
 	    if (is_int($this->value[$index])) {
-	        $this->value[$index] = \Sunhill\ORM\Objects\oo_object::load_object_of($this->value[$index]);
+	        $this->value[$index] = Objects::load($this->value[$index]);
 	    }
 	    return $this->value[$index];
 	}
@@ -62,9 +63,9 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	        foreach ($this->value as $index=>$element) {
 	            if (!is_int($element)) {
 	                $element->commit();
-	            } else if (\Sunhill\ORM\Objects\oo_object::is_cached($element)) {
+	            } else if (Objects::is_cached($element)) {
 	                // Wenn es im Cache ist, kann es per seiteneffekt manipuliert worden sein
-	                $this->value[$index] = \Sunhill\ORM\Objects\oo_object::load_object_of($element);	
+	                $this->value[$index] = Objects::load($element);	
 	                $this->value[$index]->commit();
 	            }
 	        }

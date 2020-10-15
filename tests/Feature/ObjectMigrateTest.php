@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Facades\Objects;
 
 class testA extends oo_object {
    
@@ -95,7 +96,7 @@ class ObjectMigrateTest extends DBTestCase
         $test->testchar = 'AAA';
         $test->commit();
         
-        $reread = oo_object::load_object_of($test->get_id());
+        $reread = Objects::load($test->get_id());
         $this->assertEquals('AAA',$reread->testchar);
     }
 
@@ -107,7 +108,7 @@ class ObjectMigrateTest extends DBTestCase
         $test->testint = 123;
         $test->commit();
         
-        $reread = oo_object::load_object_of($test->get_id());
+        $reread = Objects::load($test->get_id());
         $this->assertEquals(123,$reread->testint);
     }
     
@@ -131,7 +132,7 @@ class ObjectMigrateTest extends DBTestCase
         $test->testchar = 'ABC';
         $test->commit();
         
-        $reread = oo_object::load_object_of($test->get_id());
+        $reread = Objects::load($test->get_id());
         $this->assertEquals('ABC',$reread->testchar);        
     }
     
@@ -147,8 +148,8 @@ class ObjectMigrateTest extends DBTestCase
         $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
+       Objects::flush_cache();
+        $read = Objects::load($test->get_id());
         $this->assertEquals($read->testfield,$init);
     }
 
@@ -165,8 +166,8 @@ class ObjectMigrateTest extends DBTestCase
         $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
+       Objects::flush_cache();
+        $read = Objects::load($test->get_id());
         $this->assertEquals($read->testfield,$init);        
     }
     
@@ -205,8 +206,8 @@ class ObjectMigrateTest extends DBTestCase
         $dummy->dummyint = 2;
         $test->testfield[] = $dummy;
         $test->commit();
-        oo_object::flush_cache();
-        $read = oo_object::load_object_of($test->get_id());
+        Objects::flush_cache();
+        $read = Objects::load($test->get_id());
         $this->assertEquals($read->testfield[0]->dummyint,2);
     }
 }

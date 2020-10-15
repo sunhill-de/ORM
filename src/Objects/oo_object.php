@@ -8,12 +8,15 @@
  * Documentation: unknown
  * Tests: unknown
  * Coverage: unknown
+ * Dependencies: Objects, SunhillException, base
  */
 namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\base;
 use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Classes;
 
 require_once(dirname(__FILE__).'/../base.php');
 
@@ -114,24 +117,25 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	    return new \Sunhill\ORM\Storage\storage_mysql($this);
 	}
 	    
-// ================================ Laden ========================================	
+// ================================ Loading ========================================	
 	/**
-	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
-	 * @param integer $id
-	 */
+	 * Checks, if the object with ID $id is in the cache. If yes, return it, othwerwise return false
+	 * @param integer $id The id to search for
+	 * @return bool|oo_object false if not in cache otherwise the cache entry
+	 */ 	 
 	protected function check_cache(int $id) {
-	    if (self::is_cached($id)) {
-	        return self::load_object_of($id);
+	    if (Objects::is_cached($id)) {
+	        return Objects::load($id);
 	    }
 	    return false;
 	}
 	
 	/**
-	 * Trägt sich selbst im Cache ein
+	 * Puts itself in the objects cache
 	 * @param Int $id
 	 */
 	protected function insert_cache(int $id) {
-	    self::load_id_called($id,$this);	    
+	    Objects::insert_cache($id,$this);	    
 	}
 	
 	/**
@@ -220,8 +224,11 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	    $this->clear_cache_entry();
 	}
 	
+    /**
+     * Removes the entry from the cache
+     */
 	protected function clear_cache_entry() {
-	    unset(self::$objectcache[$this->get_id()]); // Cache-Eintrag löschen
+	    Objects::clear_cache($this->get_id());
 	}
 	
 	// ********************* Property Handling *************************************	
@@ -364,7 +371,9 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	}
 	
 	protected function degration(String $newclass) {
-	    $newobject = new $newclass; // Neues Objekt erzeugen
+	    $newclass = Classes::get_class_name($newclass);
+	    $namespace = Classes::get_namespace_of_class($newclass);
+	    $newobject = new $namespace; // Neues Objekt erzeugen
 	    $storage = $this->get_storage();
 	    $class_diff = $this->get_class_diff($this,$newobject);
 	    $this->get_affected_fields($storage, $class_diff);
@@ -494,65 +503,7 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	        throw new \Sunhill\ORM\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
 	    }	    
 	}
-	// ***************** Statische Methoden ***************************	
-	
-	private static $objectcache = array();
-		
-	/**
-	 * Ermittelt den Klassennamen von dem Object mit der ID $id
-	 * @todo move the functionality to the object manager
-	 * @param int $id ID des Objektes von dem der Klassennamen ermittelt werden soll
-	 * @return string Der Klassenname
-	 */
-	public static function get_class_name_of($id) {
-	    $object = DB::table('objects')->where('id','=',$id)->first(); 
-	    if (empty($object)) {
-	        return false;
-	    }
-	    return $object->classname;
-	}
-	
-	/**
-	 * Diese Methode wird von $this->load() aufgerufen, wenn ein Objekt über den lader geladen wurde. Sie soll das Objekt in den Cache eintragen
-	 * @param int $id
-	 */
-	public static function load_id_called(int $id,oo_object $object) {
-	    self::$objectcache[$id] = $object;
-	}
-	
-	/**
-	 * Erzeugt ein passendes Objekt zur übergebenen ID
-	 * @param int $id ID des Objektes von dem ein Objekt erzeugt werden soll
-	 * @return oo_object oder Abkömmling
-	 */
-	public static function load_object_of($id) {
-	    if (isset(self::$objectcache[$id])) {
-	        return self::$objectcache[$id];
-	    } else {
-	        if (($classname = self::get_class_name_of($id)) === false) {
-	            return false;
-	        }
-	        $object = new $classname();
-	        $object = $object->load($id);
-	        return $object;
-	    }
-	}
-	
-	/**
-	 * Clears the object cache
-	 */
-	public static function flush_cache() {
-	    self::$objectcache = array();
-	}
-	
-	/**
-	 * Liefert zurück, ob sich ein Objekt mit der ID $id im Cache befindet
-	 * @param int $id
-	 * @return bool, true, wenn im Cache sonst false
-	 */
-	public static function is_cached(int $id) {
-	    return isset(self::$objectcache[$id]);
-	}
+	// ********************** Static methods  ***************************	
 	
 // ======================= Statisches Proprtyhandling =============================	
 	protected static function setup_properties() {

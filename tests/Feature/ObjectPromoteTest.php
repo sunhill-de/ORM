@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectPromoteTest extends DBTestCase
 {
@@ -49,8 +50,8 @@ class ObjectPromoteTest extends DBTestCase
         $id = $test->get_id();
         $new = $test->promote('\\Sunhill\\ORM\\Test\\ts_thirdlevelchild');
         $new->commit(); 
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($id);
+       Objects::flush_cache();
+        $read = Objects::load($id);
         $this->assertEquals(1,$read->childint);
         $this->assertEquals(2,$read->childchildint);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
@@ -78,8 +79,8 @@ class ObjectPromoteTest extends DBTestCase
         $id = $test->get_id();
         $new = $test->promote('\\Sunhill\\ORM\\Test\\ts_thirdlevelchild');
         $new->commit();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($id);
+       Objects::flush_cache();
+        $read = Objects::load($id);
         $this->assertEquals(2,$read->childint);
         $this->assertEquals(4,$read->childchildint);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);

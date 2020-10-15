@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Test\ts_dummy;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Properties\AttributeException;
 
 class ObjectAttributeTest extends DBTestCase
 {
@@ -26,14 +28,14 @@ class ObjectAttributeTest extends DBTestCase
             $test->dummyint = 123;
             $test->commit();
             
-            oo_object::flush_cache();
-            $read = oo_object::load_object_of($test->get_id());
+            Objects::flush_cache();
+            $read = Objects::load($test->get_id());
             $this->assertEquals($init,$read->$attributename);
             $read->$attributename = $change;
             $read->commit();
             
-            oo_object::flush_cache();
-            $reread = oo_object::load_object_of($test->get_id());
+            Objects::flush_cache();
+            $reread = Objects::load($test->get_id());
             $this->assertEquals($change,$reread->$attributename);
         } catch (\Exception $e) {
             if ($exception) {
@@ -54,7 +56,7 @@ class ObjectAttributeTest extends DBTestCase
     }
     
     public function testInvalidAttribute() {
-        $this->expectException(\Sunhill\ORM\Properties\AttributeException::class);
+        $this->expectException(AttributeException::class);
         $test = new ts_dummy();
         $test->attribute1 = 2;
     }

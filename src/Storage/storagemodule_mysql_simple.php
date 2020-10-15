@@ -1,6 +1,8 @@
 <?php namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Objects;
 
 class storagemodule_mysql_simple extends storagemodule_base {
     
@@ -26,7 +28,7 @@ class storagemodule_mysql_simple extends storagemodule_base {
     }
     
     private function store_core() {
-        return DB::table('objects')->insertGetId(['classname'=>get_class($this->storage->get_caller()),
+        return DB::table('objects')->insertGetId(['classname'=>Classes::get_class_name($this->storage->get_caller()),
                                                   'created_at'=>DB::raw('now()'),
                                                   'updated_at'=>DB::raw('now()')
         ]);

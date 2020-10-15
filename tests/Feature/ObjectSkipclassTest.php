@@ -8,6 +8,7 @@ use Sunhill\ORM\Test\ts_dummy;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Facades\Objects;
 
 class SkipClass extends ts_dummy {
     
@@ -38,14 +39,14 @@ class ObjectSkipclassTest extends DBTestCase
         $init_object->dummyint = 1243;
         $init_object->commit();
 
-        oo_object::flush_cache();
-        $read_object = oo_object::load_object_of($init_object->get_id());
+        Objects::flush_cache();
+        $read_object = Objects::load($init_object->get_id());
         $this->assertEquals(1243,$read_object->dummyint);
         $read_object->dummyint = 4312;
         $read_object->commit();
         
-        oo_object::flush_cache();
-        $reread_object = oo_object::load_object_of($init_object->get_id());
+        Objects::flush_cache();
+        $reread_object = Objects::load($init_object->get_id());
         $this->assertEquals(4312,$reread_object->dummyint);
         
 	}

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectReReadStampsTest extends DBTestCase
 {
@@ -14,8 +15,8 @@ class ObjectReReadStampsTest extends DBTestCase
         $add = new \Sunhill\ORM\Test\ts_dummy();
         $add->dummyint = 123;
         $add->commit();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($add->get_id());
+        Objects::flush_cache();
+        $read = Objects::load($add->get_id());
         $this->assertFalse(is_null($read->created_at));
     }
 }

@@ -10,6 +10,8 @@ namespace Sunhill\ORM\Utils;
 use Sunhill\ORM\SunhillException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Objects\oo_object;
 
 class ObjectListException extends SunhillException
 {
@@ -83,7 +85,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
             throw new ObjectListException("Invalid index '$index'");
         }
         if (is_int($this->items[$index])) {
-            $this->items[$index] = oo_object::load_object_of($this->items[$index]);
+            $this->items[$index] = Objects::load($this->items[$index]);
         }
         return $this->items[$index];
     }
@@ -149,7 +151,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
     public function get_class(int $index)
     {
         if (! isset($this->class_cache[$index])) {
-            $this->class_cache[$index] = Classes::normalize_namespace(oo_object::get_class_name_of($this->get_id($index)));
+            $this->class_cache[$index] = Classes::normalize_namespace(Objects::get_class_namespace_of($this->get_id($index)));
         }
         return $this->class_cache[$index];
     }

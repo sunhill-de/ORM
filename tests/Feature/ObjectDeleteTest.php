@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectDeleteTest extends DBTestCase
 {
@@ -38,9 +39,9 @@ class ObjectDeleteTest extends DBTestCase
         $test->childsarray[] = 'TEST';
         $test->commit();
         $id = $test->get_id();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($id);
+        $read = Objects::load($id);
         $read->delete(); 
-        $this->assertFalse(\Sunhill\ORM\Objects\oo_object::load_object_of($id));
+        $this->assertFalse(Objects::load($id));
         return $id;
     }
     

@@ -9,17 +9,21 @@
  * Documentation: unknown
  * Tests: unknown
  * Coverage: unknown
+ * Depenencies: class_manager
  */
  namespace Sunhill\ORM\Managers;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\SunhillException;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Objects\oo_object;
 
 class ObjectManagerException extends SunhillException {}
 
 class object_manager  {
  
+    protected $object_cache = [];
+    
     protected function search_class_namespace($condition) {
         if (is_array($condition)) {
             if (isset($condition['class'])) {
@@ -88,4 +92,81 @@ class object_manager  {
 			return $objects;
 		}
 
+		/**
+		 * Returns the name of the class with the passed $id.
+		 * @param int $id ID of the object we want to know the class name of
+		 * @return string The name (not the namespace!) of the class
+		 */
+		public function get_class_name_of(int $id) {
+		    $object = DB::table('objects')->where('id','=',$id)->first();
+		    if (empty($object)) {
+		        return false;
+		    }
+		    return $object->classname;
+		}
+
+		/**
+		 * Returns the namespace of the class with the passed $id.
+		 * @param int $id ID of the object we want to know the class name of
+		 * @return string The namespace of the class
+		 */
+		public function get_class_namespace_of(int $id) {
+		    $object = DB::table('objects')->where('id','=',$id)->first();
+		    if (empty($object)) {
+		        return false;
+		    }
+		    return Classes::get_namespace_of_class($object->classname);
+		}
+		
+		/**
+		 * Loads the object with the id $id from the database
+		 * @param int $id
+		 * @return unknown|boolean
+		 */
+		public function load(int $id) {
+		    if ($this->is_cached($id)) {
+		        return $this->object_cache[$id];
+		    } else {
+		        if (($classname = $this->get_class_namespace_of($id)) === false) {
+		            return false;
+		        }
+		        $object = new $classname();
+		        $object = $object->load($id);
+		        return $object;
+		    }
+		}
+		
+		/**
+		 * Clears the object cache
+		 */
+		public function flush_cache() {
+		    $this->object_cache = [];
+		}
+		
+		/**
+		 * Returns if the object with the id $id is in the cache
+		 * @param int $id
+		 * @return bool, true, wenn im Cache sonst false
+		 */
+		public function is_cached(int $id) {
+		    return isset($this->object_cache[$id]);
+		}
+		
+		/**
+		 * Adds the entry of $id with the object $object to the cache
+		 * @param int $id
+		 * @param oo_objct $object
+		 */
+		public function insert_cache(int $id,oo_object $object) {
+		    $this->object_cache[$id] = $object;
+		}
+		
+		/**
+		 * Removes the entry of $id from the cache
+		 * @param int $id
+		 */
+		public function clear_cache(int $id) {
+		    unset($this->object_cache[$id]);
+		}
+		
  }

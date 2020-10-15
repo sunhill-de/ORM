@@ -3,6 +3,7 @@
 namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Objects\ObjectException;
 
 class oo_property_calculated extends oo_property_field {
 	
@@ -15,7 +16,7 @@ class oo_property_calculated extends oo_property_field {
 //	protected $initialized = true;
 	
 	protected function do_set_value($value) {
-	    throw new \Sunhill\ORM\Objects\ObjectException("Versuch ein Calulate-Field zu beschreiben");
+	    throw new ObjectException("Tried to write to a calculate field");
 	}
 	
 	/**

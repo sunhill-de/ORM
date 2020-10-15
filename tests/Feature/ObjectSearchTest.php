@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Artisan;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Utils\objectlist;
+use Sunhill\ORM\Facades\Objects;
 
 class searchtestA extends oo_object {
    
@@ -272,7 +273,7 @@ class ObjectSearchTest extends DBTestCase
      * @group object
      */
     public function testPassObject() {
-        $test = \Sunhill\ORM\Objects\oo_object::load_object_of(1);
+        $test = Objects::load(1);
         $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestA::search()->where('Aobject','=',$test)->get());
         $this->assertEquals([7,13],$result);
         

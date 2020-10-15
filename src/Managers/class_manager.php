@@ -14,6 +14,7 @@ namespace Sunhill\ORM\Managers;
 use \Sunhill\ORM\SunhillException;
 use Illuminate\Support\Facades\Lang;
 use Sunhill\ORM\Utils\descriptor;
+use Sunhill\ORM\Objects\oo_object;
 
  /**
   * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
@@ -23,13 +24,19 @@ use Sunhill\ORM\Utils\descriptor;
   * The problem is that objectclasses a called by namespace and autoloader and there is no sufficient method to 
   * get the installed objectclasses at the momement, so we have to read out the specific directories.
   * Definition of objectclass:
-  * A descendand of \Sunhill\ORM\Objects\oo_object which represents a storable dataobject
+  * A descendand of Sunhill\ORM\Objects\oo_object which represents a storable dataobject
   * @author lokal
   *
   */
 class class_manager {
  
     private static $translatable = [/*'name_s','name_p','description'*/];
+    
+    /**
+     * Stores all directories, that coinatin classes
+     * @var array
+     */
+    private $class_dirs = [];
     
     /**
      * Stores the information about the classes
@@ -65,6 +72,7 @@ class class_manager {
                 throw new SunhillException("Can't delete the class cache.");
             }
         }
+        $this->class_dirs = [];
     }
 
     /**
@@ -181,7 +189,7 @@ class class_manager {
     public function create_cache($class_dir=null) {
         if (is_null($class_dir)) {
             // If not passes, set class dir to default
-            $class_dir = [base_path('objects')];
+            $class_dir = $this->class_dirs;
         } else if (is_string($class_dir)) {
             $class_dir = [$class_dir];
         } else if (!is_array($class_dir)) {
@@ -230,6 +238,18 @@ class class_manager {
             }
             $this->classes[$name] = $descriptor;
         }
+    }
+    
+    /**
+     * Add a single dir to the class manager, to build the class cache from
+     * @param string $path
+     * @throws SunhillException
+     */
+    public function add_class_dir(string $path) {
+        if (!file_exists($path)) {
+            throw new SunhillException("The passed class directory '$path' doesn't exists.");
+        }
+        $this->object_dirs[] = $path;
     }
     
 // *************************** General class informations ===============================    
@@ -300,7 +320,56 @@ class class_manager {
         }
     }
     
-    private function check_class(string $name) {
+    /**
+     * Returns the (internal) name of the class. It doesn't matter how the class is passed (name, namespace, object or index)
+     * @param unknown $test Could be either a string, an object or an integer
+     */
+    public function get_class_name($test) {
+        if (is_int($test)) {
+            return $this->get_classname_with_index($test);
+        } else if (is_string($test)) {
+            if (strpos($test,'\\') !== false) {
+                // We have a namespace
+                return $test::$object_infos['name'];
+            } else {
+                return $test;
+            }
+        } else if (is_object($test)) {
+            if (is_a($test,oo_object::class)) {
+                return $test::$object_infos['name'];
+            } else {
+                throw new SunhillException("Invalid object passed to get_class: ".get_class($test));
+            }            
+        } else {
+            throw new SunhillException("Unknown type for get_class_name()");
+        }
+    }
+    
+    /**
+     * Returns the class with the number $index
+     * @param int $index The number of the wanted class
+     * @retval string
+     */
+    private function get_classname_with_index(int $index) {
+        if ($index < 0) {
+            throw new SunhillException("Invalid Index '$index'");
+        }
+        $i=0;
+        foreach ($this->classes as $class_name => $info) {
+            if ($i==$index) {
+                return $class_name;
+            }
+            $i++;
+        }
+        throw new SunhillException("Invalid index '$index'");        
+    }
+    
+    /**
+     * Tests if this class is in the class cache
+     * @param unknown $test The class to test
+     */
+    private function check_class($test) {
+        $name = $this->get_class_name($test);
         if (!isset($this->classes[$name]) && ($name !== 'object')) {
             throw new SunhillException("The class '$name' doesn't exists.");
         }
@@ -318,39 +387,22 @@ class class_manager {
      * @throws SunhillException
      * @return unknown
      */
-    public function get_class($name,$field=null) {
+    public function get_class($test,$field=null) {
         $this->check_cache();
-        if (is_int($name)) {
-            if ($name < 0) {
-                throw new SunhillException("Invalid Index '$name'");
-            }
-            $i=0;
-            foreach ($this->classes as $class_name => $info) {
-                if ($i==$name) {
-                    if (is_null($field)) {
-                        return $info;
-                    } else {
-                        return $info->$field;                        
-                    }
-                }
-                $i++;
-            }
-            throw new SunhillException("Invalid index '$name'");
+        $name = $this->get_class_name($test);
+        $this->check_class($name);
+        $class = $this->classes[$name];
+        if (is_null($field)) {
+            return $class;
         } else {
-            $this->check_class($name);
-            $class = $this->classes[$name];
-            if (is_null($field)) {
-                    return $class;
+            if (in_array($field,static::$translatable)) {
+                return $this->translate($name,$field);
+            } else if ($class->is_defined($field)) {
+                return $class->$field;
             } else {
-                if (in_array($field,static::$translatable)) {
-                    return $this->translate($name,$field);
-                } else if ($class->is_defined($field)) {
-                    return $class->$field;                    
-                } else {
-                    throw new SunhillException("The class '$name' doesn't export '$field'.");
-                }
+                throw new SunhillException("The class '$name' doesn't export '$field'.");
             }
-        }
+        }        
     }
     
     /**

@@ -13,6 +13,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Test\ts_objectunit;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectInsertTest extends DBTestCase
 {
@@ -23,10 +24,10 @@ class ObjectInsertTest extends DBTestCase
         $object->sarray[] = 'AAA';
         $object->sarray[] = 'BBB';
         $object->sarray[] = 'CCC';
-        $dummy1 = oo_object::load_object_of(1);
-        $dummy2 = oo_object::load_object_of(2);
-        $dummy3 = oo_object::load_object_of(3);
-        $dummy4 = oo_object::load_object_of(4);
+        $dummy1 = Objects::load(1);
+        $dummy2 = Objects::load(2);
+        $dummy3 = Objects::load(3);
+        $dummy4 = Objects::load(4);
         $object->objectvalue = $dummy1;
         $object->oarray[] = $dummy2;
         $object->oarray[] = $dummy3;

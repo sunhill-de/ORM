@@ -44,5 +44,10 @@ abstract class TestCase extends BaseTestCase
             return $loader;
         }
     }
+
+    public static function setUpBeforeClass() : void {
+        parent::setUpBeforeClass();
+       // Classes::add_class_dir(dirname(__FILE__).'/../objects');        
+    }
     
 }
