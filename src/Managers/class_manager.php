@@ -109,8 +109,22 @@ class class_manager {
             $result[$key] = $value;
         }
         $parent = get_parent_class($class);
-        $result['parent'] = $parent::$object_infos['name'];
+        if ($class !== 'object') { // Strange infinite loop bug
+            $result['parent'] = $parent::$object_infos['name'];
+        }
+        $result['properties'] = $this->get_class_properties($class);
         return $result;
+    }
+    
+    private function get_class_properties(string $class) {
+        $properties = $class::static_get_properties_with_feature();
+        $result = [];
+        foreach ($properties as $name => $descriptor) {
+            if ($name !== 'tags') {
+                $result[$name] = $descriptor;
+            }
+        }
+        return $result;        
     }
     
     /**
@@ -128,7 +142,31 @@ class class_manager {
             $class_info = $this->get_class_info($class);
             fputs($file,'    "'.$class_info['name'].'"=>['."\n");
             foreach ($class_info as $key => $value) {
-                fputs($file,'        "'.$key.'"=>"'.$value.'",'."\n");
+                if ($key == 'properties') {
+                   fputs($file,'        "properties"=>['."\n");
+                   foreach ($value as $prop_name => $property) {
+                      $features = $property->get_static_attributes();
+                      fputs($file,'          "'.$prop_name.'"=>['."\n");
+                      foreach ($features as $feat_key => $feat_value) {
+                          fputs($file,'             "'.$feat_key.'"=>');
+                          if (is_bool($feat_value)) {
+                              fputs($file,($feat_value?'true':'false').','."\n");
+                          } else if (is_scalar($feat_value)) {
+                              fputs($file,'"'.$feat_value.'",'."\n");
+                          } else if (is_array($feat_value)) {
+                              fputs($file,'[');
+                              foreach ($feat_value as $single_value) {
+                                  fputs($file,'"'.$single_value.'",');
+                              }
+                              fputs($file,'],'."\n");
+                          }
+                      }
+                      fputs($file,'             ],'."\n");
+                   }
+                   fputs($file,'        ],'."\n");
+                } else {
+                    fputs($file,'        "'.$key.'"=>"'.$value.'",'."\n");
+                }
             }
             fputs($file,"    ],\n");
         }
@@ -176,7 +214,19 @@ class class_manager {
         foreach ($classes as $name => $info) {
             $descriptor = new descriptor();
             foreach ($info as $key => $value) {
-                $descriptor->$key = $value;
+                if (is_array($value)) {
+                    foreach ($value as $subkey => $subvalue) {
+                        if (is_array($subvalue)) {
+                            foreach ($subvalue as $subsubkey => $subsubvalue) {
+                                $descriptor->$key->$subkey->$subsubkey = $subsubvalue;
+                            }
+                        } else {
+                            $descriptor->$key->$subkey = $subvalue;
+                        }
+                    }
+                } else {
+                    $descriptor->$key = $value;
+                }
             }
             $this->classes[$name] = $descriptor;
         }
@@ -206,14 +256,8 @@ class class_manager {
      * Example: 
      * ['object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
      */
-    public function get_class_tree(string $root='object') {
-        $result = [];
-        foreach ($this->classes as $name => $info) {
-            if ($info->parent == $root) {
-                $result[$name] = $this->get_class_tree($name);
-            }
-        }
-        return [$root=>$result];
+    public function get_class_tree(string $class = 'object') {
+        return [$class=>$this->get_children_of_class($class)];
     }
     
 // *************************** Informations about a specific class **************************    
@@ -248,7 +292,7 @@ class class_manager {
             }
             return null;
         }  else {
-            if (isset($this->classes[$needle])) {
+            if (isset($this->classes[$needle]) || ($needle === 'object')) {
                 return $needle;
             } else {
                 return null;
@@ -257,9 +301,10 @@ class class_manager {
     }
     
     private function check_class(string $name) {
-        if (!isset($this->classes[$name])) {
+        if (!isset($this->classes[$name]) && ($name !== 'object')) {
             throw new SunhillException("The class '$name' doesn't exists.");
         }
+        return $name;
     }
     
     private function translate(string $class,string $item) {
@@ -314,6 +359,7 @@ class class_manager {
      * @return unknown
      */
     public function get_table_of_class(string $name) {
+        $name = $this->check_class($this->search_class($name));
         return $this->get_class($name,'table');        
     }
     
@@ -323,7 +369,49 @@ class class_manager {
      * @return unknown
      */
     public function get_parent_of_class(string $name) {
+        $name = $this->check_class($this->search_class($name));
         return $this->get_class($name,'parent');
+    }
+
+    /**
+     * Return an associative array of the children of the passed class. The array is in the form
+     *  name_of_child=>[list_of_children_of_this_child]
+     * @param string $name Name of the class to which all children should be searched. Default=object
+     * @param int $level search children only to this depth. -1 means search all children. Default=-1
+     */
+    public function get_children_of_class(string $name='object',int $level=-1) : array {
+        $name = $this->check_class($this->search_class($name));
+        $this->check_cache();
+        $result = [];
+        if (!$level) { // We reached top level
+            return $result;
+        }
+        foreach ($this->classes as $class_name => $info) {
+            if ($info->parent === $name) {
+                $result[$class_name] = $this->get_children_of_class($class_name,$level-1);
+            }
+        }
+        return $result;
+    }
+    
+    /**
+     * Returns all properties of the given class
+     * @param string $class The class to search for properties
+     * @return descriptor of all properties
+     */
+    public function get_properties_of_class(string $class) {
+        $name = $this->check_class($this->search_class($class));
+        return $this->get_class($name,'properties');        
+    }
+    
+    /**
+     * Return only the descriptor of a given property of a given class
+     * @param string $class The class to search for the property
+     * @param string $property The property to search for
+     * @return descriptor of this property
+     */
+    public function get_property_of_class(string $class,string $property) {        
+        return $this->get_properties_of_class($class)->$property;        
     }
     
     /**
@@ -333,5 +421,49 @@ class class_manager {
      */
     public function get_namespace_of_class(string $name) {
         return $this->get_class($name,'class');        
+    }
+    
+    /**
+     * Creates an instance of the passes class
+     * @param string $class is either the namespace or the class name 
+     * @return oo_object The created instance of $class
+     */
+    public function create_object(string $class) {
+        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        $result = new $namespace();
+        return $result;
+    }
+    
+    /**
+     * The reimplementation of is_a() that works with class names too
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
+    public function is_a($test,$class) {
+        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        return is_a($test,$namespace);
+    }
+    
+    /**
+     * Returns true is $test is exactly a $class and not of its children
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
+    public function is_a_class($test,$class) {
+        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        return is_a($test,$namespace) && !is_subclass_of($test,$namespace);
+    }
+
+    /**
+     * The reimplementation of is_subclass_of() that works with class names too
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
+    public function is_subclass_of($test,$class) {
+        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        return is_subclass_of($test,$namespace);        
     }
 }

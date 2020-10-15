@@ -11,6 +11,29 @@ define('CLASS_COUNT',8);
 
 class ManagerClassesTest extends DBTestCase
 {
+   
+    protected function checkArrays($expect,$test) {
+        foreach ($expect as $key => $value) {
+            if (!array_key_exists($key, $test)) {
+                return false;
+            }
+            if (is_array($value)) {
+                if (!$this->checkArrays($value,$test[$key])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    protected function assertArrayContains($expect,$test) {
+        if (!$this->checkArrays($expect,$test)) {
+            $this->fail("The expected array is not contained in the passed one");
+            return;
+        }
+        $this->assertTrue(true);
+    }
+    
     public function testFlushCache() {
         $test = new class_manager();
         $test->flush_cache();
@@ -90,13 +113,20 @@ class ManagerClassesTest extends DBTestCase
             ['dummy',null,'notexisting','except'],  // Field not exported
             [-1,null,'table','except'],             // Invalid Index
             [1000,null,'table','except'],           // Invalid Index
-            [0,null,'table','dummies'],             // Get table by index direct
-            [0,'table',null,'dummies'],             // Get table by index indirect
-            [1,null,'table','objectunits'],         // Get table by index direct
-            [1,'table',null,'objectunits'],         // Get table by index indirect
         ];    
     }
     
+    public function testDummyTable() {
+        $classes = Classes::get_all_classes();
+        $i=0;
+        foreach ($classes as $class=>$info) {
+            if ($class === 'dummy') {
+                $dummyid = $i;
+            }
+            $i++;
+        }
+        $this->assertEquals('dummies',Classes::get_class($dummyid,'table'));        
+    }
     /**
      * @dataProvider SearchClassProvider
      * @param unknown $search
@@ -133,8 +163,79 @@ class ManagerClassesTest extends DBTestCase
         ];
     }
     
+    /**
+     * @dataProvider GetChildrenOfClassProvider
+     * @param unknown $test_class
+     * @param unknown $expect
+     */
+    public function testGetChildrenOfClass($test_class,$level,$expect) {
+        $this->assertEquals($expect,Classes::get_children_of_class($test_class,$level));    
+    }
+    
+    public function GetChildrenOfClassProvider() {
+        return [
+                ['referenceonly',-1,[]],
+                ['secondlevelchild',-1,['thirdlevelchild'=>[]]],
+                ['testparent',-1,['passthru'=>['secondlevelchild'=>['thirdlevelchild'=>[]]],'testchild'=>[]]],
+                ['testparent',1,['passthru'=>[],'testchild'=>[]]],
+       ];
+    }
+    
+    /**
+     * @dataProvider GetClassTreeProvider
+     */
+    public function testGetClassTree($test_class,$expect) {
+        if (is_null($test_class)) {
+            $this->assertArrayContains($expect,Classes::get_class_tree());
+        } else {
+            $this->assertArrayContains($expect,Classes::get_class_tree($test_class));
+        }
+    }
+    
+    public function GetClassTreeProvider() {
+        return [
+            [null,
+                ['object'=>
+                    [
+                        'dummy'=>[],
+                        'objectunit'=>[],
+                        'referenceonly'=>[],
+                        'testparent'=>[
+                            'passthru'=>[
+                                'secondlevelchild'=>[
+                                    'thirdlevelchild'=>[]
+                                ]
+                            ],
+                            'testchild'=>[]
+                        ]
+                    ]    
+                ]                
+            ],
+            ['testparent',
+                        ['testparent'=>[
+                            'passthru'=>[
+                                'secondlevelchild'=>[
+                                    'thirdlevelchild'=>[]
+                                ]
+                            ],
+                            'testchild'=>[]
+                        ]]
+            ],
+            ['dummy',['dummy'=>[]]],
+            
+        ];
+    }
+
+    public function testGetClassProperties() {
+        $this->assertEquals('dummyint',Classes::get_properties_of_class('dummy')->dummyint->name);
+    }
+    
+    public function testGetClassProperty() {
+        $this->assertEquals('dummyint',Classes::get_property_of_class('dummy','dummyint')->name);
+    }
+
     public function testGetClassTreeRoot() {
-        $this->assertEquals(
+        $this->assertArrayContains(
             ['object'=>[
                 'dummy'=>[],
                 'objectunit'=>[],
@@ -161,6 +262,82 @@ class ManagerClassesTest extends DBTestCase
                 ]
             ]
        ],Classes::get_class_tree('testparent'));
+    }
+    
+    public function testCreateObjectViaName() {
+        $test = Classes::create_object('testparent');
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Test\ts_testparent'));
+    }
+    
+    public function testCreateObjectViaNamespace() {
+        $test = Classes::create_object('Sunhill\ORM\Test\ts_testparent');
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Test\ts_testparent'));
+    }
+    
+    /**
+     * @dataProvider IsAProvider
+     * @group IsA
+     */
+    public function testIsA($test,$param,$expect) {
+        $test = new $test();
+        $this->assertEquals($expect,Classes::is_a($test,$param));
+    }
+        
+    public function IsAProvider() {
+        return [
+            ['Sunhill\ORM\Test\ts_testparent','testparent',true],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',true],
+            ['Sunhill\ORM\Test\ts_testchild','testparent',true],
+            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',true],
+            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
+            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+        ];
+    }
+    
+    /**
+     * @dataProvider IsAClassProvider
+     * @group IsA
+     */
+    public function testIsAClass($test,$param,$expect) {
+        $test = new $test();
+        $this->assertEquals($expect,Classes::is_a_class($test,$param));
+    }
+    
+    public function IsAClassProvider() {
+        return [
+            ['Sunhill\ORM\Test\ts_testparent','testparent',true],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',true],
+            ['Sunhill\ORM\Test\ts_testchild','testparent',false],
+            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',false],
+            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
+            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+        ];
+    }
+    
+    /**
+     * @dataProvider IsSubclassOfProvider
+     * @group IsA
+     */
+    public function testIsSubclassOf($test,$param,$expect) {
+        $test = new $test();
+        $this->assertEquals($expect,Classes::is_subclass_of($test,$param));
+    }
+        
+    public function IsSubclassOfProvider() {
+        return [
+            ['Sunhill\ORM\Test\ts_testparent','testparent',false],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',false],
+            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
+            ['Sunhill\ORM\Test\ts_testchild','testparent',true],
+            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',true],
+            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+        ];
     }
     
 /**    

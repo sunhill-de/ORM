@@ -6,5 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Sunhill\\' => array($baseDir . '/src/lib'),
+    'Sunhill\\ORM\\Tests\\' => array($baseDir . '/tests', $baseDir . '/tests/lib', $baseDir . '/tests/objects'),
+    'Sunhill\\ORM\\Test\\' => array($baseDir . '/tests', $baseDir . '/tests/lib', $baseDir . '/tests/objects'),
+    'Sunhill\\ORM\\' => array($baseDir . '/src'),
 );

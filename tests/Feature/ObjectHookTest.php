@@ -13,6 +13,14 @@ class HookingObject extends oo_object  {
     
     public static $hook_str = '';
     
+    public static $object_infos = [
+        'name'=>'HookingObject',            // A repetition of static:$object_name @todo see above
+        'table'=>'hookings',         // A repitition of static:$table_name
+        'name_s'=>'Hookingtest A object',   // A human readable name in singular
+        'name_p'=>'Hookingtest A objects',  // A human readable name in plural
+        'description'=>'For hooking tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('hooking_int')->set_default(0);
@@ -140,6 +148,14 @@ class HookingObject extends oo_object  {
 
 class HookingChild extends HookingObject {
  
+    public static $object_infos = [
+        'name'=>'HookingChild',            // A repetition of static:$object_name @todo see above
+        'table'=>'childhookings',         // A repitition of static:$table_name
+        'name_s'=>'Hookingtest A object',   // A human readable name in singular
+        'name_p'=>'Hookingtest A objects',  // A human readable name in plural
+        'description'=>'For hooking tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
     public static $child_hookstr;
     
     public static $table_name = 'childhookings';

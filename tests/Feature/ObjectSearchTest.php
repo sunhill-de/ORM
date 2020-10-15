@@ -13,6 +13,15 @@ class searchtestA extends oo_object {
    
     public static $table_name = 'searchtestA';
     
+    public static $object_infos = [
+        'name'=>'searchtestA',            // A repetition of static:$object_name @todo see above
+        'table'=>'searchtestA',         // A repitition of static:$table_name
+        'name_s'=>'Searchtest A object',   // A human readable name in singular
+        'name_p'=>'Searchtest A objects',  // A human readable name in plural
+        'description'=>'For search tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
+    
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('Aint')->searchable();
@@ -38,6 +47,14 @@ class searchtestB extends searchtestA {
 
     public static $table_name = 'searchtestB';
     
+    public static $object_infos = [
+        'name'=>'searchtestB',            // A repetition of static:$object_name @todo see above
+        'table'=>'searchtestB',         // A repitition of static:$table_name
+        'name_s'=>'Searchtest B object',   // A human readable name in singular
+        'name_p'=>'Searchtest B objects',  // A human readable name in plural
+        'description'=>'For search tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('Bint')->searchable();
@@ -57,6 +74,14 @@ class searchtestC extends searchtestB {
     
     public static $table_name = 'searchtestC';
     
+    public static $object_infos = [
+        'name'=>'searchtestC',            // A repetition of static:$object_name @todo see above
+        'table'=>'searchtestC',         // A repitition of static:$table_name
+        'name_s'=>'Searchtest C object',   // A human readable name in singular
+        'name_p'=>'Searchtest C objects',  // A human readable name in plural
+        'description'=>'For search tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
     protected static function setup_properties() {
         parent::setup_properties();
         self::object('Cobject')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();

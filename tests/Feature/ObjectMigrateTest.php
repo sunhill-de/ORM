@@ -10,6 +10,14 @@ use Sunhill\ORM\Tests\DBTestCase;
 
 class testA extends oo_object {
    
+    public static $object_infos = [
+        'name'=>'testA',            // A repetition of static:$object_name @todo see above
+        'table'=>'testA',         // A repitition of static:$table_name
+        'name_s'=>'Migrationtest A object',   // A human readable name in singular
+        'name_p'=>'Migrationtest A objects',  // A human readable name in plural
+        'description'=>'For migration tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
     public static $table_name = 'testA';
     
     protected static function setup_properties() {
@@ -22,6 +30,14 @@ class testA extends oo_object {
 
 class testD extends \Sunhill\ORM\Test\ts_dummy {
 
+    public static $object_infos = [
+        'name'=>'testD',            // A repetition of static:$object_name @todo see above
+        'table'=>'testD',         // A repitition of static:$table_name
+        'name_s'=>'Migrationtest D object',   // A human readable name in singular
+        'name_p'=>'Migrationtest D objects',  // A human readable name in plural
+        'description'=>'For migration tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
     public static $table_name = 'testD';
     
     public static $type='varchar';
@@ -40,6 +56,14 @@ class testD extends \Sunhill\ORM\Test\ts_dummy {
 
 class testE extends oo_object {
 
+    public static $object_infos = [
+        'name'=>'testE',            // A repetition of static:$object_name @todo see above
+        'table'=>'testE',         // A repitition of static:$table_name
+        'name_s'=>'Migrationtest e object',   // A human readable name in singular
+        'name_p'=>'Migrationtest e objects',  // A human readable name in plural
+        'description'=>'For migration tests only',
+        'options'=>0,               // Reserved for later purposes
+    ];
     public static $table_name = 'testE';
     
     protected static function setup_properties() {

@@ -17,6 +17,7 @@ namespace Sunhill\ORM\Properties;
  * @todo Muss das wirklich sein, oder kann man das auf das Storage auslagern
  */
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Utils\descriptor;
 
 /** 
  * Die folgenden Defines legen Konstanten fest, die get_diff_array als (optionalem) Parameter übergeben
@@ -576,4 +577,27 @@ class oo_property extends \Sunhill\ORM\base {
 	   $this->hooks[] = ['action'=>$action,'hook'=>$hook,'subaction'=>$subaction,'target'=>$target];    
 	}
 	
+	public function get_all_attributes() {
+	    $result = $this->get_static_attributes();
+	    $result->value = $this->value;
+	    $result->shadow = $this->shadow;
+	    $result->dirty = $this->dirty;
+	    return $result;
+	}
+	
+	public function get_static_attributes() {
+	    $result = new descriptor();
+	    $result->class = $this->class;
+	    $result->default = $this->default;
+	    $result->defaults_null = $this->defaults_null;
+	    $result->features = $this->features;
+	    $result->name = $this->name;
+	    $result->read_only = $this->read_only;
+	    $result->searchable = $this->searchable;
+	    $result->type = $this->type;
+	    foreach ($this->additional_fields as $key => $value) {
+	        $result->$key = $value;
+	    }
+	    return $result;
+	}
 }

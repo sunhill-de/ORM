@@ -54,7 +54,8 @@ class ManagerObjectTest extends DBTestCase
     public function testObjectCountClassFilter_nochildren() {
         $count1 = DB::table('testparents')->select(DB::raw('count(*) as count'))->first();
         $count2 = DB::table('testchildren')->select(DB::raw('count(*) as count'))->first();
-        $this->assertEquals($count1->count-$count2->count,Objects::count('testparent',true));
+        $count3 = DB::table('passthrus')->select(DB::raw('count(*) as count'))->first();
+        $this->assertEquals($count1->count-$count2->count-$count3->count,Objects::count('testparent',true));
     }
 
     public function testObjectListNoFilter() {
@@ -75,7 +76,8 @@ class ManagerObjectTest extends DBTestCase
         $this->assertEquals(5,$list[0]->get_id());
         $count1 = DB::table('testparents')->select(DB::raw('count(*) as count'))->first();
         $count2 = DB::table('testchildren')->select(DB::raw('count(*) as count'))->first();
-        $this->assertEquals($count1->count-$count2->count,count($list));
+        $count3 = DB::table('passthrus')->select(DB::raw('count(*) as count'))->first();
+        $this->assertEquals($count1->count-$count2->count-$count3->count,count($list));
     }
 
 }

@@ -126,15 +126,15 @@ class UtilObjectlistTest extends DBTestCase
     public function testGetClass()
     {
         $test = $this->get_mixed_test();
-        $this->assertEquals('\Sunhill\ORM\Test\ts_dummy', $test->get_class(0));
+        $this->assertEquals('Sunhill\ORM\Test\ts_dummy', $test->get_class(0));
     }
 
     public function testGetDistinctClasses()
     {
         $test = $this->get_mixed_test();
         $this->assertEquals([
-            '\Sunhill\ORM\Test\ts_dummy',
-            '\Sunhill\ORM\Test\ts_testparent'
+            'Sunhill\ORM\Test\ts_dummy',
+            'Sunhill\ORM\Test\ts_testparent'
         ], $test->get_distinct_classes());
     }
 
