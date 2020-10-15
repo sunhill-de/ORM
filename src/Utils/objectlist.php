@@ -10,7 +10,6 @@ namespace Sunhill\ORM\Utils;
 use Sunhill\ORM\SunhillException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\oo_object;
 
 class ObjectListException extends SunhillException
@@ -178,7 +177,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
      */
     public function filter_class(string $class, bool $children = true)
     {
-        $class = Classes::get_namespace_of_class(Classes::_class($class));
+        $class = Classes::get_namespace_of_class($class);
         $shadow_items = [];
         $shadow_classes = [];
         for ($i = 0; $i < count($this->items); $i ++) {
