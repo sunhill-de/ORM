@@ -10,6 +10,7 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Test\ts_dummy;
+use Sunhill\ORM\Facades\Objects;
 
 class UtilObjectlistTest extends DBTestCase
 {
@@ -91,7 +92,7 @@ class UtilObjectlistTest extends DBTestCase
     public function testAddObject_array_mixed()
     {
         $test = new objectlist();
-        $dummy = \Sunhill\ORM\Objects\oo_object::load_object_of(1);
+        $dummy = Objects::load(1);
         $test[] = $dummy;
         $test[] = 2;
         $test[] = 3;

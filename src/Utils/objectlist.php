@@ -150,7 +150,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
     public function get_class(int $index)
     {
         if (! isset($this->class_cache[$index])) {
-            $this->class_cache[$index] = Classes::normalize_namespace(oo_object::get_class_name_of($this->get_id($index)));
+            $this->class_cache[$index] = Classes::normalize_namespace(Objects::get_class_namespace_of($this->get_id($index)));
         }
         return $this->class_cache[$index];
     }

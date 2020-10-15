@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectUpdateTest extends DBTestCase
 {
@@ -16,7 +16,7 @@ class ObjectUpdateTest extends DBTestCase
      * @param unknown $test_callback
      */
     public function testStorageUpdate($update_callback,$expectations) {
-        oo_object::flush_cache();
+        Objects::flush_cache();
         $object = new \Sunhill\ORM\Test\ts_objectunit();
         $object->storage_values = [
             'id'=>1,
@@ -107,7 +107,7 @@ class ObjectUpdateTest extends DBTestCase
 // Objectfeldtests            
              [ // #5: Ändern eines Objektfelde 
                     function($object) {
-                        $dummy = \Sunhill\ORM\Objects\oo_object::load_object_of(3);
+                        $dummy = Objects::load(3);
                         $object->objectvalue = $dummy;
                     },
                     [
@@ -131,7 +131,7 @@ class ObjectUpdateTest extends DBTestCase
                              /**
                               * @todo Hier sollte ein Mock eingesetzt werden
                               */
-                             $dummy1 = \Sunhill\ORM\Objects\oo_object::load_object_of(2);
+                             $dummy1 = Objects::load(2);
                              $object->oarray[] = $dummy1;
                     },
                     [
@@ -165,7 +165,7 @@ class ObjectUpdateTest extends DBTestCase
                     /**
                      * @todo Hier sollte ein Mock eingesetzt werden
                      */
-                    $dummy1 = \Sunhill\ORM\Objects\oo_object::load_object_of(2);
+                    $dummy1 = Objects::load(2);
                     unset($object->oarray[1]);;
                     $object->oarray[] = $dummy1;
                 },
@@ -231,7 +231,7 @@ class ObjectUpdateTest extends DBTestCase
     }
     
     public function testAttribute1() {
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        Objects::flush_cache();
         $object = new \Sunhill\ORM\Test\ts_objectunit();
         $object->storage_values = [
             'id'=>1,
@@ -264,7 +264,7 @@ class ObjectUpdateTest extends DBTestCase
     }
         
     public function testAttribute2() {
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        Objects::flush_cache();
         $object = new \Sunhill\ORM\Test\ts_objectunit();
         $object->storage_values = [
             'id'=>1,
