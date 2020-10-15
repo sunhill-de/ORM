@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Facades\Objects;
 
 class HookingObject extends oo_object  {
 
@@ -37,10 +38,10 @@ class HookingObject extends oo_object  {
     protected function field_changing($params) {
         if ($params['subaction'] == 'ofield') {
             if (is_int($params['FROM'])) {
-                $params['FROM'] = oo_object::load_object_of($params['FROM']);
+                $params['FROM'] = Objects::load($params['FROM']);
             }
             if (is_int($params['TO'])) {
-                $params['TO'] = oo_object::load_object_of($params['TO']);
+                $params['TO'] = Objects::load($params['TO']);
             }
         }
         if (is_a($params['FROM'],'\\Sunhill\\ORM\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Test\\ts_dummy') ) {
@@ -55,10 +56,10 @@ class HookingObject extends oo_object  {
     protected function field_changed($params) {
         if ($params['subaction'] == 'ofield') {
             if (is_int($params['FROM'])) {
-                $params['FROM'] = oo_object::load_object_of($params['FROM']);
+                $params['FROM'] = Objects::load($params['FROM']);
             }
             if (is_int($params['TO'])) {
-                $params['TO'] = oo_object::load_object_of($params['TO']);
+                $params['TO'] = Objects::load($params['TO']);
             }
         }
         if (is_a($params['FROM'],'\\Sunhill\\ORM\\Test\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Test\\ts_dummy') ) {
@@ -98,14 +99,14 @@ class HookingObject extends oo_object  {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
             if (is_int($new)) {
-                $new = oo_object::load_object_of($new);
+                $new = Objects::load($new);
             }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
             if (is_int($new)) {
-                $new = oo_object::load_object_of($new);
+                $new = Objects::load($new);
             }
             $hilf .= $new->dummyint;
         }
@@ -116,14 +117,14 @@ class HookingObject extends oo_object  {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
             if (is_int($new)) {
-                $new = oo_object::load_object_of($new);
+                $new = Objects::load($new);
             }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
             if (is_int($new)) {
-                $new = oo_object::load_object_of($new);
+                $new = Objects::load($new);
             }
             $hilf .= $new->dummyint;
         }
@@ -181,14 +182,14 @@ class HookingChild extends HookingObject {
         $hilf = '(oarray:NEW:';
         foreach ($diff['NEW'] as $new) {
             if (is_int($new)) {
-                $new = oo_object::load_object_of($new);
+                $new = Objects::load($new);
             }
             $hilf .= $new->dummyint;
         }
         $hilf .= ' REMOVED:';
         foreach ($diff['REMOVED'] as $new) {
             if (is_int($new)) {
-                $new = oo_object::load_object_of($new);
+                $new = Objects::load($new);
             }
             $hilf .= $new->dummyint;
         }
@@ -217,8 +218,8 @@ class ObjectHookTest extends DBTestCase
         $test = $init_hook();
         $test->commit();
         
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $read = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
+        Objects::flush_cache();
+        $read = Objects::load($test->get_id());
         $change_hook($read);
         $read->commit();
         
@@ -534,10 +535,10 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeObjectIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
+       Objects::flush_cache();
         // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
-        \Sunhill\ORM\Objects\oo_object::load_id_called($test->get_id(), $test);
-        $readdummy = \Sunhill\ORM\Objects\oo_object::load_object_of($dummy->get_id());
+        Objects::insert_cache($test->get_id(), $test);
+        $readdummy = Objects::load($dummy->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
         $this->assertEquals('(Cofield:123->234)',$test->get_hook_str());
@@ -549,12 +550,12 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeObjectBothIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $readdummy = \Sunhill\ORM\Objects\oo_object::load_object_of($dummy->get_id());
+       Objects::flush_cache();
+        $readdummy = Objects::load($dummy->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
-        $readtest = \Sunhill\ORM\Objects\oo_object::load_object_of($test->get_id());
+       Objects::flush_cache();
+        $readtest = Objects::load($test->get_id());
         $this->assertEquals('(Cofield:123->234)',$readtest->get_hook_str());
         
     }
@@ -589,10 +590,10 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeArrayIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
-        \Sunhill\ORM\Objects\oo_object::flush_cache();
+        Objects::flush_cache();
         // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
-        \Sunhill\ORM\Objects\oo_object::load_id_called($test->get_id(), $test);
-        $readdummy = \Sunhill\ORM\Objects\oo_object::load_object_of($dummy1->get_id());
+        Objects::insert_cache($test->get_id(), $test);
+        $readdummy = Objects::load($dummy1->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
         $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());        
@@ -603,12 +604,12 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeArrayBothIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
-        oo_object::flush_cache();
-        $readdummy = oo_object::load_object_of($dummy1->get_id());
+        Objects::flush_cache();
+        $readdummy = Objects::load($dummy1->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
-        oo_object::flush_cache();
-        $readtest = oo_object::load_object_of($test->get_id());
+        Objects::flush_cache();
+        $readtest = Objects::load($test->get_id());
         $this->assertEquals('(Cobjarray:123->234)',$readtest->get_hook_str());
     }
 }

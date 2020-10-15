@@ -5,6 +5,8 @@
  */
 namespace Sunhill\ORM;
 
+use Sunhill\ORM\Facades\Objects;
+
 /**
  * Basisklasse für Klassen, die Hooks benutzen
  * Folgende Hooks werden vordefiniert:

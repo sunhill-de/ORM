@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Facades\Objects;
 
 class ObjectReReadTest extends DBTestCase
 {
@@ -20,7 +21,7 @@ class ObjectReReadTest extends DBTestCase
 	 * @group simple
 	 */
 	public function testSimpleFields($classname,$init,$modify,$expect) {
-	    oo_object::flush_cache();
+	    Objects::flush_cache();
 	    $classname = 'Sunhill\\ORM\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -40,10 +41,10 @@ class ObjectReReadTest extends DBTestCase
 	        }
 	    }
 	    $init_object->commit();
-	    oo_object::flush_cache();
+	    Objects::flush_cache();
 	    
 // Read
-	    $read_object = oo_object::load_object_of($init_object->get_id());
+	    $read_object = Objects::load($init_object->get_id());
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
 	            $this->assertEquals($value,$read_object->$key,"Wiederauslesen von Feld '$key' fehlgeschlagen.");
@@ -62,8 +63,8 @@ class ObjectReReadTest extends DBTestCase
 	    }
 	    $read_object->commit();
 
-	    oo_object::flush_cache();
-	    $reread_object = oo_object::load_object_of($init_object->get_id());
+	    Objects::flush_cache();
+	    $reread_object = Objects::load($init_object->get_id());
 	    if (!is_null($expect)) {
 	        foreach ($expect as $key => $value) {
 	            $this->assertEquals($value,$reread_object->$key,"Wiederauslesen nach Modify von Feld '$key' fehlgeschlagen.");
@@ -242,7 +243,7 @@ class ObjectReReadTest extends DBTestCase
 	 * @group complex
 	 */
 	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
-	    oo_object::flush_cache();
+	    Objects::flush_cache();
 	    $classname = 'Sunhill\\ORM\\Test\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -263,9 +264,9 @@ class ObjectReReadTest extends DBTestCase
 	    }
 	    $init_object->commit(); 
 	    $id = $init_object->get_id();
-	    oo_object::flush_cache();
+	    Objects::flush_cache();
 	    // Read
-	    $read_object = oo_object::load_object_of($id);
+	    $read_object = Objects::load($id);
 	    if (!is_null($read_callback)) {
 	        if (!$read_callback($read_object)) {
 	            $this->fail("Read_Callback fehlgeschlagen.");
@@ -279,8 +280,8 @@ class ObjectReReadTest extends DBTestCase
 	    }
 	    $read_object->commit();
 
-	    oo_object::flush_cache();
-	    $reread_object = oo_object::load_object_of($init_object->get_id());
+	    Objects::flush_cache();
+	    $reread_object = Objects::load($init_object->get_id());
 	    if (!is_null($expect_callback)) {
 	        if (!$expect_callback($reread_object)) {
 	            $this->fail("Expect_Callback fehlgeschlagen.");
@@ -598,7 +599,7 @@ class ObjectReReadTest extends DBTestCase
 	}
 	
 	public function testChildChange() {
-	       oo_object::flush_cache();
+	       Objects::flush_cache();
 	       $object = new \Sunhill\ORM\Test\ts_referenceonly();
 	       $child  = new \Sunhill\ORM\Test\ts_dummy();
 	       $object->testint = 123;
@@ -607,7 +608,7 @@ class ObjectReReadTest extends DBTestCase
 	       $object->commit();
 	       $child->dummyint = 666;
 	       $child->commit();
-	       $read = \Sunhill\ORM\Objects\oo_object::load_object_of($object->get_id());
+	       $read = Objects::load($object->get_id());
 	       $this->assertEquals(666,$read->testobject->dummyint);
 	       
 	}
@@ -616,7 +617,7 @@ class ObjectReReadTest extends DBTestCase
 	 * @group many
 	 */
 	public function testManyObjects() {
-	    oo_object::flush_cache();
+	    Objects::flush_cache();
 	    $sub = array();
 	    $main = array();
 	    for ($i=0;$i<100;$i++) {
@@ -630,7 +631,7 @@ class ObjectReReadTest extends DBTestCase
 	            $id = $main[$i]->get_id();
 	        }
 	    }
-	    $obj = oo_object::load_object_of($id);
+	    $obj = Objects::load($id);
         $this->assertEquals(50,$obj->testobject->dummyint);
 	}
 }

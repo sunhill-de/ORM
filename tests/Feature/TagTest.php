@@ -7,7 +7,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
- 
+use Sunhill\ORM\Test\ts_dummy;
+use Sunhill\ORM\Objects\oo_tag;
+use Sunhill\ORM\Facades\Objects;
+
 class TagTest extends DBTestCase
 {
        
@@ -16,14 +19,14 @@ class TagTest extends DBTestCase
      * Dieser Test wurde in Feature ausgelager, da er von update-commits abhängig ist
 	 */
 	public function testStaticDeleteTagObjects() {
-	    $object = new \Sunhill\ORM\Test\ts_dummy(); 
+	    $object = new ts_dummy(); 
 	    $object->dummyint = 1;
-	    $tag = \Sunhill\ORM\Objects\oo_tag::search_tag('TagA');
+	    $tag = oo_tag::search_tag('TagA');
 	    $object->tags->stick($tag);
 	    $object->commit();
-	    $tag = \Sunhill\ORM\Objects\oo_tag::delete_tag('TagA');
-	    \Sunhill\ORM\Objects\oo_object::flush_cache();
-	    $object = \Sunhill\ORM\Objects\oo_object::load_object_of($object->get_id());
+	    $tag = oo_tag::delete_tag('TagA');
+	    Objects::flush_cache();
+	    $object = Objects::load($object->get_id());
 	    $this->assertEquals(0,count($object->tags));
 	}
 	
