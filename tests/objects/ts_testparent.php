@@ -30,9 +30,9 @@ class ts_testparent extends \Sunhill\ORM\Objects\oo_object {
 		self::date('parentdate');
 		self::time('parenttime');
 		self::enum('parentenum')->set_values(['testA','testB','testC']);
-		self::object('parentobject')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy'])->set_default(null);
+		self::object('parentobject')->set_allowed_objects(['dummy'])->set_default(null);
 		self::arrayofstrings('parentsarray');
-		self::arrayofobjects('parentoarray')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy']);
+		self::arrayofobjects('parentoarray')->set_allowed_objects(['dummy']);
 		self::calculated('parentcalc');
 	}
 	

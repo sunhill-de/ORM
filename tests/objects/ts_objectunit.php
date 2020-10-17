@@ -51,9 +51,9 @@ class ts_objectunit extends \Sunhill\ORM\Objects\oo_object {
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('intvalue');
-        self::object('objectvalue')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy'])->set_default(null);
+        self::object('objectvalue')->set_allowed_objects(['dummy'])->set_default(null);
         self::arrayofstrings('sarray');
-        self::arrayofobjects('oarray')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy']);
+        self::arrayofobjects('oarray')->set_allowed_objects(['dummy']);
         self::calculated('calcvalue');
     }
 

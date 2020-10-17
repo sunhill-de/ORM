@@ -17,8 +17,8 @@ class ts_referenceonly extends \Sunhill\ORM\Objects\oo_object {
     protected static function setup_properties() {
 		parent::setup_properties();
 		self::integer('testint');
-		self::object('testobject')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy','\Sunhill\ORM\Test\ts_referenceonly'])->set_default(null);;
-		self::arrayofobjects('testoarray')->set_allowed_objects(['\Sunhill\ORM\Test\ts_dummy','\Sunhill\ORM\Test\ts_referenceonly']);
+		self::object('testobject')->set_allowed_objects(['dummy','referenceonly'])->set_default(null);;
+		self::arrayofobjects('testoarray')->set_allowed_objects(['dummy','referenceonly']);
 	}
 	
 }
