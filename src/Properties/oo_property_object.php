@@ -4,6 +4,7 @@ namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Storage\storage_base;
 
 require_once('property_traits.php');
 
@@ -29,7 +30,7 @@ class oo_property_object extends oo_property_field {
 	 * {@inheritDoc}
 	 * @see \Sunhill\ORM\Properties\oo_property::load()
 	 */
-	protected function do_load(\Sunhill\ORM\Storage\storage_base $storage,$name) {
+	protected function do_load(storage_base $storage,$name) {
         $reference = $storage->$name;
 	    if (!empty($reference)) {
 	        $this->do_set_value($reference);
