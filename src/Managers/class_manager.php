@@ -67,7 +67,7 @@ class class_manager {
                 throw new SunhillException("Can't delete the class cache.");
             }
         }
-        $this->class_dirs = [];
+        $this->object_dirs = [];
     }
 
     /**
