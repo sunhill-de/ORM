@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use \Sunhill\ORM\Managers\class_manager;
 use \Sunhill\ORM\Managers\object_manager;
 use \Sunhill\ORM\Managers\tag_manager;
+use Sunhill\ORM\Console\MigrateObjects;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -23,7 +24,10 @@ class SunhillServiceProvider extends ServiceProvider
     {
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang','ORM');
         if ($this->app->runningInConsole()) {
-
+            $this->commands([
+                MigrateObjects::class,
+            ]);
+            
           if (! class_exists('CreateAttributesTable')) {
             $this->publishes([
                 __DIR__ . '/../database/migrations/create_attributes_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', time()) . '_create_attributes_table.php'),

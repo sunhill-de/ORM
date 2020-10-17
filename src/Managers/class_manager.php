@@ -31,13 +31,8 @@ use Sunhill\ORM\Objects\oo_object;
 class class_manager {
  
     private static $translatable = [/*'name_s','name_p','description'*/];
-    
-    /**
-     * Stores all directories, that coinatin classes
-     * @var array
-     */
-    private $class_dirs = [];
-    
+        
+    private $object_dirs = [];
     /**
      * Stores the information about the classes
      * @var array|null
@@ -189,7 +184,7 @@ class class_manager {
     public function create_cache($class_dir=null) {
         if (is_null($class_dir)) {
             // If not passes, set class dir to default
-            $class_dir = $this->class_dirs;
+            $class_dir = $this->object_dirs;
         } else if (is_string($class_dir)) {
             $class_dir = [$class_dir];
         } else if (!is_array($class_dir)) {
