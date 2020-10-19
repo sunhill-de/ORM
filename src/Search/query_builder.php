@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\Facades\Objects;
 
 class QueryException extends SunhillException {}
 
@@ -271,9 +272,9 @@ class query_builder {
     public function load_if_exists() {
         $this->set_query_part('target', new query_target_id($this));
         $this->set_query_part('limit', new query_limit($this,0,1));
-        $result = $this->prepare_query($dump);
+        $result = $this->prepare_query(false);
         if (!empty($result)) {
-            return oo_object::load_object_if($result[0]->id);       
+            return Objects::load($result[0]->id);       
         } else {
             return null;
         }
