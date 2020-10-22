@@ -15,6 +15,7 @@ use \Sunhill\ORM\SunhillException;
 use Illuminate\Support\Facades\Lang;
 use Sunhill\ORM\Utils\descriptor;
 use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\Utils\object_migrator;
 
  /**
   * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
@@ -512,5 +513,10 @@ class class_manager {
     public function is_subclass_of($test,$class) {
         $namespace = $this->get_namespace_of_class($this->search_class($class));
         return is_subclass_of($test,$namespace);        
+    }
+    
+    public function migrate_class(string $class_name) {
+        $migrator = new object_migrator();
+        $migrator->migrate($class_name);
     }
 }
