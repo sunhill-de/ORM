@@ -8,71 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
-
-class testA extends oo_object {
-   
-    public static $object_infos = [
-        'name'=>'testA',            // A repetition of static:$object_name @todo see above
-        'table'=>'testA',         // A repitition of static:$table_name
-        'name_s'=>'Migrationtest A object',   // A human readable name in singular
-        'name_p'=>'Migrationtest A objects',  // A human readable name in plural
-        'description'=>'For migration tests only',
-        'options'=>0,               // Reserved for later purposes
-    ];
-    public static $table_name = 'testA';
-    
-    protected static function setup_properties() {
-        parent::setup_properties();
-        self::integer('testint');
-        self::varchar('testchar');
-    }
-    
-}
-
-class testD extends \Sunhill\ORM\Test\ts_dummy {
-
-    public static $object_infos = [
-        'name'=>'testD',            // A repetition of static:$object_name @todo see above
-        'table'=>'testD',         // A repitition of static:$table_name
-        'name_s'=>'Migrationtest D object',   // A human readable name in singular
-        'name_p'=>'Migrationtest D objects',  // A human readable name in plural
-        'description'=>'For migration tests only',
-        'options'=>0,               // Reserved for later purposes
-    ];
-    public static $table_name = 'testD';
-    
-    public static $type='varchar';
-    
-    protected static function setup_properties() {
-        $method = self::$type;
-        parent::setup_properties();
-        if ($method == 'enum') {
-            self::enum('testfield')->set_enum_values(['A','B']);  
-        } else {
-            self::$method('testfield');
-        }
-    }
-    
-}
-
-class testE extends oo_object {
-
-    public static $object_infos = [
-        'name'=>'testE',            // A repetition of static:$object_name @todo see above
-        'table'=>'testE',         // A repitition of static:$table_name
-        'name_s'=>'Migrationtest e object',   // A human readable name in singular
-        'name_p'=>'Migrationtest e objects',  // A human readable name in plural
-        'description'=>'For migration tests only',
-        'options'=>0,               // Reserved for later purposes
-    ];
-    public static $table_name = 'testE';
-    
-    protected static function setup_properties() {
-        parent::setup_properties();
-        self::arrayofobjects('testfield')->set_allowed_objects(["\Sunhill\ORM\Test\\ts_dummy"]);
-    }
-    
-}
+use Sunhill\ORM\Test\TestA;
+use Sunhill\ORM\Test\TestD;
+use Sunhill\ORM\Test\TestE;
+use Sunhill\ORM\Facades\Classes;
 
 class ObjectMigrateTest extends DBTestCase
 {
@@ -90,7 +29,7 @@ class ObjectMigrateTest extends DBTestCase
     public function testNewField() {
         DB::statement('drop table if exists testA');
         DB::statement('create table testA (id int primary key,testint int)');
-        testA::migrate();
+        Classes::migrate_class('testA');
         $test = new testA();
         $test->testint = 123;
         $test->testchar = 'AAA';
