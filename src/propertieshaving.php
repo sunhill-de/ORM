@@ -369,7 +369,7 @@ class propertieshaving extends hookable {
 	
 	protected static $property_definitions;
 	
-	protected static function initialize_properties() {
+	public static function initialize_properties() {
  	       static::$property_definitions = array();
 	       static::setup_properties();
 	}
