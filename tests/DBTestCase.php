@@ -4,6 +4,7 @@ namespace Sunhill\ORM\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Classes;
 
 abstract class DBTestCase extends TestCase
 {
@@ -18,6 +19,7 @@ abstract class DBTestCase extends TestCase
             static::$db_inited = true;
             $this->do_migration();
             $this->do_seeding();
+            Classes::create_cache(dirname(__FILE__).'/objects');
         }
         Objects::flush_cache();
     }
