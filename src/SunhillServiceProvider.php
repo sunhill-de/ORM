@@ -7,6 +7,7 @@ use \Sunhill\ORM\Managers\class_manager;
 use \Sunhill\ORM\Managers\object_manager;
 use \Sunhill\ORM\Managers\tag_manager;
 use Sunhill\ORM\Console\MigrateObjects;
+use Sunhill\ORM\Console\FlushCaches;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,7 @@ class SunhillServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 MigrateObjects::class,
+                FlushCaches::class
             ]);
             
           if (! class_exists('CreateAttributesTable')) {
