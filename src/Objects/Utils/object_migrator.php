@@ -106,10 +106,10 @@ class object_migrator {
     private function get_current_properties() {
         $properties = $this->class_namespace::static_get_properties_with_feature('simple','class');
         $result = array();
-        if (!isset($properties[$this->class_namespace])) {
+        if (!isset($properties[$this->class_name])) {
             return $result;
         }
-        foreach ($properties[$this->class_namespace] as $property) {
+        foreach ($properties[$this->class_name] as $property) {
             $result[$property->get_name()] = ['type'=>$property->get_type()];
             switch ($property->get_type()) {
                 case 'varchar':
