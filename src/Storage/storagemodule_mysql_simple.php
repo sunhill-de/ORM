@@ -1,4 +1,16 @@
-<?php namespace Sunhill\ORM\Storage;
+<?php 
+/**
+ * @file storagemodule_mysql_simple.php
+ * Provides the storage module that uses mysql for simple properties
+ * Lang en
+ * Reviewstatus: 2020-09-11
+ * Localization: unknown
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ */
+
+namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
@@ -10,7 +22,7 @@ class storagemodule_mysql_simple extends storagemodule_base {
     
     public function load(int $id) {
         foreach ($this->storage->get_inheritance() as $inheritance) {
-            $table = $inheritance::$table_name;
+            $table = ($inheritance=='object')?'objects':Classes::get_table_of_class($inheritance); 
             $result = DB::table($table)->where('id','=',$id)->first();
             if (!empty($result)) {
                 foreach ($result as $name => $value) {
@@ -43,10 +55,10 @@ class storagemodule_mysql_simple extends storagemodule_base {
         $id = $this->store_core();
         $fields = $this->storage->filter_storage('simple','class');
         foreach ($this->storage->get_inheritance() as $inheritance) {
-            if ($inheritance == "Sunhill\\ORM\\Objects\\oo_object") {
+            if ($inheritance == "object") {
                 return $id;
             }
-            $table = $inheritance::$table_name;
+            $table = Classes::get_table_of_class($inheritance);
             if (!isset($fields[$inheritance])) {
                 $this->store_table($id,$table,[]);
             } else {
@@ -74,10 +86,10 @@ class storagemodule_mysql_simple extends storagemodule_base {
             return $id;
         }
         foreach ($this->storage->get_inheritance() as $inheritance) {
-            if ($inheritance == "Sunhill\\Objects\\oo_object") {
+            if ($inheritance == "object") {
                 $this->update_core($id);
             }
-            $table = $inheritance::$table_name;
+            $table = Classes::get_table_of_class($inheritance);
             if (isset($fields[$inheritance])) {
                 $this->update_table($id,$table,$fields[$inheritance]);
             }
@@ -87,7 +99,7 @@ class storagemodule_mysql_simple extends storagemodule_base {
     
     public function delete(int $id) {
         foreach ($this->storage->get_inheritance() as $inheritance) {
-            $table = $inheritance::$table_name;
+            $table = Classes::get_table_of_class($inheritance);
             DB::table($table)->where('id',$id)->delete();
         }
         return $id;        
@@ -101,7 +113,7 @@ class storagemodule_mysql_simple extends storagemodule_base {
     public function degrade(int $id,array $degration_info) {
         DB::table('objects')->where('id',$id)->update(['classname'=>$degration_info['newclass']]);
         foreach ($degration_info['diff'] as $class) {
-            DB::table($class::$table_name)->where('id',$id)->delete();
+            DB::table(Classes::get_table_of_class($class))->where('id',$id)->delete();
         }
         return $id;
     }
