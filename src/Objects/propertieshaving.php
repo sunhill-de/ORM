@@ -3,10 +3,13 @@
  * @file propertieshaving.php
  * Definiert die Klassen PropertiesHavingException und propertieshaving
  */
-namespace Sunhill\ORM;
+namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Search\query_builder;
+use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\hookable;
+use Sunhill\ORM\Facades\Classes;
 
 /**
  * Abgeleitete Exception die im Zusammenhang mit Properties stehen
@@ -47,6 +50,14 @@ class propertieshaving extends hookable {
     
     protected $properties;
     
+    public static $object_infos = [
+        'name'=>'propertieshaving',       // A repetition of static:$object_name @todo see above
+        'table'=>'',     // A repitition of static:$table_name
+        'name_s'=>'properties having',     // A human readable name in singular
+        'name_p'=>'properties having',    // A human readable name in plural
+        'description'=>'Baseclass of all other classes in the ORM system. An oo_object should\'t be initiated directly',
+        'options'=>0,           // Reserved for later purposes
+    ];
     /**
      * Konstruktur, ruft nur zusätzlich setup_properties auf
      */
@@ -383,12 +394,12 @@ class propertieshaving extends hookable {
 	    return $caller[4]['class'];
 	}
 	
-	protected static function create_property($name,$type) {
+	protected static function create_property($name,$type,$class=null) {
 	    $property_name = '\Sunhill\ORM\Properties\oo_property_'.$type;
 	    $property = new $property_name();
 	    $property->set_name($name);
 	    $property->set_type($type);
-	    $property->set_class(self::get_calling_class());
+	    $property->set_class(is_null($class)?Classes::get_class_name(self::get_calling_class()):$class);
 	    $property->initialize();
 	    return $property;
 	}
@@ -466,4 +477,70 @@ class propertieshaving extends hookable {
 	     $query->set_calling_class(get_called_class());
 	     return $query;
 	}
+	
+	protected static function timestamp($name) {
+	    $property = self::add_property($name, 'timestamp');
+	    return $property;
+	}
+	
+	protected static function integer($name) {
+	    $property = self::add_property($name, 'integer');
+	    return $property;
+	}
+	
+	protected static function varchar($name) {
+	    $property = self::add_property($name, 'varchar');
+	    return $property;
+	}
+	
+	protected static function object($name) {
+	    $property = self::add_property($name, 'object');
+	    return $property;
+	}
+	
+	protected static function text($name) {
+	    $property = self::add_property($name, 'text');
+	    return $property;
+	}
+	
+	protected static function enum($name) {
+	    $property = self::add_property($name, 'enum');
+	    return $property;
+	}
+	
+	protected static function datetime($name) {
+	    $property = self::add_property($name, 'datetime');
+	    return $property;
+	}
+	
+	protected static function date($name) {
+	    $property = self::add_property($name, 'date');
+	    return $property;
+	}
+	
+	protected static function time($name) {
+	    $property = self::add_property($name, 'time');
+	    return $property;
+	}
+	
+	protected static function float($name) {
+	    $property = self::add_property($name, 'float');
+	    return $property;
+	}
+	
+	protected static function arrayofstrings($name) {
+	    $property = self::add_property($name, 'array_of_strings');
+	    return $property;
+	}
+	
+	protected static function arrayofobjects($name) {
+	    $property = self::add_property($name, 'array_of_objects');
+	    return $property;
+	}
+	
+	protected static function calculated($name) {
+	    $property = self::add_property($name, 'calculated');
+	    return $property;
+	}
+	
 }
