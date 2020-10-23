@@ -141,7 +141,18 @@ class class_manager {
         }
         $class_array = $this->get_class_array();
         $file = fopen($this->cache_file(),'w+');
-        fputs($file,"<?php return [\n");
+        fputs($file,"<?php return [\n".
+'    "object"=>['."\n".
+'       "class"=>"Sunhill\\ORM\\Object\\oo_object",'."\n".
+'       "name"=>"object",'."\n".
+'       "table"=>"objects",'."\n".
+'       "name_s"=>"object",'."\n".
+'       "name_p"=>"objects",'."\n".
+'       "description"=>"Base class for objects",'."\n".
+'       "options"=>"0",'."\n".
+'       "parent"=>"",'."\n".
+'       "properties"=>[]],'."\n"
+            );
         foreach ($class_array as $class) {
             $class_info = $this->get_class_info($class);
             fputs($file,'    "'.$class_info['name'].'"=>['."\n");
@@ -419,6 +430,24 @@ class class_manager {
     public function get_parent_of_class(string $name) {
         $name = $this->check_class($this->search_class($name));
         return $this->get_class($name,'parent');
+    }
+
+    /**
+     * Returns the inheritance of the given class. 
+     * @param string $name
+     * @param bool $include_self
+     */
+    public function get_inheritance_of_class(string $name,bool $include_self=false) {
+        if ($include_self) {
+            $result = [$name];
+        } else {
+            $result = [];
+        }
+        do {
+           $name = $this->get_parent_of_class($name); 
+           $result[] = $name;
+        } while ($name !== 'object');
+        return $result;
     }
 
     /**
