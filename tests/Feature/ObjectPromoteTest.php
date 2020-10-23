@@ -21,11 +21,11 @@ class ObjectPromoteTest extends DBTestCase
     
     public function InheritanceProvider(){    
         return [
-            ['Sunhill\ORM\Test\\ts_testparent',['Sunhill\\ORM\\Objects\oo_object']],
-            ['Sunhill\ORM\Test\\ts_testchild',['Sunhill\ORM\Test\\ts_testparent','Sunhill\\ORM\\Objects\oo_object']],
-            ['Sunhill\ORM\Test\\ts_passthru',['Sunhill\ORM\Test\\ts_testparent','Sunhill\\ORM\\Objects\oo_object']],
-            ['Sunhill\ORM\Test\\ts_secondlevelchild',['Sunhill\ORM\Test\\ts_passthru','Sunhill\ORM\Test\\ts_testparent','Sunhill\\ORM\\Objects\oo_object']],
-            ['Sunhill\ORM\Test\\ts_thirdlevelchild',['Sunhill\ORM\Test\\ts_secondlevelchild','Sunhill\ORM\Test\\ts_passthru','Sunhill\ORM\Test\\ts_testparent','Sunhill\\ORM\\Objects\oo_object']]
+            ['Sunhill\ORM\Test\\ts_testparent',['object']],
+            ['Sunhill\ORM\Test\\ts_testchild',['testparent','object']],
+            ['Sunhill\ORM\Test\\ts_passthru',['testparent','object']],
+            ['Sunhill\ORM\Test\\ts_secondlevelchild',['passthru','testparent','object']],
+            ['Sunhill\ORM\Test\\ts_thirdlevelchild',['secondlevelchild','passthru','testparent','object']]
         ];
     }
     
