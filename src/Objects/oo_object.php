@@ -80,7 +80,9 @@ class oo_object extends propertieshaving {
 	
 	
 	/**
-	 * Fügt dem Objekt einen neuen Eintrag hinzu, der die ID des Objektes benötigt
+	 * Adds another entry to the needid_queries array. This array is needed for queries that have
+	 * been executed before the id of the master object was ready. So this queries have to be updated
+	 * with the actual ID. 
 	 * @param string $table
 	 * @param array $fixed
 	 * @param string $id_field
@@ -90,7 +92,7 @@ class oo_object extends propertieshaving {
 	}
 	
 	/**
-	 * Die Einträge werden der Reihe nach abgearbeitet
+	 * Processes all entries in the need_id_query
 	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
 	protected function execute_need_id_queries(\Sunhill\ORM\Storage\storage_base $storage) {
@@ -261,77 +263,30 @@ class oo_object extends propertieshaving {
 	}
 
 // ================================== Promotion ===========================================	
+	
 	/**
-	 * Hebt das momentane Objekt auf eine abgeleitete Klasse an
+	 * Raises this object to a (higher) class
 	 * @param String $newclass
-	 * @throws ObjectException
-	 * @return oo_object
+	 * @return unknown
 	 */
 	public function promote(String $newclass) {
-	    if (!class_exists($newclass)) {
-	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");    
-	    }
-	    if (!is_subclass_of($newclass, get_class($this))) {
-	        throw new ObjectException("'$newclass' ist keine Unterklassen von '".get_class($this)."'");
-	    }
-	    $this->pre_promotion($newclass);
-	    $newobject = $this->promotion($newclass);
-	    $newobject->post_promotion($this);
-	    return $newobject;
+        return Objects::promote_object($this,$newclass);    
 	}
 	
 	/**
-	 * Wird aufgerufen, bevor die Promovierung stattfindet
-	 * @param String $newclass
+	 * The old (lower) object is called before the promotion takes place.
+	 * @param string $newclass
 	 */
-	protected function pre_promotion(String $newclass) {
-	   return true; // Mach in der urspünglichen Variante nix
+	public function pre_promotion(string $newclass) {
+	    // Does nothing
 	}
 	
 	/**
-	 * Die eigentliche Promovierung
-	 * @todo Has an direct database access
-	 * @param String $newclass
-	 */
-	private function promotion(String $newclass) {
-	    $newobject = new $newclass; // Neues Objekt erzeugen
-	    $newobject->set_id($this->get_id());
-	    $this->copy_to($newobject); // Die Werte bis zu dieser Hirarchie können kopiert werden
-	    DB::table('objects')->where('id','=',$this->get_id())->update(['classname'=>$newclass]);
-	    $newobject->recalculate();
-	    return $newobject;
-	}
-	
-	protected function copy_to(oo_object $newobject) {
-	    $newobject->set_id($this->get_id());
-	    foreach ($this->properties as $property) {
-	        $name = $property->get_name();
-	        switch ($property->get_type()) {
-	            case 'array_of_objects':
-	            case 'array_of_strings':
-	            case 'external_references':
-	            case 'tags':
-	                for ($i=0;$i<count($this->$name);$i++) {
-	                    $newobject->$name[] = $this->$name[$i];
-	                }
-	                $newobject->get_property($name)->commit();
-	                break;
-	            case 'calculated':
-	                $newobject->recalculate($name);
-	                break;
-	            default:
-	                $newobject->$name = $this->$name;
-	                $newobject->get_property($name)->commit();
-	        }
-	    }
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Objekt promoviert wurde
-	 * @param oo_object $newobject
+	 * The newly created (promoted) object is called after the promotion took place
+	 * @param oo_object $from The old (lower) object
 	 */
 	public function post_promotion(oo_object $from) {
-	    
+	    // Does nothing
 	}
 
 // ===================================== Degration =============================================	
@@ -383,6 +338,35 @@ class oo_object extends propertieshaving {
 	    
 	}
 	
+	/**
+	 * This routine copies the properties to $newobject
+	 * @param oo_object $newobject
+	 */
+	public function copy_to(oo_object $newobject) {
+	    $newobject->set_id($this->get_id());
+	    foreach ($this->properties as $property) {
+	        $name = $property->get_name();
+	        switch ($property->get_type()) {
+	            case 'array_of_objects':
+	            case 'array_of_strings':
+	            case 'external_references':
+	            case 'tags':
+	                for ($i=0;$i<count($this->$name);$i++) {
+	                    $newobject->$name[] = $this->$name[$i];
+	                }
+	                break;
+	            case 'calculated':
+	                break;
+	            default:
+	                $newobject->$name = $this->$name;
+	        }
+	    }
+	}
+	
+	/**
+	 * This routine copies the properties of the $source to this object
+	 * @param oo_object $source
+	 */
 	public function copy_from(oo_object $source) {
 	    $this->set_id($source->get_id());
 	    foreach ($this->properties as $property) {
@@ -407,26 +391,14 @@ class oo_object extends propertieshaving {
 	public function post_degration(oo_object $from) {
 	    
 	}
-	
+
+	/**
+	 * This function just calls the routine of the Classes facade
+	 * @param boolean $full
+	 * @return unknown
+	 */
 	public function get_inheritance($full=false) {
 	    return Classes::get_inheritance_of_class(static::$object_infos['name'],$full);
-	    /*
-	    $parent_class_names = array();
-	     $parent_class_name = get_class($this);
-	     if ($full) {
-	         //$parent_class_names[] = $parent_class_name;
-	     }
-	     do {
-	         $parent_class_names[] = $parent_class_name;
-	         if (($parent_class_name == 'Sunhill\\ORM\\Objects\\oo_object')) {
-	             if (!$full) {
-	                array_shift($parent_class_names);
-	             }
-	             return $parent_class_names;
-	         }
-	         //array_unshift($parent_class_names,$parent_class_name);
-	     } while ($parent_class_name = get_parent_class($parent_class_name));
-	     return $parent_class_names;*/
 	}
 	
 	/**

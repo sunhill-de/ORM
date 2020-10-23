@@ -50,7 +50,7 @@ class ObjectPromoteTest extends DBTestCase
         $id = $test->get_id();
         $new = $test->promote('\\Sunhill\\ORM\\Test\\ts_thirdlevelchild');
         $new->commit(); 
-       Objects::flush_cache();
+        Objects::flush_cache();
         $read = Objects::load($id);
         $this->assertEquals(1,$read->childint);
         $this->assertEquals(2,$read->childchildint);
@@ -87,7 +87,7 @@ class ObjectPromoteTest extends DBTestCase
     }
     
    public function testWrongInhertiance() {
-        $this->expectException(\Sunhill\ORM\Objects\ObjectException::class);
+        $this->expectException(\Sunhill\ORM\Managers\ObjectManagerException::class);
         $test = new \Sunhill\ORM\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -103,7 +103,7 @@ class ObjectPromoteTest extends DBTestCase
     }
     
     public function testNotExistingClassInhertiance() {
-        $this->expectException(\Sunhill\ORM\Objects\ObjectException::class);
+        $this->expectException(\Sunhill\ORM\Managers\ObjectManagerException::class);
         $test = new \Sunhill\ORM\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;

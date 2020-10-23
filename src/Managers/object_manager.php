@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\SunhillException;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\Utils\object_promotor;
 
 class ObjectManagerException extends SunhillException {}
 
@@ -167,6 +168,26 @@ class object_manager  {
 		 */
 		public function clear_cache(int $id) {
 		    unset($this->object_cache[$id]);
+		}
+		
+		public function get_object($object) {
+		    if (is_a($object,oo_object::class)) {
+		        return $object;
+		    } else if (is_int($object)) {
+		        return $this->load($object);
+		    } else {
+		        throw new ObjectManagerException("Passed parameter is not resolvable to an object.");
+		    }
+		}
+		
+		/**
+		 * Raises the given object $object to a new (and higher) class $newclass
+		 * @param oo_object|int $object
+		 * @param string $newclass
+		 */
+		public function promote_object($object,string $newclass) {
+		    $promotor = new object_promotor();
+		    return $promotor->promote($this->get_object($object),$newclass);
 		}
 		
  }
