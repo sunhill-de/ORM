@@ -21,8 +21,7 @@ class MigrateObjects extends Command
         if (!empty($classes)) {
             foreach($classes as $name => $infos) {
                 $this->info('Migrating: '.$name);
-                $namespace = $infos->class;
-                $namespace::migrate();
+                Classes::migrate_class($name);
             }
         }
         $this->info('Migrating finished.');
