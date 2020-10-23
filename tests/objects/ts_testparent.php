@@ -8,7 +8,7 @@ class ts_testparent extends \Sunhill\ORM\Objects\oo_object {
     public static $table_name = 'testparents';
     public static $object_infos = [
         'name'=>'testparent',       // A repetition of static:$object_name @todo see above
-        'table'=>'testparentes',     // A repitition of static:$table_name
+        'table'=>'testparents',     // A repitition of static:$table_name
         'name_s'=>'test parent',     // A human readable name in singular
         'name_p'=>'test parents',    // A human readable name in plural
         'description'=>'Another test class. A class with all avaiable properties',
