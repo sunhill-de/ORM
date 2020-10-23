@@ -18,13 +18,11 @@ use Sunhill\ORM\SunhillException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 
-require_once(dirname(__FILE__).'/../base.php');
-
 /**
  * Baseclass for errors that raise inside of oo_object
  * @author lokal
  */
-class ObjectException extends \Sunhill\ORM\SunhillException {}
+class ObjectException extends SunhillException {}
 
 /**
  * This exception indicates that an unknown property was requested
@@ -44,7 +42,7 @@ class UnknownPropertyException extends ObjectException {}
  * - No direct database interaction. Should be handled by the storages
  * @author lokal
  */
-class oo_object extends \Sunhill\ORM\propertieshaving {
+class oo_object extends propertieshaving {
 
     /**
      * Static variable that stores the name of the database table.
@@ -74,8 +72,8 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
      */
 	public function __construct() {
 	    parent::__construct();
-	    $this->properties['tags'] = self::create_property('tags','tags')->set_owner($this);
-	    $this->properties['externalhooks'] = self::create_property('externalhooks','externalhooks')->set_owner($this);
+	    $this->properties['tags'] = self::create_property('tags','tags','object')->set_owner($this);
+	    $this->properties['externalhooks'] = self::create_property('externalhooks','externalhooks','object')->set_owner($this);
 	}
 	
 	// ========================================== NeedID-Queries ========================================
@@ -231,12 +229,11 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	    Objects::clear_cache($this->get_id());
 	}
 	
-	// ********************* Property Handling *************************************	
+	// ********************* Property handling *************************************	
 	
 	/**
-	 * Berechnet ein oder alle Calculatefelder neu
-	 * Wird der Parameter $property mit dem Namen eines Calculate-Felder aufgerufen, wird nur dieses
-	 * neu berechnet. Ohne diesen Parameter werden alle neu berechnet.
+	 * Recaculated all or one specific calculated fields. 
+	 * If $property is set, only this one is recalculated
 	 * @param unknown $property
 	 */
 	public function recalculate($property=null) {
@@ -412,7 +409,9 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	}
 	
 	public function get_inheritance($full=false) {
-	     $parent_class_names = array();
+	    return Classes::get_inheritance_of_class(static::$object_infos['name'],$full);
+	    /*
+	    $parent_class_names = array();
 	     $parent_class_name = get_class($this);
 	     if ($full) {
 	         //$parent_class_names[] = $parent_class_name;
@@ -427,7 +426,7 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	         }
 	         //array_unshift($parent_class_names,$parent_class_name);
 	     } while ($parent_class_name = get_parent_class($parent_class_name));
-	     return $parent_class_names;
+	     return $parent_class_names;*/
 	}
 	
 	/**
@@ -503,80 +502,27 @@ class oo_object extends \Sunhill\ORM\propertieshaving {
 	        throw new \Sunhill\ORM\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
 	    }	    
 	}
+	
+	/**
+	 * This routine is called, whenever a migration on the class was performed
+	 * @param unknown $added_fields
+	 * @param unknown $removed_fields
+	 */
+	public function object_migrated(array $added_fields,array $removed_fields,array $changed_fields) {
+	    
+	}
+	
 	// ********************** Static methods  ***************************	
 	
-// ======================= Statisches Proprtyhandling =============================	
+	/**
+	 * Initializes the properties of this object. Any child has to call its parents setup_properties() method
+	 */
 	protected static function setup_properties() {
 	    parent::setup_properties(); 
 	    self::add_property('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
 	}
-
-	protected static function timestamp($name) {
-	    $property = self::add_property($name, 'timestamp');
-	    return $property;
-	}
-	
-	protected static function integer($name) {
-	    $property = self::add_property($name, 'integer');
-	    return $property;
-	}
-	
-	protected static function varchar($name) {
-	    $property = self::add_property($name, 'varchar');
-	    return $property;
-	}
-	
-	protected static function object($name) {
-	    $property = self::add_property($name, 'object');
-	    return $property;
-	}
-	
-	protected static function text($name) {
-	    $property = self::add_property($name, 'text');
-	    return $property;
-	}
-	
-	protected static function enum($name) {
-	    $property = self::add_property($name, 'enum');
-	    return $property;
-	}
-	
-	protected static function datetime($name) {
-	    $property = self::add_property($name, 'datetime');
-	    return $property;
-	}
-	
-	protected static function date($name) {
-	    $property = self::add_property($name, 'date');
-	    return $property;
-	}
-	
-	protected static function time($name) {
-	    $property = self::add_property($name, 'time');
-	    return $property;
-	}
-	
-	protected static function float($name) {
-	    $property = self::add_property($name, 'float');
-	    return $property;
-	}
-	
-	protected static function arrayofstrings($name) {
-	    $property = self::add_property($name, 'array_of_strings');
-	    return $property;
-	}
-	
-	protected static function arrayofobjects($name) {
-	    $property = self::add_property($name, 'array_of_objects');
-	    return $property;
-	}
-	
-	protected static function calculated($name) {
-	    $property = self::add_property($name, 'calculated');
-	    return $property;
-	}	
 
 	// ****************** Migration **********************************
 	/**
