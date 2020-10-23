@@ -5,6 +5,7 @@ namespace Sunhill\ORM\Search;
 use Sunhill\ORM\Properties\oo_property;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Search\QueryException;
+use Sunhill\ORM\Facades\Classes;
 
 /**
  * An abstract base class for where parts in a query. It provides a check for allowed relations and stores the required field for the query
@@ -58,8 +59,7 @@ abstract class query_where extends query_atom {
     }
     
     protected function get_table_name(oo_property $field) {
-        $owner = $field->get_class();
-        return $owner::$table_name;
+        return Classes::get_table_of_class($field->get_class());
     }
     
     /**
