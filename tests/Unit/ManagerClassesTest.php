@@ -402,6 +402,23 @@ class ManagerClassesTest extends DBTestCase
         ];
     }
     
+    /**
+     * @dataProvider GetInheritanceProvider
+     * @param unknown $test
+     * @param unknown $include_self
+     * @param unknown $expect
+     */
+    public function testGetInheritance($test,$include_self,$expect) {
+        $this->assertEquals($expect,Classes::get_inheritance_of_class($test,$include_self));    
+    }
+    
+    public function GetInheritanceProvider() {
+        return [
+            ['testparent',false,['object']],
+            ['testparent',true,['testparent','object']],
+            ['testchild',true,['testchild','testparent','object']]
+        ];
+    }
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));
