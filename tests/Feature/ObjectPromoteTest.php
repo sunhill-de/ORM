@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\SunhillException;
 
 class ObjectPromoteTest extends DBTestCase
 {
@@ -87,7 +88,7 @@ class ObjectPromoteTest extends DBTestCase
     }
     
    public function testWrongInhertiance() {
-        $this->expectException(\Sunhill\ORM\Managers\ObjectManagerException::class);
+        $this->expectException(SunhillException::class);
         $test = new \Sunhill\ORM\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -99,11 +100,11 @@ class ObjectPromoteTest extends DBTestCase
         $test->parentenum='testA';
         $test->commit();
         $id = $test->get_id();
-        $new = $test->promote('\\Sunhill\\Test\\ts_testchild');        
+        $new = $test->promote('ts_testchild');        
     }
     
     public function testNotExistingClassInhertiance() {
-        $this->expectException(\Sunhill\ORM\Managers\ObjectManagerException::class);
+        $this->expectException(SunhillException::class);
         $test = new \Sunhill\ORM\Test\ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
@@ -115,7 +116,7 @@ class ObjectPromoteTest extends DBTestCase
         $test->parentenum='testA';
         $test->commit();
         $id = $test->get_id();
-        $new = $test->promote('\\Sunhill\\ORM\\Test\\notexisting');
+        $new = $test->promote('notexisting');
     }
     
 }

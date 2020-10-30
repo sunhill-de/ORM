@@ -18,6 +18,7 @@ use Sunhill\ORM\SunhillException;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Objects\Utils\object_promotor;
+use Sunhill\ORM\Objects\Utils\object_degrader;
 
 class ObjectManagerException extends SunhillException {}
 
@@ -170,6 +171,12 @@ class object_manager  {
 		    unset($this->object_cache[$id]);
 		}
 		
+		/**
+		 * Returns an instance of oo_object. If its just its id it loads the object
+		 * @param unknown $object
+		 * @throws ObjectManagerException
+		 * @return unknown
+		 */
 		public function get_object($object) {
 		    if (is_a($object,oo_object::class)) {
 		        return $object;
@@ -190,4 +197,14 @@ class object_manager  {
 		    return $promotor->promote($this->get_object($object),$newclass);
 		}
 		
- }
+		/**
+		 * Lowers the given object $object to a new (and lower) class $newclass
+		 * @param oo_object|int $object
+		 * @param string $newclass
+		 */
+		public function degrade_object($object,string $newclass) {
+		    $degrader = new object_degrader();
+		    return $degrader->degrade($this->get_object($object),$newclass);
+		}
+		
+}

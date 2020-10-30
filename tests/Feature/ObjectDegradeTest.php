@@ -63,7 +63,7 @@ class ObjectDegradeTest extends DBTestCase
         $test->tags->stick($tag);
         $test->commit();
         $id = $test->get_id();
-        $new = $test->degrade('Sunhill\\ORM\\Test\\ts_testparent');
+        $new = $test->degrade('testparent');
         $new->commit();
         Objects::flush_cache();
         $read = Objects::load($id);

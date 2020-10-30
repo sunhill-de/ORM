@@ -288,6 +288,13 @@ class class_manager {
     }
     
 // *************************** Informations about a specific class **************************    
+    private function not_exists($test) {
+        if ($this->search_class($test)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     /**
      * Normalizes the passed namespace (removes heading \ and double backslashes)
      * @param string $namespace
@@ -306,10 +313,14 @@ class class_manager {
      * This method returns the name of the class or null
      * If $needle is a string with backslashes it searches the correspending class name
      * If $needle is a string without backslahes it just returns the name
+     * if $needle is an object it gets the namespace of this object and searches it
      * @param string $needle
      */
-    public function search_class(string $needle) {
+    public function search_class($needle) {
         $this->check_cache();
+        if (is_object($needle)) {
+            $needle = get_class($needle);
+        }
         if (strpos($needle,'\\') !== false) {
             $needle = $this->normalize_namespace($needle);
             foreach ($this->classes as $name => $info) {
@@ -376,6 +387,9 @@ class class_manager {
      * @param unknown $test The class to test
      */
     private function check_class($test) {
+        if (is_null($test)) {
+            throw new SunhillException("Null was passed to check_class");
+        }
         $name = $this->get_class_name($test);
         if (!isset($this->classes[$name]) && ($name !== 'object')) {
             throw new SunhillException("The class '$name' doesn't exists.");
@@ -438,6 +452,7 @@ class class_manager {
      * @param bool $include_self
      */
     public function get_inheritance_of_class(string $name,bool $include_self=false) {
+        $name = $this->check_class($this->search_class($name));
         if ($include_self) {
             $result = [$name];
         } else {
@@ -488,6 +503,7 @@ class class_manager {
      * @return descriptor of this property
      */
     public function get_property_of_class(string $class,string $property) {        
+        $class = $this->check_class($this->search_class($class));
         return $this->get_properties_of_class($class)->$property;        
     }
     
@@ -497,6 +513,7 @@ class class_manager {
      * @return unknown
      */
     public function get_namespace_of_class(string $name) {
+        $name = $this->check_class($this->search_class($name));
         return $this->get_class($name,'class');        
     }
     
@@ -506,6 +523,7 @@ class class_manager {
      * @return oo_object The created instance of $class
      */
     public function create_object(string $class) {
+        $class = $this->check_class($this->search_class($class));
         $namespace = $this->get_namespace_of_class($this->search_class($class));
         $result = new $namespace();
         return $result;
@@ -518,7 +536,7 @@ class class_manager {
      * @return boolean
      */
     public function is_a($test,$class) {
-        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        $namespace = $this->get_namespace_of_class($this->check_class($this->search_class($class)));
         return is_a($test,$namespace);
     }
     
@@ -529,7 +547,7 @@ class class_manager {
      * @return boolean
      */
     public function is_a_class($test,$class) {
-        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        $namespace = $this->get_namespace_of_class($this->check_class($this->search_class($class)));
         return is_a($test,$namespace) && !is_subclass_of($test,$namespace);
     }
 
@@ -540,11 +558,13 @@ class class_manager {
      * @return boolean
      */
     public function is_subclass_of($test,$class) {
-        $namespace = $this->get_namespace_of_class($this->search_class($class));
-        return is_subclass_of($test,$namespace);        
+        $namespace = $this->get_namespace_of_class($this->check_class($this->search_class($class)));
+        $test_space = $this->get_namespace_of_class($this->check_class($this->search_class($test)));
+        return is_subclass_of($test_space,$namespace);        
     }
     
     public function migrate_class(string $class_name) {
+        $class_name = $this->check_class($this->search_class($class_name));
         $migrator = new object_migrator();
         $migrator->migrate($class_name);
     }

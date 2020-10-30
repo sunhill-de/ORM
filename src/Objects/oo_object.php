@@ -291,53 +291,18 @@ class oo_object extends propertieshaving {
 
 // ===================================== Degration =============================================	
 	public function degrade(String $newclass) {
-	    if (!class_exists($newclass)) {
-	        throw new ObjectException("Die Klasse '$newclass' existiert nicht.");
-	    }
-	    if (!is_subclass_of(get_class($this), $newclass)) {
-	        throw new ObjectException("'".get_class($this)."' ist keine Unterklasse von '$newclass'");
-	    }
-	    $this->pre_degration($newclass);
-        $newobject = $this->degration($newclass);
-	    $newobject->post_degration($this);
-	    $this->set_state('invalid'); // Das alte darf nicht mehr weiter benutzt werden
-	    return $newobject;
+	    return Objects::degrade_object($this,$newclass);
 	}
 	
-	protected function pre_degration(String $newclass) {
-	       return true;    
-	}
-	
-	private function get_class_diff($hiclass,$loclass) {
-	    $hi_hirarchy = $hiclass->get_inheritance(true);
-	    $lo_hirarchy = $loclass->get_inheritance(true);
-	    return array_diff($hi_hirarchy,$lo_hirarchy);
-	}
-	
-	private function get_affected_fields($storage,array $diff) {
-	   foreach($this->properties as $property) {
-	       if (in_array($property->get_class(),$diff)) {
-                $storage->set_entity($property->get_name(),1);
-	       }
-	   }
-	}
-	
-	protected function degration(String $newclass) {
-	    $newclass = Classes::get_class_name($newclass);
-	    $namespace = Classes::get_namespace_of_class($newclass);
-	    $newobject = new $namespace; // Neues Objekt erzeugen
-	    $storage = $this->get_storage();
-	    $class_diff = $this->get_class_diff($this,$newobject);
-	    $this->get_affected_fields($storage, $class_diff);
-	    $storage->degrade_object($this->get_id(),array('newclass'=>$newclass,
-	                                                   'diff'=>$class_diff));
-	    
-	    $newobject->copy_from($this); // Die Werte bis zu dieser Hirarchie können kopiert werden
-	    $newobject->clean_properties();
-	    return $newobject;
+	public function pre_degration(string $newclass) {
 	    
 	}
 	
+	public function post_degration(oo_object $from) {
+	    
+	}
+
+// =============================== Copying ====================================	
 	/**
 	 * This routine copies the properties to $newobject
 	 * @param oo_object $newobject
@@ -388,10 +353,6 @@ class oo_object extends propertieshaving {
 	    }
 	}
 	
-	public function post_degration(oo_object $from) {
-	    
-	}
-
 	/**
 	 * This function just calls the routine of the Classes facade
 	 * @param boolean $full

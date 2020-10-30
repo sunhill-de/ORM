@@ -31,11 +31,11 @@ class object_promotor {
      */
     public function promote(oo_object $object,string $newclass) {
         $this->original_name = Classes::get_class_name($object);
-        if (empty($this->original_name)) {
+        if (empty(Classes::get_class_name($object))) {
             throw new ObjectManagerException("The class '$newclass' doesn't exist.");            
         }
         $this->original_namespace = Classes::get_namespace_of_class($this->original_name);
-        if (!Classes::is_subclass_of($newclass, $this->original_name)) {
+        if (!Classes::is_subclass_of($newclass, $this->original_namespace)) {
             throw new ObjectManagerException("'$newclass' is not a subclass of '".$this->original_name."'");
         }
         $object->pre_promotion($newclass);
@@ -57,6 +57,7 @@ class object_promotor {
         $oldobject->copy_to($newobject);       
         DB::table('objects')->where('id','=',$oldobject->get_id())->update(['classname'=>Classes::get_class_name($newclass)]);
         $newobject->recalculate();
+        $newobject->clean_properties();
         return $newobject;
     }
     
