@@ -143,7 +143,7 @@ class class_manager {
         $file = fopen($this->cache_file(),'w+');
         fputs($file,"<?php return [\n".
 '    "object"=>['."\n".
-'       "class"=>"Sunhill\\ORM\\Object\\oo_object",'."\n".
+'       "class"=>"Sunhill\\ORM\\Objects\\oo_object",'."\n".
 '       "name"=>"object",'."\n".
 '       "table"=>"objects",'."\n".
 '       "name_s"=>"object",'."\n".
