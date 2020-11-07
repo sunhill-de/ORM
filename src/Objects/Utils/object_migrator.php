@@ -31,6 +31,9 @@ class object_migrator {
      * @param $class_name string: The (internal) name of this class
      */
     public function migrate(string $class_name) {
+        if ($class_name == 'object') {
+            return; // Dont migrate object because its done with migrate:fresh
+        }
         $this->class_name = $class_name;
         $this->class_namespace = Classes::get_namespace_of_class($class_name);
         $this->class_tablename = Classes::get_table_of_class($class_name);
