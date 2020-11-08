@@ -13,6 +13,7 @@
 namespace Sunhill\ORM\Utils;
 
 use Sunhill\ORM\ORMException;
+use Sunhill\Basic\loggable;
 
 class DescriptorException extends ORMException {}
 
@@ -22,7 +23,7 @@ class DescriptorException extends ORMException {}
  * @author Klaus
  *        
  */
-class descriptor implements \Iterator
+class descriptor extends loggable implements \Iterator
 {
 
     private $fields = [];
@@ -160,7 +161,7 @@ class descriptor implements \Iterator
      *
      * @return boolean|\Manager\Utils\string
      */
-    public function error()
+    public function has_error()
     {
         return $this->error;
     }

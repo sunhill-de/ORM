@@ -55,14 +55,14 @@ class UtilDescriptorTest extends TestCase
     {
         $test = new descriptor();
         $this->assertTrue($test->empty());
-        $this->assertFalse($test->error());
+        $this->assertFalse($test->has_error());
     }
 
     public function testError()
     {
         $test = new descriptor();
         $test->set_error('There was an error');
-        $this->assertEquals('There was an error', $test->error());
+        $this->assertEquals('There was an error', $test->has_error());
     }
 
     /**
