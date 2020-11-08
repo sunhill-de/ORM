@@ -11,7 +11,7 @@
  */
 namespace Sunhill\ORM\Managers;
 
-use \Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 use Illuminate\Support\Facades\Lang;
 use Sunhill\ORM\Utils\descriptor;
 use Sunhill\ORM\Objects\oo_object;
@@ -59,13 +59,13 @@ class class_manager {
     
     /**
      * Erases the class cache file. It throws an excpetion if the cache file still exists after deletion (missing rights?)
-     * @throws SunhillException
+     * @throws ORMException
      */
     public function flush_cache() {
         if ($this->cache_exists()) {
             unlink($this->cache_file());
             if ($this->cache_exists()) {
-                throw new SunhillException("Can't delete the class cache.");
+                throw new ORMException("Can't delete the class cache.");
             }
         }
         $this->object_dirs = [];
@@ -191,7 +191,7 @@ class class_manager {
     
     /**
      * Flushes the class cache and recreates it
-     * @throws SunhillException
+     * @throws ORMException
      */
     public function create_cache($class_dir=null) {
         if (is_null($class_dir)) {
@@ -200,12 +200,12 @@ class class_manager {
         } else if (is_string($class_dir)) {
             $class_dir = [$class_dir];
         } else if (!is_array($class_dir)) {
-            throw new SunhillException("Unexpected data for 'class_dir'.");
+            throw new ORMException("Unexpected data for 'class_dir'.");
         }
         $this->flush_cache();
         $this->create_cache_file($class_dir);
         if (!$this->cache_exists()) {
-            throw new SunhillException("Can't create the class cache.");            
+            throw new ORMException("Can't create the class cache.");            
         }
     }
     
@@ -250,11 +250,11 @@ class class_manager {
     /**
      * Add a single dir to the class manager, to build the class cache from
      * @param string $path
-     * @throws SunhillException
+     * @throws ORMException
      */
     public function add_class_dir(string $path) {
         if (!file_exists($path)) {
-            throw new SunhillException("The passed class directory '$path' doesn't exists.");
+            throw new ORMException("The passed class directory '$path' doesn't exists.");
         }
         $this->object_dirs[] = $path;
     }
@@ -356,10 +356,10 @@ class class_manager {
             if (is_a($test,oo_object::class)) {
                 return $test::$object_infos['name'];
             } else {
-                throw new SunhillException("Invalid object passed to get_class: ".get_class($test));
+                throw new ORMException("Invalid object passed to get_class: ".get_class($test));
             }            
         } else {
-            throw new SunhillException("Unknown type for get_class_name()");
+            throw new ORMException("Unknown type for get_class_name()");
         }
     }
     
@@ -370,7 +370,7 @@ class class_manager {
      */
     private function get_classname_with_index(int $index) {
         if ($index < 0) {
-            throw new SunhillException("Invalid Index '$index'");
+            throw new ORMException("Invalid Index '$index'");
         }
         $i=0;
         foreach ($this->classes as $class_name => $info) {
@@ -379,7 +379,7 @@ class class_manager {
             }
             $i++;
         }
-        throw new SunhillException("Invalid index '$index'");        
+        throw new ORMException("Invalid index '$index'");        
     }
     
     /**
@@ -388,11 +388,11 @@ class class_manager {
      */
     private function check_class($test) {
         if (is_null($test)) {
-            throw new SunhillException("Null was passed to check_class");
+            throw new ORMException("Null was passed to check_class");
         }
         $name = $this->get_class_name($test);
         if (!isset($this->classes[$name]) && ($name !== 'object')) {
-            throw new SunhillException("The class '$name' doesn't exists.");
+            throw new ORMException("The class '$name' doesn't exists.");
         }
         return $name;
     }
@@ -405,7 +405,7 @@ class class_manager {
      * Searches for the class named '$name'
      * @param string $name
      * @param unknown $field
-     * @throws SunhillException
+     * @throws ORMException
      * @return unknown
      */
     public function get_class($test,$field=null) {
@@ -421,7 +421,7 @@ class class_manager {
             } else if ($class->is_defined($field)) {
                 return $class->$field;
             } else {
-                throw new SunhillException("The class '$name' doesn't export '$field'.");
+                throw new ORMException("The class '$name' doesn't export '$field'.");
             }
         }        
     }

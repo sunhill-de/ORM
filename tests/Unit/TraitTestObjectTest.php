@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Unit;
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Traits\TestObject;
-use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Test\ts_dummy;
 use Sunhill\ORM\Test\ts_testparent;
 use Sunhill\ORM\Test\ts_testchild;

@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Traits;
 
-use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Objects\oo_object;
 
@@ -17,7 +17,7 @@ trait TestObject {
      * Returns true, is $test is a valid object defined by $allowed_objects
      * @param oo_object $test
      * @param array of oo_object|oo_object $allowed_objects
-     * @throws SunhillException
+     * @throws ORMException
      * @return boolean|unknown
      */
     protected function is_valid_object(oo_object $test,$allowed_objects) {
@@ -31,7 +31,7 @@ trait TestObject {
         } else if (is_string($allowed_objects)) {
             return Classes::is_a($test,$allowed_objects);
         } else {
-            throw new SunhillException("is_valid_object: Inavlid type passed to allowed_objects.");
+            throw new ORMException("is_valid_object: Inavlid type passed to allowed_objects.");
         }
     }
 }

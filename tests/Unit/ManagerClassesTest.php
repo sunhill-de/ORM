@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\class_manager;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Test\ts_dummy;
 
 define('CLASS_COUNT',8);
@@ -173,7 +173,7 @@ class ManagerClassesTest extends DBTestCase
     }
     
     public function testGetClassWithObjectFail() {
-        $this->expectException(SunhillException::class);
+        $this->expectException(ORMException::class);
         $test = new \stdClass();
         Classes::get_class($test,'name');
     }

@@ -12,7 +12,7 @@
 namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\loggable;
+use Sunhill\Basic\loggable;
 use Sunhill\ORM\Facades\Objects;
 
 define('TO_LEAFABLE',0x0001);

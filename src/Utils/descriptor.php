@@ -12,9 +12,9 @@
  */
 namespace Sunhill\ORM\Utils;
 
-use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 
-class DescriptorException extends SunhillException {}
+class DescriptorException extends ORMException {}
 
 /**
  * A class that bundles informations in a class like style

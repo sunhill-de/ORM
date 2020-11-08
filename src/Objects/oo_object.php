@@ -8,13 +8,12 @@
  * Documentation: unknown
  * Tests: unknown
  * Coverage: unknown
- * Dependencies: Objects, SunhillException, base
+ * Dependencies: Objects, ORMException, base
  */
 namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\base;
-use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 
@@ -22,7 +21,7 @@ use Sunhill\ORM\Facades\Classes;
  * Baseclass for errors that raise inside of oo_object
  * @author lokal
  */
-class ObjectException extends SunhillException {}
+class ObjectException extends ORMException {}
 
 /**
  * This exception indicates that an unknown property was requested
@@ -474,7 +473,7 @@ class oo_object extends propertieshaving {
 	public static function get_hirarchic_array(string $name)
 	{
 	    if (! property_exists(get_called_class(), $name)) {
-	        throw new SunhillException("The property '$name' doesn't exists.");
+	        throw new ORMException("The property '$name' doesn't exists.");
 	    }
 	    $result = [];
 	    $pointer = get_called_class();

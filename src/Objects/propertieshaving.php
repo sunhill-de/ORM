@@ -7,7 +7,7 @@ namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Search\query_builder;
-use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 use Sunhill\ORM\hookable;
 use Sunhill\ORM\Facades\Classes;
 
@@ -15,7 +15,7 @@ use Sunhill\ORM\Facades\Classes;
  * Abgeleitete Exception die im Zusammenhang mit Properties stehen
  * @author lokal
  */
-class PropertiesHavingException extends SunhillException {}
+class PropertiesHavingException extends ORMException {}
 
 /**
  * Basisklasse für Klassen, die Properties besitzen

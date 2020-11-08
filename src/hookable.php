@@ -6,6 +6,7 @@
 namespace Sunhill\ORM;
 
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\Basic\loggable;
 
 /**
  * Basisklasse für Klassen, die Hooks benutzen

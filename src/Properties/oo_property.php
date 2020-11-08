@@ -18,6 +18,8 @@ namespace Sunhill\ORM\Properties;
  */
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Utils\descriptor;
+use Sunhill\ORM\ORMException;
+use Sunhill\Basic\loggable;
 
 /** 
  * Die folgenden Defines legen Konstanten fest, die get_diff_array als (optionalem) Parameter übergeben
@@ -33,7 +35,7 @@ define ('PD_KEEP',3);  // Ist das Objekt bereits geladen, gib dies zurück, anso
  * @author lokal
  *
  */
-class PropertyException extends \Sunhill\ORM\SunhillException {}
+class PropertyException extends ORMException {}
 
 /**
  * Die Exception für ungültige Wertzuweisungen an dieses Property
@@ -47,7 +49,7 @@ class InvalidValueException extends PropertyException {}
  * @author lokal
  *
  */
-class oo_property extends \Sunhill\ORM\base {
+class oo_property extends loggable {
 	
     /**
      * Properties get the possibility to add additinal fields (like property->set_additional)

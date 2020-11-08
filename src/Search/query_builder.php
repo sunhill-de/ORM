@@ -5,10 +5,10 @@ namespace Sunhill\ORM\Search;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Objects\oo_object;
-use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Facades\Objects;
 
-class QueryException extends SunhillException {}
+class QueryException extends ORMException {}
 
 class query_builder {
 

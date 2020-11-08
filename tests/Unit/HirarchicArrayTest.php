@@ -75,7 +75,7 @@ class HirarchicArrayTest extends TestCase
 
     public function testNotExistingArray()
     {
-        $this->expectException(\Sunhill\ORM\SunhillException::class);
+        $this->expectException(\Sunhill\ORM\ORMException::class);
         $hilf = child_object::get_hirarchic_array('non_existing');
     }
 

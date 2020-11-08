@@ -14,13 +14,13 @@
  namespace Sunhill\ORM\Managers;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\SunhillException;
+use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Objects\Utils\object_promotor;
 use Sunhill\ORM\Objects\Utils\object_degrader;
 
-class ObjectManagerException extends SunhillException {}
+class ObjectManagerException extends ORMException {}
 
 class object_manager  {
  
