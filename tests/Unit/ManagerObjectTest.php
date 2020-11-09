@@ -43,7 +43,7 @@ class ManagerObjectTest extends DBTestCase
         
     public function testObjectCountNamespaceFilter() {
         $count = DB::table('dummies')->select(DB::raw('count(*) as count'))->first();
-        $this->assertEquals($count->count,Objects::count(['class'=>'Sunhill\ORM\Test\ts_dummy']));
+        $this->assertEquals($count->count,Objects::count(['class'=>'Sunhill\ORM\Tests\Objects\ts_dummy']));
     }
 
     public function testObjectCountNameFilter() {

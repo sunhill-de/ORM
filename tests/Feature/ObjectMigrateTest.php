@@ -8,9 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Test\TestA;
-use Sunhill\ORM\Test\TestD;
-use Sunhill\ORM\Test\TestE;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\TestA;
+use Sunhill\ORM\Tests\Objects\TestD;
+use Sunhill\ORM\Tests\Objects\TestE;
 use Sunhill\ORM\Facades\Classes;
 
 class ObjectMigrateTest extends DBTestCase
@@ -141,7 +142,7 @@ class ObjectMigrateTest extends DBTestCase
         DB::statement("create table testE (id int primary key)");
         testE::migrate();
         $test = new TestE();
-        $dummy = new \Sunhill\ORM\Test\ts_dummy;
+        $dummy = new ts_dummy;
         $dummy->dummyint = 2;
         $test->testfield[] = $dummy;
         $test->commit();

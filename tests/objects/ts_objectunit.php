@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Test;
+namespace Sunhill\ORM\Tests\Objects;
 
 use Sunhill\ORM\Objects;
 

@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Objects\oo_tag;
-use Sunhill\ORM\Test\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 

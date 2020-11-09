@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 class ObjectInsertTest extends DBTestCase
 {
@@ -36,15 +37,15 @@ class ObjectInsertTest extends DBTestCase
     
     public function InsertProvider() {
         return [
-            ["\\Sunhill\\ORM\\Test\\ts_dummy",['dummyint'=>666],null,'dummyint',666],
-            ["\\Sunhill\\ORM\\Test\\ts_dummy",['dummyint'=>666],function($object){
+            ["\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",['dummyint'=>666],null,'dummyint',666],
+            ["\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",['dummyint'=>666],function($object){
                 $object->tags->stick('TagA');
                 $object->tags->stick('TagB');
             },'tags[1]','TagB'],
-            ["\\Sunhill\\ORM\\Test\\ts_dummy",['dummyint'=>666],function($object){
+            ["\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",['dummyint'=>666],function($object){
                 $object->int_attribute = 898;
             },'int_attribute',898],
-            ['\\Sunhill\\ORM\\Test\\ts_testparent',
+            ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testparent',
             [   'parentchar'=>'ABC',
                 'parentint'=>123,
                 'parentfloat'=>1.23,
@@ -55,7 +56,7 @@ class ObjectInsertTest extends DBTestCase
                 'parentenum'=>'testA'
             ],null,'parentchar','ABC'],
             
-            ['\\Sunhill\\ORM\\Test\\ts_testparent',
+            ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testparent',
             [   'parentchar'=>'ABC',
                 'parentint'=>123,
                 'parentfloat'=>1.23,
@@ -65,11 +66,11 @@ class ObjectInsertTest extends DBTestCase
                 'parenttime'=>'11:11:11',
                 'parentenum'=>'testA'
             ],function($object){
-                $dummy = new \Sunhill\ORM\Test\ts_dummy();
+                $dummy = new ts_dummy();
                 $dummy->dummyint = 333;
                 $object->parentobject = $dummy;
             },'parentobject->dummyint',333],
-            ['\\Sunhill\\ORM\\Test\\ts_testparent',
+            ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testparent',
                 [   'parentchar'=>'ABC',
                     'parentint'=>123,
                     'parentfloat'=>1.23,
@@ -79,14 +80,14 @@ class ObjectInsertTest extends DBTestCase
                     'parenttime'=>'11:11:11',
                     'parentenum'=>'testA'
                 ],function($object){
-                    $dummy1 = new \Sunhill\ORM\Test\ts_dummy();
+                    $dummy1 = new ts_dummy();
                     $dummy1->dummyint = 333;
-                    $dummy2 = new \Sunhill\ORM\Test\ts_dummy();
+                    $dummy2 = new ts_dummy();
                     $dummy2->dummyint = 444;
                     $object->parentoarray[] = $dummy1;
                     $object->parentoarray[] = $dummy2;
                 },'parentoarray[1]->dummyint',444],
-                ['\\Sunhill\\ORM\\Test\\ts_testparent',
+                ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testparent',
                     [   'parentchar'=>'ABC',
                         'parentint'=>123,
                         'parentfloat'=>1.23,
@@ -100,7 +101,7 @@ class ObjectInsertTest extends DBTestCase
                         $object->parentsarray[] = 'E2';
                     },'parentsarray[1]','E2'],
                    
-                    ['\\Sunhill\\ORM\\Test\\ts_testchild',
+                    ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testchild',
                     [   'parentchar'=>'ABC',
                         'parentint'=>123,
                         'parentfloat'=>1.23,
@@ -119,7 +120,7 @@ class ObjectInsertTest extends DBTestCase
                         'childenum'=>'testB'
                     ],null,'childdate','2011-02-02'],
                     
-                    ['\\Sunhill\\ORM\\Test\\ts_testchild',
+                    ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testchild',
                         [   'parentchar'=>'ABC',
                             'parentint'=>123,
                             'parentfloat'=>1.23,
@@ -142,7 +143,7 @@ class ObjectInsertTest extends DBTestCase
                             $object->childsarray[] = 'CE1';
                             $object->childsarray[] = 'CE2';
                         },'childsarray[1]','CE2'],
-                        ['\\Sunhill\\ORM\\Test\\ts_testchild',
+                        ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testchild',
                             [   'parentchar'=>'ABC',
                                 'parentint'=>123,
                                 'parentfloat'=>1.23,
@@ -166,7 +167,7 @@ class ObjectInsertTest extends DBTestCase
                                 $object->childsarray[] = 'CE2';
                             },'parentsarray[1]','E2'],
                             
-                            ['\\Sunhill\\ORM\\Test\\ts_testchild',
+                            ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testchild',
                                 [   'parentchar'=>'ABC',
                                     'parentint'=>123,
                                     'parentfloat'=>1.23,
@@ -184,13 +185,13 @@ class ObjectInsertTest extends DBTestCase
                                     'childtime'=>'12:12:12',
                                     'childenum'=>'testB'
                                 ],function($object){
-                                    $dummy1 = new \Sunhill\ORM\Test\ts_dummy();
+                                    $dummy1 = new ts_dummy();
                                     $dummy1->dummyint = 1111;
-                                    $dummy2 = new \Sunhill\ORM\Test\ts_dummy();
+                                    $dummy2 = new ts_dummy();
                                     $dummy2->dummyint = 2222;
-                                    $dummy3 = new \Sunhill\ORM\Test\ts_dummy();
+                                    $dummy3 = new ts_dummy();
                                     $dummy3->dummyint = 3333;
-                                    $dummy4 = new \Sunhill\ORM\Test\ts_dummy();
+                                    $dummy4 = new ts_dummy();
                                     $dummy4->dummyint = 4444;
                                     $object->parentoarray[] = $dummy1;
                                     $object->parentoarray[] = $dummy2;
@@ -198,7 +199,7 @@ class ObjectInsertTest extends DBTestCase
                                     $object->childoarray[] = $dummy4;
                                 },'parentoarray[1]->dummyint',2222],
                                 
-                                ['\\Sunhill\\ORM\\Test\\ts_testchild',
+                                ['\\Sunhill\\ORM\\Tests\\Objects\\ts_testchild',
                                     [   'parentchar'=>'ABC',
                                         'parentint'=>123,
                                         'parentfloat'=>1.23,
@@ -216,13 +217,13 @@ class ObjectInsertTest extends DBTestCase
                                         'childtime'=>'12:12:12',
                                         'childenum'=>'testB'
                                     ],function($object){
-                                        $dummy1 = new \Sunhill\ORM\Test\ts_dummy();
+                                        $dummy1 = new ts_dummy();
                                         $dummy1->dummyint = 1111;
-                                        $dummy2 = new \Sunhill\ORM\Test\ts_dummy();
+                                        $dummy2 = new ts_dummy();
                                         $dummy2->dummyint = 2222;
-                                        $dummy3 = new \Sunhill\ORM\Test\ts_dummy();
+                                        $dummy3 = new ts_dummy();
                                         $dummy3->dummyint = 3333;
-                                        $dummy4 = new \Sunhill\ORM\Test\ts_dummy();
+                                        $dummy4 = new ts_dummy();
                                         $dummy4->dummyint = 4444;
                                         $object->parentoarray[] = $dummy1;
                                         $object->parentoarray[] = $dummy2;

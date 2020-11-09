@@ -9,10 +9,10 @@
  * Tests: not needed
  * Coverage: not needed
  */
-namespace Sunhill\ORM\Test;
+namespace Sunhill\ORM\Tests\Objects;
 
 use Sunhill\ORM\Objects\oo_object;
-use Sunhill\ORM\Test\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 class testD extends ts_dummy {
     

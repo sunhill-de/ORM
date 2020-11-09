@@ -6,8 +6,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Test\ts_dummy;
-use Sunhill\ORM\Test\ts_referenceonly;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_referenceonly;
 
 class RegressionTest extends DBTestCase
 {
