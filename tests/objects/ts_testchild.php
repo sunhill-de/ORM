@@ -1,5 +1,5 @@
 <?php
-namespace Sunhill\ORM\Test;
+namespace Sunhill\ORM\Tests\Objects;
 
 class ts_testchild extends ts_testparent {
     public static $table_name = 'testchildren';

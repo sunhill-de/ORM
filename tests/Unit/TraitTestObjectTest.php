@@ -5,9 +5,9 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Traits\TestObject;
 use Sunhill\ORM\ORMException;
-use Sunhill\ORM\Test\ts_dummy;
-use Sunhill\ORM\Test\ts_testparent;
-use Sunhill\ORM\Test\ts_testchild;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_testparent;
+use Sunhill\ORM\Tests\Objects\ts_testchild;
 
 class test_trait_class {
     
@@ -39,7 +39,7 @@ class TraitTestObjectTest extends TestCase
     public function IsValidProvider() {
         return [
             [function() { return new ts_dummy(); },'dummy',true],
-            [function() { return new ts_dummy(); },'Sunhill\ORM\Test\ts_dummy',true],
+            [function() { return new ts_dummy(); },'Sunhill\ORM\Tests\Objects\ts_dummy',true],
             [function() { return new ts_dummy(); },'testparent',false],
             [function() { return new ts_testchild(); },'testparent',true],
             [function() { return new ts_testchild(); },['testparent'],true],

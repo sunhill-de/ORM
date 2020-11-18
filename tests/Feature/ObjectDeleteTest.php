@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 class ObjectDeleteTest extends DBTestCase
 {
     function testCantLoad() {
-        $test = new \Sunhill\ORM\Test\ts_testchild;
+        $test = new ts_testchild;
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -29,7 +31,7 @@ class ObjectDeleteTest extends DBTestCase
         $test->childdate='2011-01-01';
         $test->childtime='11:11:11';
         $test->childenum='testA';
-        $add = new \Sunhill\ORM\Test\ts_dummy();
+        $add = new ts_dummy();
         $add->dummyint = 123;
         $test->parentobject = $add;
         $test->parentoarray[] = $add;

@@ -5,9 +5,9 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Crawler;
 use Tests\sunhill_testcase_db;
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 class StorageInsertTest extends StorageBase {
 
@@ -32,8 +32,8 @@ class StorageInsertTest extends StorageBase {
     
     public function InsertProvider() {
         return [
-            ['Sunhill\\ORM\\Test\\ts_dummy',function($object) { $object->dummyint = 123; },'dummyint',123], // Einfacher Test mit simple Fields
-            ['Sunhill\\ORM\\Test\\ts_testparent',function($object) { // Komplexere Simplefields
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_dummy',function($object) { $object->dummyint = 123; },'dummyint',123], // Einfacher Test mit simple Fields
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_testparent',function($object) { // Komplexere Simplefields
                 $object->parentint = 234;
                 $object->parentchar = 'ABC';
                 $object->parentenum = 'TestA';
@@ -43,7 +43,7 @@ class StorageInsertTest extends StorageBase {
                 $object->parentdatetime = '2013-11-24 01:11:00';
                 $object->parenttext = 'Lorem Ipsum';
             },'parentint',234],
-            ['Sunhill\\ORM\\Test\\ts_testchild',function($object) { // Simplefields mit Vererbung
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_testchild',function($object) { // Simplefields mit Vererbung
                 $object->parentint = 1234;
                 $object->parentchar = 'ZABC';
                 $object->parentenum = 'TestA';
@@ -62,7 +62,7 @@ class StorageInsertTest extends StorageBase {
                 $object->childdatetime = '2019-11-24 01:11:00';
                 $object->childtext = 'Lorems Ipsums';
             },'parentint',1234],
-            ['Sunhill\\ORM\\Test\\ts_testchild',function($object) { // Simplefields mit Vererbung
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_testchild',function($object) { // Simplefields mit Vererbung
                 $object->parentint = 1234;
                 $object->parentchar = 'ZABC';
                 $object->parentenum = 'TestA';
@@ -81,7 +81,7 @@ class StorageInsertTest extends StorageBase {
                 $object->childdatetime = '2019-11-24 01:11:00';
                 $object->childtext = 'Lorems Ipsums';
             },'childint',2345],
- /*           ['Sunhill\\ORM\\Test\\ts_passthru',function($object) { // Simplefields mit Objekt ohne Simplefields am Ende
+ /*           ['Sunhill\\ORM\\Tests\\Objects\\ts_passthru',function($object) { // Simplefields mit Objekt ohne Simplefields am Ende
                 $object->parentint = 234;
                 $object->parentchar = 'ABC';
                 $object->parentenum = 'TestA';
@@ -91,13 +91,13 @@ class StorageInsertTest extends StorageBase {
                 $object->parentdatetime = '2013-11-24 01:11:00';
                 $object->parenttext = 'Lorem Ipsum';
             },'parentint',234],
-            ['Sunhill\\ORM\\Test\\ts_referenceonly',function($object) {
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_referenceonly',function($object) {
                 $object->testobject = 234;
             },'testobject',234],
-            ['Sunhill\\ORM\\Test\\ts_referenceonly',function($object) {
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_referenceonly',function($object) {
                 $object->testoarray = [123,234,345];
             },'testoarray[1]',234], */
-            ['Sunhill\\ORM\\Test\\ts_testparent',function($object) { // Komplexere Simplefields
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_testparent',function($object) { // Komplexere Simplefields
                 $object->parentint = 234;
                 $object->parentchar = 'ABC';
                 $object->parentenum = 'TestA';
@@ -108,7 +108,7 @@ class StorageInsertTest extends StorageBase {
                 $object->parenttext = 'Lorem Ipsum';
                 $object->parentsarray = ['ABC','BCE','DEF'];
             },'parentsarray[1]','BCE'],
-            ['Sunhill\\ORM\\Test\\ts_testparent',function($object) { // Komplexere Simplefields
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_testparent',function($object) { // Komplexere Simplefields
                 $object->parentint = 234;
                 $object->parentchar = 'ABC';
                 $object->parentenum = 'TestA';
@@ -119,7 +119,7 @@ class StorageInsertTest extends StorageBase {
                 $object->parenttext = 'Lorem Ipsum';
                 $object->parentcalc = 'ABC1';
             },'parentcalc','ABC1'],
-            ['Sunhill\\ORM\\Test\\ts_testparent',function($object) { // Komplexere Simplefields
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_testparent',function($object) { // Komplexere Simplefields
                 $object->parentint = 234;
                 $object->parentchar = 'ABC';
                 $object->parentenum = 'TestA';
@@ -130,7 +130,7 @@ class StorageInsertTest extends StorageBase {
                 $object->parenttext = 'Lorem Ipsum';
                 $object->tags = [1,2,3];
             },'tags',[1,2,3]],
-            ['Sunhill\\ORM\\Test\\ts_dummy',function($object) { 
+            ['Sunhill\\ORM\\Tests\\Objects\\ts_dummy',function($object) { 
                 $object->dummyint = 123; 
                 $object->attributes = ['int_attribute' =>['name'=>'int_attribute','type'=>'int','property'=>'','attribute_id'=>1,'value'=>999,'textvalue'=>'']];
             },'attributes[int_attribute][value]',999], // Einfacher Test mit simple Fields            
@@ -142,14 +142,14 @@ class StorageInsertTest extends StorageBase {
      */
     public function testInsertHooks() {
         $this->prepare_write();
-        $object = new \Sunhill\ORM\Test\ts_dummy();
+        $object = new ts_dummy();
         $storage = new \Sunhill\ORM\Storage\storage_mysql($object);
         $storage->dummyint = 123;
         $storage->set_entity('externalhooks', 
          [['target_id'=>2,'action'=>'PROPERTY_UPDATED','subaction'=>'dummyint','hook'=>'dummychanged','payload'=>'']]);
         $id = $storage->insert_object();
         
-        $readobject = new \Sunhill\ORM\Test\ts_dummy();
+        $readobject = new ts_dummy();
         $loader = new \Sunhill\ORM\Storage\storage_mysql($readobject);
         $loader->load_object($id);
         $this->assertEquals('dummyint',$this->get_field($loader,'externalhooks[0][subaction]'));

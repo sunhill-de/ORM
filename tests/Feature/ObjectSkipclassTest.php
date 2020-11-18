@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Test\ts_dummy;
+use Sunhill\ORM\Tests\objects\ts_dummy;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Illuminate\Support\Facades\DB;

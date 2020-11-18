@@ -6,8 +6,12 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\oo_tag;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\ORMException;
+use Sunhill\ORM\Tests\Objects\ts_secondlevelchild;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_passthru;
 
 class ObjectPromoteTest extends DBTestCase
 {
@@ -22,16 +26,16 @@ class ObjectPromoteTest extends DBTestCase
     
     public function InheritanceProvider(){    
         return [
-            ['Sunhill\ORM\Test\\ts_testparent',['object']],
-            ['Sunhill\ORM\Test\\ts_testchild',['testparent','object']],
-            ['Sunhill\ORM\Test\\ts_passthru',['testparent','object']],
-            ['Sunhill\ORM\Test\\ts_secondlevelchild',['passthru','testparent','object']],
-            ['Sunhill\ORM\Test\\ts_thirdlevelchild',['secondlevelchild','passthru','testparent','object']]
+            ['Sunhill\ORM\Tests\\Objects\\ts_testparent',['object']],
+            ['Sunhill\ORM\Tests\\Objects\\ts_testchild',['testparent','object']],
+            ['Sunhill\ORM\Tests\\Objects\\ts_passthru',['testparent','object']],
+            ['Sunhill\ORM\Tests\\Objects\\ts_secondlevelchild',['passthru','testparent','object']],
+            ['Sunhill\ORM\Tests\\Objects\\ts_thirdlevelchild',['secondlevelchild','passthru','testparent','object']]
         ];
     }
     
     public function testOneStepPromotion() {
-        $test = new \Sunhill\ORM\Test\ts_secondlevelchild;
+        $test = new ts_secondlevelchild;
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -40,16 +44,16 @@ class ObjectPromoteTest extends DBTestCase
         $test->parentdate='2011-01-01';
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
-        $add = new \Sunhill\ORM\Test\ts_dummy();
+        $add = new ts_dummy();
         $add->dummyint = 123;
         $test->parentobject = $add;
         $test->parentoarray[] = $add;
         $test->childint = 1;
-        $tag = new \Sunhill\ORM\Objects\oo_tag('TestTag',true);
+        $tag = new oo_tag('TestTag',true);
         $test->tags->stick($tag);
         $test->commit();
         $id = $test->get_id();
-        $new = $test->promote('\\Sunhill\\ORM\\Test\\ts_thirdlevelchild');
+        $new = $test->promote('Sunhill\\ORM\\Tests\\Objects\\ts_thirdlevelchild');
         $new->commit(); 
         Objects::flush_cache();
         $read = Objects::load($id);
@@ -61,7 +65,7 @@ class ObjectPromoteTest extends DBTestCase
     }
     
     public function testTwoStepPromotion() {
-         $test = new \Sunhill\ORM\Test\ts_passthru();
+         $test = new ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -70,15 +74,15 @@ class ObjectPromoteTest extends DBTestCase
         $test->parentdate='2011-01-01';
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
-        $add = new \Sunhill\ORM\Test\ts_dummy();
+        $add = new ts_dummy();
         $add->dummyint = 123;
         $test->parentobject = $add;
         $test->parentoarray[] = $add;
-        $tag = new \Sunhill\ORM\Objects\oo_tag('TestTag',true);
+        $tag = new oo_tag('TestTag',true);
         $test->tags->stick($tag);
         $test->commit();
         $id = $test->get_id();
-        $new = $test->promote('\\Sunhill\\ORM\\Test\\ts_thirdlevelchild');
+        $new = $test->promote('\\Sunhill\\ORM\\Tests\\Objects\\ts_thirdlevelchild');
         $new->commit();
        Objects::flush_cache();
         $read = Objects::load($id);
@@ -89,7 +93,7 @@ class ObjectPromoteTest extends DBTestCase
     
    public function testWrongInhertiance() {
         $this->expectException(ORMException::class);
-        $test = new \Sunhill\ORM\Test\ts_passthru();
+        $test = new ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -105,7 +109,7 @@ class ObjectPromoteTest extends DBTestCase
     
     public function testNotExistingClassInhertiance() {
         $this->expectException(ORMException::class);
-        $test = new \Sunhill\ORM\Test\ts_passthru();
+        $test = new ts_passthru();
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;

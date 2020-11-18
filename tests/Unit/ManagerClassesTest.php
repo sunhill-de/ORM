@@ -6,7 +6,7 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\class_manager;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
-use Sunhill\ORM\Test\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 define('CLASS_COUNT',8);
 
@@ -98,7 +98,7 @@ class ManagerClassesTest extends DBTestCase
     public function GetClassnameProvider() {
         return [
             ['dummy','dummy'],
-            ['Sunhill\ORM\Test\ts_dummy','dummy'],
+            ['Sunhill\ORM\Tests\Objects\ts_dummy','dummy'],
             [-1,'except'],
             [1000,'except'],
             [function() { return new ts_dummy(); },'dummy'],
@@ -171,11 +171,11 @@ class ManagerClassesTest extends DBTestCase
     public function SearchClassProvider() {
         return [
             ['dummy','dummy'],
-            ['dummy','\\Sunhill\\ORM\\Test\\ts_dummy'],
-            ['dummy','Sunhill\\ORM\\Test\\ts_dummy'],
+            ['dummy','\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy'],
+            ['dummy','Sunhill\\ORM\\Tests\\Objects\\ts_dummy'],
             [null,'notexisting'],
-            [null,'\\Sunhill\\ORM\\Test\\nonexisting'],
-            [null,'Sunhill\\ORM\\Test\\nonexisting'],
+            [null,'\\Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
+            [null,'Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
         ];
     }
     
@@ -299,12 +299,12 @@ class ManagerClassesTest extends DBTestCase
     
     public function testCreateObjectViaName() {
         $test = Classes::create_object('testparent');
-        $this->assertTrue(is_a($test,'Sunhill\ORM\Test\ts_testparent'));
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Objects\ts_testparent'));
     }
     
     public function testCreateObjectViaNamespace() {
-        $test = Classes::create_object('Sunhill\ORM\Test\ts_testparent');
-        $this->assertTrue(is_a($test,'Sunhill\ORM\Test\ts_testparent'));
+        $test = Classes::create_object('Sunhill\ORM\Tests\Objects\ts_testparent');
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Objects\ts_testparent'));
     }
     
     /**
@@ -318,14 +318,14 @@ class ManagerClassesTest extends DBTestCase
         
     public function IsAProvider() {
         return [
-            ['Sunhill\ORM\Test\ts_testparent','testparent',true],
-            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',true],
-            ['Sunhill\ORM\Test\ts_testchild','testparent',true],
-            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',true],
-            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
-            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
-            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
-            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','testparent',true],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testparent',true],
+            ['Sunhill\ORM\Tests\Objects\ts_testchild','testparent',true],
+            ['Sunhill\ORM\Tests\Objects\ts_testchild','Sunhill\ORM\Tests\Objects\ts_testparent',true],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testchild',false],
+            ['Sunhill\ORM\Tests\Objects\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_dummy','Sunhill\ORM\Tests\Objects\ts_testparent',false],
         ];
     }
     
@@ -340,14 +340,14 @@ class ManagerClassesTest extends DBTestCase
     
     public function IsAClassProvider() {
         return [
-            ['Sunhill\ORM\Test\ts_testparent','testparent',true],
-            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',true],
-            ['Sunhill\ORM\Test\ts_testchild','testparent',false],
-            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',false],
-            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
-            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
-            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
-            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','testparent',true],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testparent',true],
+            ['Sunhill\ORM\Tests\Objects\ts_testchild','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testchild','Sunhill\ORM\Tests\Objects\ts_testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testchild',false],
+            ['Sunhill\ORM\Tests\Objects\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_dummy','Sunhill\ORM\Tests\Objects\ts_testparent',false],
         ];
     }
     
@@ -362,14 +362,14 @@ class ManagerClassesTest extends DBTestCase
         
     public function IsSubclassOfProvider() {
         return [
-            ['Sunhill\ORM\Test\ts_testparent','testparent',false],
-            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testparent',false],
-            ['Sunhill\ORM\Test\ts_testparent','testchild',false],
-            ['Sunhill\ORM\Test\ts_testparent','Sunhill\ORM\Test\ts_testchild',false],
-            ['Sunhill\ORM\Test\ts_testchild','testparent',true],
-            ['Sunhill\ORM\Test\ts_testchild','Sunhill\ORM\Test\ts_testparent',true],
-            ['Sunhill\ORM\Test\ts_dummy','testparent',false],
-            ['Sunhill\ORM\Test\ts_dummy','Sunhill\ORM\Test\ts_testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','testchild',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testchild',false],
+            ['Sunhill\ORM\Tests\Objects\ts_testchild','testparent',true],
+            ['Sunhill\ORM\Tests\Objects\ts_testchild','Sunhill\ORM\Tests\Objects\ts_testparent',true],
+            ['Sunhill\ORM\Tests\Objects\ts_dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\ts_dummy','Sunhill\ORM\Tests\Objects\ts_testparent',false],
         ];
     }
     

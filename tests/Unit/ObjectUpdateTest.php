@@ -6,6 +6,7 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Tests\Objects\ts_objectunit;
 
 class ObjectUpdateTest extends DBTestCase
 {
@@ -17,7 +18,7 @@ class ObjectUpdateTest extends DBTestCase
      */
     public function testStorageUpdate($update_callback,$expectations) {
         Objects::flush_cache();
-        $object = new \Sunhill\ORM\Test\ts_objectunit();
+        $object = new ts_objectunit();
         $object->storage_values = [
             'id'=>1,
             'created_at'=>'2019-10-06 12:05:00',
@@ -232,7 +233,7 @@ class ObjectUpdateTest extends DBTestCase
     
     public function testAttribute1() {
         Objects::flush_cache();
-        $object = new \Sunhill\ORM\Test\ts_objectunit();
+        $object = new ts_objectunit();
         $object->storage_values = [
             'id'=>1,
             'created_at'=>'2019-10-06 12:05:00',
@@ -265,7 +266,7 @@ class ObjectUpdateTest extends DBTestCase
         
     public function testAttribute2() {
         Objects::flush_cache();
-        $object = new \Sunhill\ORM\Test\ts_objectunit();
+        $object = new ts_objectunit();
         $object->storage_values = [
             'id'=>1,
             'created_at'=>'2019-10-06 12:05:00',

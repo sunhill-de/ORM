@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Test;
+namespace Sunhill\ORM\Tests\Objects;
 
 class ts_thirdlevelchild extends ts_secondlevelchild {
     public static $table_name = 'thirdlevelchildren';
@@ -22,9 +22,9 @@ class ts_thirdlevelchild extends ts_secondlevelchild {
 	}
 	
 	public function post_promotion($from) {
-	    if (is_a($from,'Sunhill\ORM\Test\ts_secondlevelchild')) {
+	    if (is_a($from,'Sunhill\ORM\Tests\Objects\ts_secondlevelchild')) {
 	        $this->childchildint = $this->childint * 2;
-	    } elseif (is_a($from,'Sunhill\ORM\Test\ts_passthru')) {	        
+	    } elseif (is_a($from,'Sunhill\ORM\Tests\Objects\ts_passthru')) {	        
 	        $this->childint = 2;
 	        $this->childchildint = $this->childint * 2;	        
 	    } else {

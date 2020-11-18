@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\tag_manager;
 use Sunhill\ORM\Facades\Tags;
-use \Sunhill\ORM\ORMException;
+use Sunhill\ORM\ORMException;
 use Illuminate\Support\Facades\DB;
 
 define('NUMBER_OF_TAGS', 8);

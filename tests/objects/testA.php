@@ -9,7 +9,7 @@
  * Tests: not needed
  * Coverage: not needed
  */
-namespace Sunhill\ORM\Test;
+namespace Sunhill\ORM\Tests\Objects;
 
 use Sunhill\ORM\Objects\oo_object;
 

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
-use Sunhill\ORM\Test\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Properties\AttributeException;
 

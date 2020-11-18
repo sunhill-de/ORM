@@ -1,10 +1,11 @@
 <?php
 
-namespace Sunhill\ORM\Test;
+namespace Sunhill\ORM\Tests\Objects;
 
-use Sunhill\ORM\Objects;
+use Sunhill\ORM\Objects\oo_object;
 
-class ts_testparent extends \Sunhill\ORM\Objects\oo_object {
+class ts_testparent extends oo_object {
+    
     public static $table_name = 'testparents';
     public static $object_infos = [
         'name'=>'testparent',       // A repetition of static:$object_name @todo see above

@@ -1,5 +1,5 @@
 <?php
-namespace Sunhill\ORM\Test;
+namespace Sunhill\ORM\Tests\Objects;
 
 class ts_referenceonly extends \Sunhill\ORM\Objects\oo_object {
     public static $table_name = 'referenceonlies';
