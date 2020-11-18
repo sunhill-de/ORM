@@ -13,35 +13,6 @@ define('CLASS_COUNT',8);
 class ManagerClassesTest extends DBTestCase
 {
    
-    /**
-     * The following two methods are helpers to test if one array is contained in another
-     * @todo Move to another class?
-     * @param unknown $expect
-     * @param unknown $test
-     * @return boolean
-     */
-    protected function checkArrays($expect,$test) {
-        foreach ($expect as $key => $value) {
-            if (!array_key_exists($key, $test)) {
-                return false;
-            }
-            if (is_array($value)) {
-                if (!$this->checkArrays($value,$test[$key])) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
-    protected function assertArrayContains($expect,$test) {
-        if (!$this->checkArrays($expect,$test)) {
-            $this->fail("The expected array is not contained in the passed one");
-            return;
-        }
-        $this->assertTrue(true);
-    }
-    
     public function testFlushCache() {
         $test = new class_manager();
         $test->flush_cache();
