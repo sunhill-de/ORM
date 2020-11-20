@@ -13,7 +13,7 @@ namespace Sunhill\ORM\Managers;
 
 use Sunhill\ORM\ORMException;
 use Illuminate\Support\Facades\Lang;
-use Sunhill\ORM\Utils\descriptor;
+use Sunhill\Basic\Utils\descriptor;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Objects\Utils\object_migrator;
 

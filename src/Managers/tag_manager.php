@@ -13,7 +13,7 @@
 namespace Sunhill\ORM\Managers;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Utils\descriptor;
+use Sunhill\Basic\Utils\descriptor;
 use Sunhill\ORM\Objects\oo_tag;
 
 define('TagNamespace','Sunhill\ORM\Objects\oo_tag');

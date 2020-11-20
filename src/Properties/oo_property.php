@@ -17,7 +17,7 @@ namespace Sunhill\ORM\Properties;
  * @todo Muss das wirklich sein, oder kann man das auf das Storage auslagern
  */
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Utils\descriptor;
+use Sunhill\Basic\Utils\descriptor;
 use Sunhill\ORM\ORMException;
 use Sunhill\Basic\loggable;
 
