@@ -8,21 +8,34 @@ use Illuminate\Support\Facades\DB;
 class orm_checks extends checker {
     
     /**
+     * Helper function for the check for tables that point to non existing entries
+     */
+    protected function check_for_dangling_pointers(string $master,string $master_field,string $slave,string $slave_field,$master_can_be_null=false) {
+        $query = DB::table($master.' AS a')->select('a.'.$master_field.' as id')->leftJoin($slave.' AS b','a.'.$master_field,'=','b.'.$slave_field)->whereNull('b.'.$slave_field);    
+        if ($master_can_be_null) {
+            $query = $query->where('a.'.$master_field,'>',0);
+        }
+        $query_result = $query->get();
+        if (count($query_result)) {
+            $result = '';
+            foreach ($query_result as $entry) {
+                $result .= (empty($result)?$entry->$slave_field:','.$entry->$slave_field);
+            }
+            return $result;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
      * Checks if all tags have existing or no parents at all
      * @return unknown
      */
     public function check_tagswithnotexistingparents() {
-        $result = DB::table('tags AS a')->leftJoin('tags AS b','a.parent_id','=','b.id')->whereNull('b.id')->where('a.parent_id','>',0)->get();
-        if (count($result) == 0) {
-            return $this->create_result('OK','Check tags for not existing parents');
+        if ($entries = $this->check_for_dangling_pointers('tags','parent_id','tags','id',true)) {
+            return $this->create_result('FAILED','Check tags for not existing parents',"Parents of tags '$entries' dont exist.");            
         } else {
-            $first = true;
-            $tag_ids = '';
-            foreach ($result as $tag) {
-                $tag_ids .= ($first?'':',').$tag->id;
-                $first = false;
-            }
-            return $this->create_result('FAILED','Check tags for not existing parents','Parents of tags "'.$tag_ids.'" dont exist.');            
+            return $this->create_result('OK','Check tags for not existing parents');            
         }
     }
     
@@ -31,17 +44,11 @@ class orm_checks extends checker {
      * @return unknown
      */
     public function check_tagcachewithnotexistingtags() {
-        $result = DB::table('tagcache AS a')->leftJoin('tags AS b','a.tag_id','=','b.id')->whereNull('b.id')->get();
-        if (count($result) == 0) {
-            return $this->create_result('OK','Check tagcache for not existing tags');
+        if ($entries = $this->check_for_dangling_pointers('tagcache','tag_id','tags','id')) {
+            return $this->create_result('FAILED',"Check tagcache for not existing tags","Tags '$entries' dont exist.");            
         } else {
-            $first = true;
-            $tag_ids = '';
-            foreach ($result as $tag) {
-                $tag_ids .= ($first?'':',').$tag->tag_id;
-                $first = false;
-            }
-            return $this->create_result('FAILED','Check tagcache for not existing tags','Tags "'.$tag_ids.'" dont exist.');
+            return $this->create_result('OK','Check tagcache for not existing tags');
+            
         }        
     }
     
@@ -93,34 +100,52 @@ class orm_checks extends checker {
         }
     }
     
+    /**
+     * Checks if all tags in the tagobjectassigns table exists
+     * @return unknown
+     */
     public function check_tagobjectassignstagsexist() {
-        $result = DB::table('tagobjectassigns AS a')->leftJoin('tags AS b','a.tag_id','=','b.id')->whereNull('b.id')->get();
-        if (count($result) == 0) {
-            return $this->create_result('OK','Check tag-object-assigns for not existing tags');
+        if ($entries = $this->check_for_dangling_pointers('tagobjectassigns','tag_id','tags','id',true)) {
+            return $this->create_result('FAILED','Check tag-object-assigns for not existing tags',"Tags '$entries' dont exist.");
         } else {
-            $first = true;
-            $tag_ids = '';
-            foreach ($result as $tag) {
-                $tag_ids .= ($first?'':',').$tag->id;
-                $first = false;
-            }
-            return $this->create_result('FAILED','Check tag-object-assigns for not existing tags','Tags "'.$tag_ids.'" dont exist.');
-        }        
+            return $this->create_result('OK','Check tag-object-assigns for not existing tags');
+        }
     }
     
+    /**
+     * Checks if all objects in the tagobjectassigns table exists
+     * @return unknown
+     */
     public function check_tagobjectassignsobjectsexist() {
-        $result = DB::table('tagobjectassigns AS a')->leftJoin('objects AS b','a.container_id','=','b.id')->whereNull('b.id')->get();
-        if (count($result) == 0) {
-            return $this->create_result('OK','Check tag-object-assigns for not existing objects');
+        if ($entries = $this->check_for_dangling_pointers('tagobjectassigns','container_id','objects','id',true)) {
+            return $this->create_result('FAILED','Check tag-object-assigns for not existing objects',"Objects '$entries' dont exist.");
         } else {
-            $first = true;
-            $tag_ids = '';
-            foreach ($result as $tag) {
-                $tag_ids .= ($first?'':',').$tag->container_id;
-                $first = false;
-            }
-            return $this->create_result('FAILED','Check tag-object-assigns for not existing objects','Objects "'.$tag_ids.'" dont exist.');
+            return $this->create_result('OK','Check tag-object-assigns for not existing objects');
         }
-        
     }
+    
+    /**
+     * Checks if all container objects in the objectobjectassigns table exists
+     * @return unknown
+     */
+    public function check_objectobjectassignscontainerexist() {
+        if ($entries = $this->check_for_dangling_pointers('objectobjectassigns','container_id','objects','id',true)) {
+            return $this->create_result('FAILED','Check object-object-assigns for not existing container objects',"Objects '$entries' dont exist.");
+        } else {
+            return $this->create_result('OK','Check object-object-assigns for not existing container objects');
+        }
+    }
+    
+    /**
+     * Checks if all element objects in the objectobjectassigns table exists
+     * @return unknown
+     */
+    public function check_objectobjectassignselementexist() {
+        if ($entries = $this->check_for_dangling_pointers('objectobjectassigns','element_id','objects','id',true)) {
+            return $this->create_result('FAILED','Check object-object-assigns for not existing element objects',"Objects '$entries' dont exist.");
+        } else {
+            return $this->create_result('OK','Check object-object-assigns for not existing element objects');
+        }
+    }
+    
 }
