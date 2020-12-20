@@ -337,4 +337,36 @@ class ORMChecksTest extends TestCase
         $this->assertEquals('FAILED',$result->result);
     }
     
+    public function testObjectExistance_pass() {
+        Classes::create_cache(dirname(__FILE__).'/../objects');
+
+        DB::statement('truncate objects');
+        
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'dummy'],
+            ['id'=>2,'classname'=>'testparent'],
+            ['id'=>3,'classname'=>'testchild'],
+        ]);
+        
+        $test = new orm_checks();
+        $result = $test->check_objectexistance();
+        $this->assertEquals('OK',$result->result);
+    }
+    
+    public function testObjectExistance_fail() {
+        Classes::create_cache(dirname(__FILE__).'/../objects');
+        
+        DB::statement('truncate objects');
+        
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'dummy'],
+            ['id'=>2,'classname'=>'testparent'],
+            ['id'=>3,'classname'=>'notexisting'],
+        ]);
+        
+        $test = new orm_checks();
+        $result = $test->check_objectexistance();
+        $this->assertEquals('FAILED',$result->result);
+    }
+    
 }
