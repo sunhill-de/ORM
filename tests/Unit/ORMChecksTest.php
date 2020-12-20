@@ -70,5 +70,192 @@ class ORMChecksTest extends TestCase
         $result = $test->check_tagcachewithnotexistingtags();
         $this->assertEquals('FAILED',$result->result);
     }
+
+    public function testTagCacheConsitency_pass() {
+        DB::statement('truncate tags');
+        DB::statement('truncate tagcache');
+        DB::table('tags')->insert([
+            ['id'=>1,'name'=>'TagA','parent_id'=>0,'options'=>0],
+            ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
+            ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
+        ]);
+        DB::table('tagcache')->insert([
+            ['name'=>'TagA','tag_id'=>1],
+            ['name'=>'TagB','tag_id'=>2],
+            ['name'=>'TagA.TagB','tag_id'=>2],
+            ['name'=>'TagC','tag_id'=>3],
+            ['name'=>'TagA.TagC','tag_id'=>3],
+        ]);
+        $test = new orm_checks();
+        $result = $test->check_tagcacheconsistency();
+        $this->assertEquals('OK',$result->result);        
+    }
+    
+    public function testTagCacheConsitency_fail1() {
+        DB::statement('truncate tags');
+        DB::statement('truncate tagcache');
+        DB::table('tags')->insert([
+            ['id'=>1,'name'=>'TagA','parent_id'=>0,'options'=>0],
+            ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
+            ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
+        ]);
+        DB::table('tagcache')->insert([
+            ['name'=>'TagA','tag_id'=>1],
+            ['name'=>'TagB','tag_id'=>2],
+            ['name'=>'TagA.TagB','tag_id'=>2],
+            ['name'=>'TagC','tag_id'=>3],
+            ['name'=>'TagE.TagC','tag_id'=>3],
+        ]);
+        $test = new orm_checks();
+        $result = $test->check_tagcacheconsistency();
+        $this->assertEquals('FAILED',$result->result);
+    }
+    
+    public function testTagCacheConsitency_fail2() {
+        DB::statement('truncate tags');
+        DB::statement('truncate tagcache');
+        DB::table('tags')->insert([
+            ['id'=>1,'name'=>'TagA','parent_id'=>0,'options'=>0],
+            ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
+            ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
+        ]);
+        DB::table('tagcache')->insert([
+            ['name'=>'TagA','tag_id'=>1],
+            ['name'=>'TagB','tag_id'=>2],
+            ['name'=>'TagA.TagB','tag_id'=>2],
+            ['name'=>'TagC','tag_id'=>3],
+        ]);
+        $test = new orm_checks();
+        $result = $test->check_tagcacheconsistency();
+        $this->assertEquals('FAILED',$result->result);
+    }
+    
+    public function testTagObjectAssignsTagExists_pass() {
+        DB::statement('truncate tags');
+        DB::statement('truncate tagcache');
+        DB::statement('truncate objects');
+        DB::statement('truncate tagobjectassigns');
+
+        DB::table('tags')->insert([
+            ['id'=>1,'name'=>'TagA','parent_id'=>0,'options'=>0],
+            ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
+            ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
+        ]);
+        DB::table('tagcache')->insert([
+            ['name'=>'TagA','tag_id'=>1],
+            ['name'=>'TagB','tag_id'=>2],
+            ['name'=>'TagA.TagB','tag_id'=>2],
+            ['name'=>'TagC','tag_id'=>3],
+            ['name'=>'TagE.TagC','tag_id'=>3],
+        ]);
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'test'],
+            ['id'=>2,'classname'=>'test'],
+            ['id'=>3,'classname'=>'test'],
+        ]);
+        DB::table('tagobjectassigns')->insert([
+            ['container_id'=>1,'tag_id'=>1],
+            ['container_id'=>2,'tag_id'=>2],
+        ]);        
+        $test = new orm_checks();
+        $result = $test->check_tagobjectassignstagsexist();
+        $this->assertEquals('OK',$result->result);
+    }
+    
+    public function testTagObjectAssignsTagExists_fail() {
+        DB::statement('truncate tags');
+        DB::statement('truncate tagcache');
+        DB::statement('truncate objects');
+        DB::statement('truncate tagobjectassigns');
+        
+        DB::table('tags')->insert([
+            ['id'=>1,'name'=>'TagA','parent_id'=>0,'options'=>0],
+            ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
+            ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
+        ]);
+        DB::table('tagcache')->insert([
+            ['name'=>'TagA','tag_id'=>1],
+            ['name'=>'TagB','tag_id'=>2],
+            ['name'=>'TagA.TagB','tag_id'=>2],
+            ['name'=>'TagC','tag_id'=>3],
+            ['name'=>'TagE.TagC','tag_id'=>3],
+        ]);
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'test'],
+            ['id'=>2,'classname'=>'test'],
+            ['id'=>3,'classname'=>'test'],
+        ]);
+        DB::table('tagobjectassigns')->insert([
+            ['container_id'=>1,'tag_id'=>1],
+            ['container_id'=>2,'tag_id'=>100],
+        ]);
+        $test = new orm_checks();
+        $result = $test->check_tagobjectassignstagsexist();
+        $this->assertEquals('FAILED',$result->result);
+    }
+    
+    public function testTagObjectAssignsObjectExists_pass() {
+        DB::statement('truncate tags');
+        DB::statement('truncate tagcache');
+        DB::statement('truncate objects');
+        DB::statement('truncate tagobjectassigns');
+        
+        DB::table('tags')->insert([
+            ['id'=>1,'name'=>'TagA','parent_id'=>0,'options'=>0],
+            ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
+            ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
+        ]);
+        DB::table('tagcache')->insert([
+            ['name'=>'TagA','tag_id'=>1],
+            ['name'=>'TagB','tag_id'=>2],
+            ['name'=>'TagA.TagB','tag_id'=>2],
+            ['name'=>'TagC','tag_id'=>3],
+            ['name'=>'TagE.TagC','tag_id'=>3],
+        ]);
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'test'],
+            ['id'=>2,'classname'=>'test'],
+            ['id'=>3,'classname'=>'test'],
+        ]);
+        DB::table('tagobjectassigns')->insert([
+            ['container_id'=>1,'tag_id'=>1],
+            ['container_id'=>2,'tag_id'=>2],
+        ]);
+        $test = new orm_checks();
+        $result = $test->check_tagobjectassignsobjectsexist();
+        $this->assertEquals('OK',$result->result);
+    }
+    
+    public function testTagObjectAssignsObjectExists_fail() {
+        DB::statement('truncate tags');
+        DB::statement('truncate tagcache');
+        DB::statement('truncate objects');
+        DB::statement('truncate tagobjectassigns');
+        
+        DB::table('tags')->insert([
+            ['id'=>1,'name'=>'TagA','parent_id'=>0,'options'=>0],
+            ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
+            ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
+        ]);
+        DB::table('tagcache')->insert([
+            ['name'=>'TagA','tag_id'=>1],
+            ['name'=>'TagB','tag_id'=>2],
+            ['name'=>'TagA.TagB','tag_id'=>2],
+            ['name'=>'TagC','tag_id'=>3],
+            ['name'=>'TagE.TagC','tag_id'=>3],
+        ]);
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'test'],
+            ['id'=>2,'classname'=>'test'],
+            ['id'=>3,'classname'=>'test'],
+        ]);
+        DB::table('tagobjectassigns')->insert([
+            ['container_id'=>1,'tag_id'=>1],
+            ['container_id'=>100,'tag_id'=>2],
+        ]);
+        $test = new orm_checks();
+        $result = $test->check_tagobjectassignsobjectsexist();
+        $this->assertEquals('FAILED',$result->result);
+    }
     
 }
