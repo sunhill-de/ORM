@@ -299,4 +299,42 @@ class ORMChecksTest extends TestCase
         $this->assertEquals('FAILED',$result->result);
     }
     
+    public function testStringObjectAssignsElementExists_pass() {
+        DB::statement('truncate objects');
+        DB::statement('truncate stringobjectassigns');
+        
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'test'],
+            ['id'=>2,'classname'=>'test'],
+            ['id'=>3,'classname'=>'test'],
+        ]);
+        DB::table('stringobjectassigns')->insert([
+            ['container_id'=>1,'element_id'=>'test1','field'=>'test','index'=>0],
+            ['container_id'=>2,'element_id'=>'test2','field'=>'test','index'=>0],
+        ]);
+        
+        $test = new orm_checks();
+        $result = $test->check_stringobjectassignscontainerexist();
+        $this->assertEquals('OK',$result->result);
+    }
+    
+    public function testStringObjectAssignsElementExists_fail() {
+        DB::statement('truncate objects');
+        DB::statement('truncate stringobjectassigns');
+        
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'test'],
+            ['id'=>2,'classname'=>'test'],
+            ['id'=>3,'classname'=>'test'],
+        ]);
+        DB::table('stringobjectassigns')->insert([
+            ['container_id'=>1,'element_id'=>'test1','field'=>'test','index'=>0],
+            ['container_id'=>100,'element_id'=>'test2','field'=>'test','index'=>0],
+        ]);
+        
+        $test = new orm_checks();
+        $result = $test->check_stringobjectassignscontainerexist();
+        $this->assertEquals('FAILED',$result->result);
+    }
+    
 }

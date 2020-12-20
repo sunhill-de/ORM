@@ -5,6 +5,11 @@ namespace Sunhill\ORM\Checks;
 use Sunhill\Basic\Checker\checker;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Provides checks for the checking subsystem of sunhill for the orm system
+ * @author klaus
+ *
+ */
 class orm_checks extends checker {
     
     /**
@@ -147,5 +152,18 @@ class orm_checks extends checker {
             return $this->create_result('OK','Check object-object-assigns for not existing element objects');
         }
     }
+    
+    /**
+     * Checks if all container objects in the stringobjectassigns table exists
+     * @return unknown
+     */
+    public function check_stringobjectassignscontainerexist() {
+        if ($entries = $this->check_for_dangling_pointers('stringobjectassigns','container_id','objects','id',true)) {
+            return $this->create_result('FAILED','Check string-object-assigns for not existing container objects',"Objects '$entries' dont exist.");
+        } else {
+            return $this->create_result('OK','Check string-object-assigns for not existing container objects');
+        }
+    }
+    
     
 }
