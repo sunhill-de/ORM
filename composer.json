@@ -30,7 +30,8 @@
 				"Sunhill\\ORM\\SunhillServiceProvider"
 			],
 			"aliases" : {
-				"Classes" : "Sunhill\\ORM\\Facades\\Classes"
+				"Classes" : "Sunhill\\ORM\\Facades\\Classes",
+				"Operators" : "Sunhill\\ORM\\Facades\\Operators"
 			}
 		}
 	}

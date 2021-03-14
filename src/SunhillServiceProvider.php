@@ -10,6 +10,7 @@ use Sunhill\ORM\Console\MigrateObjects;
 use Sunhill\ORM\Console\FlushCaches;
 use Sunhill\Basic\Facades\Checks;
 use Sunhill\ORM\Checks\orm_checks;
+use Sunhill\ORM\Managers\operator_manager;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,8 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->alias(object_manager::class,'objects');
         $this->app->singleton(tag_manager::class, function () { return new tag_manager(); } );
         $this->app->alias(tag_manager::class,'tags');
+        $this->app->singleton(operator_manager::class, function () { return new operator_manager(); } );
+        $this->app->alias(operator_manager::class,'operators');
     }
     
     public function boot()
