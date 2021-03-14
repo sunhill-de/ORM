@@ -13,6 +13,7 @@
 namespace Sunhill\ORM\Operators;
 
 use \Sunhill\Basic\Utils\descriptor;
+use Sunhill\ORM\oo_object;
 
 /**
  * Base class for operators. An operator is a class that performs a certain action on
@@ -33,6 +34,8 @@ abstract class OperatorBase
      */
     protected $commands = [];
 
+    protected $target_class;
+    
     /**
      * The public check method which in turn calls all methods with the prefix cond_ to
      * check if the condition matches
@@ -58,6 +61,14 @@ abstract class OperatorBase
      */
     protected function cond_command(descriptor $descriptor) {
         return (in_array($descriptor->command,$this->commands));
+    }
+    
+    protected function cond_class(descriptor $descriptor) {
+        if (is_null($this->target_class)) {
+            return true;
+        } else {
+            return (is_a($descriptor->object,$this->target_class));
+        }
     }
     
     /**
