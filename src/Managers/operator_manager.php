@@ -37,8 +37,34 @@ class operator_manager {
         return count($this->operator_classes);
     }
     
+    /**
+     * Clears the caches
+     */
     public function flush() {
         $this->operators = null;
         $this->operator_classes = [];
+    }
+    
+    public function ExecuteOperators(string $command,$object) {
+        if (is_null($this->operators)) {
+            $this->loadOperators();
+        }
+        
+        $descriptor = new descriptor();
+        $descriptor->object = $object;
+        $descriptor->command = $command;
+        
+        foreach ($this->operators as $operator) {
+            if ($operator->check($descriptor)) {
+                $operator->execute($descriptor);
+            }
+        }
+    }
+    
+    private function loadOperators() {
+        $this->operators = [];
+        foreach ($this->operator_classes as $class) {
+            $this->operators[] = new $class();
+        }
     }
 }
