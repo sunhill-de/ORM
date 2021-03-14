@@ -4,6 +4,7 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Checks\orm_checks;
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Facades\Classes;
 
 class ORMChecksTest extends TestCase
 {
@@ -366,6 +367,110 @@ class ORMChecksTest extends TestCase
         
         $test = new orm_checks();
         $result = $test->check_objectexistance();
+        $this->assertEquals('FAILED',$result->result);
+    }
+    
+    public function testClassTableGaps_pass() {
+        Classes::create_cache(dirname(__FILE__).'/../objects');
+        DB::statement('truncate objects');
+        DB::statement('truncate dummies');
+        DB::statement('truncate testparents');
+        DB::statement('truncate testchildren');
+        DB::statement('truncate passthrus');
+        DB::statement('truncate secondlevelchildren');
+        
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'dummy'],
+            ['id'=>2,'classname'=>'testparent'],
+            ['id'=>3,'classname'=>'testchild'],
+            ['id'=>4,'classname'=>'secondlevelchild'],
+         ]);   
+        DB::table('dummies')->insert([
+            ['id'=>1,'dummyint'=>1],
+        ]);
+        
+        DB::table('testparents')->insert([
+            ['id'=>2,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A'],
+            ['id'=>3,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A'],
+            ['id'=>4,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A']
+        ]);
+        DB::table('testchildren')->insert([
+            ['id'=>3,'childint'=>1,'childchar'=>'A','childfloat'=>1.1,'childdate'=>'2020-12-20','childtime'=>'12:00:00','childdatetime'=>'2020-12-20 12:00:00','childenum'=>'testA','childtext'=>'A'],
+        ]);
+        DB::table('passthrus')->insert([['id'=>4]]);
+        DB::table('secondlevelchildren')->insert([['id'=>4,'childint'=>1]]);
+
+        $test = new orm_checks();
+        $result = $test->check_classtablegaps();
+        $this->assertEquals('OK',$result->result);
+        
+    }
+    
+    public function testClassTableGaps_fail1() {
+        Classes::create_cache(dirname(__FILE__).'/../objects');
+        DB::statement('truncate objects');
+        DB::statement('truncate dummies');
+        DB::statement('truncate testparents');
+        DB::statement('truncate testchildren');
+        DB::statement('truncate passthrus');
+        DB::statement('truncate secondlevelchildren');
+        
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'dummy'],
+            ['id'=>2,'classname'=>'testparent'],
+            ['id'=>3,'classname'=>'testchild'],
+            ['id'=>4,'classname'=>'secondlevelchild'],
+        ]);
+        DB::table('dummies')->insert([
+            ['id'=>1,'dummyint'=>1],
+        ]);
+        
+        DB::table('testparents')->insert([
+            ['id'=>2,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A'],
+            ['id'=>3,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A'],
+            ['id'=>4,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A']
+        ]);
+        DB::table('testchildren')->insert([
+            ['id'=>3,'childint'=>1,'childchar'=>'A','childfloat'=>1.1,'childdate'=>'2020-12-20','childtime'=>'12:00:00','childdatetime'=>'2020-12-20 12:00:00','childenum'=>'testA','childtext'=>'A'],
+        ]);
+        DB::table('secondlevelchildren')->insert([['id'=>4,'childint'=>1]]);
+        
+        $test = new orm_checks();
+        $result = $test->check_classtablegaps();
+        $this->assertEquals('FAILED',$result->result);        
+    }
+    
+    public function testClassTableGaps_fail2() {
+        Classes::create_cache(dirname(__FILE__).'/../objects');
+        DB::statement('truncate objects');
+        DB::statement('truncate dummies');
+        DB::statement('truncate testparents');
+        DB::statement('truncate testchildren');
+        DB::statement('truncate passthrus');
+        DB::statement('truncate secondlevelchildren');
+        
+        DB::table('objects')->insert([
+            ['id'=>1,'classname'=>'dummy'],
+            ['id'=>2,'classname'=>'testparent'],
+            ['id'=>4,'classname'=>'secondlevelchild'],
+        ]);
+        DB::table('dummies')->insert([
+            ['id'=>1,'dummyint'=>1],
+        ]);
+        
+        DB::table('testparents')->insert([
+            ['id'=>2,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A'],
+            ['id'=>3,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A'],
+            ['id'=>4,'parentint'=>1,'parentchar'=>'A','parentfloat'=>1.1,'parentdate'=>'2020-12-20','parenttime'=>'12:00:00','parentdatetime'=>'2020-12-20 12:00:00','parentenum'=>'testA','parenttext'=>'A']
+        ]);
+        DB::table('testchildren')->insert([
+            ['id'=>3,'childint'=>1,'childchar'=>'A','childfloat'=>1.1,'childdate'=>'2020-12-20','childtime'=>'12:00:00','childdatetime'=>'2020-12-20 12:00:00','childenum'=>'testA','childtext'=>'A'],
+        ]);
+        DB::table('passthrus')->insert([['id'=>4]]);
+        DB::table('secondlevelchildren')->insert([['id'=>4,'childint'=>1]]);
+        
+        $test = new orm_checks();
+        $result = $test->check_classtablegaps();
         $this->assertEquals('FAILED',$result->result);
     }
     

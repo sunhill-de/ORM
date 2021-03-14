@@ -4,6 +4,7 @@ namespace Sunhill\ORM\Checks;
 
 use Sunhill\Basic\Checker\checker;
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Facades\Classes;
 
 /**
  * Provides checks for the checking subsystem of sunhill for the orm system
@@ -165,5 +166,69 @@ class orm_checks extends checker {
         }
     }
     
+    /**
+     * Checks if all classes in objects exist
+     * @return unknown
+     */
+    public function check_objectexistance() {
+        $tables = DB::table('objects')->distinct('classname')->get();
+        $bad_classes = '';
+        foreach ($tables as $table) {
+            if (!Classes::search_class($table->classname)) {
+                $bad_classes .= (empty($bad_classes)?'':', ').$table->classname;
+            }
+        }
+        if (empty($bad_classes)) {
+            return $this->create_result('OK','Check for non existance classes in objects');            
+        } else {
+            return $this->create_result('FAILED','Check for non existance classes in objects',"Classes '$bad_classes' dont exist.");            
+        }
+    }
     
+    public function check_classtablegaps() {
+        $table_tree = $this->get_table_tree();
+        $return = '';
+        
+        foreach ($table_tree as $master=>$table) {
+            if ($result = $this->test_table($master,$table)) {
+                $return .= (empty($return)?'':',').$result;        
+            }
+        }
+        
+        if (empty($return)) {
+            return $this->create_result('OK','Check for gaps in object tables');
+        } else {
+            return $this->create_result('FAILED','Check for non existance classes in objects',"Objects '$return' have gaps.");
+        }
+    }
+    
+    private function test_table(string $master,array $tables) {
+        $query = DB::table($master);
+        foreach ($tables as $table) {
+            $query = $query->leftJoin($table,$table.'.id','=',$master.'.id');
+        }
+    }
+    
+    private function get_subtables(string $class) {        
+        $parent_classes = Classes::get_inheritance_of_class($class);
+        $result = [];
+        
+        foreach ($parent_classes as $parent) {
+            $result[] = Classes::get_table_of_class($parent);
+        }
+        
+        return $result;
+    }
+    
+    private function get_table_tree() {
+        $classes = Classes::get_all_classes();
+        $tables = [];
+        foreach ($classes as $class) {
+            if ($class->name !== 'object') {
+                $tables[Classes::get_table_of_class($class->name)] = $this->get_subtables($class->name);
+            }
+        }
+        
+        return $tables;
+    }
 }
