@@ -8,7 +8,7 @@ use Sunhill\Basic\Utils\descriptor;
 use Sunhill\ORM\Facades\Operators;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 
-class TestOperator1 extends OperatorBase {
+class ManagerOperator1 extends OperatorBase {
     
     protected $commands = ['test1'];
     
@@ -21,7 +21,7 @@ class TestOperator1 extends OperatorBase {
     }
 }
 
-class TestOperator2 extends OperatorBase {
+class ManagerOperator2 extends OperatorBase {
     
     protected $commands = ['test2'];
 
@@ -34,7 +34,7 @@ class TestOperator2 extends OperatorBase {
     }
 }
 
-class TestOperator3 extends OperatorBase {
+class ManagerOperator3 extends OperatorBase {
     
     protected $commands = ['test1','test2'];
 
@@ -47,31 +47,31 @@ class TestOperator3 extends OperatorBase {
     }
 }
 
-class OperatorTest extends TestCase
+class OperatorManagerTest extends TestCase
 {
     
     public function testOperatorManager() {
         $manager = new operator_manager();
         $manager
-            ->add_operator(TestOperator1::class)
-            ->add_operator(TestOperator2::class)
-            ->add_operator(TestOperator3::class);
+        ->add_operator(ManagerOperator1::class)
+        ->add_operator(ManagerOperator2::class)
+        ->add_operator(ManagerOperator3::class);
         $this->assertEquals(3,$manager->get_operator_count());
     }
     
     public function testOperatorFacade() {
         Operators::flush();
-        Operators::add_operator(TestOperator1::class)
-        ->add_operator(TestOperator2::class)
-        ->add_operator(TestOperator3::class);
+        Operators::add_operator(ManagerOperator1::class)
+        ->add_operator(ManagerOperator2::class)
+        ->add_operator(ManagerOperator3::class);
         $this->assertEquals(3,Operators::get_operator_count());
     }
     
     public function testOperatorChain() {
         Operators::flush();
-        Operators::add_operator(TestOperator1::class)
-        ->add_operator(TestOperator2::class)
-        ->add_operator(TestOperator3::class);
+        Operators::add_operator(ManagerOperator1::class)
+        ->add_operator(ManagerOperator2::class)
+        ->add_operator(ManagerOperator3::class);
         
         $test = new ts_dummy();
         $test->dummyint = 1;
