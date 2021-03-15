@@ -14,12 +14,12 @@
 			"Sunhill\\ORM\\Test\\" : [
 				"tests",
 				"tests/lib",
-				"tests/objects"
+				"tests/Objects"
 			],
 			"Sunhill\\ORM\\Tests\\" : [
 				"tests",
 				"tests/lib",
-				"tests/objects"
+				"tests/Objects"
 			],
 			"Sunhill\\ORM\\" : "src"
 		}
