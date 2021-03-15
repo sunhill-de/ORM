@@ -14,6 +14,8 @@ class TestOperator1 extends OperatorBase {
     
     protected $target_class = ts_dummy::class;
     
+    protected $prio = 3;
+    
     protected function do_execute(descriptor $descriptor) {
         $descriptor->object->dummyint++;
     }
@@ -24,6 +26,8 @@ class TestOperator2 extends OperatorBase {
     protected $commands = ['test2'];
 
     protected $target_class = ts_dummy::class;
+    
+    protected $prio = 2;
     
     protected function do_execute(descriptor $descriptor) {
         $descriptor->object->dummyint+=2;        
@@ -36,8 +40,10 @@ class TestOperator3 extends OperatorBase {
 
     protected $target_class = ts_dummy::class;
     
+    protected $prio = 1;
+    
     protected function do_execute(descriptor $descriptor) {
-        $descriptor->object->dummyint+=3;        
+        $descriptor->object->dummyint*=3;        
     }
 }
 
@@ -71,6 +77,6 @@ class OperatorTest extends TestCase
         $test->dummyint = 1;
         
         Operators::ExecuteOperators('test1',$test);
-        $this->assertEquals(5,$test->dummyint);
+        $this->assertEquals(4,$test->dummyint);
     }
 }

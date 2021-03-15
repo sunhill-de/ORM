@@ -66,5 +66,11 @@ class operator_manager {
         foreach ($this->operator_classes as $class) {
             $this->operators[] = new $class();
         }
+        usort($this->operators,function($x,$y) {
+            if ($x->get_prio() == $y->get_prio()) {
+                return 0;
+            }
+            return ($x->get_prio() < $y->get_prio())? -1:1;
+        });
     }
 }

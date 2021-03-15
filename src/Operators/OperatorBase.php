@@ -36,6 +36,12 @@ abstract class OperatorBase
 
     protected $target_class;
     
+    protected $prio = 50;
+    
+    public function get_prio() {
+        return $this->prio;
+    }
+    
     /**
      * The public check method which in turn calls all methods with the prefix cond_ to
      * check if the condition matches
