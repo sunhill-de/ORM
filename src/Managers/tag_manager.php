@@ -15,6 +15,7 @@ namespace Sunhill\ORM\Managers;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\descriptor;
 use Sunhill\ORM\Objects\oo_tag;
+use Sunhill\ORM\Objects\TagException;
 
 define('TagNamespace','Sunhill\ORM\Objects\oo_tag');
 
@@ -294,13 +295,17 @@ class tag_manager {
          return $return;
      }
      
+     protected function do_search_tag(string $name) {
+         return $this->prepare_query()
+                ->join('tagcache', 'tagcache.tag_id','=','a.id')
+                ->where('tagcache.name',$name)->get();         
+     }
+     
      /**
       * Searches for a tag with the name $name and returns all found tag descriptors
       */
      public function search_tag(string $name) {
-        $query = $this->prepare_query()                    
-                ->join('tagcache', 'tagcache.tag_id','=','a.id')
-                ->where('tagcache.name',$name)->get();
+         $query = $this->do_search_tag($name);
          $return = [];
          foreach ($query as $result) {
              $return[] = $this->get_query_descriptor($result);
@@ -315,5 +320,20 @@ class tag_manager {
          }
      }
      
+     public function load_tag($tag) {
+         if (is_string($tag)) {
+             $result = $this->do_search_tag($tag);
+             if (count($result) == 0) {
+                 throw new TagException("Tag '$tag' not found.");
+             } else if (count($result) > 1) {
+                 throw new TagException("Tag '$tag' not unique.");
+             }
+             $tag_id = $result[0]->id;
+         } else if (is_int($tag)) {
+             $tag_id = $tag;
+         }
+         $tag = new oo_tag($tag_id);
+         return $tag;
+     }
  }
  
