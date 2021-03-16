@@ -18,6 +18,7 @@ class ManagerOperator1 extends OperatorBase {
     
     protected function do_execute(descriptor $descriptor) {
         $descriptor->object->dummyint++;
+        $descriptor->payload = 4;
     }
 }
 
@@ -79,4 +80,22 @@ class OperatorManagerTest extends TestCase
         Operators::ExecuteOperators('test1',$test);
         $this->assertEquals(4,$test->dummyint);
     }
+    
+    
+    public function testOperatorChainWithDescriptor() {
+        Operators::flush();
+        Operators::add_operator(ManagerOperator1::class)
+        ->add_operator(ManagerOperator2::class)
+        ->add_operator(ManagerOperator3::class);
+        
+        $test = new ts_dummy();
+        $test->dummyint = 1;
+        
+        $descriptor = new descriptor();
+        $descriptor->payload = 3;
+        
+        Operators::ExecuteOperators('test1',$test,$descriptor);
+        $this->assertEquals($descriptor->payload,$test->dummyint);
+    }
+    
 }

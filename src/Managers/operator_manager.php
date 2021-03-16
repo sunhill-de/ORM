@@ -45,12 +45,14 @@ class operator_manager {
         $this->operator_classes = [];
     }
     
-    public function ExecuteOperators(string $command,$object) {
+    public function ExecuteOperators(string $command,$object,&$descriptor=null) {
         if (is_null($this->operators)) {
             $this->loadOperators();
         }
         
-        $descriptor = new descriptor();
+        if (is_null($descriptor)) {
+            $descriptor = new descriptor();
+        }
         $descriptor->object = $object;
         $descriptor->command = $command;
         
