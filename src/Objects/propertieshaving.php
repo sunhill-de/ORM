@@ -81,7 +81,7 @@ class propertieshaving extends hookable {
 	}
 	
 	/**
-	 * Legt die ID für das aktuelle Objekt fest
+	 * Sets the ID for the current object
 	 * @param Integer $id
 	 */
 	public function set_id($id) {
