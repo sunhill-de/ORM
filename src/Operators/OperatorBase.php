@@ -33,8 +33,6 @@ abstract class OperatorBase
      * @var array
      */
     protected $commands = [];
-
-    protected $target_class;
     
     protected $prio = 50;
     
@@ -67,14 +65,6 @@ abstract class OperatorBase
      */
     protected function cond_command(descriptor $descriptor) {
         return (in_array($descriptor->command,$this->commands));
-    }
-    
-    protected function cond_class(descriptor $descriptor) {
-        if (is_null($this->target_class)) {
-            return true;
-        } else {
-            return (is_a($descriptor->object,$this->target_class));
-        }
     }
     
     /**
