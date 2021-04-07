@@ -2,8 +2,8 @@
 /**
  * @file oo_object.php
  * Provides the core object of the orm system named oo_object
- * Lang en
- * Reviewstatus: 2020-09-11
+ * Lang en (complete)
+ * Reviewstatus: 2021-04-07
  * Localization: unknown
  * Documentation: unknown
  * Tests: unknown
@@ -101,7 +101,7 @@ class oo_object extends propertieshaving {
 	
 // ============================ Storagefunktionen =======================================	
 	/**
-	 * Liefert das aktuelle Storage zurück oder erzeugt eines, wenn es ein solches noch nicht gibt.
+	 * Returns the current storage or creates one if it doesn't exist
 	 * @return \Sunhill\ORM\Storage\storage_base
 	 */
 	final protected function get_storage() {
@@ -109,7 +109,7 @@ class oo_object extends propertieshaving {
 	}
 	
 	/**
-	 * Erzeugt ein Storage. Defaultmäßig ist es das mysql-Storage. Diese methode kann für Debug-Zwecke überschrieben werden
+	 * Creates a storage. By default this is a mysql storage. This method could be overwritten for debug purposes
 	 * @return \Sunhill\ORM\Storage\storage_mysql
 	 */
 	protected function create_storage() {
@@ -138,7 +138,7 @@ class oo_object extends propertieshaving {
 	}
 	
 	/**
-	 * Läd das Objekt aus dem Storage.
+	 * Loads the object from the storage
 	 * {@inheritDoc}
 	 * @see \Sunhill\ORM\propertieshaving::do_load()
 	 */
@@ -157,7 +157,7 @@ class oo_object extends propertieshaving {
 	}
 	
 	/**
-	 * Da die Anzahl der Attribute vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
+	 * Read the attributes from the storage
 	 */
 	protected function load_attributes(\Sunhill\ORM\Storage\storage_base $storage) {
 	    if (empty($storage->get_entity('attributes'))) {
@@ -175,16 +175,16 @@ class oo_object extends propertieshaving {
 	}
 	
 	/**
-	 * Da die Anzahl der externen Hooks vorher noch nicht feststeht, müssen diese nach Bedarf aus dem Storage gelesen werden
+	 * Reads the external hook from the storage
 	 */
 	protected function load_external_hooks(\Sunhill\ORM\Storage\storage_base $storage) {
 	}
 	
-// ========================= Einfügen =============================	
+// ========================= Insert =============================	
 	/**
-	 * Fügt ein Objekt in das Storage ein. 
-	 * Zunächst wird für jede Property inserting aufgerufen, anschließend insert und nach
-	 * abschluss aller Arbeiten noch inserted.
+     * This method is called by the public method insert and 
+     * inserts an object into the storage
+	 * First for every property inserting is called, afterwards insert and finally inserted.
 	 */
 	protected function do_insert() {
 	       $storage = $this->get_storage();
@@ -196,7 +196,7 @@ class oo_object extends propertieshaving {
            $this->insert_cache($this->get_id());
 	}
 
-// ========================== Aktualisieren ===================================	
+// ========================== Update ===================================	
 	protected function do_update() {
 	    $storage = $this->get_storage();
 	    $storage->set_entity('id',$this->get_id());
@@ -207,13 +207,13 @@ class oo_object extends propertieshaving {
 	}
 		
 	/**
-	 * Erzeugt ein leeres neues Objekt
+	 * Creates a new empty storage
 	 */
 	public function create_empty() {
 		
 	}
 	
-	// ================================= Löschen =============================================
+	// ================================= Delete =============================================
 	protected function do_delete() {
 	    $storage = $this->get_storage();
 	    $this->walk_properties('deleting',$storage);
@@ -250,9 +250,9 @@ class oo_object extends propertieshaving {
 	}
 	
 	/**
-	 * Ruft für jede Property die durch $action definierte Methode auf und übergibt dieser das Storage
-	 * @param string $action
-	 * @param \Sunhill\ORM\Storage\storage_base $storage
+	 * A helper method that calls for every propery the given method an passes the given storage to it
+	 * @param string $action The name of the method that has to get called
+	 * @param \Sunhill\ORM\Storage\storage_base $storage the storage
 	 */
 	protected function walk_properties(string $action,\Sunhill\ORM\Storage\storage_base $storage) {
 	    $properties = $this->get_properties_with_feature();
@@ -362,7 +362,7 @@ class oo_object extends propertieshaving {
 	}
 	
 	/**
-	 * Wird für komplexe Aufgabe aufgerufen
+	 * So called complex hooks use this method
 	 * @param string $action
 	 * @param string $hook
 	 * @param string $subaction
