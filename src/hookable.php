@@ -1,0 +1,141 @@
+<?php
+/**
+ * @file hookable.php
+ * Definiert die Klasse hookable
+ */
+namespace Sunhill\ORM;
+
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\Basic\loggable;
+
+/**
+ * Basisklasse für Klassen, die Hooks benutzen
+ * Folgende Hooks werden vordefiniert:
+ * @defgroup Hooks
+ * - CONSTRUCTED Wird immer aufgerufen, wenn ein neues Objekt erzeugt wurde 
+ * @author lokal
+ */
+class hookable extends loggable {
+
+	
+	protected $hooks = array();
+	protected $external_hooks = array();
+	
+	/**
+	 * Der Konstruktor muss von abgeleiteten Klassen aufgerufen werden. Er initialiesiert über einen Aufruf
+	 * von setup_hooks() die Hooks und ruft (sofern vorhanden) die Hooks für CONSTRUCTED auf
+	 */
+	public function __construct() {
+		parent::__construct();
+		$this->setup_hooks();
+		$this->check_for_hook('CONSTRUCTED');		
+	}
+		
+	/**
+	 * Wird aufgerufen, um Hooks für dieses Objekt zu setzen
+	 */
+	protected function setup_hooks() {
+	    // Macht in der Ursprungsvariante nichts
+	}
+
+	/**
+	 * Fügt einen neuen Hook hinzu
+	 * @param string $action
+	 * @param string $hook
+	 * @param string $subaction
+	 * @param hookable $destination
+	 */
+	public function add_hook(string $action,string $hook,string $subaction='default',$destination=null,$payload=null) {
+	    if (is_null($destination)) { $destination = $this; }
+	    if ($this->hook_already_installed($action,$hook,$subaction,$destination,$payload)) {
+	        return;
+	    }
+	    if ($destination !== $this) {
+            $this->set_external_hook($action,$subaction,$destination,$payload,$hook);
+	    }
+	    if (!isset($this->hooks[$action])) {
+	        $this->hooks[$action] = array();
+	    }
+	    if (!isset($this->hooks[$action][$subaction])) {
+	        $this->hooks[$action][$subaction] = array();
+	    }
+	    if (strpos($subaction,'.')) {
+	        // Es handelt sich um einen komplexen hook
+	        $this->set_complex_hook($action,$hook,$subaction,$destination);
+	    } else {	    
+	       $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook,'payload'=>$payload);
+	    }
+	}
+	
+	protected function set_external_hook($action,$subaction,$destination,$payload,$hook) {
+	    $this->external_hooks[] = array('action'=>$action,'subaction'=>$subaction,'destination'=>$destination,'payload'=>$payload);	    
+	}
+	
+	private function hook_already_installed($action,$hook,$subaction,$destination,$payload) {
+	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
+	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
+	            if (($hook == $descriptor['hook']) && ($this->target_equal($destination,$descriptor['destination']))) {
+	                return true;
+	            }
+	        }
+	    }
+	    return false;
+	}
+	
+	protected function target_equal($test1,$test2) {
+	    return ($test1 === $test2);
+	}
+	/**
+	 * Wird für komplexe Aufgabe aufgerufen
+	 * @param string $action
+	 * @param string $hook
+	 * @param string $subaction
+	 * @param unknown $destination
+	 */
+	protected function set_complex_hook(string $action,string $hook,string $subaction,$destination) {
+	    $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook);	    
+	}
+	
+	/**
+	 * Prüft, ob es entsprechende Hooks gibt
+	 * @param string $action
+	 * @param string $subaction
+	 * @param array $params
+	 */
+	public function check_for_hook(string $action,$subaction='default',array $params=null) {
+	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
+	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
+                $destination = $descriptor['destination'];
+                $hook = $descriptor['hook'];
+	            if (is_int($destination)) {
+	                $destination = Objects::load($descriptor['destination']);
+	            }
+	            if (!isset($params)) {
+	                $params = array();
+	            }
+	            $params['action']    = $action;
+	            $params['subaction'] = $subaction;
+	            $params['payload'] = $descriptor['payload'];
+	            $destination->$hook($params);
+	        }
+	    }
+	}
+
+	public function get_external_hooks() {
+	    $result = [];
+	    foreach ($this->hooks as $actionname=>$actions) {
+	        foreach ($actions as $subactionname=>$subactions) {
+	            foreach ($subactions as $hook) {
+	                if (is_int($hook['destination']) || ($hook['destination'] !== $this)) {
+	                    $hook['action'] = $actionname;
+	                    $hook['subaction'] = $subactionname;
+	                    $hook['target_id'] = is_int($hook['destination'])?$hook['destination']:$hook['destination']->get_id();
+	                    $result[] = $hook;
+	                }
+	            }
+	        }
+	    }
+	    return $result;
+	}
+		
+}

@@ -1,0 +1,13 @@
+/vendor
+/.idea
+/.vscode
+/.vagrant
+*~
+/database/database.sqlite
+/storage
+composer.lock
+.buildpath*
+/doc/latex
+/doc/html
+/doc/coverage
+/.phpunit*

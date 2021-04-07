@@ -1,0 +1,38 @@
+{
+	"name" : "sunhill/orm",
+	"description" : "The sunhill ORM extension to laravel",
+	"type" : "library",
+	"license" : "MIT",
+	"authors" : [{
+			"name" : "Klaus Dimde",
+			"email" : "klaus@dimde.info"
+		}
+	],
+	"minimum-stability" : "dev",
+	"autoload" : {
+		"psr-4" : {
+			"Sunhill\\ORM\\Test\\" : [
+				"tests",
+				"tests/lib",
+				"tests/Objects"
+			],
+			"Sunhill\\ORM\\Tests\\" : [
+				"tests",
+				"tests/lib",
+				"tests/Objects"
+			],
+			"Sunhill\\ORM\\" : "src"
+		}
+	},
+	"extra" : {
+		"laravel" : {
+			"providers" : [
+				"Sunhill\\ORM\\SunhillServiceProvider"
+			],
+			"aliases" : {
+				"Classes" : "Sunhill\\ORM\\Facades\\Classes",
+				"Operators" : "Sunhill\\ORM\\Facades\\Operators"
+			}
+		}
+	}
+}
