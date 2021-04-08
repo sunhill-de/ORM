@@ -9,7 +9,7 @@ class MigrateObjects extends Command
 {
     protected $signature = 'sunhill:migrate';
     
-    protected $description = 'Migrates the provides objects';
+    protected $description = 'Migrates the provided objects';
     
     public function handle()
     {
