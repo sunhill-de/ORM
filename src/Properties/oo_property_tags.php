@@ -8,6 +8,7 @@ use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\TagException;
 use Sunhill\ORM\Storage\storage_base;
+use Sunhill\ORM\Facades\Tags;
 
 /**
  * Diese Klasse repräsentiert die Property "Tags". Hier werden die Tags eines Objektes gespeichert.
@@ -94,6 +95,21 @@ class oo_property_tags extends oo_property_arraybase {
 	    foreach ($this->value as $listed) {
 	        if ($listed->get_id() == $test->get_id()) {
 	            return $test;
+	        }
+	    }
+	    return false;
+	}
+	
+	/**
+	 * Tests if the object is associatied with the given tag
+	 * @param id|string|oo_tag $test the tag to test
+	 * @return boolean
+	 */
+	public function HasTag($test) {
+	    $tag_desc = Tags::find_tag($test);
+	    foreach ($this->value as $listed) {
+	        if ($listed->get_id() == $tag_desc->id) {
+	            return true;
 	        }
 	    }
 	    return false;
