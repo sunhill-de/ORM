@@ -4,6 +4,7 @@ namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Objects\oo_object;
 
 class oo_property_array_of_objects extends oo_property_arraybase {
 
@@ -27,6 +28,14 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	
 	public function get_type() {
 	    return $this->type;
+	}
+	
+	protected function NormalizeValue($value) {
+	    if (is_int($value)) {
+	        return $value;
+	    } else if (is_a($value,oo_object::class)) {
+	        return $value->get_id();
+	    }
 	}
 	
 	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {
