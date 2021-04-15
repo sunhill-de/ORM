@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\descriptor;
 use Sunhill\ORM\ORMException;
 use Sunhill\Basic\loggable;
+use Sunhill\ORM\propertyhaving;
 
 /** 
  * These constants are used in get_diff_array as an optional parameter. They decide how object references should 
@@ -42,19 +43,15 @@ define ('PD_ID',2);
 define ('PD_KEEP',3);  
 
 /**
- * Basisklasse für Exceptions, die etwas mit Properties zu tun haben
+ * a basic exception class that deal with properties
  * @author lokal
  *
  */
 class PropertyException extends ORMException {}
 
 /**
- * Die Exception für ungültige Wertzuweisungen an dieses Property
- * @author lokal
- */
-
-/**
  * An exception that is raised, if a reference is assigned an invalid value
+ * @author lokal
  */
 class InvalidValueException extends PropertyException {}
 
@@ -111,70 +108,78 @@ class oo_property extends loggable {
 	protected $type;
 	
 	/**
-	 * Der Vorgabewert für value, wenn er nicht gesetzt wird. Wenn $default null ist und $defaults_null ebenfalls
-	 * ist der vorgabewert null, wenn $defaults_null false ist, gibt es keinen Vorgabewert
-	 * @var void
+	 * The default value for the value field. In combination with oo_property->defaults_null this default value 
+     * is used:
+     * $default  | $defaults_null | Default value
+     * ----------+----------------+------------------------------
+     * not null  | any            | the value stored in $default
+     * null      | true           | null
+     * null      | false          | no default value
+     * With a default value an property is never unititialized
+     * @var void
 	 */
 	protected $default;
 	
 	/**
-	 * Legt fest ob der Standardwert für value null sein soll. Wird auf true gesetzt, wenn set_default
-	 * mit null aufgerufen wird. 
+	 * See above
 	 * @var bool
 	 */
 	protected $defaults_null;
 	
 	/**
-	 * Gibt die Dirtyness der Property an. Ist der Wert false, wurde der Wert der Property seit der
-	 * Initialisierung oder dem letzten commit() nicht verändert. Ist er true, wurde er verändert
-	 * Der Zugriff sollte langfristig auch innerhalb der abgeleiteten Klassen über get_dirty() und set_dirty()
-	 * erfolgen.  
+	 * Shows if this property is dirty. If false the value wasn't change since initialization or the last
+     * commit. If true than it was changed. An access should be performed via oo_property->get_dirty() and
+     * oo_property->set_dirty().
 	 * @var bool
 	 */
 	protected $dirty=false;
 		
 	/**
-	 * Gibt den Initialiserungstatus der Property an. Ist der Wert false, wurde value noch nie ein Wert
-	 * zugeweisen, ist er true, wurde die Property entweder bereits zugeweisen oder geladen.
+     * Shows if the value was initialized at some time. If true that it was initialized already (even through
+     * a default value or via loading). If false it was not initialied. A read access on a not initialized value
+     * raises an excpetion.
 	 * @var bool
 	 */
 	protected $initialized=false;
 	
 	/**
-	 * Gibt an, ob die Property nur lesen (true) oder auch beschreibbar (false) ist
+     * Shows if the property is read only (true) or writable (false)
 	 * @var bool
 	 */
 	protected $read_only=false;
 	
 	/**
-	 * Name des Validators. Defaultmäßig ein Basisvalidator, der alle Werte durchwinkt.
+	 * The name of the associated validator. By default it's a validator that accepts any value
 	 * @var string
 	 */
 	protected $validator_name = 'validator_base';
 	
 	/**
-	 * Speichert das validator-Objekt
-	 * @var \Sunhill\ORM\Validators\validator_base
+     * Stores the validator object
+     * @var \Sunhill\ORM\Validators\validator_base
 	 */
 	protected $validator;
 	
 	/**
-	 * Speichert die Hooks für dieses Property
+	 * Stores the hooks of this property
 	 * @var array
 	 */
 	protected $hooks = array();
 	
+    /**
+     * Stores the class of the property
+     * @var string
+     */
 	protected $class;
 	
 	/**
-	 * Gibt an, ob nach nach diesem Property suchen kann (true) oder nicht (false)
-	 * @var string
+	 * Shows if this property is searchable (true) or not (false)
+	 * @var bool
 	 */
 	protected $searchable=false;
 	
 	/**
-	 * Konstruktor der Property
-	 * Setzt die Parameter auf default-Werte
+	 * The constructor sets all values to a default
 	 */
 	public function __construct() {
 		$this->dirty = false;
@@ -209,26 +214,31 @@ class oo_property extends loggable {
 	}
 	
 	/**
-	 * Initialisiert diese Property. Das ist aber nicht gleichbedeutend mit $initialized!!
-	 * Hier können zusätzliche Schritte unternommen werden
+	 * A method to provide the possibility to initialize this property. Is not the same as
+     * setting initialized to true.
 	 */
 	public function initialize() {
 	}
 	
 	/**
-	 * Initialisiert den validator.
-	 * @throws PropertyException Wenn es den Validator nicht gibt
+	 * Initializes the validator 
+	 * @throws PropertyException if the validator class dosn't exist
 	 */
 	protected function init_validator() {
 	    $validator_name = "\\Sunhill\\ORM\\Validators\\".$this->validator_name;
 	    if (!class_exists($validator_name)) {
-	        throw new PropertyException("Unbekannter Validator '".$this->validator_name."' aufgerufen.");
+	        throw new PropertyException("Unknown validator '".$this->validator_name."' called.");
 	    }
 	    $this->validator = new $validator_name();    
 	}
 
-// =========================== Setter und Getter ========================================	
-	public function set_owner($owner) {
+// =========================== Setter and getter ========================================	
+    /**
+     * sets the field oo_property->owner
+     * @param $owner a class of propertyhaving
+     * @return oo_property a reference to this to make setter chains possible
+     */
+    public function set_owner(propertyhaving $owner) {
 	    $this->owner = $owner;
 	    return $this;	    
 	}
@@ -237,7 +247,12 @@ class oo_property extends loggable {
 	    return $this->owner;
 	}
 	
-	public function set_name($name) {
+    /**
+     * sets the field oo_property->name
+     * @param $name The name of the property
+     * @return oo_property a reference to this to make setter chains possible
+     */
+	public function set_name(string $name) {
 		$this->name = $name;
 		return $this;
 	}
@@ -246,7 +261,12 @@ class oo_property extends loggable {
 		return $this->name;
 	}
 	
-	public function set_type($type) {
+    /**
+     * sets the field oo_property->type
+     * @param $type The type of the property
+     * @return oo_property a reference to this to make setter chains possible
+     */
+	public function set_type(string $type) {
 	    $this->type = $type;
 	    return $this;
 	}
