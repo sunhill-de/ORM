@@ -275,6 +275,11 @@ class oo_property extends loggable {
 	    return $this->type;
 	}
 	
+    /**
+     * sets the field oo_property->default (and perhaps oo_property->defaults_null too)
+     * 
+     * @return oo_property a reference to this to make setter chains possible
+     */
 	public function set_default($default) {
 	    if (!isset($default)) {
 	        $this->defaults_null = true;
@@ -325,7 +330,7 @@ class oo_property extends loggable {
 	 */
 	final public function set_value($value,$index=null) {
 		if ($this->read_only) {
-			throw new PropertyException("Die Property ist read-only.");
+			throw new PropertyException("Write to a read only property.");
 		}
 		
 		// Prüfen, ob sich der Wert überhaupt ändert
@@ -396,7 +401,7 @@ class oo_property extends loggable {
 				$this->initialized = true;
 			} else {
 			    if (!$this->initialize_value()) {
-			         throw new PropertyException("Lesender Zugriff auf nicht ininitialisierte Property: '".$this->name."'");
+			         throw new PropertyException("Read of a not initialized property: '".$this->name."'");
 			    }
 			}
 		}
@@ -423,17 +428,22 @@ class oo_property extends loggable {
 	    return $this->value[$index];
 	}
 	
+    /**
+     * Returns the value of the shadow field 
+     * @return void: The value of oo_property->shadow
+     */
 	public function get_old_value() {
 		return $this->shadow;
 	}
 	
 	/**
-	 * Erzeugt ein Diff-Array. 
-	 * d.h. es wird ein Array mit (mindestens) zwei Elementen zurückgebene:
-	 * FROM ist der alte Wert
-	 * TO ist der neue Wert
-	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\ORM\Properties\oo_property[]
+	 * Creates a diff array
+	 * This means the method creates an array with two named fields:
+	 * FROM is the old value
+	 * TO is the new value
+     * If the property is dealing with object references the $type field is respected
+	 * @param int $type One of the PD_XXXX fields (see above)
+	 * @return void[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
 	    return array('FROM'=>$this->get_diff_entry($this->shadow,$type),
@@ -451,43 +461,75 @@ class oo_property extends loggable {
 	    return $entry;
 	}
 //========================== Dirtyness ===============================================	
-	public function get_dirty() {
+	
+    /**
+     * Tests, if the property is dirty
+     * @return bool: True if it is dirty otherwise false 
+     */
+    public function get_dirty() {
 		return $this->dirty;	
 	}
 	
-	public function set_dirty($value) {
+    /**
+     * Sets the value of dirty to $value
+     * @param bool $value The new value of dirty
+     */
+    public function set_dirty(bool $value) {
 		$this->dirty = $value;
 	}
 	
+    /**
+     * Commit the changes that where made since the last commit() or loading
+     */
 	public function commit() {
 		if (!$this->initialized) {
 			if (isset($this->default) || $this->defaults_null) {
 				$this->value = $this->default;	
 			} else {
-				throw new PropertyException("Commit einer nicht initialisierten Property: '".$this->name."'");
+				throw new PropertyException("Commit of a not initialized property: '".$this->name."'");
 			}
 		}
 		$this->dirty = false;
 		$this->shadow = $this->value;
 	}
 	
+    /**
+     * Rollback the changes that were made this the last commit() or loading
+     */
 	public function rollback() {
 		$this->dirty = false;
 		$this->value = $this->shadow;
 	}
 	
+    /**
+     * Checks via the validator if the value is valid for this property.
+     * @param $value The value to test
+     * @return bool: True if it's valid otherwise false
+     */
 	protected function validate($value) {
 		return $this->validator->validate($value);
 	}
 	
+    /**
+     * Checks if this property is an array 
+     * @return bool: True if it's an array otherwise false
+     */
 	public function is_array() {
 		return $this->has_feature('array');
 	}
 	
+    /**
+     * Checks if this property is a simple property 
+     * @return bool: True if it's a simple property otherwise false
+     */
 	public function is_simple() {
 		return $this->has_feature('simple');
 	}
 	
+    /**
+     * Tests if the property has the given feature
+     * @return bool: True if it has the feature otherwise false
+     */
 	public function has_feature(string $test) {
 	    return in_array($test,$this->features);
 	}
@@ -504,7 +546,7 @@ class oo_property extends loggable {
 	    
 	}
 	
-	// ================================== Laden ===========================================	
+	// ================================== Loading ===========================================	
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert aus dem Storage zu lesen
 	 * Ruft wiederrum die überschreibbare Methode do_load auf, die property-Individuelle Dinge erledigen kann
