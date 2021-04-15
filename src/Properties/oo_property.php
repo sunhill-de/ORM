@@ -14,7 +14,8 @@
 namespace Sunhill\ORM\Properties;
 
 /**
- * @todo Muss das wirklich sein, oder kann man das auf das Storage auslagern
+ * @todo It has to be considered, if an direct DB access is necessary in properties or if they should 
+ * be layed out completely to the storage
  */
 use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\descriptor;
@@ -22,13 +23,23 @@ use Sunhill\ORM\ORMException;
 use Sunhill\Basic\loggable;
 
 /** 
- * Die folgenden Defines legen Konstanten fest, die get_diff_array als (optionalem) Parameter übergeben
- * werden können
+ * These constants are used in get_diff_array as an optional parameter. They decide how object references should 
+ * be treated. 
  * @var unknown
  */
-define ('PD_VALUE',1); // In das Diff Array werden die Werte direkt von $value und $shadow kopiert
-define ('PD_ID',2);    // Bei Objektreferenzen werden statt dessen nur die IDs kopiert
-define ('PD_KEEP',3);  // Ist das Objekt bereits geladen, gib dies zurück, ansonsten die ID
+
+/**
+ * The values are copied. For object references that means that these are copied. 
+ */
+define ('PD_VALUE',1);
+/**
+ * If we have object references the IDs are copied
+ */
+define ('PD_ID',2);
+/**
+ * If an object reference is already loaded, the object is returned otherwise the ID
+ */
+define ('PD_KEEP',3);  
 
 /**
  * Basisklasse für Exceptions, die etwas mit Properties zu tun haben
@@ -40,12 +51,15 @@ class PropertyException extends ORMException {}
 /**
  * Die Exception für ungültige Wertzuweisungen an dieses Property
  * @author lokal
- *
+ */
+
+/**
+ * An exception that is raised, if a reference is assigned an invalid value
  */
 class InvalidValueException extends PropertyException {}
 
 /**
- * Basisklasse für Properties
+ * A basic class for properties. 
  * @author lokal
  *
  */
@@ -57,41 +71,41 @@ class oo_property extends loggable {
     private $additional_fields = [];
     
     /**
-     * Über das Feature-Array werden die Eigenschaften des Properties definiert. Features können über
-     * has_feature() abgefragt werden
+     * This array store special "features" of this property so properties can be filtered by this featured.
+     * To check if a certain feature is set the method oo_property->has_feature() is used.
      * @var array
      */
     protected $features = array();
     
     /**
-     * Der Owner ist das besitzende Objekt dieses Properties (also eine von propertieshaving abgeleitete Klasse)
-     * Wird über get_owner() und set_owner() abgefragt bzw. geändert.
-     * @var \Sunhill\propertieshaving
+     * This field stores the owner of this property. It points to an descendand of propertieshaving 
+     * oo_property->get_owner() reads, oo_property->set_owner() writes
+     * @var \Sunhill\ORM\propertieshaving
      */
 	protected $owner;
 	
     /**
-     * Der Name der Property
-     * Wird über get_name() und set_name() abgefragt bzw. festgelegt
+     * The name of this property
+     * oo_property->get_name() reads, oo_property->set_name() writes
      * @var string
      */
 	protected $name;
 	
 	/**
-	 * Der Wert dieser Property
+	 * The value of this property
 	 * @var void
 	 */
 	protected $value;
 	
 	/**
-	 * Der Schattenwert dieser Property (also der Wert nach dem letzten commit(). Wird für ein 
-	 * Rollback benötigt, sowie für die Erzeugung des diff_arrays
+	 * The shadow value of this property. This is the value after the last oo_property->commit()
+     * It is used for rollback and creation of the diff array (oo_property->get_diff_array())
 	 * @var void
 	 */
 	protected $shadow;
 	
 	/**
-	 * Der Typ der Property. Wird in der jeweiligen Property als Defaultwert gesetzt.
+	 * The type of this property. Is set by the property itself and can't (or shouldn't) be changed
 	 * @var string
 	 */
 	protected $type;
@@ -459,11 +473,11 @@ class oo_property extends loggable {
 	}
 	
 	public function deleting(\Sunhill\ORM\Storage\storage_base $storage) {
-	    
+	   // Does nothing by default	    
 	}
 	
 	public function deleted(\Sunhill\ORM\Storage\storage_base $storage) {
-	    
+	   // Does nothing by default	    
 	}
 	
 	public function delete($storage) {
@@ -497,7 +511,7 @@ class oo_property extends loggable {
 	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
 	public function loading(\Sunhill\ORM\Storage\storage_base $storage) {
-	    // Macht nix
+	   // Does nothing by default
 	}
 	
 	/**
@@ -505,7 +519,7 @@ class oo_property extends loggable {
 	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
 	public function loaded(\Sunhill\ORM\Storage\storage_base $storage) {
-	    // Macht nix
+	   // Does nothing by default
 	}
 	
 	// ============================= Insert =========================================	
@@ -532,7 +546,7 @@ class oo_property extends loggable {
      * @param \Sunhill\ORM\Storage\storage_base $storage
      */
 	public function inserting(\Sunhill\ORM\Storage\storage_base $storage) {
-        // Macht nix	    
+	   // Does nothing by default
 	}
 	
 	/**
@@ -540,7 +554,7 @@ class oo_property extends loggable {
 	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
 	public function inserted(\Sunhill\ORM\Storage\storage_base $storage) {
-	    // Macht nix
+	   // Does nothing by default
 	}
 
 // ================================= Update ====================================	
@@ -560,33 +574,32 @@ class oo_property extends loggable {
 	}
 	
     /**
-     * Wird aufgerufen, bevor das Update stattfindet
+     * Is called before an update
      * @param \Sunhill\ORM\Storage\storage_base $storage
      */
 	public function updating(\Sunhill\ORM\Storage\storage_base $storage) {
-	    // Macht nix
+	    // Does nothis by default
 	}
 	
     /**
-     * Wird aufgerufen, nachdem das Update stattgefunden hat
+     * Is called after an update
      * @param \Sunhill\ORM\Storage\storage_base $storage
      */
 	public function updated(\Sunhill\ORM\Storage\storage_base $storage) {
-	   // Macht nix
+	   // Does nothing by default
 	}
 	
+    /**
+     * Adds an hook for this property
+     */
 	public function add_hook($action,$hook,$subaction,$target) {
 	   $this->hooks[] = ['action'=>$action,'hook'=>$hook,'subaction'=>$subaction,'target'=>$target];    
 	}
-	
-	public function get_all_attributes() {
-	    $result = $this->get_static_attributes();
-	    $result->value = $this->value;
-	    $result->shadow = $this->shadow;
-	    $result->dirty = $this->dirty;
-	    return $result;
-	}
-	
+
+    /**
+     * Returns a descriptor array with all static (unchangable) values of this property.
+     * @return \Sunhill\basic\Utils\descriptor The collection of values
+     */
 	public function get_static_attributes() {
 	    $result = new descriptor();
 	    $result->class = $this->class;
@@ -600,6 +613,18 @@ class oo_property extends loggable {
 	    foreach ($this->additional_fields as $key => $value) {
 	        $result->$key = $value;
 	    }
+	    return $result;
+	}
+	
+    /**
+     * Completes the mthod oo_property->get_static_attributes() with values that a volatile.
+     * @return \Sunhill\basic\Utils\descriptor The collection of values
+     */
+	public function get_all_attributes() {
+	    $result = $this->get_static_attributes();
+	    $result->value = $this->value;
+	    $result->shadow = $this->shadow;
+	    $result->dirty = $this->dirty;
 	    return $result;
 	}
 }
