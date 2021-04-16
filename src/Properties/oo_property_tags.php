@@ -187,5 +187,17 @@ class oo_property_tags extends oo_property_arraybase {
 	            break;
 	    }
 	}
+
+	protected function NormalizeValue($value) {
+	    if (is_a($value,oo_tag::class)) {
+	        return $value->get_fullpath();
+	    } else if (is_string($value)) {
+	        return $value;
+	    } else if (is_int($value)) {
+	        $tag = Tags::load_tag($value);
+	        return $tag->get_fullpath();
+	    }
+	}
+	
 	
 }
