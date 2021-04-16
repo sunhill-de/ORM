@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * @file oo_property_arraybase.php
+ * The base class for array like properties
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-04-16
+ * Localization: no localization
+ * Documentation: complete
+ * Tests: Unit/Properties/ArrayPropertyTest.php
+ * Coverage: unknown
+ */
+
 namespace Sunhill\ORM\Properties;
 
 class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countable,\Iterator {
