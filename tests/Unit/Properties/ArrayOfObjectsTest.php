@@ -9,24 +9,54 @@ use Sunhill\ORM\Properties\oo_property_array_of_objects;
 
 class ArrayOfObjectsTest extends TestCase
 {
+    public function testArrayEmpty() {
+        $test = new oo_property_array_of_objects();
+        $this->assertTrue($test->empty());
+        return $test;
+    }
+    
+    /**
+     * @depends testArrayEmpty
+     * @param unknown $test
+     */
+    public function testArrayNotEmpty($test) {        
+        $test[] = new ts_dummy();
+        $test[] = new ts_dummy();
+        $test[] = new ts_dummy();
+        $this->assertFalse($test->empty());
+        return $test;
+    }
+    
+    /**
+     * @depends testArrayNotEmpty
+     * @param unknown $test
+     */
+    public function testArrayClear($test) {
+        $test->clear();
+        $this->assertTrue($test->empty());
+        return $test;
+    }
+    
+    /**
+     * @return \Sunhill\ORM\Tests\Unit\Properties\oo_property_array_of_objects
+     */
     public function testArrayCount() {
         $test = new oo_property_array_of_objects();
-        $obj1 = new ts_dummy();
-        $obj1->set_id(1);
-        $obj2 = new ts_dummy();
-        $obj2->set_id(2);
-        $test[] = $obj1;
-        $test[] = $obj2;
-        $test[] = 3;
+        $dummy1 = new ts_dummy(); $dummy1->dummyint = 11; $dummy1->set_ID(1);
+        $dummy2 = new ts_dummy(); $dummy2->dummyint = 22; $dummy2->set_ID(2);
+        $dummy3 = new ts_dummy(); $dummy3->dummyint = 33; $dummy3->set_ID(3);
+        $test[] = $dummy1;
+        $test[] = $dummy2;
+        $test[] = $dummy3;
         $this->assertEquals(3,count($test));
         return $test;
     }
-
+    
     /**
      * @depends testArrayCount
      */
     public function testArrayIndex($test) {
-        $this->assertEquals(2,$test[1]->get_id());
+        $this->assertEquals(22,$test[1]->dummyint);
         return $test;
     }
     
@@ -36,9 +66,9 @@ class ArrayOfObjectsTest extends TestCase
     public function testArrayForeach($test) {
         $result = 'A';
         foreach ($test as $char) {
-            $result .= (is_int($char)?$char:$char->get_id());
+            $result .= $char->dummyint;
         }
-        $this->assertEquals('A123',$result);
+        $this->assertEquals('A112233',$result);
         return $test;
     }
     
@@ -46,15 +76,17 @@ class ArrayOfObjectsTest extends TestCase
      * @depends testArrayCount
      */
     public function testArrayHasValue_pass($test) {
-        $this->assertTrue($test->IsElementIn(1));
+        $dummy = new ts_dummy(); $dummy->set_ID(2);
+        $this->assertTrue($test->IsElementIn($dummy));
         return $test;
     }
-
+    
     /**
      * @depends testArrayCount
      */
     public function testArrayHasValue_fail($test) {
-        $this->assertFalse($test->IsElementIn(999));
+        $dummy = new ts_dummy(); $dummy->set_ID(992);
+        $this->assertFalse($test->IsElementIn($dummy));
         return $test;
     }
     
@@ -63,41 +95,37 @@ class ArrayOfObjectsTest extends TestCase
      */
     public function testArrayDirty($test) {
         $test->set_dirty(false);
-        $test[] = 'D';
+        $dummy = new ts_dummy(); $dummy->set_ID(992);
+        $test[] = $dummy;
         $this->assertTrue($test->get_dirty());
         return $test;
     }
     
     public function testNormalize_bothnormalized() {
-        $test = new TestArray2();
+        $test = new oo_property_array_of_objects();
         $test[] = 1;
         $test[] = 2;
-        $test[] = 'C';
+        $dummy = new ts_dummy(); $dummy->set_ID(3);        
+        $test[] = $dummy;
         $this->assertTrue($test->IsElementIn(1));
         $this->assertFalse($test->IsElementIn(999));
     }
     
     public function testNormalize_testnormalized() {
-        $test = new TestArray2();
+        $test = new oo_property_array_of_objects();
         $test[] = 1;
         $test[] = 2;
-        $test[] = 'C';
+        $dummy = new ts_dummy(); $dummy->set_ID(3);
+        $test[] = $dummy;
         $this->assertTrue($test->IsElementIn(3));
     }
     
-    public function testNormalize_intnormalized() {
-        $test = new TestArray2();
-        $test[] = 1;
-        $test[] = 2;
-        $test[] = 'C';
-        $this->assertTrue($test->IsElementIn('B'));
-    }
-    
     public function testNormalize_nonenormalized() {
-        $test = new TestArray2();
+        $test = new oo_property_array_of_objects();
         $test[] = 1;
         $test[] = 2;
-        $test[] = 'C';
-        $this->assertTrue($test->IsElementIn('C'));
+        $dummy = new ts_dummy(); $dummy->set_ID(3);
+        $test[] = $dummy;
+        $this->assertTrue($test->IsElementIn($dummy));
     }
 }
