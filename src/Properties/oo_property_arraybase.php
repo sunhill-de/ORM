@@ -1,16 +1,74 @@
 <?php
 
+/**
+ * @file oo_property_arraybase.php
+ * The base class for array like properties
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-04-16
+ * Localization: no localization
+ * Documentation: complete
+ * Tests: Unit/Properties/ArrayPropertyTest.php
+ * Coverage: unknown
+ */
+
 namespace Sunhill\ORM\Properties;
 
-class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countable {
-
+class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countable,\Iterator {
+    
 	protected $initialized = true;
 	
+	protected $pointer = 0;
+
+	/**
+	 * Checks if the property exports the array feature
+	 * @throws \Exception
+	 */
 	private function check_array() {
 	    if (!$this->is_array()) {
-	        throw new \Exception('Die Property "'.$this->name.'" wurde mit array Funktionen aufgerufen obwohl vom Typ "'.$this->type.'"');
+	        throw new \Exception('The property "'.$this->name.'" if of type "'.$this->type.'" and doesnt have the array feature');
 	    }
 	}
+
+	/**
+	 * Returns the current element of the foreach loop
+	 * @return mixed
+	 */
+	public function current (  ) {
+	    return $this->value[$this->pointer];
+	}
+	
+	/**
+	 * Returns the current key of the foreach loop
+	 * @return unknown
+	 */
+	public function key (  ) {
+	    return $this->pointer;
+	}
+	
+	/**
+	 * Sets the pointer to the next element
+	 */
+	public function next (  ) {
+	    $this->pointer++;
+	}
+	
+	/**
+	 * Rewinds the pointer
+	 */
+	public function rewind (  ) {
+	    $this->pointer = 0;
+	}
+	
+	/**
+	 * Checks if the pointer points to a valid element
+	 * @return boolean
+	 */
+	public function valid (  ) {
+	    return (($this->pointer >= 0) && ($this->pointer < count($this->value)));
+	}
+	
 	public function offsetExists($offset) {
 	    $this->check_array();
 	    return isset($this->value[$offset]);
@@ -62,6 +120,11 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    
 	}
 	
+	/**
+	 * Returns the number of entries in this array
+	 * {@inheritDoc}
+	 * @see Countable::count()
+	 */
 	public function count() {
 	    $this->check_array();
 	    return count($this->value);
@@ -123,4 +186,43 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	    }
 	}
 	
+	/**
+	 * This method normalizes the given value $value so that arrays with for example lazy loading could
+	 * use objects and ids
+	 * @param unknown $value
+	 * @return unknown
+	 */
+	protected function NormalizeValue($value) {
+	    return $value;
+	}
+	
+	/**
+	 * Tests if the element $value is in this array
+	 * @param unknown $value
+	 * @return boolean true if its in otherwise false
+	 */
+	public function IsElementIn($value) {
+	   $value = $this->NormalizeValue($value);
+	   foreach ($this->value as $test) {
+	       if ($this->NormalizeValue($test) == $value) {
+	           return true;
+	       }
+	   }
+	   return false;
+	}
+	
+	/**
+	 * Tests if this array property is empty (has no entries)
+	 * @return true if empty otherwise false
+	 */
+	public function empty() {
+	    return (empty($this->value));
+	}
+	
+	/**
+	 * Clears the array. Removes all entries
+	 */
+	public function clear() {
+	    $this->value = [];
+	}
 }
