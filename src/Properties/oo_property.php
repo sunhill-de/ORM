@@ -238,7 +238,7 @@ class oo_property extends loggable {
      * @param $owner a class of propertyhaving
      * @return oo_property a reference to this to make setter chains possible
      */
-    public function set_owner(propertyhaving $owner) {
+    public function set_owner($owner) {
 	    $this->owner = $owner;
 	    return $this;	    
 	}
