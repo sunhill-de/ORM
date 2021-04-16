@@ -34,6 +34,37 @@ class TestArray2 extends oo_property_arraybase {
 
 class ArrayPropertyTest extends TestCase
 {
+    public function testArrayEmpty() {
+        $test = new TestArray1();
+        $this->assertTrue($test->empty());
+        return $test;
+    }
+    
+    /**
+     * @depends testArrayEmpty
+     * @param unknown $test
+     */
+    public function testArrayNotEmpty($test) {
+        $test[] = 'A';
+        $test[] = 'B';
+        $test[] = 'C';
+        $this->assertFalse($test->empty());
+        return $test;
+    }
+    
+    /**
+     * @depends testArrayNotEmpty
+     * @param unknown $test
+     */
+    public function testArrayClear($test) {
+        $test->clear();
+        $this->assertTrue($test->empty());
+        return $test;
+    }
+    
+    /**
+     * @return \Sunhill\ORM\Tests\Unit\Properties\TestArray1
+     */
     public function testArrayCount() {
         $test = new TestArray1();
         $test[] = 'A';

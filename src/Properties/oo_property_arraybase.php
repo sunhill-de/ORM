@@ -198,4 +198,18 @@ class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countab
 	   return false;
 	}
 	
+	/**
+	 * Tests if this array property is empty (has no entries)
+	 * @return true if empty otherwise false
+	 */
+	public function empty() {
+	    return (empty($this->value));
+	}
+	
+	/**
+	 * Clears the array. Removes all entries
+	 */
+	public function clear() {
+	    $this->value = [];
+	}
 }
