@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * @file MigrateObjects.php
+ * an artisan command that creates the tables for the orm objects
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: complete
+ * Tests: none
+ * Coverage: unknown
+ * @todo localization
+ */
+
 namespace Sunhill\ORM\Console;
 
 use Illuminate\Console\Command;
