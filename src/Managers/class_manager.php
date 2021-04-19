@@ -1,7 +1,10 @@
 <?php
+
 /**
  * @file class_manager.php
  * Provides the class_manager object for accessing information about the orm classes
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
  * Lang en
  * Reviewstatus: 2020-09-13
  * Localization: unknown
