@@ -1,5 +1,5 @@
 <?php
-namespace Sunhill\ORM\Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit\Operators;
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Managers\operator_manager;
