@@ -2,11 +2,13 @@
 /**
  * @file operator_manager.php
  * Provides the operator_manager class for managing the handling of operators on objects
+ * @author Klaus Dimde
+ * --------------------------------------------------------------------------------------
  * Lang en
  * Reviewstatus: 2021-03-14
  * Localization: unknown
  * Documentation: unknown
- * Tests: unknown
+ * Tests: Unit/Operators/OperatorManagerTest.php
  * Coverage: unknown
  */
 namespace Sunhill\ORM\Managers;
@@ -14,11 +16,15 @@ namespace Sunhill\ORM\Managers;
 use Sunhill\ORM\ORMException;
 use Sunhill\Basic\Utils\descriptor;
 
+/**
+ The operator manager provides access to the operator subsystem. An operator is a piece of code that works on a Sunhill\Basic\Utils\descriptor object if 
+ certain conditions meet.
+ */
 class operator_manager {
  
-    protected $operators = null;
+    protected $operators = null; /**< Saves the loaded operators */
     
-    protected $operator_classes = [];
+    protected $operator_classes = []; /**< Saves the class names of the operators */
     
     /**
      * Adds a new operator class to the manager
@@ -45,7 +51,14 @@ class operator_manager {
         $this->operator_classes = [];
     }
     
-    public function ExecuteOperators(string $command,$object,&$descriptor=null) {
+    /**
+    * Executes all operators that meet the conditions. At least a command has to be passed. If no descriptor is passed
+    * one is created. If no object is passed an empty descriptor is used. 
+    * @param $command string The current command that is executed
+    * @param $object oo_object|null The objects that should be used for the operators (or null, if none)
+    * @param $descriptor descriptor|null The descriptor that should be used for the operators. If null, an empty descriptor is created
+    */
+    public function ExecuteOperators(string $command,$object=null,&$descriptor=null) {
         if (is_null($this->operators)) {
             $this->loadOperators();
         }
@@ -53,7 +66,9 @@ class operator_manager {
         if (is_null($descriptor)) {
             $descriptor = new descriptor();
         }
-        $descriptor->object = $object;
+        if (!is_null($object))  {
+            $descriptor->object = $object;
+        }
         $descriptor->command = $command;
         
         foreach ($this->operators as $operator) {
