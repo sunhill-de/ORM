@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit\Managers;
 
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\class_manager;
