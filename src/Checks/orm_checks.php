@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * @file orm_checks.php
+ * An extension to the sunhill check system to perform checks on the sunhill orm database
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: complete
+ * Tests: Unit/ORMCheckTest.php
+ * Coverage: unknown
+ */
+
 namespace Sunhill\ORM\Checks;
 
 use Sunhill\Basic\Checker\checker;
