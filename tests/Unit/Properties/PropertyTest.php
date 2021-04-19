@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit\Properties;
 
 use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -11,7 +11,7 @@ use Sunhill\ORM\Objects\oo_object;
 class PropertyTest extends TestCase
 {
 	/**
-	 * Testet den Konstruktur der Property.
+	 * Tests the constructor of the property
 	 *
 	 * @return void
 	 */
@@ -23,7 +23,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet die Zuweisung eines Default-Wertes
+	 * Tests assign of a default value
 	 * @depends testPropertyConstructor
 	 */
 	public function testPropertyDefault($test) {
@@ -33,7 +33,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet die Wertzuweisung
+	 * Tests assign of a value
 	 * @depends testPropertyDefault
 	 */
 	public function testPropertySetValue($test) {
@@ -43,7 +43,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob eine Wertzuweisung die Property dirty macht
+	 * Tests if a value assign make property "dirty"
 	 * @depends testPropertySetValue
 	 */
 	public function testPropertyDirty($test) {
@@ -52,7 +52,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob der Wert nach Rollback wiederhergestellt ist
+	 * Tests if a rollback restores old value
 	 * @depends testPropertyDirty
 	 */
 	public function testRollback($test) {
@@ -62,7 +62,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob die Property nach dem Rollback immer noch dirty ist
+	 * Tests if a rollback make property "clean" again
 	 * @depends testRollback
 	 */
 	public function testUndirtyAfterRollback($test) {
@@ -71,7 +71,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob die Property nach einem Commit noch dirty ist
+	 * Tests if a commit makes property "clean"
 	 * @depends testUndirtyAfterRollback
 	 */
 	public function testUndirtyAfterCommit($test) {
@@ -82,7 +82,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob ein Rollback nach Commit etwas bewirkt
+	 * Tests if a rollback after a commit does anything unexpected
 	 * @depends testUndirtyAfterRollback
 	 */
 	public function testRollbackAfterCommit($test) {
@@ -92,7 +92,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet einen Doppelten Commit
+	 * Tests a double commit
 	 * @depends testRollbackAfterCommit
 	 */
 	public function testDoubleCommit($test) {
@@ -105,7 +105,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet einen Doppelten Commit
+	 * Tests a rollback after two value assigns
 	 * @depends testDoubleCommit
 	 */
 	public function testDoubleChange($test) {
@@ -119,7 +119,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob die Zuweisung des gleichen Wertes, dirty ändert
+	 * Tests if a assign of the same value makes the property dirty
 	 * @depends testDoubleChange
 	 */
 	public function testDirtyIfNoChange($test) {
@@ -128,7 +128,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob der Vergleich auf gleichheit auch für Objekte gilt
+	 * Tests the same as above for objects
 	 */
 	public function testDirtyIfNoChangeWithObjects() {
 //		$object = new oo_object();
@@ -141,7 +141,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob commit mit Default korrekt ist
+	 * Tests if a commit with a default value is ok
 	 */
 	public function testCommitUninitialiedWithDefault() {
 	    $test = new oo_property(null);
@@ -151,7 +151,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob commit ohne Default korrekt ist
+	 * Tests if a commit with no default value raises an exception
 	 */
 	public function testCommitUninitialiedWithoutDefault() {
 	    $this->expectException(\Exception::class);
@@ -160,7 +160,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob eine Exception ausgelöst wird, wenn ein nicht initialisierter Wert gelesen wird
+	 * Tests if a read on a uninitialied value raises an exception
 	 */
 	public function testExceptionUninitialized() {
 	    $this->expectException(\Exception::class);
@@ -169,7 +169,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob das setzen von Null Werten korrekt gehandelt wird
+	 * Tests if assign of null makes property dirty
 	 */
 	public function testSetNullDirty() {
 		$test = new oo_property(null);
@@ -179,7 +179,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob das setzen von Null Werten korrekt gehandelt wird
+	 * Tests if assign of null is handled correctly
 	 * @depends testSetNullDirty
 	 */
 	public function testSetNullInitialized($test) {
@@ -189,7 +189,7 @@ class PropertyTest extends TestCase
 	}
 	
 	/**
-	 * Testet, ob das setzen von Null Werten korrekt gehandelt wird
+	 * Tests if commit of a null value is correct
 	 */
 	public function testSetToNullAgain() {
 		$test = new oo_property(null);
@@ -200,12 +200,18 @@ class PropertyTest extends TestCase
 		return $test;
 	}
 	
+    /**
+     * Tests if defaults null is working
+     */
 	public function testDefaultsNull() {
 		$test = new oo_property(null);
 		$test->set_default(null);
 		$this->assertTrue(is_null($test->value));
 	}
 	
+    /**
+     * Tests if property can implement additional fields
+     */
 	public function testAdditinalFields() {
 	    $test = new oo_property(null);
 	    $test->set_additional('ABC')->set_another('DEF');
