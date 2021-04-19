@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Managers;
 
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\tag_manager;
