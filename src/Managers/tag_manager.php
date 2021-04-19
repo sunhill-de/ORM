@@ -6,8 +6,8 @@
  * Lang en
  * Reviewstatus: 2020-09-13
  * Localization: unknown
- * Documentation: unknown
- * Tests: unknown
+ * Documentation: started
+ * Tests: Unit/Managers/ManagerTagTest.php
  * Coverage: unknown
  */
 namespace Sunhill\ORM\Managers;
