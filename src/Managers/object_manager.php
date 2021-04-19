@@ -1,8 +1,10 @@
 <?php
-
+ 
 /**
  * @file object_manager.php
  * Provides the object_manager object for accessing information about the orm objects
+ * @author Klaus Dimde
+ * -----------------------------------------------------------------------------------------------
  * Lang en
  * Reviewstatus: 2020-09-13
  * Localization: unknown
