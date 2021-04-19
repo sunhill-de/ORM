@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * @file FlushCaches.php
+ * A command for the artisan interface that clears all ORM specific caches (at this time only the class cache)
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: complete
+ * Tests: Unit/ORMCheckTest.php
+ * Coverage: unknown
+ */
+
 namespace Sunhill\ORM\Console;
 
 use Illuminate\Console\Command;
