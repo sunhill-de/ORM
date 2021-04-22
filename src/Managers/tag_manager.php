@@ -3,10 +3,12 @@
 /**
  * @file tag_manager.php
  * Provides the tag_manager object for accessing information about tags
+ * @author Klaus Dimde
+ * ----------------------------------------------------------------------
  * Lang en
  * Reviewstatus: 2020-09-13
  * Localization: unknown
- * Documentation: started
+ * Documentation: all public
  * Tests: Unit/Managers/ManagerTagTest.php
  * Coverage: unknown
  */
@@ -19,6 +21,9 @@ use Sunhill\ORM\Objects\TagException;
 
 define('TagNamespace','Sunhill\ORM\Objects\oo_tag');
 
+/**
+ * The tag_manager is accessed via the Tags facade. It's a singelton class
+ */
 class tag_manager {
  
     /**
@@ -96,7 +101,6 @@ class tag_manager {
      /**
       * Return all root tags
       * @return array of descriptor
-
       */
      public function get_all_root() {
          $query = $this->prepare_query()->whereNull('a.parent_id')->orWhere('a.parent_id',0)->get();
@@ -320,7 +324,19 @@ class tag_manager {
          }
      }
      
+    /**
+     * Loads the given tag $tag.
+     * @param $tag string|int|oo_tag
+     * If $tag is a string then it searches for the fitting tag. 
+     * If $tag is a int then it searches for the tag with
+     * If $tag is a oo_tag object it returns $tag
+     * @return oo_tag
+     * @throws TagException if tag is not found or is not unique
+     */
      public function load_tag($tag) {
+         if (is_a($tag,oo_tag::class) {
+             return $tag;
+         }
          if (is_string($tag)) {
              $result = $this->do_search_tag($tag);
              if (count($result) == 0) {
