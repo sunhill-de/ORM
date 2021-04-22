@@ -211,14 +211,27 @@ class orm_checks extends checker {
         if (empty($return)) {
             return $this->create_result('OK','Check for gaps in object tables');
         } else {
-            return $this->create_result('FAILED','Check for non existance classes in objects',"Objects '$return' have gaps.");
+            return $this->create_result('FAILED','Check for gaps in object tables',"Objects '$return' have gaps.");
         }
     }
     
+    private function table_exists(string $table) {
+        $query = array_map('reset',DB::select('show tables'));    
+        return in_array($table,$query);
+    }
+    
     private function test_table(string $master,array $tables) {
+        if (!$this->table_exists($master)) {
+            return;
+        }
         $query = DB::table($master);
         foreach ($tables as $table) {
             $query = $query->leftJoin($table,$table.'.id','=',$master.'.id');
+            $query = $query->orWhere("$table.id",null);
+        }
+        $result = $query->get();
+        if ($result->count() > 0) {
+            return $master;
         }
     }
     
