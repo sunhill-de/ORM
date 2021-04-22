@@ -9,5 +9,7 @@ use Sunhill\ORM\Facades\Objects;
 
 class ObjectMigratorTest extends DBTestCase
 {
-    
+    public function testNothing() {
+        $this->assertTrue(true);
+    }
 }

@@ -334,7 +334,7 @@ class tag_manager {
      * @throws TagException if tag is not found or is not unique
      */
      public function load_tag($tag) {
-         if (is_a($tag,oo_tag::class) {
+         if (is_a($tag,oo_tag::class)) {
              return $tag;
          }
          if (is_string($tag)) {
