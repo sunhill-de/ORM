@@ -58,7 +58,7 @@ class operator_manager {
     * @param $object oo_object|null The objects that should be used for the operators (or null, if none)
     * @param $descriptor descriptor|null The descriptor that should be used for the operators. If null, an empty descriptor is created
     */
-    public function ExecuteOperators(string $command,$object=null,&$descriptor=null) {
+    public function ExecuteOperators(string $command='',$object=null,&$descriptor=null) {
         if (is_null($this->operators)) {
             $this->loadOperators();
         }
@@ -69,7 +69,9 @@ class operator_manager {
         if (!is_null($object))  {
             $descriptor->object = $object;
         }
-        $descriptor->command = $command;
+        if (!empty($command)) {
+            $descriptor->command = $command;
+        }        
         
         foreach ($this->operators as $operator) {
             if ($operator->check($descriptor)) {
