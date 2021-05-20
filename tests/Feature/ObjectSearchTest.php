@@ -42,6 +42,11 @@ class searchtestA extends oo_object {
         $id = searchtestA::search()->where('Acalc','=','ABC')->first();
         
     }
+    
+    protected static function DefineKeyfields(string $keyfield) {
+        list($int,$char) = explode(' ',$keyfield);
+        return ['Aint'=>$int,'Achar'=>$char];
+    }
 }
 
 class searchtestB extends searchtestA {
@@ -69,6 +74,13 @@ class searchtestB extends searchtestA {
     public function calculate_Bcalc() {
         return $this->Bint."=".$this->Bchar;
     }
+
+    protected static function DefineKeyfields(string $keyfield) {
+        list($int,$char) = explode(' ',$keyfield);
+        return ['Bint'=>$int,'Bchar'=>$char];
+    }
+    
+    
 }
 
 class searchtestC extends searchtestB {
@@ -331,5 +343,30 @@ class ObjectSearchTest extends DBTestCase
         $test = new searchtestA();
         $test->unify();
         $this->assertTrue(true);
+    }
+    
+    /**
+     * @dataProvider SearchFieldProvider
+     */
+    public function testSearchKeyfield($class,$keyfield,$expect) {
+        $classname = 'Sunhill\\ORM\\Tests\\Feature\\'.$class;
+        $search = $classname::SearchKeyfield($keyfield);
+        if ($expect == 0) {
+            $this->assertNull($search);
+        } else {
+            $this->assertEquals($search->get_ID(),$expect);
+        }
+    }
+    
+    public function SearchFieldProvider() {
+        return [
+            ['searchtestA','111 ABC',5],
+            ['searchtestA','502 GGT',12],
+            ['searchtestA','999 ZZZ',0],
+            ['searchtestB','601 BBB',11],
+            ['searchtestB','111 ABC',10],
+            ['searchtestB','603 ADD',14],
+            ['searchtestB','502 GGT',0],
+        ];
     }
 }

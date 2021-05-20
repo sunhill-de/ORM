@@ -484,5 +484,20 @@ class oo_object extends propertieshaving {
 	    return $result;
 	}
 	
+	public static function SearchKeyfield(string $keyfield) {
+	   $query = static::search();
+	   $keyfields = static::DefineKeyfields($keyfield);
+	   if (empty($keyfields)) {
+	       throw new ORMException("The class doesn't support keyfield search");
+	   }
+	   foreach ($keyfields as $key => $value) {
+	       $query = $query->where($key,$value);
+	   }
+	   return $query->load_if_exists();
+	}
+	
+	protected static function DefineKeyfields(string $keyfield) {
+	    
+	}
 	
 }
