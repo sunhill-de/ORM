@@ -9,6 +9,8 @@ use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\ORMException;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 class searchtestA extends oo_object {
    
@@ -368,5 +370,10 @@ class ObjectSearchTest extends DBTestCase
             ['searchtestB','603 ADD',14],
             ['searchtestB','502 GGT',0],
         ];
+    }
+    
+    public function testSearchkeyfieldException() {
+        $this->expectException(ORMException::class);
+        ts_dummy::SearchKeyfield('Keyfield');
     }
 }
