@@ -32,7 +32,11 @@ abstract class Seeder {
             foreach ($fields as $field) {
                 $value = $value_array[$i];
                 if (!is_null($value)) {
-                    if (is_array($value)) {
+                    if ($field == 'tags') {
+                        foreach ($value as $tag) {
+                            $object->tags->stick($tag);
+                        }
+                    } else if (is_array($value)) {
                         foreach ($value as $subvalue) {
                             $object->$field[] = $this->SolveValue($subvalue);
                         }

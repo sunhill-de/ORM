@@ -75,6 +75,17 @@ class TestSeeder3 extends Seeder {
     
 }
 
+class TestSeeder4 extends Seeder {
+    
+    public function Seed() {
+        $this->SeedObject(ts_dummy::class,['dummyint','tags'],[
+            'Dummy1'=>[1,null],
+            'Dummy2'=>[2,['TagA','TagB.TagC']],
+            'Dummy3'=>[3,null]
+        ]);
+    }
+}
+
 class SeederTest extends DBTestCase
 {
        
@@ -165,5 +176,33 @@ class SeederTest extends DBTestCase
 	    $this->assertEquals(2,$test->GetKeyObject('child2')->parentoarray[1]->dummyint);
 	    $this->assertEquals(1,$test->GetKeyObject('child2')->childoarray[1]->dummyint);
 	}
+
+	public function testSeedWorkWithTags() {
+	    DB::table('dummies')->truncate();
+	    DB::table('objects')->truncate();
+	    DB::table('tags')->truncate();
+	    DB::table('tagcache')->truncate();
+	    DB::table('tags')->insert([
+	        ['id'=>1,'name'=>'TagsA','parent_id'=>0,'options'=>0],
+	        ['id'=>2,'name'=>'TagsB','parent_id'=>0,'options'=>0],
+	        ['id'=>3,'name'=>'TagsC','parent_id'=>2,'options'=>0],	        
+	    ]);
+        DB::table('tagcache')->insert([
+            ['id'=>1,'name'=>'TagA','tag_id'=>1],
+            ['id'=>2,'name'=>'TagB','tag_id'=>2],
+            ['id'=>3,'name'=>'TagC','tag_id'=>3],
+            ['id'=>4,'name'=>'TagB.TagC','tag_id'=>3],
+        ]);
+	    $test = new TestSeeder4();
+	    $test->Seed();
+	    $this->assertTrue($test->GetKeyObject('Dummy2')->tags->HasTag('TagA'));
+	    return $test;
+	}
 	
+	/**
+	 * @depends testSeedWorkWithTags
+	 */
+	public function testSeedWithNoTag($test) {
+	    $this->assertEquals(0,$test->GetKeyObject('Dummy1')->tags->count());
+	}
 }
