@@ -1,7 +1,15 @@
 <?php
 /**
  * @file propertieshaving.php
- * Definiert die Klassen PropertiesHavingException und propertieshaving
+ * Defines the class propertyhaving. This is, as the name suggents, a class that has properties. 
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-06-25
+ * Localization: none
+ * Documentation: in progress
+ * Tests: none
+ * Coverage: unknown
  */
 namespace Sunhill\ORM\Objects;
 
@@ -12,14 +20,8 @@ use Sunhill\ORM\hookable;
 use Sunhill\ORM\Facades\Classes;
 
 /**
- * Abgeleitete Exception die im Zusammenhang mit Properties stehen
- * @author lokal
- */
-class PropertiesHavingException extends ORMException {}
-
-/**
- * Basisklasse für Klassen, die Properties besitzen
- * Die Klasse erbt von hookable folgende Hooks:
+ * Basic class for all classes that have properties.
+ * This class inherits from hookable
  * * - CONSTRUCTED
  * 
  * Die Klasse definiert folgende Hooks:
@@ -538,6 +540,11 @@ class propertieshaving extends hookable {
 	    return $property;
 	}
 	
+    /**
+     * Defines a calculated property with the name $name
+     * @param $name The name of this property
+     * @see Sunhill/ORM/Properties/
+     */     
 	protected static function calculated($name) {
 	    $property = self::add_property($name, 'calculated');
 	    return $property;
