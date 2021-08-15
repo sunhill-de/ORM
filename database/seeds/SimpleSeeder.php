@@ -1,6 +1,8 @@
 <?php
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Database\Seeders\TagsTableSeeder;
 
 class SimpleSeeder extends Seeder
 {
@@ -11,19 +13,19 @@ class SimpleSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call('TagsTableSeeder');
-        $this->call('TagCacheTableSeeder');
-        $this->call('AttributesTableSeeder');
-        $this->call('SimpleObjectsTableSeeder');
-        $this->call('SimpleDummiesTableSeeder');
-        $this->call('SimpleTestparentsTableSeeder');
-        $this->call('SimpleTestchildrenTableSeeder');
-        $this->call('SimplePassthrusTableSeeder');
-        $this->call('SimpleTagObjectAssignsTableSeeder');
-        $this->call('SimpleObjectObjectAssignsTableSeeder');
-        $this->call('SimpleStringObjectAssignsTableSeeder');
-        $this->call('SimpleCachingTableSeeder');
-        $this->call('SimpleAttributeValuesTableSeeder');
-        $this->call('ExternalhooksTableSeeder');
+        $this->call(TagsTableSeeder::class);
+        $this->call(TagCacheTableSeeder::class);
+        $this->call(AttributesTableSeeder::class);
+        $this->call(SimpleObjectsTableSeeder::class);
+        $this->call(SimpleDummiesTableSeeder::class);
+        $this->call(SimpleTestparentsTableSeeder::class);
+        $this->call(SimpleTestchildrenTableSeeder::class);
+        $this->call(SimplePassthrusTableSeeder::class);
+        $this->call(SimpleTagObjectAssignsTableSeeder::class);
+        $this->call(SimpleObjectObjectAssignsTableSeeder::class);
+        $this->call(SimpleStringObjectAssignsTableSeeder::class);
+        $this->call(SimpleCachingTableSeeder::class);
+        $this->call(SimpleAttributeValuesTableSeeder::class);
+        $this->call(ExternalhooksTableSeeder::class);
     }
 }

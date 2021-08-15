@@ -5,6 +5,7 @@ namespace Sunhill\ORM\Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
+use Database\Seeders\SimpleSeeder;
 
 abstract class DBTestCase extends TestCase
 {
@@ -39,6 +40,6 @@ abstract class DBTestCase extends TestCase
     }
     
     protected function do_seeding() {
-        $this->seed('SimpleSeeder');        
+        $this->seed(SimpleSeeder::class);        
     }
 }

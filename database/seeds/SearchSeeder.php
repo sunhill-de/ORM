@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
@@ -11,17 +12,17 @@ class SearchSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call('SearchObjectsTableSeeder');
-        $this->call('SearchDummiesTableSeeder');
-        $this->call('SearchtestATableSeeder');
-        $this->call('SearchtestBTableSeeder');
-        $this->call('SearchtestCTableSeeder');
-        $this->call('SearchCachingTableSeeder');
-        $this->call('SearchTagsTableSeeder');
-        $this->call('SearchTagCacheTableSeeder');
-        $this->call('SearchTagObjectAssignsTableSeeder');        
-        $this->call('SearchObjectObjectAssignsTableSeeder');
-        $this->call('SearchStringObjectAssignsTableSeeder');
+        $this->call(SearchObjectsTableSeeder::class);
+        $this->call(SearchDummiesTableSeeder::class);
+        $this->call(SearchtestATableSeeder::class);
+        $this->call(SearchtestBTableSeeder::class);
+        $this->call(SearchtestCTableSeeder::class);
+        $this->call(SearchCachingTableSeeder::class);
+        $this->call(SearchTagsTableSeeder::class);
+        $this->call(SearchTagCacheTableSeeder::class);
+        $this->call(SearchTagObjectAssignsTableSeeder::class);        
+        $this->call(SearchObjectObjectAssignsTableSeeder::class);
+        $this->call(SearchStringObjectAssignsTableSeeder::class);
         
         /*$this->call('SearchAttributesTableSeeder');
         $this->call('SearchAttributeValuesTableSeeder');*/
