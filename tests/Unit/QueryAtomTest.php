@@ -26,7 +26,7 @@ class test_query_atom extends query_atom {
     }
 }
 
-class SearchAtomTest extends TestCase
+class QueryAtomTest extends TestCase
 {
     public function testLinking1() {
         $dummy = new query_builder();

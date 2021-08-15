@@ -1,16 +1,21 @@
 <?php
+/**
+ * @file storage_base.php
+ * The basic class for storages (at the moment there is only storage_mysql)
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ */
 
 namespace Sunhill\ORM\Storage;
 
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\oo_object;
-
-/**
- * Alle Exceptions innhalb der Storages und ihrer Module sollten von StorageException abgeleitet werden
- * @author Klaus
- *
- */
-class StorageException extends \Exception {}
 
 /**
  * Basisklasse für Storages. Die abgeleiteten Klassen müssen die protected property $modules definieren, welche die eigentlichen

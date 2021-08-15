@@ -1,4 +1,16 @@
 <?php
+/**
+ * @file oo_property_array_of_objects.php
+ * A propertx that represents an array of objects
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: complete
+ * Tests: unknown
+ * Coverage: unknown
+ */
 
 namespace Sunhill\ORM\Properties;
 
