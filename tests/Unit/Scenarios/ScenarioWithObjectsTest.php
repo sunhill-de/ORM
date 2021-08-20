@@ -9,6 +9,7 @@ use Tests\CreatesApplication;
 use Illuminate\Support\Facades\DB;
 use  Sunhill\ORM\Tests\Objects\ts_dummy;
 use  Sunhill\ORM\Tests\Objects\ts_testparent;
+use Sunhill\Basic\SunhillException;
 
 class ScenarioWithObjectsUnitTestScenario extends ScenarioBase{
 
@@ -68,7 +69,7 @@ class ScenarioWithObjectsTest extends SunhillTestCase
     public function testAlreadyUsedReference($test) {
         $this->expectException(SunhillException::class);
         
-        $dummy = new dummy();
+        $dummy = new ts_dummy();
         $dummy->dummyint = 2;
 
         $this->callProtectedMethod($test,'storeReference',['test',$dummy]);
@@ -98,7 +99,7 @@ class ScenarioWithObjectsTest extends SunhillTestCase
         $test = new ScenarioWithObjectsUnitTestScenario();
         $dummy = new ts_dummy();
         
-        $this->callProtectedMethod($test,'handleTag',[$dummy,'TagA']);
+        $this->callProtectedMethod($test,'handleTags',[$dummy,'TagA']);
         
         $this->assertEquals('TagA',$dummy->tags[0]);
     }
@@ -107,7 +108,7 @@ class ScenarioWithObjectsTest extends SunhillTestCase
         $test = new ScenarioWithObjectsUnitTestScenario();
         $dummy = new ts_dummy();
         
-        $this->callProtectedMethod($test,'handleTag',[$dummy,['TagA','TagB']]);
+        $this->callProtectedMethod($test,'handleTags',[$dummy,['TagA','TagB']]);
         
         $this->assertEquals('TagB',$dummy->tags[1]);
     }
@@ -116,7 +117,7 @@ class ScenarioWithObjectsTest extends SunhillTestCase
         $test = new ScenarioWithObjectsUnitTestScenario();
         $dummy = new ts_dummy();
         
-        $this->callProtectedMethod($test,'handleTag',[$dummy,null]);
+        $this->callProtectedMethod($test,'handleTags',[$dummy,null]);
         
         $this->assertEquals(0,count($dummy->tags));
     }
@@ -125,22 +126,13 @@ class ScenarioWithObjectsTest extends SunhillTestCase
         $test = new ScenarioWithObjectsUnitTestScenario();
         $dummy = new ts_dummy();
         $dummy->dummyint = 12;
+        $this->callProtectedMethod($test,'storeReference',['dummy',$dummy]);
         
         $parent = new ts_testparent();
         
-        $this->callProtectedMethod($test,'handleReference',[$dummy,'parentobject',$dummy);
+        $this->callProtectedMethod($test,'handleReference',[$parent,'parentobject',"=>dummy"]);
         
         $this->assertEquals(12,$parent->parentobject->dummyint);
-    }
-
-    public function testHandleReferenceWithNull() {
-        $test = new ScenarioWithObjectsUnitTestScenario();
-        
-        $parent = new ts_testparent();
-        
-        $this->callProtectedMethod($test,'handleReference',[$dummy,'parentobject',null);
-        
-        $this->assertEquals(null,$parent->parentobject);
     }
 
     public function testHandleArrayOfStrings() {
@@ -148,7 +140,7 @@ class ScenarioWithObjectsTest extends SunhillTestCase
         
         $parent = new ts_testparent();
         
-        $this->callProtectedMethod($test,'handleArray',[$parent,'parentsarray',['A','B','C']);
+        $this->callProtectedMethod($test,'handleArray',[$parent,'parentsarray',['A','B','C']]);
         
         $this->assertEquals('B',$parent->parentsarray[1]);
     }
@@ -165,7 +157,7 @@ class ScenarioWithObjectsTest extends SunhillTestCase
         $this->callProtectedMethod($test,'storeReference',['dummy2',$dummy2]);
         $this->callProtectedMethod($test,'storeReference',['dummy3',$dummy3]);
 
-        $this->callProtectedMethod($test,'handleArray',[$parent,'parentoarray',["=>dummy1","=>dummy2","=>dummy3"]);
+        $this->callProtectedMethod($test,'handleArray',[$parent,'parentoarray',["=>dummy1","=>dummy2","=>dummy3"]]);
         
         $this->assertEquals(23,$parent->parentoarray[1]->dummyint);
     }
@@ -201,41 +193,42 @@ class ScenarioWithObjectsTest extends SunhillTestCase
         $this->callProtectedMethod($test,'storeReference',['dummy2',$dummy2]);
         $this->callProtectedMethod($test,'storeReference',['dummy3',$dummy3]);
 
-        $this->callProtectedMethod($test,'handleFields',[$parent,['parentint','parentobject','parentsarray'],[null,null,null]]]);
+        $this->callProtectedMethod($test,'handleFields',[$parent,['parentint','parentobject','parentsarray'],[null,null,null]]);
         
         $this->assertEquals(null,$parent->parentobject);
     }
  
     public function testHandleObject() {
         $test = new ScenarioWithObjectsUnitTestScenario();
-        $dummy1 = new ts_dummy(); $dummy1->dummyint = 12;
-        $dummy2 = new ts_dummy(); $dummy2->dummyint = 23;
-        $dummy3 = new ts_dummy(); $dummy3->dummyint = 34;
+        $dummy = new ts_dummy(); $dummy->dummyint = 12;
         
-        $this->callProtectedMethod($test,'storeReference',['dummy1',$dummy1]);
-        $this->callProtectedMethod($test,'storeReference',['dummy2',$dummy2]);
-        $this->callProtectedMethod($test,'storeReference',['dummy3',$dummy3]);
+        $this->callProtectedMethod($test,'handleObject',['dummy','test',['dummyint'],[12]]);
 
-        $this->callProtectedMethod($test,'handleObject',['ts_testparebt,'test',['parentint','parentobject','parentsarray'],[12,"=>dummy2",['A','B','C']]]);
-
-        $this->assertEquals(23,$this->callProtectedMethod($test,'getReference',['test'])->parentobject->dummyint);
+        $this->assertEquals(12,$this->callProtectedMethod($test,'getReference',['test'])->dummyint);
     }
 
     public function testHandleObjectWithoutReference() {
         $test = new ScenarioWithObjectsUnitTestScenario();
-        $this->callProtectedMethod($test,'handleObject',['ts_testparent',1,['parentint','parentobject','parentsarray'],[null,null,null]]]);
-        $this->assertEquals(0,count($this->getProtectedProperty('references')));
+        $dummy = new ts_dummy(); $dummy->dummyint = 12;
+        
+        $this->callProtectedMethod($test,'handleObject',['dummy',1,['dummyint'],[12]]);
+        $this->assertEquals(0,count($this->getProtectedProperty($test,'references')));
     }
                                                         
     public function testHandleObjectWithError() {
         $this->expectException(SunhillException::class);
 
         $test = new ScenarioWithObjectsUnitTestScenario();
-        $this->callProtectedMethod($test,'handleObject',['ts_testparent',1,['parentint','parentobject','parentsarray'],[null,null]]]);        
+        $this->callProtectedMethod($test,'handleObject',['testparent',1,['parentint','parentobject','parentsarray'],[null,null]]);        
     }
 
     public function testHandleClass() {
         $test = new ScenarioWithObjectsUnitTestScenario();
+        
+        $this->callProtectedMethod($test,'handleClass',['dummy',[['dummyint'],['test'=>[1],[2],'test3'=>[3]]]]);
+        
+        $this->assertEquals(3,$this->callProtectedMethod($test,'getReference',['test3'])->dummyint);
+        
     }
                                                         
     public function testHandleClassWithError() {
@@ -243,7 +236,7 @@ class ScenarioWithObjectsTest extends SunhillTestCase
 
         $test = new ScenarioWithObjectsUnitTestScenario();
         
-        $this->callProtectedMethod($test,'handleClass',['ts_testparent',[['parentint','parentobject']]]);
+        $this->callProtectedMethod($test,'handleClass',['testparent',[['parentint','parentobject']]]);
     }
 
 }

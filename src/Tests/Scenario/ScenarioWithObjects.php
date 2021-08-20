@@ -11,7 +11,7 @@
  * Dependencies: Functioning object subsystem, class and object manager
  */
 
-namespace Sunhill\Basic\Tests\Scenario;
+namespace Sunhill\ORM\Tests\Scenario;
 
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\Basic\SunhillException;
@@ -49,11 +49,11 @@ trait ScenarioWithObjects {
      * @param $description array The descriptor of this class (an two element array)
      */
     protected function handleClass(string $name,array $descriptor) {
-        if (count($description) !== 2) {
+        if (count($descriptor) !== 2) {
             throw new SunhillException("Invalid object descriptor: Elementcount is not 2");
             return;
         }
-        list($fields,$values) = $description;
+        list($fields,$values) = $descriptor;
         
         // Traverse through the values array and create an object for each row
         foreach ($values as $reference=>$single_values) {
@@ -113,7 +113,7 @@ trait ScenarioWithObjects {
                 $class->tags->stick($tag);
             }
         } else {
-            $class->tags->stick($tag);
+            $class->tags->stick($tags);
         }
     }
     
