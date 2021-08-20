@@ -8,20 +8,12 @@ use Sunhill\ORM\Tests\Scenario\ScenarioWithObjects;
 use Tests\CreatesApplication;
 use Illuminate\Support\Facades\DB;
 
-class ScenarioWithObjectsTestScenario extends ScenarioBase{
+class ScenarioWithObjectsUnitTestScenario extends ScenarioBase{
 
     use ScenarioWithObjects;
              
     public function GetObjects() {
         return [
-          'dummy'=>[
-              ['dummyint'],
-              [
-                  'dummy1'=>11,
-                  'dummy2'=>22,
-                  33
-              ]
-          ]  
         ];
     }
 }
@@ -30,17 +22,74 @@ class ScenarioWithObjectsTest extends SunhillTestCase
 {
    
     use CreatesApplication;
-
-    protected function SetupTables() {
-        DB::statement('drop table if exists dummies');
-        DB::statement('create table dummies (id int primary key,dummyint int)');
-        DB::statement('drop table if exists simpleparents');
-        DB::statement('create table simpleparents (id int primary key,parentint int,parentchar varchar(10))');
-        DB::statement('drop table if exists simplechildren');
-        DB::statement('create table simplechildren (id int primary key,childint int,childchar varchar(10))');
+    
+    public function testSetReference() {
+        $test = new ScenarioWithObjectsUnitTestScenario();
+        
+        $dummy = new dummy();
+        $dummy->dummyint = 1;
+        
+        $this->callProtectedMethod($test,'storeReference',['test',$dummy]);
+        
+        $this->assertEquals(1,$this->getProtectedProperty($test,'references')['test']->dummyint);
+        return $test;
     }
     
-    public function testSimpleSeed() {
-        
+    /**
+     * @depends testSetReference
+     */
+    public function testGetReference($test) {
+        $this->assertEquals(1,$this->callProtectedMethod($test,'getReference',['test'])->dummyint);
+        return $test;
     }
+    
+    /**
+     * @depends testSetReference
+     */
+    public function testGetReferenceWithReferenceString($test) {
+        $this->assertEquals(1,$this->callProtectedMethod($test,'getReference',['=>test'])->dummyint);
+        return $test;
+    }
+    
+    /**
+     * @depends testSetReference
+     */
+    public function testGetUnknownReference($test) {
+        $this->expectException(SunhillException::class);
+        $this->callProtectedMethod($test,'getReference',['notexisting'])->dummyint;
+        return $test;
+    }
+       
+    /**
+     * @depends testSetReference
+     */
+    public function testAlreadyUsedReference($test) {
+        $this->expectException(SunhillException::class);
+        
+        $dummy = new dummy();
+        $dummy->dummyint = 2;
+
+        $this->callProtectedMethod($test,'storeReference',['test',$dummy]);
+        return $test;
+    }
+    
+    public function testHandleField() {
+        $test = new ScenarioWithObjectsUnitTestScenario();
+        $dummy = new dummy();
+        
+        $this->callProtectedMethod($test,'handleField',[$dummy,'dummyint',12]);
+        
+        $this->assertEquals(12,$dummy->dummyint);
+    }
+    
+    public function testHandleFieldWithNull() {
+        $test = new ScenarioWithObjectsUnitTestScenario();
+        $dummy = new dummy();
+        $dummy->dummyint = 1;
+        
+        $this->callProtectedMethod($test,'handleField',[$dummy,'dummyint',null]);
+        
+        $this->assertEquals(1,$dummy->dummyint);
+    }
+    
 }
