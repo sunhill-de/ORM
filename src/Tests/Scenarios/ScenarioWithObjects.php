@@ -104,6 +104,17 @@ trait ScenarioWithObjects {
     }
     
     protected function handleTags($class,$tags) {
+        if (is_null($tags)) {
+            return;
+        }
+        
+        if (is_array($tags)) {
+            foreach ($tags as $tag) {
+                $class->tags->stick($tag);
+            }
+        } else {
+            $class->tags->stick($tag);
+        }
     }
     
     protected function handleReference($class,$field_name,$reference) {
