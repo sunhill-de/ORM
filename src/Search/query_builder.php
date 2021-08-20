@@ -1,14 +1,23 @@
 <?php
+/**
+ * @file query_builder.php
+ * Provides the query_builder class
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-08-20
+ * Localization: none
+ * Documentation: complete
+ * Tests: none
+ * Coverage: unknown
+ */
 
 namespace Sunhill\ORM\Search;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Objects\oo_object;
-use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Facades\Objects;
-
-class QueryException extends ORMException {}
 
 class query_builder {
 

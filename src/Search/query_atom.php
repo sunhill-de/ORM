@@ -1,4 +1,16 @@
 <?php
+/**
+ * @file query_atom.php
+ * provides the query_atom class
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-08-20
+ * Localization: none
+ * Documentation: complete
+ * Tests: none
+ * Coverage: unknown
+ */
 
 namespace Sunhill\ORM\Search;
 
