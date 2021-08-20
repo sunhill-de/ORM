@@ -1,4 +1,16 @@
 <?php
+/**
+ * @file TestObject.php
+ * A trait for testing if a given object is a allowed class
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-08-20
+ * Localization: none
+ * Documentation: complete
+ * Tests: tests/Unit/TraitTestObjectTest.php
+ * Coverage: unknown
+ */
 
 namespace Sunhill\ORM\Traits;
 

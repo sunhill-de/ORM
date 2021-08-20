@@ -1,4 +1,16 @@
 <?php
+/**
+ * @file TraversableArray.php
+ * A trait for handling traversable arrays
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-08-20
+ * Localization: none
+ * Documentation: complete
+ * Tests: /tests/Unit/TraitTraversableArrayTest.php
+ * Coverage: unknown
+ */
 
 namespace Sunhill\ORM\Traits;
 

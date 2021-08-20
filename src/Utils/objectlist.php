@@ -1,9 +1,15 @@
 <?php
 
 /**
- @file objectlist
- Implements the class objectlist
- lang=en
+ *
+ * @file objectlist
+ * Implements the class objectlist
+ * lang=en
+ * Reviewstatus: 2020-08-10
+ * Localization: complete
+ * Documentation: complete
+ * Tests: unknown
+ * Coverage: unknown
  */
 namespace Sunhill\ORM\Utils;
 

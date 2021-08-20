@@ -1,7 +1,15 @@
 <?php
 /**
  * @file hookable.php
- * Definiert die Klasse hookable
+ * A basic class for classes that use hooks to trigger certain events
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2021-08-20
+ * Localization: none
+ * Documentation: complete
+ * Tests: Unit/HookableTest.php
+ * Coverage: unknown
  */
 namespace Sunhill\ORM;
 
@@ -9,11 +17,11 @@ use Sunhill\ORM\Facades\Objects;
 use Sunhill\Basic\loggable;
 
 /**
- * Basisklasse für Klassen, die Hooks benutzen
- * Folgende Hooks werden vordefiniert:
+ * A basic class for classes, that make use of hooks
+ * The following hooks are predefined:
  * @defgroup Hooks
- * - CONSTRUCTED Wird immer aufgerufen, wenn ein neues Objekt erzeugt wurde 
- * @author lokal
+ * - CONSTRUCTED is called whenever a new object is created
+ * @author Klaus
  */
 class hookable extends loggable {
 
@@ -22,8 +30,9 @@ class hookable extends loggable {
 	protected $external_hooks = array();
 	
 	/**
-	 * Der Konstruktor muss von abgeleiteten Klassen aufgerufen werden. Er initialiesiert über einen Aufruf
-	 * von setup_hooks() die Hooks und ruft (sofern vorhanden) die Hooks für CONSTRUCTED auf
+	 * Derrived classes have to call this constructor so that the initialization of the hook
+	 * system will be performed. The initialization will take place via a call of ->setup_hooks(). 
+	 * Further the hook for CONSTRCUTED will be called if it exists
 	 */
 	public function __construct() {
 		parent::__construct();
@@ -31,15 +40,15 @@ class hookable extends loggable {
 		$this->check_for_hook('CONSTRUCTED');		
 	}
 		
-	/**
-	 * Wird aufgerufen, um Hooks für dieses Objekt zu setzen
-	 */
+    /**
+     * This method will initialize the hooks for this class
+     */
 	protected function setup_hooks() {
-	    // Macht in der Ursprungsvariante nichts
+	    // Does nothing in the basic class
 	}
 
 	/**
-	 * Fügt einen neuen Hook hinzu
+	 * Adds a new hook
 	 * @param string $action
 	 * @param string $hook
 	 * @param string $subaction
@@ -97,7 +106,7 @@ class hookable extends loggable {
 	}
 	
 	/**
-	 * Prüft, ob es entsprechende Hooks gibt
+	 * Checks if there are hooks for this event
 	 * @param string $action
 	 * @param string $subaction
 	 * @param array $params
