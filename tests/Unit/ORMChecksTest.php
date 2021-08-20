@@ -339,7 +339,7 @@ class ORMChecksTest extends TestCase
     }
     
     public function testObjectExistance_pass() {
-        Classes::create_cache(dirname(__FILE__).'/../Objects');
+        Classes::create_cache(dirname(__FILE__).'/../../src/Tests/Objects');
 
         DB::statement('truncate objects');
         
@@ -355,7 +355,7 @@ class ORMChecksTest extends TestCase
     }
     
     public function testObjectExistance_fail() {
-        Classes::create_cache(dirname(__FILE__).'/../Objects');
+        Classes::create_cache(dirname(__FILE__).'/../../src/Tests/Objects');
         
         DB::statement('truncate objects');
         
@@ -371,7 +371,7 @@ class ORMChecksTest extends TestCase
     }
     
     public function testClassTableGaps_pass() {
-        Classes::create_cache(dirname(__FILE__).'/../Objects');
+        Classes::create_cache(dirname(__FILE__).'/../../src/Tests/Objects');
         DB::statement('truncate objects');
         DB::statement('truncate dummies');
         DB::statement('truncate testparents');
@@ -407,7 +407,7 @@ class ORMChecksTest extends TestCase
     }
     
     public function testClassTableGaps_fail1() {
-        Classes::create_cache(dirname(__FILE__).'/../Objects');
+        Classes::create_cache(dirname(__FILE__).'/../../src/Tests/Objects');
         DB::statement('truncate objects');
         DB::statement('truncate dummies');
         DB::statement('truncate testparents');
@@ -441,7 +441,7 @@ class ORMChecksTest extends TestCase
     }
     
     public function testClassTableGaps_fail2() {
-        Classes::create_cache(dirname(__FILE__).'/../Objects');
+        Classes::create_cache(dirname(__FILE__).'/../../src/Tests/Objects');
         DB::statement('truncate objects');
         DB::statement('truncate dummies');
         DB::statement('truncate testparents');

@@ -8,8 +8,8 @@
  * Lang en
  * Reviewstatus: 2020-09-13
  * Localization: unknown
- * Documentation: unknown
- * Tests: unknown
+ * Documentation: complete
+ * Tests: tests/Unit/Managers/ManagerObjectTest.php
  * Coverage: unknown
  * Depenencies: class_manager
  */

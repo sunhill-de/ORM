@@ -9,7 +9,7 @@
  * Reviewstatus: 2020-09-13
  * Localization: unknown
  * Documentation: unknown
- * Tests: unknown
+ * Tests: tests/Unit/Managers/ManagerClassesTest.php
  * Coverage: unknown
  */
 namespace Sunhill\ORM\Managers;

@@ -24,7 +24,7 @@ class ManagerClassesTest extends DBTestCase
      * @depends testFlushCache
      */
     public function testCreateCache($test) {
-        $test->create_cache(dirname(__FILE__).'/../../Objects');
+        $test->create_cache(dirname(__FILE__).'/../../../src/Objects');
         $this->assertTrue(file_exists(base_path('bootstrap/cache/sunhill_classes.php')));
         return $test;
     }
@@ -68,7 +68,7 @@ class ManagerClassesTest extends DBTestCase
      */
     public function testAddObjectDir($count) {
         Classes::flush_cache();
-        Classes::add_class_dir(dirname(__FILE__).'/../../Objects');
+        Classes::add_class_dir(dirname(__FILE__).'/../../../src/Tests/Objects');
         Classes::create_cache();
         $this->assertEquals($count,Classes::get_class_count());
     }
