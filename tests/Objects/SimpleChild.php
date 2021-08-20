@@ -28,7 +28,7 @@ class SimpleChild extends SimpleParent {
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('childint');
-        self::varchar('childchar');
+        self::varchar('childchar')->searchable();
     }
     
 }

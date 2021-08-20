@@ -28,7 +28,9 @@ class SimpleParent extends oo_object {
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('parentint');
-        self::varchar('parentchar');
+        self::varchar('parentchar')->searchable();
+        self::object('parentobject');
+        self::arrayofobjects('parentoarray');
     }
     
 }

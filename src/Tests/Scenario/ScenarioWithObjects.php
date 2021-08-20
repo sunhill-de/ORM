@@ -36,6 +36,7 @@ trait ScenarioWithObjects {
      *  class2 => ...
      */
     protected function SetUpObjects() {
+        $this->references = [];
         $objects = $this->GetObjects();
         foreach ($objects as $name => $description) {
             $this->handleClass($name,$description);
