@@ -1,0 +1,6 @@
+{
+  "Check tags for not existing parents":"Überprüfe Tags auf nicht existente Eltern",
+  "Parents of tags ':entries' dont exist.":"Eltern der Tags ':entries' existieren nicht.",
+  "Check tagcache for not existing tags":"Überprüfe Tagcache auf nicht existente Tags",
+  "Tags ':entries' dont exist.":"Tags ':entries' existieren nicht."
+}
