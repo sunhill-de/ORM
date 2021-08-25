@@ -1,6 +1,21 @@
 {
+  "***** src/Checks/orm_checks":"src/Checks/orm_checks *******",
+  "OK":"OK",
+  "FAILED":"FEHLGESCHLAGEN",
   "Check tags for not existing parents":"Überprüfe Tags auf nicht existente Eltern",
   "Parents of tags ':entries' dont exist.":"Eltern der Tags ':entries' existieren nicht.",
   "Check tagcache for not existing tags":"Überprüfe Tagcache auf nicht existente Tags",
-  "Tags ':entries' dont exist.":"Tags ':entries' existieren nicht."
+  "Tags ':entries' dont exist.":"Tags ':entries' existieren nicht.",
+  "Check tagcache consitency":"Überprüfe Konsistenz des Tagcaches",
+  "Entry count :count doenst match expected :expect":"Anzahl der Einträge :count ist nicht wie erwartet :expect",
+  "Entries :entries don't match.":"Die Einträge :entries passen nicht",
+  "Check tag-object-assigns for not existing tags":"Überprüfe die Tag-Object-Verknüpfung auf nichtexistente Tags.",
+  "Check tag-object-assigns for not existing objects":"Überprüfe die Tag-Object-Verknüpfung auf nichtexistente Objekte.",
+  "Objects ':entries' dont exist.":"Die Objekte ':entries' existieren nicht.",
+  "Check object-object-assigns for not existing container objects":"Überprüfe die Objekt-Objekt-Verknüfungen auf nichtexistente Container-Objekte",
+  "Check object-object-assigns for not existing element objects":"Überprüfe die Objekt-Objekt-Verknüfungen auf nichtexistente Element-Objekte",
+  "Check string-object-assigns for not existing container objects":"Überprüfe die String-Objekt-Verknüfungen auf nichtexistente Container-Objekte",
+  "Check for non existance classes in objects":"Überprüfe auf nicht existente Klassen in Objekten",
+  "Check for gaps in object tables":"Überprüfe auf Lücken in den Objekttabellen",
+  "Objects ':return' have gaps.":"Objekte ':return' haben Lücken"
 }
