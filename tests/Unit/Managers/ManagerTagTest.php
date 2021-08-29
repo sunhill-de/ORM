@@ -202,6 +202,10 @@ class ManagerTagTest extends DBTestCase
     }
         
     // Add a tag (tag table updated?)
+    public function testAddTag_withString() {
+        Tags::add_tag('');
+    }
+    
     /**
      * @group add
      */

@@ -38,11 +38,12 @@ trait ScenarioWithObjects {
   protected function GetParentalTag(array $subtags,$index) {
     $result = '';
     $first = true;
-    for ($i=$index;$>0;$i--) {
-        $result = $subtags 
+    for ($i=$index;$i>0;$i--) {
+        $result = $subtags ;
+    }
   }
     
-  protecetd function SetupSubtag(string $tag,string $parent) {
+  protected function SetupSubtag(string $tag,string $parent) {
     
   }
     
