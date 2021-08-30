@@ -80,4 +80,22 @@ class ManagerObjectTest extends DBTestCase
         $this->assertEquals($count1->count-$count2->count-$count3->count,count($list));
     }
 
+    public function testClearObjects_nochildren() {
+        Objects::clear_objects('dummy');
+        $count = DB::tables('dummies')->select(DB::raw('count(*) as count'))->first()->count;
+        $this->assertEquals(0,$count);
+    }
+    
+    public function testClearObjects_children() {
+        $countc_before = DB::tables('testchildren')->select(DB::raw('count(*) as count'))->first()->count;
+        $countp_before = DB::tables('testparents')->select(DB::raw('count(*) as count'))->first()->count;
+        $counto_before = DB::tables('objects')->select(DB::raw('count(*) as count'))->first()->count;
+        Objects::clear_objects('testchildren');
+        $countc_after = DB::tables('testchildren')->select(DB::raw('count(*) as count'))->first()->count;
+        $countp_after = DB::tables('testparents')->select(DB::raw('count(*) as count'))->first()->count;
+        $counto_after = DB::tables('objects')->select(DB::raw('count(*) as count'))->first()->count;
+        $this->assertEquals(0,$countc_after,'Number of testchildren is not 0 as expected.');
+        $this->assertEquals($countp_before-$countc_before,$countp_after,'Number of testparents is not as expected.');
+        $this->assertEquals($counto_before-$countc_before,$counto_after,'Number of objects is not as expected.');
+    }
 }
