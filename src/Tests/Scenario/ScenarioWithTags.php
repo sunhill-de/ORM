@@ -29,24 +29,9 @@ trait ScenarioWithObjects {
   }
   
   protected function SetupTag(string $tag) {
-    $subtags = explode('.'.$tag);
-    for ($i=0;$i<count($subtags);$i++) {
-        $this->SetupSubtags($subtags[$i],$this->GetParentalTag($subtags,$i));
-    }
+     Tags::add_tag($tag);
   }
   
-  protected function GetParentalTag(array $subtags,$index) {
-    $result = '';
-    $first = true;
-    for ($i=$index;$i>0;$i--) {
-        $result = $subtags ;
-    }
-  }
-    
-  protected function SetupSubtag(string $tag,string $parent) {
-    
-  }
-    
   /**
    * This method returns an array of tags. The tags can be seperated by dots, then a tag hirarchy is build
    * Example:
