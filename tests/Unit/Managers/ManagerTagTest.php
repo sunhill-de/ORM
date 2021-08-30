@@ -296,6 +296,16 @@ class ManagerTagTest extends DBTestCase
     /**
      * @group add
      */
+    public function testAddTag_withString_missingparent() {
+        $test = new tag_manager();
+        $this->call_protected_method($test,'add_tag_by_string',['TagZ.Test']);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertTrue($result->parent_id>1);
+    }
+    
+    /**
+     * @group add
+     */
     public function testAddTag_withArray_no_parent() {
         $test = new tag_manager();
         $this->call_protected_method($test,'add_tag_by_string',[['name'=>'Test']]);
