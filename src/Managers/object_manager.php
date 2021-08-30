@@ -208,5 +208,21 @@ class object_manager  {
 		    $degrader = new object_degrader();
 		    return $degrader->degrade($this->get_object($object),$newclass);
 		}
-		
+
+        /**
+         * Deletes alls objects of the given class from the database
+         */
+        public function clear_objects($class) {
+            $inheritance = Classes::get_inhertitance_of_class($class,false);
+            $master = Classes::get_table_of_class($class);
+            foreach ($inheritance as $subclass) {
+                $table = Classes::get_table_of_class($subclass);
+                DB::table($table)->where('id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
+            }
+            DB::table('tagobjectassigns')->where('container_id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
+            DB::table('stringobjectassigns')->where('container_id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
+            DB::table('objectobjectassigns')->where('container_id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
+            DB::table('objectobjectassigns')->where('target_id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
+            DB::table($master)->delete();
+        }    
 }
