@@ -13,7 +13,7 @@
 
 namespace Sunhill\ORM\Tests\Scenario;
 
-use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Tags;
 use Sunhill\Basic\SunhillException;
 
 trait ScenarioWithObjects {
@@ -22,6 +22,7 @@ trait ScenarioWithObjects {
    * This is called by the Test to setup set Tags
    */
   protected function SetUpTags() {
+    Tags::clear_tags();  // Delete all tags and clear the tag cache
     $tags = $this->GetTags();
     foreach ($tags as $tag) {
       $this->SetupTag($tag);
