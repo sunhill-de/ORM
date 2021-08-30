@@ -169,6 +169,25 @@ class ManagerTagTest extends DBTestCase
         $this->assertEquals($result[0]->name,'TagC');
     }
     
+    // Clear tags
+    public function testClearTags_CacheEmpty() {
+        Tags::clear_tags();
+        $result = DB::table('tagcache')->get();
+        $this->assertTrue($result->isEmpty());
+    }
+    
+    public function testClearTags_ReferenceEmpty() {
+        Tags::clear_tags();
+        $result = DB::table('tagobjectassigns')->get();
+        $this->assertTrue($result->isEmpty());
+    }
+    
+    public function testClearTags_TagsEmpty() {
+        Tags::clear_tags();
+        $result = DB::table('tags')->get();
+        $this->assertTrue($result->isEmpty());
+    }
+    
     // delete tag index
     /**
      * @group delete
@@ -200,44 +219,149 @@ class ManagerTagTest extends DBTestCase
         $result = DB::table('tagobjectassigns')->where('tag_id',3)->get();
         $this->assertTrue($result->isEmpty());
     }
-        
-    // Add a tag (tag table updated?)
-    public function testAddTag_withString() {
-        Tags::add_tag('');
+    
+    /**
+     * @dataProvider GetTagIDProvider
+     * @group add
+     */
+    public function test_get_tag_id($parent,$expect) {
+        $test = new tag_manager();
+        if (is_callable($parent)) {
+            $parent = $parent();
+        }
+        $tag = $this->call_protected_method($test,'get_tag_id',[$parent]);
+        $this->assertEquals($expect,$tag->get_id());
+    }
+    
+    public function GetTagIDProvider() {
+        return [
+            [null,0],
+            [1,1],
+            ['TagA',1],
+            ['TagB.TagC',3],
+            [function(){ return Tags::load_tag(3); },3]
+        ]
     }
     
     /**
      * @group add
      */
-    public function testAddTag_TagAdded() {
-        
-        Tags::add_tag(['name'=>'TagZ','parent'=>'TagA']);
-        $result = DB::table('tags')->where('name','TagZ')->get();
-        $this->assertEquals('TagZ',$result[0]->name);
+    public function testExecuteAddTag_TagAdded() {
+        $test = new tag_manager();
+        $this->call_protected_method($test,'execute_add_tag',['Test','TagA']);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertEquals(1,$result->parent_id);                
     }
-
-    // Add a tag (tag table updated?)
+    
     /**
      * @group add
      */
-    public function testAddTag_TagAdded_noparent() {
-        
-        Tags::add_tag(['name'=>'TagZ']);
-        $result = DB::table('tags')->where('name','TagZ')->get();
-        $this->assertEquals(0,$result[0]->parent_id);
+    public function testExecuteAddTag_TagAddedNoParent() {
+        $test = new tag_manager();
+        $this->call_protected_method($test,'execute_add_tag',['Test',null]);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertEquals(0,$result->parent_id);                
     }
-
-    // Add a tag (tag cache updated?)
+    
     /**
      * @group add
      */
-    public function testAddTag_CacheUpdated() {
-        
-        Tags::add_tag(['name'=>'TagZ','parent'=>'TagA']);
-        $result = DB::table('tagcache')->where('name','TagA.TagZ')->get();
+    public function testExecuteAddTag_TagCacheAdded() {
+        $test = new tag_manager();
+        $this->call_protected_method($test,'execute_add_tag',['Test','TagA']);
+        $result = DB::table('tagcache')->where('name','TagA.Test')->get();
         $this->assertTrue($result->count()>0);
     }
-                                                                                        
+    
+    /**
+     * @group add
+     */
+    public function testAddTag_withString_no_parent() {
+        $test = new tag_manager();
+        $this->call_protected_method($test,'add_tag_by_string',['Test']);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertTrue($result->count()>0);
+    }
+    
+    /**
+     * @group add
+     */
+    public function testAddTag_withString_parent() {
+        $test = new tag_manager();
+        $this->call_protected_method($test,'add_tag_by_string',['TagA.Test']);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertEquals(1,$result->parent_id);
+    }
+    
+    /**
+     * @group add
+     */
+    public function testAddTag_withArray_no_parent() {
+        $test = new tag_manager();
+        $this->call_protected_method($test,'add_tag_by_string',[['name'=>'Test']]);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertTrue($result->count()>0);
+    }
+    
+    /**
+     * @group add
+     */
+    public function testAddTag_withArray_parent() {
+        $test = new tag_manager();
+        $this->call_protected_method($test,'add_tag_by_string',[['name'=>'Test','parent'=>'TagA']);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertEquals(1,$result->parent_id);
+    }
+    
+    /**
+     * @group add
+     */
+    public function testAddTag_withDescriptor_no_parent() {
+        $test = new tag_manager();
+        $descriptor = new descriptor();
+        $descriptor->name = 'Test';
+        $descriptor->parent 'TagA';
+        $this->call_protected_method($test,'add_tag_by_descriptor',[$descriptor]);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertTrue($result->count()>0);
+    }
+    
+    /**
+     * @group add
+     */
+    public function testAddTag_withDescriptor_parent() {
+        $test = new tag_manager();
+        $descriptor = new descriptor();
+        $descriptor->name = 'Test';
+        $descriptor->parent 'TagA';
+        $this->call_protected_method($test,'add_tag_by_descriptor',[$descriptor]);
+        $result = DB::table('tags')->where('name','Test')->get();
+        $this->assertEquals(1,$result->parent_id);
+    }
+    
+    /**
+     * @group add
+     * @dataProvider AddTagProvider
+     */
+    public function testAddTag($tag,$expect) {        
+        if (is_callable($tag)) {
+            $tag = $tag();
+        }
+        Tags::add_tag($tag);
+        $result = DB::table('tags')->where('name',$expect)->get();
+        $this->assertEquals($expect,$result[0]->name);
+    }
+
+    public function AddTagProvider() {
+        return [
+            ['Test','Test'],
+            ['TagA.Test','Test'],
+            [['name'=>'Test','Test'],
+            [function() { $descriptor = new descriptor(); $descriptor->name = 'Test'; return $descriptor; },'Test'],
+            [function() { $tag = new tag(); $tag->set_name('Test'); return $tag; },'Test'],
+        ];
+    }                                                                
+                                                                
     // List all tags with a condition
     /**
      * @group list
