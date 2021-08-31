@@ -349,7 +349,7 @@ class tag_manager {
      * The passed data is an array
      */
      protected function add_tag_by_array(array $values) {
-            $this->execute_add_tag($values['name'],isset($values['parent']):$values['parent']:null);
+            $this->execute_add_tag($values['name'],isset($values['parent'])?$values['parent']:null);
      }   
     
      /**
