@@ -316,7 +316,7 @@ class tag_manager {
      * Returns the id of the given tag or 0 if null is passed
      */
     protected function get_tag_id($parent) {
-        if (is_null($parent)) {
+        if (is_null($parent) || empty($parent)) {
             return 0;
         } else {
             return $this->load_tag($parent)->get_id();
@@ -330,9 +330,8 @@ class tag_manager {
      * @param $options int The options (defaults 0)
      */
     protected function execute_add_tag(string $name,$parent=null,int $options=0) {
-        $parent_id = $this->get_tag_id($parent);
+        $parent_id = $this->GetParent($parent);
         $id = DB::table('tags')->insertGetId(['name'=>$name,'parent_id'=>$parent_id,'options'=>$options]);
-    
         $tag = $this->load_tag($id);
         $full_path = $tag->get_fullpath();
 	    $fullpath = explode('.',$full_path);
@@ -343,6 +342,27 @@ class tag_manager {
 	        ]);
 	        array_shift($fullpath);
 	    }
+	    return $id;
+    }
+    
+    protected function GetParent($parent) {
+        if (!empty($parent)) {
+            if (is_a($parent,descriptor::class)) {
+                $name = $parent->name;
+                if (empty($name)) {
+                    return 0;           
+                }
+                $parent= $parent->name;
+            }
+            $parent_id = $this->search_tag($parent);
+            if (empty($parent_id)) {
+                $parent_id = $this->add_tag_by_string($parent);
+            } else {
+                $parent_id = $parent_id->id;
+            }
+        } else {
+            $parent_id = 0;
+        }        
     }
     
     /**
@@ -356,7 +376,7 @@ class tag_manager {
       * The passed data is a descriptor
       */
      protected function add_tag_by_descriptor(descriptor $descriptor) {
-        $this->execute_add_tag($descriptor->name,$descriptor->parent);
+        $this->execute_add_tag($descriptor->name,$descriptor->assertHasKey('parent')?$descriptor->parent:null);
      }
     
      /**
@@ -365,7 +385,7 @@ class tag_manager {
      protected function add_tag_by_string(string $tag) {
          $tag_parts = explode('.',$tag);
          $tag_name = array_shift($tag_parts);
-         $this->execute_add_tag($tag_name,implode('.',$tag_parts));
+         return $this->execute_add_tag($tag_name,implode('.',$tag_parts));
      }
     
      /**

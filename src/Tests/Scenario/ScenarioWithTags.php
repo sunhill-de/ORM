@@ -16,7 +16,7 @@ namespace Sunhill\ORM\Tests\Scenario;
 use Sunhill\ORM\Facades\Tags;
 use Sunhill\Basic\SunhillException;
 
-trait ScenarioWithObjects {
+trait ScenarioWithTags {
 
   /**
    * This is called by the Test to setup set Tags

@@ -213,16 +213,16 @@ class object_manager  {
          * Deletes alls objects of the given class from the database
          */
         public function clear_objects($class) {
-            $inheritance = Classes::get_inhertitance_of_class($class,false);
+            $inheritance = Classes::get_inheritance_of_class($class,false);
             $master = Classes::get_table_of_class($class);
             foreach ($inheritance as $subclass) {
                 $table = Classes::get_table_of_class($subclass);
-                DB::table($table)->where('id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
+                DB::statement("delete from $table where id in (select id from $master)");
             }
-            DB::table('tagobjectassigns')->where('container_id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
-            DB::table('stringobjectassigns')->where('container_id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
-            DB::table('objectobjectassigns')->where('container_id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
-            DB::table('objectobjectassigns')->where('target_id',function($query){ $query->selectRaw('z.id')->from($master.' as z'); })->delete();
+            DB::statement("delete from tagobjectassigns where container_id in (select id from $master)");
+            DB::statement("delete from stringobjectassigns where container_id in (select id from $master)");
+            DB::statement("delete from objectobjectassigns where container_id in (select id from $master)");
+            DB::statement("delete from objectobjectassigns where element_id in (select id from $master)");
             DB::table($master)->delete();
         }    
 }

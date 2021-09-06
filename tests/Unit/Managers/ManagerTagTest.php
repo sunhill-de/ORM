@@ -6,7 +6,9 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\tag_manager;
 use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\ORMException;
+use Sunhill\ORM\Objects\oo_tag;
 use Illuminate\Support\Facades\DB;
+use Sunhill\Basic\Utils\descriptor;
 
 define('NUMBER_OF_TAGS', 8);
 define('NUMBER_OF_ORPHANED_TAGS', 6);
@@ -230,7 +232,7 @@ class ManagerTagTest extends DBTestCase
             $parent = $parent();
         }
         $tag = $this->callProtectedMethod($test,'get_tag_id',[$parent]);
-        $this->assertEquals($expect,$tag->get_id());
+        $this->assertEquals($expect,$tag);
     }
     
     public function GetTagIDProvider() {
@@ -249,7 +251,7 @@ class ManagerTagTest extends DBTestCase
     public function testExecuteAddTag_TagAdded() {
         $test = new tag_manager();
         $this->callProtectedMethod($test,'execute_add_tag',['Test','TagA']);
-        $result = DB::table('tags')->where('name','Test')->get();
+        $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);                
     }
     
@@ -259,7 +261,7 @@ class ManagerTagTest extends DBTestCase
     public function testExecuteAddTag_TagAddedNoParent() {
         $test = new tag_manager();
         $this->callProtectedMethod($test,'execute_add_tag',['Test',null]);
-        $result = DB::table('tags')->where('name','Test')->get();
+        $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(0,$result->parent_id);                
     }
     
@@ -289,7 +291,7 @@ class ManagerTagTest extends DBTestCase
     public function testAddTag_withString_parent() {
         $test = new tag_manager();
         $this->callProtectedMethod($test,'add_tag_by_string',['TagA.Test']);
-        $result = DB::table('tags')->where('name','Test')->get();
+        $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);
     }
     
@@ -299,7 +301,7 @@ class ManagerTagTest extends DBTestCase
     public function testAddTag_withString_missingparent() {
         $test = new tag_manager();
         $this->callProtectedMethod($test,'add_tag_by_string',['TagZ.Test']);
-        $result = DB::table('tags')->where('name','Test')->get();
+        $result = DB::table('tags')->where('name','Test')->first();
         $this->assertTrue($result->parent_id>1);
     }
     
@@ -308,7 +310,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testAddTag_withArray_no_parent() {
         $test = new tag_manager();
-        $this->callProtectedMethod($test,'add_tag_by_string',[['name'=>'Test']]);
+        $this->callProtectedMethod($test,'add_tag_by_string',['Test']);
         $result = DB::table('tags')->where('name','Test')->get();
         $this->assertTrue($result->count()>0);
     }
@@ -318,8 +320,8 @@ class ManagerTagTest extends DBTestCase
      */
     public function testAddTag_withArray_parent() {
         $test = new tag_manager();
-        $this->callProtectedMethod($test,'add_tag_by_string',[['name'=>'Test','parent'=>'TagA']]);
-        $result = DB::table('tags')->where('name','Test')->get();
+        $this->callProtectedMethod($test,'add_tag_by_string',['name'=>'TagA.Test']);
+        $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);
     }
     
@@ -345,7 +347,7 @@ class ManagerTagTest extends DBTestCase
         $descriptor->name = 'Test';
         $descriptor->parent = 'TagA';
         $this->callProtectedMethod($test,'add_tag_by_descriptor',[$descriptor]);
-        $result = DB::table('tags')->where('name','Test')->get();
+        $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);
     }
     
@@ -366,9 +368,9 @@ class ManagerTagTest extends DBTestCase
         return [
             ['Test','Test'],
             ['TagA.Test','Test'],
-            [['name'=>'Test','Test']],
+            [['name'=>'Test'],'Test'],
             [function() { $descriptor = new descriptor(); $descriptor->name = 'Test'; return $descriptor; },'Test'],
-            [function() { $tag = new tag(); $tag->set_name('Test'); return $tag; },'Test'],
+            [function() { $tag = new oo_tag(); $tag->set_name('Test'); return $tag; },'Test'],
         ];
     }                                                                
                                                                 
