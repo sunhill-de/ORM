@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Feature;
 
 use Sunhill\Basic\Tests\SunhillScenarioTestCase;
 use Sunhill\Basic\Tests\Scenario\ScenarioBase;
-use Sunhill\ORM\Tests\Scenario\ScenarioWithObjects;
+use Sunhill\ORM\Tests\Scenario\ScenarioWithTags;
 use Tests\CreatesApplication;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
@@ -39,13 +39,17 @@ class ScenarioWithTagsFeatureTestScenario extends ScenarioBase{
     }
 }
 
-class ScenarioWithObjectsTest extends SunhillScenarioTestCase
+class ScenarioWithTagsTest extends SunhillScenarioTestCase
 {
    
     static protected $ScenarioClass = 'Sunhill\\ORM\\Tests\\Feature\\ScenarioWithTagsFeatureTestScenario';
     
     use CreatesApplication;
 
+    protected function GetScenarioClass() {
+        return ScenarioWithTagsFeatureTestScenario::class;
+    }
+    
     public function SetupTables() {
     }
     

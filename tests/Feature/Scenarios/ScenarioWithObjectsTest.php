@@ -68,6 +68,10 @@ class ScenarioWithObjectsTest extends SunhillScenarioTestCase
     
     use CreatesApplication;
 
+    protected function GetScenarioClass() {
+        return ScenarioWithObjectsFeatureTestScenario::class;    
+    }
+    
     public function SetupTables() {
     }
     
