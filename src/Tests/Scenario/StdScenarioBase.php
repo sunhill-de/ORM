@@ -133,7 +133,7 @@ class StdScenarioBase extends ScenarioBase{
   
     protected function GetTables() {
       return [
-           'object'=>[
+           'objects'=>[
                 ['id','classname','created_at'],
                 [
                     'dummy1'=>[1,'dummy','2019-05-15 10:00:00'],
@@ -209,7 +209,62 @@ class StdScenarioBase extends ScenarioBase{
                    [12,'TagF.TagG.TagE','=>TagE'],
                 ]
            ],
-          
+           'externalhooks'=>[
+               ['id','container_id','target_id','action','subaction','hook','payload']
+               [
+                   [1,'=>dummy1','=>dummy2','PROPERTY_UPDATED','dummyint','dummyint_updated',null],
+                   [2,'=>dummy2','=>dummy1','PROPERTY_UPDATED','dummyint','dummyint2_updated',null],
+                   [3,'=>dummy1','=>parent','PROPERTY_UPDATED','dummyint','dummyint3_updated',null],
+               ]
+           ],
+          'caching'=>[
+              ['id','object_id','fieldname','value'],
+              [
+                  [1,"=>parent","parentcalc","123A"],
+                  [2,"=>child","parentcalc","234A"]
+              ]
+          ],
+          'attributes'=>[
+              ['name','type','allowedobjects','property'],
+              [
+                  'int_attribute'=>['int_attribute','int',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
+                  'attribute1'=>['attribute1','int',"\\Sunhill\\ORM\\Test\\ts_testparent",''],
+	              'attribute2'=>['attribute2','int',"\\Sunhill\\ORM\\Test\\ts_testparent",''],
+	              ['general_attribute','int',"\\Sunhill\\ORM\\Objects\\oo_object",''],
+	              ['char_attribute','char',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
+	              ['float_attribute','float',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
+	              ['text_attribute','text',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
+              ]
+          ],
+          'attributevalues'=>[
+              ['attribute_id','object_id','value','textvalue'],
+              [
+                  ['=>int_attribute','=>dummy1',111,''],
+                  ['=>attribute1','=>parent',121,''],
+                  ['=>attribute1','=>child',232,''],
+                  ['=>attribute2','=>child',121,''],
+              ]
+         ],
+         'passthrus'=>[
+             ['id'],
+             [
+                 ["=>passthru']
+             ]
+         ],
+         'testchildren'=>[
+             ['id','childint','childchar','childfloat','childtext','childdatetime','childdate','childtime','childenum'],
+             [
+                ['=>child',345,'GHI',3.45,'Norem Torem','1973-01-24 18:00:00','2016-06-17','18:00:00','testA']
+             ]
+         ],
+         'testparents'=>[
+             ['id','parentint','parentchar','parentfloat','parenttext','parentdatetime','parentdate','parenttime','parentenum'],
+             [
+                 ['=>parent',123,'ABC',1.23,'Lorem ipsum','1974-09-15 17:45:00','1978-06-05','01:11:00','testC'],
+                 ['=>child',234,'DEF',2.34,'Upsala Dupsala','1970-09-11 18:00:00','2013-11-24','16:00:00','testB'],
+                 ['=>passthru',321,'FED',4.32,'Ups Dup','1970-09-11 18:00:00','2013-11-24','16:00:00','testB']
+		     ]
+         ]
       ];
     }
   
