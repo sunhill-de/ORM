@@ -356,12 +356,12 @@ class tag_manager {
             }
             $parent_id = $this->search_tag($parent);
             if (empty($parent_id)) {
-                $parent_id = $this->add_tag_by_string($parent);
+                return $this->add_tag_by_string($parent);
             } else {
-                $parent_id = $parent_id->id;
+                return $parent_id->id;
             }
         } else {
-            $parent_id = 0;
+            return 0;
         }        
     }
     
@@ -384,7 +384,7 @@ class tag_manager {
       */
      protected function add_tag_by_string(string $tag) {
          $tag_parts = explode('.',$tag);
-         $tag_name = array_shift($tag_parts);
+         $tag_name = array_pop($tag_parts);
          return $this->execute_add_tag($tag_name,implode('.',$tag_parts));
      }
     

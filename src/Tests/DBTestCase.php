@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-use Database\Seeders\SimpleSeeder;
+use Database\Seeds\SimpleSeeder;
 
 abstract class DBTestCase extends TestCase
 {
