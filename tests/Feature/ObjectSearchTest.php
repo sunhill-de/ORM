@@ -11,6 +11,7 @@ use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Database\Seeds\SearchSeeder;
 
 class searchtestA extends oo_object {
    
@@ -114,7 +115,7 @@ class ObjectSearchTest extends DBTestCase
     }
     
     protected function do_seeding() {
-        Artisan::call('db:seed --class=SearchSeeder');
+        $this->seed(SearchSeeder::class);
     }
     
     protected function simplify_result(objectlist $result) {
