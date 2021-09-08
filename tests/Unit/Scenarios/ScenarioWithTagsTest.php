@@ -29,6 +29,8 @@ class ScenarioWithTagsTest extends SunhillTestCase
     use CreatesApplication;
     
     public function testSetupTag() {
+        DB::table('tags')->truncate();
+        DB::table('tagcache')->truncate();
         $test = new ScenarioWithTagsUnitTestScenario();
         $this->callProtectedMethod($test,'SetupTag',['TagA']);
         $this->assertDatabaseHas('tags',['name'=>'TagA']);
@@ -36,10 +38,12 @@ class ScenarioWithTagsTest extends SunhillTestCase
     }
     
     public function testSetupTags() {
+        DB::table('tags')->truncate();
+        DB::table('tagcache')->truncate();
         $test = new ScenarioWithTagsUnitTestScenario();
-        $this->callProtectedMethod($test,'SetupTags',[]);
-        $this->assertDatabaseHas('tags',['name'=>'TagA']);        
+        $this->callProtectedMethod($test,'SetupTags',[['TagB','TagC.TagD']]);
+        $this->assertDatabaseHas('tags',['name'=>'TagB']);        
         $this->assertDatabaseHas('tags',['name'=>'TagD']);
-        $this->assertDatabaseCache('tags',['name'=>'TagC.TagD']);
+        $this->assertDatabaseHas('tagcache',['name'=>'TagC.TagD']);
     }
 }
