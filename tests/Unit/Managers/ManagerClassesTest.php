@@ -14,24 +14,39 @@ class ManagerClassesTest extends DBTestCase
 {
    
     public function testFlushClasses() {
+        $test = new class_manager();
+        $this->setProtectedProperty($test,'classes',['test']);
+        $this->assertFalse(empty($this->getProtectedProperty($test,'classes')));
+
+        $this->callProtectedMethod($test,'flushClasses',[]);
+
+        $this->assertTrue(empty($this->getProtectedProperty($test,'classes')));
     }
     
     public function testGetClassEntry() {
+        $test = new class_manager();
+        
+        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\ts_dummy');
     }
     
     public function testGetClassInformationEntries() {
+        $test = new class_manager();
     }
     
     public function testGetClassParentEntry() {
+        $test = new class_manager();
     }
     
     public function testGetClassPropertyEntries() {
+        $test = new class_manager();
     }
     
     public function testBuildClassInformation() {
+        $test = new class_manager();
     }
     
     public function testRegisterClass() {
+        $test = new class_manager();
     }
     
     public function testFlushCache() {
