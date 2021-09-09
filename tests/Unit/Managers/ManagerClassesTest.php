@@ -13,6 +13,27 @@ define('CLASS_COUNT',8);
 class ManagerClassesTest extends DBTestCase
 {
    
+    public function testFlushClasses() {
+    }
+    
+    public function testGetClassEntry() {
+    }
+    
+    public function testGetClassInformationEntries() {
+    }
+    
+    public function testGetClassParentEntry() {
+    }
+    
+    public function testGetClassPropertyEntries() {
+    }
+    
+    public function testBuildClassInformation() {
+    }
+    
+    public function testRegisterClass() {
+    }
+    
     public function testFlushCache() {
         $test = new class_manager();
         $test->flush_cache();
