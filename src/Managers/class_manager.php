@@ -36,246 +36,37 @@ class class_manager {
  
     private static $translatable = [/*'name_s','name_p','description'*/];
         
-    private $object_dirs = [];
     /**
      * Stores the information about the classes
      * @var array|null
      */
     private $classes=null;
+// ********************************** Register class ******************************************
 
-// ******************************** Cache-Management ***************************************    
     /**
-     * Return the full path to the class cache file
-     * @return string 
+     * Get the fully qualified class name and adds it to $result
      */
-    private function cache_file() {
-        return base_path('bootstrap/cache/sunhill_classes.php');
+    protected function getClassEntry(array &$result,string $class) : void {
+        $result['class'] = addslashes($class);
     }
     
     /**
-     * Returns true if the class cache file exists otherwise false
-     * @return boolean
+     * Get the class informations and adds them to $result
      */
-    private function cache_exists() {
-        return file_exists($this->cache_file());    
-    }
-    
-    /**
-     * Erases the class cache file. It throws an excpetion if the cache file still exists after deletion (missing rights?)
-     * @throws ORMException
-     */
-    public function flush_cache() {
-        if ($this->cache_exists()) {
-            unlink($this->cache_file());
-            if ($this->cache_exists()) {
-                throw new ORMException("Can't delete the class cache.");
-            }
-        }
-        $this->object_dirs = [];
-    }
-
-    /**
-     * Includes all orm class file to get the classes accesible by get_declared_classes()
-     * @param string $dir
-     */
-    private function read_object_dir(string $dir) {
-        $directory = dir($dir);
-        while (false !== ($entry = $directory->read())) {
-            if (($entry !== '.') && ($entry !== '..')) {
-                if (is_dir($dir . '/' . $entry)) {
-                    $this->read_object_dir($dir . '/' . $entry);
-                } else if (is_file($dir . '/' . $entry)) {
-                    require_once($dir . '/' . $entry);
-                }
-            }
-        }        
-    }
-    
-    /**
-     * After all orm class files where previously include traverse all classes and return only those children of oo_object
-     * @return unknown[]
-     */
-    private function get_class_array() {
-        $all_classes = get_declared_classes();
-        $orm_classes = [];
-        foreach ($all_classes as $class) {
-            if (is_subclass_of($class,oo_object::class)) {
-                $orm_classes[] = $class;       
-            }
-        }        
-        return $orm_classes;
-    }
-
-    /**
-     * Returns the information for the cache array
-     * @param string $class The full name of a class that points to a descendant of oo_object
-     */
-    private function get_class_info(string $class) {
-        $result = ['class'=>addslashes($class)];
+    protected function getClassInformationEntries(array &$result,string $class) : void {
         foreach ($class::$object_infos as $key => $value) {
             $result[$key] = $value;
         }
+    }
+    
+    protected function getClassParentEntry(array &$result,string $class) : void {
         $parent = get_parent_class($class);
         if ($class !== 'object') { // Strange infinite loop bug
             $result['parent'] = $parent::$object_infos['name'];
         }
-        $result['properties'] = $this->get_class_properties($class);
-        return $result;
     }
     
-    private function get_class_properties(string $class) {
-        $properties = $class::static_get_properties_with_feature();
-        $result = [];
-        foreach ($properties as $name => $descriptor) {
-            if ($name !== 'tags') {
-                $result[$name] = $descriptor;
-            }
-        }
-        return $result;        
-    }
-    
-    /**
-     * Creates the class cache file
-     * @param array $class_dirs
-     */
-    private function create_cache_file(array $class_dirs) {
-        foreach ($class_dirs as $dir) {
-            $this->read_object_dir($dir);
-        }
-        $class_array = $this->get_class_array();
-        $file = fopen($this->cache_file(),'w+');
-        fputs($file,"<?php return [\n".
-'    "object"=>['."\n".
-'       "class"=>"Sunhill\\ORM\\Objects\\oo_object",'."\n".
-'       "name"=>"object",'."\n".
-'       "table"=>"objects",'."\n".
-'       "name_s"=>"object",'."\n".
-'       "name_p"=>"objects",'."\n".
-'       "description"=>"Base class for objects",'."\n".
-'       "options"=>"0",'."\n".
-'       "parent"=>"",'."\n".
-'       "properties"=>[]],'."\n"
-            );
-        foreach ($class_array as $class) {
-            $class_info = $this->get_class_info($class);
-            fputs($file,'    "'.$class_info['name'].'"=>['."\n");
-            foreach ($class_info as $key => $value) {
-                if ($key == 'properties') {
-                   fputs($file,'        "properties"=>['."\n");
-                   foreach ($value as $prop_name => $property) {
-                      $features = $property->get_static_attributes();
-                      fputs($file,'          "'.$prop_name.'"=>['."\n");
-                      foreach ($features as $feat_key => $feat_value) {
-                          fputs($file,'             "'.$feat_key.'"=>');
-                          if (is_bool($feat_value)) {
-                              fputs($file,($feat_value?'true':'false').','."\n");
-                          } else if (is_scalar($feat_value)) {
-                              fputs($file,'"'.$feat_value.'",'."\n");
-                          } else if (is_array($feat_value)) {
-                              fputs($file,'[');
-                              foreach ($feat_value as $single_value) {
-                                  fputs($file,'"'.$single_value.'",');
-                              }
-                              fputs($file,'],'."\n");
-                          }
-                      }
-                      fputs($file,'             ],'."\n");
-                   }
-                   fputs($file,'        ],'."\n");
-                } else {
-                    fputs($file,'        "'.$key.'"=>"'.$value.'",'."\n");
-                }
-            }
-            fputs($file,"    ],\n");
-        }
-        fputs($file,"];");
-        fclose($file);        
-    }
-    
-    /**
-     * Flushes the class cache and recreates it
-     * @throws ORMException
-     */
-    public function create_cache($class_dir=null) {
-        if (is_null($class_dir)) {
-            // If not passes, set class dir to default
-            $class_dir = $this->object_dirs;
-        } else if (is_string($class_dir)) {
-            $class_dir = [$class_dir];
-        } else if (!is_array($class_dir)) {
-            throw new ORMException("Unexpected data for 'class_dir'.");
-        }
-        $this->flush_cache();
-        $this->create_cache_file($class_dir);
-        if (!$this->cache_exists()) {
-            throw new ORMException("Can't create the class cache.");            
-        }
-    }
-    
-    /**
-     * Checks if the classes array was read from the cache. If not it reads the file
-     */
-    private function check_cache() {
-        if (is_null($this->classes)) {
-            if (!$this->cache_exists()) {
-                $this->create_cache();
-            }
-            $this->load_cache_file();
-         }
-    }
-
-    /**
-     * Loads the cache file and tranlates it into a desciptor array
-     */
-    private function load_cache_file() {
-        $classes = require($this->cache_file());
-        foreach ($classes as $name => $info) {
-            $descriptor = new descriptor();
-            foreach ($info as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $subkey => $subvalue) {
-                        if (is_array($subvalue)) {
-                            foreach ($subvalue as $subsubkey => $subsubvalue) {
-                                $descriptor->$key->$subkey->$subsubkey = $subsubvalue;
-                            }
-                        } else {
-                            $descriptor->$key->$subkey = $subvalue;
-                        }
-                    }
-                } else {
-                    $descriptor->$key = $value;
-                }
-            }
-            $this->classes[$name] = $descriptor;
-        }
-    }
-    
-    /**
-     * Add a single dir to the class manager, to build the class cache from
-     * @param string $path
-     * @throws ORMException
-     */
-    public function add_class_dir(string $path) {
-        if (!file_exists($path)) {
-            throw new ORMException("The passed class directory '$path' doesn't exists.");
-        }
-        $this->object_dirs[] = $path;
-    }
-
-    /**
-     * Collects all data about this class to store it in the classes array
-     * @param $classname string The name of the class to collect values from
-     * @return array associative array with informations about this class
-     */
-    protected function buildClassInformation(string $classname) : array {
-        $result = ['class'=>addslashes($class)];
-        foreach ($class::$object_infos as $key => $value) {
-            $result[$key] = $value;
-        }
-        $parent = get_parent_class($class);
-        if ($class !== 'object') { // Strange infinite loop bug
-            $result['parent'] = $parent::$object_infos['name'];
-        }
+    protected function getClassPropertyEntries(array &$result,string $class) : void {
         $result['properties'] = [];
         $properties = $this->get_class_properties($class);
         foreach ($properties as $property) {
@@ -285,8 +76,23 @@ class class_manager {
                 $result['properties'][$property][$feat_key] = $feat_value;
             }            
         }    
-        return $result;        
-    }
+   }
+    
+    /**
+     * Collects all data about this class to store it in the classes array
+     * @param $classname string The name of the class to collect values from
+     * @return array associative array with informations about this class
+     */
+    protected function buildClassInformation(string $classname) : array {
+        $result = [];
+        
+        $this->getClassEntry($result,$classname);
+        $this->getClassInformationEntries($result,$classname);
+        $this->getClassParentEntry($result,$classname);
+        $this->getClassPropertyEntries($result,$classname);
+        
+        return $result;
+     }
     
     /**
      * Every single class that should be accessible via the class manager should be added through this method. 
@@ -634,7 +440,17 @@ class class_manager {
         return is_subclass_of($test_space,$namespace);        
     }
     
+    /**
+     * Alias for @see migrateClass()
+     */
     public function migrate_class(string $class_name) {
+        return $this->migrateClass($class_name);
+    }
+    
+    /**
+     * Creates the necessary tables for this class and checks if the fields are up to date
+     */
+    public function migrateClass(string $class_name) : void {
         $class_name = $this->check_class($this->search_class($class_name));
         $migrator = new object_migrator();
         $migrator->migrate($class_name);
