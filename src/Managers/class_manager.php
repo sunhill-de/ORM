@@ -99,7 +99,7 @@ class class_manager {
         $all_classes = get_declared_classes();
         $orm_classes = [];
         foreach ($all_classes as $class) {
-            if (is_subclass_of($class,"\\Sunhill\\ORM\\Objects\oo_object")) {
+            if (is_subclass_of($class,oo_object::class)) {
                 $orm_classes[] = $class;       
             }
         }        
@@ -261,23 +261,91 @@ class class_manager {
         }
         $this->object_dirs[] = $path;
     }
+
+    /**
+     * Collects all data about this class to store it in the classes array
+     * @param $classname string The name of the class to collect values from
+     * @return array associative array with informations about this class
+     */
+    protected function buildClassInformation(string $classname) : array {
+        $result = ['class'=>addslashes($class)];
+        foreach ($class::$object_infos as $key => $value) {
+            $result[$key] = $value;
+        }
+        $parent = get_parent_class($class);
+        if ($class !== 'object') { // Strange infinite loop bug
+            $result['parent'] = $parent::$object_infos['name'];
+        }
+        $result['properties'] = [];
+        $properties = $this->get_class_properties($class);
+        foreach ($properties as $property) {
+            $result['properties'][$property] = [];
+            $features = $property->get_static_attributes();
+            foreach ($features as $feat_key => $feat_value) {
+                $result['properties'][$property][$feat_key] = $feat_value;
+            }            
+        }    
+        return $result;        
+    }
+    
+    /**
+     * Every single class that should be accessible via the class manager should be added through this method. 
+     * In opposite to the above cache file (wich is deprecated then) this allowes testing to be easier. 
+     * @param $classname string The fully qualified name of the class to register
+     * @return bool true if successful false if not
+     */
+    public function registerClass(string $classname) : bool {
+        if (!class_exists($classname)) {
+            throw new ORMException("The class '$classname' is not accessible.");
+            return false;
+        }
+        if (isset($this->classes[$classname])) {
+            throw new ORMException("The class '$classname' is already registered.");
+        }
+        $this->classes[$classname] = $this->buildClassInformation($classname);
+        return true;
+    }
+    
+    /**
+     * Clears the class information array
+     */
+    public function flushClasses() : void {
+        $this->classes = [];
+    }
     
 // *************************** General class informations ===============================    
     /**
-     * Returns the number of registered classes
+     * Alias for getClassCount()
+     * @deprecated use getClassCount()
      */
     public function get_class_count() {
+        return $this->getClassCount();
+    }
+
+    /**
+     * Returns the number of registered classes
+     */
+    public function getClassCount() : int {
         $this->check_cache();
         return count($this->classes);       
     }
-
+    
+    /**
+     * Alias for getAllClasses
+     * @deprecated use getAllClasses
+     * @return unknown
+     */
+    public function get_all_classes() {
+        return $this->getAllClasses();
+    }
+    
     /**
      * Returns a treversable associative array of all registered classes
      * @return unknown
      */
-    public function get_all_classes() {
+    public function getAllClasses() : array {
         $this->check_cache();
-        return $this->classes;
+        return $this->classes;        
     }
     
     /**
