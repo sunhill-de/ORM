@@ -75,8 +75,8 @@ class propertieshaving extends hookable {
 	
 	// ================================= ID-Handling =======================================
 	/**
-	 * Liefert die Aktuelle ID des Objektes zurück (oder null, wenn das Objekt noch nicht in der Datenbank ist)
-	 * @return Integer oder null
+	 * Returns the current id of this object (or null, when this object wasn't stored yet) 
+	 * @return int|null
 	 */
 	public function get_id() {
 	    return $this->id;
@@ -90,7 +90,7 @@ class propertieshaving extends hookable {
 	    $this->id = $id;
 	}
 	/**
-	 * Setzt einen neuen Wert für Readonly
+	 * Sets a new value for readonly
 	 * @param bool $value
 	 * @return \Sunhill\propertieshaving
 	 */
@@ -100,7 +100,7 @@ class propertieshaving extends hookable {
 	}
 	
 	/**
-	 * Liefert den Wert für Readonly zurück
+	 * Returns the value for readonly
 	 * @return boolean|\Sunhill\bool
 	 */
 	protected function get_readonly() {
@@ -109,42 +109,73 @@ class propertieshaving extends hookable {
 	
 // ============================== State-Handling ===========================================	
 	
+    /**
+     * Sets the current state of this object
+     * @param $state string the new state
+     */
 	protected function set_state(string $state) {
 	    $this->state = $state;
 	    return $this;
 	}
 
+    /**
+     * Returns the current state of this object
+     * @return string
+     */
 	protected function get_state() {
 	    return $this->state;
 	}
-	
+
+    /**
+     * Returns true if this object is comitting right now
+     * @return bool
+     */
 	protected function is_committing() {
 	    return ($this->get_state() == 'committing');
 	}
 	
+    /**
+     * Returns true if this object is invalid
+     * @return bool
+     */
 	protected function is_invalid() {
 	    return $this->get_state() == 'invalid';
 	}
 	
-	protected function is_loading() {
+    /**
+     * Returns true if this object is loading right now
+     * @return bool
+     */
+    protected function is_loading() {
 	   return $this->get_state() == 'loading';    
 	}
 	
-	protected function check_validity() {
+	/**
+     * Raises an exception if the object is invalid
+     */
+    protected function check_validity() {
 	    if ($this->is_invalid()) {
-	        throw new PropertiesHavingException('Invalides Objekt aufgerufen.');
+	        throw new PropertiesHavingException('Invalided object called.');
 	    }
 	}
 // ==================================== Loading =========================================
 	
+    /**
+     * Loads the object with the id $id from the storage
+     * @param $id int The id of the object to load
+     * @returns propertieshaving Reference to self
+     * @throws PropertiesHavingException If the object is invalid
+     */
 	public function load($id) {
-	    $this->check_validity();
-	    if ($result = $this->check_cache($id)) {
-	        $this->set_state('invalid');
-	        return $result;
+	    $this->check_validity(); // Is this object inavlid?
+	    
+        if ($result = $this->check_cache($id)) { // Is this object already in the cache
+	        $this->set_state('invalid'); // If yes, this object is invalid
+	        return $result; // Return the cache instead
 	    }
-	    $this->insert_cache($id);
-	    $this->set_id($id);
+	    
+        $this->insert_cache($id); // Insert into cache
+	    $this->set_id($id);       
 	    $this->check_for_hook('LOADING','default',array($id));
 	    $this->do_load();
 	    $this->clean_properties();
@@ -153,33 +184,40 @@ class propertieshaving extends hookable {
 	}
 	
 	/**
-	 * Prüft, ob das Objekt mit der ID $id im Cache ist, wenn ja, liefert es ihn zurück
-	 * @param integer $id
+	 * Checks if the object with the given id is already in cache
+	 * @param integer $id The id to check
+     * @returns bool True if it is in the cache, false if not
 	 */
 	protected function check_cache(int $id) {
 	    return false;
 	}
 	
 	/**
-	 * Trägt sich selbst im Cache ein
+	 * Add itself to the cache
 	 * @param Int $id
 	 */
 	protected function insert_cache(int $id) {
 	}
 	
+    /**
+     * Does the loading (has to be overwritten)
+     */
 	protected function do_load() {
 	}
 	
 // ===================================== Committing =======================================
-	public function commit($caller=null) {
+	/**
+     * Stores the object into the storage
+     */
+    public function commit($caller=null) {
 	    $this->check_validity();
-    	if (!$this->is_committing()) { // Guard, um zirkuläres Aufrufen vom commit zu verhindern
+    	if (!$this->is_committing()) { // Guard to protect from circular calls
 	        $this->set_state('committing');
 	        $this->check_for_hook('COMMITTING');
 	        if ($this->get_id()) {
-	            $this->update(); // Der Eintrag befindet sich bereits in einem Storage
+	            $this->update(); // This object is already in a storage
 	        } else {
-	            $this->insert(); // Der Eintrag ist neu
+	            $this->insert(); // This object is new
 	        }
 	        $this->check_for_hook('COMMITTED');
 	        $this->set_state('normal');
@@ -187,6 +225,10 @@ class propertieshaving extends hookable {
 	    return;
 	}
 
+    /**
+     * Returns if one of the properties is modified since the last commit(), rollback() or load()
+     * @returns bool
+     */
 	protected function get_dirty() {
 	    $dirty_properties = $this->get_properties_with_feature('',true);
 	    return (!empty($dirty_properties));	    
@@ -197,59 +239,78 @@ class propertieshaving extends hookable {
 	}
 	
 // ====================================== Updating ========================================	
-	protected function update() {
+	/**
+     * Checks for hooks and calls do_update
+     */
+    protected function update() {
 	    $this->check_for_hook('UPDATING');
 	    $this->do_update();
 	    $this->check_for_hook('UPDATED');
 	}
 
+    /**
+     * Does the update work
+     */
 	protected function do_update() {
-	    // Muss von der abgeleiteten Klasse überschrieben werden
+	    // has to be overwritten in child objects
 	}
 	
 	/**
-	 * Wird aufgerufen, wenn der commit ausgeführt wurde (egal ob create oder update)
+	 * Cleans the dirty state
 	 */
 	protected function clear_dirty() {
 	    $this->clean_properties();
 	}
 
 // ======================================= Inserting ===========================================
-	protected function insert() {
+	/**
+     * Checks for hooks and calls do_insert
+     */
+    protected function insert() {
 	    $this->check_for_hook('INSERTING');
 	    $this->do_insert();
 	    $this->check_for_hook('INSERTED');
 	}
 
 	/**
-	 * Führt den eigentlichen Commit aus
+	 * Does the insert work
 	 * @param bool $recommit
 	 */
 	protected function do_insert() {
-	    
+	   // has to be overwritten in child objects 
 	}
 	
 	// ====================================== Deleting ==========================================
-	public function delete() {
+	/**
+     * Checks for hooks and calls do_delete and clears the cache
+     */
+    public function delete() {
 	    $this->check_for_hook('DELETING');
 	    $this->do_delete();
 	    $this->check_for_hook('DELETED');
 	    $this->clear_cache_entry();
 	}
 	
+    /**
+     * Does the delete work
+     */
 	protected function do_delete() {
-	    
+	   // Has to be overwritten in child objects 
 	}
 	
+    /**
+     * Clears the cache (reomves this entry)
+     */
 	protected function clear_cache_entry() {
-	    
+	   // Has to be overwritten in child objects 
 	}
 	
 	// ===================================== Property-Handling ========================================	
-	/**
-	 * Wird vom Constructor aufgerufen, um die Properties zu initialisieren.
-	 * Abgeleitete Objekte müssen immer die Elternmethoden mit aufrufen.
-	 */
+
+    /**
+	 * Is called by the constructor to initialize the properties
+     * Child objects always have to call the parent method
+     */
 	protected function copy_properties() {
 	    $this->properties = array();
 	    foreach (static::$property_definitions as $name => $property) {
@@ -259,12 +320,19 @@ class propertieshaving extends hookable {
 	    }
 	}
 
+    /**
+     * Undirties all properties 
+     */
 	public function clean_properties() {
 	    foreach ($this->properties as $property) {
 	        $property->set_dirty(false);
 	    }
 	}
 	
+    /**
+     * Searches for a property with the given name. If there is one, return its value. If not pass it to the parent __get method
+     * @param $name string The name of the unknown member variable
+     */
 	public function &__get($name) {
 	    if (isset($this->properties[$name])) {
 	        $this->check_for_hook('GET',$name,null);
@@ -273,11 +341,16 @@ class propertieshaving extends hookable {
 	        return parent::__get($name);
 	    }
 	}
-	
+
+    /**
+     * Searches for a property with the given name. If there is one, set its value. if not call handle_unknown_property()
+     * @param $name string The name of the unknown member variable
+     * @param $value void The valie for this member variable
+     */
 	public function __set($name,$value) {
 	    if (isset($this->properties[$name])) {
 	        if ($this->get_readonly()) {
-	            throw new PropertiesHavingException("Property '$name' in der Readonly Phase verändert.");
+	            throw new PropertiesHavingException("Property '$name' was changed in readonly state.");
 	        } else {
 	            $this->properties[$name]->set_value($value);
 	            $this->check_for_hook('SET',$name,array(
@@ -293,14 +366,14 @@ class propertieshaving extends hookable {
 	            }
 	        }
 	    } else if (!$this->handle_unknown_property($name,$value)){
-	        throw new PropertiesHavingException("Unbekannte Property '$name'");
+	        throw new PropertiesHavingException("Unknown property '$name'");
 	    }
 	}
 	
 	/**
-	 * Behandelt unbekannte Properties. Wenn auch diese nicht behandelt werden können, wird false zurückgegeben
-	 * @param unknown $name
-	 * @param unknown $value
+	 * Tries to handle an unknown property. If it can't be handled return false, then an exception will be raised
+	 * @param unknown $name The Name of the property
+	 * @param unknown $value The value of the property
 	 * @return boolean
 	 */
 	protected function handle_unknown_property($name,$value) {
@@ -308,8 +381,8 @@ class propertieshaving extends hookable {
 	}
 	
 	/**
-	 * Liefert das Property-Objekt der Property $name zurück
-	 * @param string $name Name der Property
+	 * Returns the property object with the given name or raises an exception if there is no such property
+	 * @param string $name Name of the property
 	 * @return oo_property
 	 */
 	public function get_property(string $name,bool $return_null=false) {
@@ -317,7 +390,7 @@ class propertieshaving extends hookable {
 	        if ($return_null) {
 	            return null;
 	        }
-	        throw new PropertiesHavingException("Unbekannter Property '$name'");
+	        throw new PropertiesHavingException("Unknown property '$name'");
 	    }
 	    return $this->properties[$name];
 	}
