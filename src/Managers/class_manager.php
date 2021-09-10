@@ -36,94 +36,38 @@ class class_manager {
  
     private static $translatable = [/*'name_s','name_p','description'*/];
         
-    private $object_dirs = [];
     /**
      * Stores the information about the classes
      * @var array|null
      */
-    private $classes=null;
+    private $classes=[];
+// ********************************** Register class ******************************************
 
-// ******************************** Cache-Management ***************************************    
     /**
-     * Return the full path to the class cache file
-     * @return string 
+     * Get the fully qualified class name and adds it to $result
      */
-    private function cache_file() {
-        return base_path('bootstrap/cache/sunhill_classes.php');
+    private function getClassEntry(array &$result,string $class) : void {
+        $result['class'] = $class;
     }
     
     /**
-     * Returns true if the class cache file exists otherwise false
-     * @return boolean
+     * Get the class informations and adds them to $result
+     * @
      */
-    private function cache_exists() {
-        return file_exists($this->cache_file());    
-    }
-    
-    /**
-     * Erases the class cache file. It throws an excpetion if the cache file still exists after deletion (missing rights?)
-     * @throws ORMException
-     */
-    public function flush_cache() {
-        if ($this->cache_exists()) {
-            unlink($this->cache_file());
-            if ($this->cache_exists()) {
-                throw new ORMException("Can't delete the class cache.");
-            }
-        }
-        $this->object_dirs = [];
-    }
-
-    /**
-     * Includes all orm class file to get the classes accesible by get_declared_classes()
-     * @param string $dir
-     */
-    private function read_object_dir(string $dir) {
-        $directory = dir($dir);
-        while (false !== ($entry = $directory->read())) {
-            if (($entry !== '.') && ($entry !== '..')) {
-                if (is_dir($dir . '/' . $entry)) {
-                    $this->read_object_dir($dir . '/' . $entry);
-                } else if (is_file($dir . '/' . $entry)) {
-                    require_once($dir . '/' . $entry);
-                }
-            }
-        }        
-    }
-    
-    /**
-     * After all orm class files where previously include traverse all classes and return only those children of oo_object
-     * @return unknown[]
-     */
-    private function get_class_array() {
-        $all_classes = get_declared_classes();
-        $orm_classes = [];
-        foreach ($all_classes as $class) {
-            if (is_subclass_of($class,oo_object::class)) {
-                $orm_classes[] = $class;       
-            }
-        }        
-        return $orm_classes;
-    }
-
-    /**
-     * Returns the information for the cache array
-     * @param string $class The full name of a class that points to a descendant of oo_object
-     */
-    private function get_class_info(string $class) {
-        $result = ['class'=>addslashes($class)];
+    private function getClassInformationEntries(array &$result,string $class) : void {
         foreach ($class::$object_infos as $key => $value) {
             $result[$key] = $value;
         }
+    }
+    
+    private function getClassParentEntry(array &$result,string $class) : void {
         $parent = get_parent_class($class);
         if ($class !== 'object') { // Strange infinite loop bug
             $result['parent'] = $parent::$object_infos['name'];
         }
-        $result['properties'] = $this->get_class_properties($class);
-        return $result;
     }
     
-    private function get_class_properties(string $class) {
+    private function getClassProperties(string $class) {
         $properties = $class::static_get_properties_with_feature();
         $result = [];
         foreach ($properties as $name => $descriptor) {
@@ -131,162 +75,36 @@ class class_manager {
                 $result[$name] = $descriptor;
             }
         }
-        return $result;        
+        return $result;
     }
     
-    /**
-     * Creates the class cache file
-     * @param array $class_dirs
-     */
-    private function create_cache_file(array $class_dirs) {
-        foreach ($class_dirs as $dir) {
-            $this->read_object_dir($dir);
-        }
-        $class_array = $this->get_class_array();
-        $file = fopen($this->cache_file(),'w+');
-        fputs($file,"<?php return [\n".
-'    "object"=>['."\n".
-'       "class"=>"Sunhill\\ORM\\Objects\\oo_object",'."\n".
-'       "name"=>"object",'."\n".
-'       "table"=>"objects",'."\n".
-'       "name_s"=>"object",'."\n".
-'       "name_p"=>"objects",'."\n".
-'       "description"=>"Base class for objects",'."\n".
-'       "options"=>"0",'."\n".
-'       "parent"=>"",'."\n".
-'       "properties"=>[]],'."\n"
-            );
-        foreach ($class_array as $class) {
-            $class_info = $this->get_class_info($class);
-            fputs($file,'    "'.$class_info['name'].'"=>['."\n");
-            foreach ($class_info as $key => $value) {
-                if ($key == 'properties') {
-                   fputs($file,'        "properties"=>['."\n");
-                   foreach ($value as $prop_name => $property) {
-                      $features = $property->get_static_attributes();
-                      fputs($file,'          "'.$prop_name.'"=>['."\n");
-                      foreach ($features as $feat_key => $feat_value) {
-                          fputs($file,'             "'.$feat_key.'"=>');
-                          if (is_bool($feat_value)) {
-                              fputs($file,($feat_value?'true':'false').','."\n");
-                          } else if (is_scalar($feat_value)) {
-                              fputs($file,'"'.$feat_value.'",'."\n");
-                          } else if (is_array($feat_value)) {
-                              fputs($file,'[');
-                              foreach ($feat_value as $single_value) {
-                                  fputs($file,'"'.$single_value.'",');
-                              }
-                              fputs($file,'],'."\n");
-                          }
-                      }
-                      fputs($file,'             ],'."\n");
-                   }
-                   fputs($file,'        ],'."\n");
-                } else {
-                    fputs($file,'        "'.$key.'"=>"'.$value.'",'."\n");
-                }
-            }
-            fputs($file,"    ],\n");
-        }
-        fputs($file,"];");
-        fclose($file);        
-    }
+    private function getClassPropertyEntries(array &$result,string $class) : void {
+        $result['properties'] = [];
+        $properties = $this->getClassProperties($class);
+        foreach ($properties as $property) {
+            $result['properties'][$property->get_name()] = [];
+            $features = $property->get_static_attributes();
+            foreach ($features as $feat_key => $feat_value) {
+                $result['properties'][$property->get_name()][$feat_key] = $feat_value;
+            }            
+        }    
+   }
     
-    /**
-     * Flushes the class cache and recreates it
-     * @throws ORMException
-     */
-    public function create_cache($class_dir=null) {
-        if (is_null($class_dir)) {
-            // If not passes, set class dir to default
-            $class_dir = $this->object_dirs;
-        } else if (is_string($class_dir)) {
-            $class_dir = [$class_dir];
-        } else if (!is_array($class_dir)) {
-            throw new ORMException("Unexpected data for 'class_dir'.");
-        }
-        $this->flush_cache();
-        $this->create_cache_file($class_dir);
-        if (!$this->cache_exists()) {
-            throw new ORMException("Can't create the class cache.");            
-        }
-    }
-    
-    /**
-     * Checks if the classes array was read from the cache. If not it reads the file
-     */
-    private function check_cache() {
-        if (is_null($this->classes)) {
-            if (!$this->cache_exists()) {
-                $this->create_cache();
-            }
-            $this->load_cache_file();
-         }
-    }
-
-    /**
-     * Loads the cache file and tranlates it into a desciptor array
-     */
-    private function load_cache_file() {
-        $classes = require($this->cache_file());
-        foreach ($classes as $name => $info) {
-            $descriptor = new descriptor();
-            foreach ($info as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $subkey => $subvalue) {
-                        if (is_array($subvalue)) {
-                            foreach ($subvalue as $subsubkey => $subsubvalue) {
-                                $descriptor->$key->$subkey->$subsubkey = $subsubvalue;
-                            }
-                        } else {
-                            $descriptor->$key->$subkey = $subvalue;
-                        }
-                    }
-                } else {
-                    $descriptor->$key = $value;
-                }
-            }
-            $this->classes[$name] = $descriptor;
-        }
-    }
-    
-    /**
-     * Add a single dir to the class manager, to build the class cache from
-     * @param string $path
-     * @throws ORMException
-     */
-    public function add_class_dir(string $path) {
-        if (!file_exists($path)) {
-            throw new ORMException("The passed class directory '$path' doesn't exists.");
-        }
-        $this->object_dirs[] = $path;
-    }
-
     /**
      * Collects all data about this class to store it in the classes array
      * @param $classname string The name of the class to collect values from
      * @return array associative array with informations about this class
      */
-    protected function buildClassInformation(string $classname) : array {
-        $result = ['class'=>addslashes($class)];
-        foreach ($class::$object_infos as $key => $value) {
-            $result[$key] = $value;
-        }
-        $parent = get_parent_class($class);
-        if ($class !== 'object') { // Strange infinite loop bug
-            $result['parent'] = $parent::$object_infos['name'];
-        }
-        $result['properties'] = [];
-        $properties = $this->get_class_properties($class);
-        foreach ($properties as $property) {
-            $result['properties'][$property] = [];
-            $features = $property->get_static_attributes();
-            foreach ($features as $feat_key => $feat_value) {
-                $result['properties'][$property][$feat_key] = $feat_value;
-            }            
-        }    
-        return $result;        
-    }
+    private function buildClassInformation(string $classname) : array {
+        $result = [];
+        
+        $this->getClassEntry($result,$classname);
+        $this->getClassInformationEntries($result,$classname);
+        $this->getClassParentEntry($result,$classname);
+        $this->getClassPropertyEntries($result,$classname);
+        
+        return $result;
+     }
     
     /**
      * Every single class that should be accessible via the class manager should be added through this method. 
@@ -302,7 +120,8 @@ class class_manager {
         if (isset($this->classes[$classname])) {
             throw new ORMException("The class '$classname' is already registered.");
         }
-        $this->classes[$classname] = $this->buildClassInformation($classname);
+        $information = $this->buildClassInformation($classname);
+        $this->classes[$information['name']] = $information;
         return true;
     }
     
@@ -326,7 +145,7 @@ class class_manager {
      * Returns the number of registered classes
      */
     public function getClassCount() : int {
-        $this->check_cache();
+
         return count($this->classes);       
     }
     
@@ -344,34 +163,53 @@ class class_manager {
      * @return unknown
      */
     public function getAllClasses() : array {
-        $this->check_cache();
+        
         return $this->classes;        
     }
     
     /**
-     * Returns an array with the root oo_object. Each entry is an array with the name of the
-     * class as key and its children as another array. 
-     * Example: 
-     * ['object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
+     * Alias for getClassTree() 
+     * @deprecated use getClassTree 
      */
     public function get_class_tree(string $class = 'object') {
-        return [$class=>$this->get_children_of_class($class)];
+        return $this->getClassTree($class);
     }
     
-// *************************** Informations about a specific class **************************    
-    private function not_exists($test) {
+    /**
+     * Returns an array with the root oo_object. Each entry is an array with the name of the
+     * class as key and its children as another array.
+     * Example:
+     * ['object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
+     */
+    public function getClassTree(string $class = 'object') {
+        return [$class=>$this->getChildrenOfClass($class)];
+    }
+    
+    // *************************** Informations about a specific class **************************    
+    private function notExists($test) {
         if ($this->search_class($test)) {
             return false;
         } else {
             return true;
         }
     }
+
+    /**
+     * Alias for normalizeNamespace
+     * @param string $namespace
+     * @return string
+     * @deprecated use normalizeNamespace()
+     */
+    public function normalize_namespace(string $namespace) : string {
+        return $this->normalizeNamespace($namespace);
+    }
+
     /**
      * Normalizes the passed namespace (removes heading \ and double backslashes)
      * @param string $namespace
      * @return string
      */
-    public function normalize_namespace(string $namespace) : string {
+    public function normalizeNamespace(string $namespace) : string {
         $namespace = str_replace("\\\\","\\",$namespace);
         if (strpos($namespace,'\\') == 0) {
             return substr($namespace,1);
@@ -379,7 +217,20 @@ class class_manager {
             return $namespace;
         }
     }
-
+    
+    /**
+     * This method returns the name of the class or null
+     * Alias for searchClass
+     * @deprecated use searchClass
+     * If $needle is a string with backslashes it searches the correspending class name
+     * If $needle is a string without backslahes it just returns the name
+     * if $needle is an object it gets the namespace of this object and searches it
+     * @param string $needle
+     */
+    public function search_class($needle) {
+        return $this->searchClass($needle);        
+    }
+    
     /**
      * This method returns the name of the class or null
      * If $needle is a string with backslashes it searches the correspending class name
@@ -387,16 +238,16 @@ class class_manager {
      * if $needle is an object it gets the namespace of this object and searches it
      * @param string $needle
      */
-    public function search_class($needle) {
-        $this->check_cache();
+    public function searchClass($needle) {
+        
         if (is_object($needle)) {
             $needle = get_class($needle);
         }
         if (strpos($needle,'\\') !== false) {
             $needle = $this->normalize_namespace($needle);
             foreach ($this->classes as $name => $info) {
-                if ($info->class === $needle) {
-                    return $info->name;
+                if ($info['class'] === $needle) {
+                    return $info['name'];
                 }
             }
             return null;
@@ -412,10 +263,19 @@ class class_manager {
     /**
      * Returns the (internal) name of the class. It doesn't matter how the class is passed (name, namespace, object or index)
      * @param unknown $test Could be either a string, an object or an integer
+     * @deprecated use getClassName
      */
     public function get_class_name($test) {
+        return $this->getClassName($test);
+    }
+    
+    /**
+     * Returns the (internal) name of the class. It doesn't matter how the class is passed (name, namespace, object or index)
+     * @param unknown $test Could be either a string, an object or an integer
+     */
+    public function getClassName($test) {
         if (is_int($test)) {
-            return $this->get_classname_with_index($test);
+            return $this->getClassnameWithIndex($test);
         } else if (is_string($test)) {
             if (strpos($test,'\\') !== false) {
                 // We have a namespace
@@ -428,7 +288,7 @@ class class_manager {
                 return $test::$object_infos['name'];
             } else {
                 throw new ORMException("Invalid object passed to get_class: ".get_class($test));
-            }            
+            }
         } else {
             throw new ORMException("Unknown type for get_class_name()");
         }
@@ -439,7 +299,7 @@ class class_manager {
      * @param int $index The number of the wanted class
      * @retval string
      */
-    private function get_classname_with_index(int $index) {
+    private function getClassnameWithIndex(int $index) {
         if ($index < 0) {
             throw new ORMException("Invalid Index '$index'");
         }
@@ -457,19 +317,32 @@ class class_manager {
      * Tests if this class is in the class cache
      * @param unknown $test The class to test
      */
-    private function check_class($test) {
+    private function checkClass($test) {
         if (is_null($test)) {
-            throw new ORMException("Null was passed to check_class");
+            throw new ORMException("Null was passed to checkClass");
         }
-        $name = $this->get_class_name($test);
+        $name = $this->getClassName($test);
         if (!isset($this->classes[$name]) && ($name !== 'object')) {
             throw new ORMException("The class '$name' doesn't exists.");
         }
         return $name;
     }
     
+
     private function translate(string $class,string $item) {
         return Lang::get('ORM:testfiles.'.$class.'_'.$item);
+    }
+    
+    /**
+     * Searches for the class named '$name'
+     * @deprecated use getClass()
+     * @param string $name
+     * @param unknown $field
+     * @throws ORMException
+     * @return unknown
+     */
+    public function get_class($test,$field=null) {
+        return $this->getClass($test,$field);
     }
     
     /**
@@ -479,22 +352,32 @@ class class_manager {
      * @throws ORMException
      * @return unknown
      */
-    public function get_class($test,$field=null) {
-        $this->check_cache();
-        $name = $this->get_class_name($test);
-        $this->check_class($name);
+    public function getClass($test,$field=null) {        
+        $name = $this->getClassName($test);
+        $this->checkClass($name);
         $class = $this->classes[$name];
         if (is_null($field)) {
             return $class;
         } else {
             if (in_array($field,static::$translatable)) {
                 return $this->translate($name,$field);
-            } else if ($class->is_defined($field)) {
-                return $class->$field;
+            } else if (in_array($field,$class)) {
+                return $class[$field];
             } else {
                 throw new ORMException("The class '$name' doesn't export '$field'.");
             }
-        }        
+        }
+    }
+    
+    /**
+     * Return the table of class '$name'. Alias for get_class($name,'table')
+     * Alias for getTableOfClass()
+     * @deprecated use getTableOfClass()
+     * @param string $name
+     * @return unknown
+     */
+    public function get_table_of_class(string $name) {
+        return $this->getTableOfClass($name);
     }
     
     /**
@@ -502,40 +385,60 @@ class class_manager {
      * @param string $name
      * @return unknown
      */
-    public function get_table_of_class(string $name) {
-        $name = $this->check_class($this->search_class($name));
-        return $this->get_class($name,'table');        
+    public function getTableOfClass(string $name) {
+        $name = $this->checkClass($this->search_class($name));
+        return $this->get_class($name,'table');
     }
     
+    /**
+     * Return the parent of class '$name'. Alias for get_class($name,'parent')
+     * @deprecated use getParentOfClass
+     * @param string $name
+     * @return unknown
+     */
+    public function get_parent_of_class(string $name) {
+        return $this->getParentOfClass($name);
+    }
+
     /**
      * Return the parent of class '$name'. Alias for get_class($name,'parent')
      * @param string $name
      * @return unknown
      */
-    public function get_parent_of_class(string $name) {
-        $name = $this->check_class($this->search_class($name));
+    public function getParentOfClass(string $name) {
+        $name = $this->checkClass($this->search_class($name));
         return $this->get_class($name,'parent');
     }
-
+    
     /**
      * Returns the inheritance of the given class. 
+     * @deprecated use getInheritanceOfClass
      * @param string $name
      * @param bool $include_self
      */
     public function get_inheritance_of_class(string $name,bool $include_self=false) {
-        $name = $this->check_class($this->search_class($name));
+        return $this->getInheritanceOfClass($name,$include_self);
+    }
+
+    /**
+     * Returns the inheritance of the given class.
+     * @param string $name
+     * @param bool $include_self
+     */
+    public function getInheritanceOfClass(string $name,bool $include_self=false) {
+        $name = $this->checkClass($this->searchClass($name));
         if ($include_self) {
             $result = [$name];
         } else {
             $result = [];
         }
         do {
-           $name = $this->get_parent_of_class($name); 
-           $result[] = $name;
+            $name = $this->getParentOfClass($name);
+            $result[] = $name;
         } while ($name !== 'object');
         return $result;
     }
-
+    
     /**
      * Return an associative array of the children of the passed class. The array is in the form
      *  name_of_child=>[list_of_children_of_this_child]
@@ -543,15 +446,25 @@ class class_manager {
      * @param int $level search children only to this depth. -1 means search all children. Default=-1
      */
     public function get_children_of_class(string $name='object',int $level=-1) : array {
-        $name = $this->check_class($this->search_class($name));
-        $this->check_cache();
+        return $this->getChildrenOfClass($name,$level);
+    }
+    
+    /**
+     * Return an associative array of the children of the passed class. The array is in the form
+     *  name_of_child=>[list_of_children_of_this_child]
+     * @param string $name Name of the class to which all children should be searched. Default=object
+     * @param int $level search children only to this depth. -1 means search all children. Default=-1
+     */
+    public function getChildrenOfClass(string $name='object',int $level=-1) : array {
+        $name = $this->checkClass($this->searchClass($name));
+        
         $result = [];
         if (!$level) { // We reached top level
             return $result;
         }
         foreach ($this->classes as $class_name => $info) {
-            if ($info->parent === $name) {
-                $result[$class_name] = $this->get_children_of_class($class_name,$level-1);
+            if ($info['parent'] === $name) {
+                $result[$class_name] = $this->getChildrenOfClass($class_name,$level-1);
             }
         }
         return $result;
@@ -559,12 +472,33 @@ class class_manager {
     
     /**
      * Returns all properties of the given class
+     * @deprecated use getPropertiesOfClass
      * @param string $class The class to search for properties
      * @return descriptor of all properties
      */
     public function get_properties_of_class(string $class) {
-        $name = $this->check_class($this->search_class($class));
-        return $this->get_class($name,'properties');        
+        return $this->getPropertiesOfClass($class);
+    }
+    
+    /**
+     * Returns all properties of the given class
+     * @param string $class The class to search for properties
+     * @return descriptor of all properties
+     */
+    public function getPropertiesOfClass(string $class) {
+        $name = $this->checkClass($this->searchClass($class));
+        return $this->getClass($name,'properties');
+    }
+    
+    /**
+     * Return only the descriptor of a given property of a given class
+     * @deprecated use getPropertyOfClass
+     * @param string $class The class to search for the property
+     * @param string $property The property to search for
+     * @return descriptor of this property
+     */
+    public function get_property_of_class(string $class,string $property) {        
+        return $this->getPropertyOfClass($class,$property);
     }
     
     /**
@@ -573,9 +507,19 @@ class class_manager {
      * @param string $property The property to search for
      * @return descriptor of this property
      */
-    public function get_property_of_class(string $class,string $property) {        
-        $class = $this->check_class($this->search_class($class));
-        return $this->get_properties_of_class($class)->$property;        
+    public function getPropertyOfClass(string $class,string $property) {
+        $class = $this->checkClass($this->searchClass($class));
+        return $this->getPropertiesOfClass($class)[$property];
+    }
+    
+    /**
+     * Return the full qualified namespace name of the class 'name'. Alias for get_class($name,'class')
+     * @deprecated use getNamespaceOfClass
+     * @param string $name
+     * @return unknown
+     */
+    public function get_namespace_of_class(string $name) {
+        return $this->getNamespaceOfClass($name);
     }
     
     /**
@@ -583,19 +527,29 @@ class class_manager {
      * @param string $name
      * @return unknown
      */
-    public function get_namespace_of_class(string $name) {
-        $name = $this->check_class($this->search_class($name));
-        return $this->get_class($name,'class');        
+    public function getNamespaceOfClass(string $name) {
+        $name = $this->checkClass($this->searchClass($name));
+        return $this->getClass($name,'class');
     }
     
     /**
      * Creates an instance of the passes class
+     * @deprecated use createObject
      * @param string $class is either the namespace or the class name 
      * @return oo_object The created instance of $class
      */
     public function create_object(string $class) {
-        $class = $this->check_class($this->search_class($class));
-        $namespace = $this->get_namespace_of_class($this->search_class($class));
+        return $this->createObject($class);
+    }
+    
+    /**
+     * Creates an instance of the passes class
+     * @param string $class is either the namespace or the class name
+     * @return oo_object The created instance of $class
+     */
+    public function createObject(string $class) {
+        $class = $this->checkClass($this->searchClass($class));
+        $namespace = $this->getNamespaceOfClass($this->searchClass($class));
         $result = new $namespace();
         return $result;
     }
@@ -607,7 +561,17 @@ class class_manager {
      * @return boolean
      */
     public function is_a($test,$class) {
-        $namespace = $this->get_namespace_of_class($this->check_class($this->search_class($class)));
+        return $this->isA($test,$class);
+    }
+    
+    /**
+     * The reimplementation of is_a() that works with class names too
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
+    public function isA($test,$class) {
+        $namespace = $this->getNamespaceOfClass($this->checkClass($this->searchClass($class)));
         return is_a($test,$namespace);
     }
     
@@ -618,7 +582,17 @@ class class_manager {
      * @return boolean
      */
     public function is_a_class($test,$class) {
-        $namespace = $this->get_namespace_of_class($this->check_class($this->search_class($class)));
+        return $this->isAClass($test,$class);
+    }
+    
+    /**
+     * Returns true is $test is exactly a $class and not of its children
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
+    public function isAClass($test,$class) {
+        $namespace = $this->getNamespaceOfClass($this->checkClass($this->searchClass($class)));
         return is_a($test,$namespace) && !is_subclass_of($test,$namespace);
     }
 
@@ -629,13 +603,35 @@ class class_manager {
      * @return boolean
      */
     public function is_subclass_of($test,$class) {
-        $namespace = $this->get_namespace_of_class($this->check_class($this->search_class($class)));
-        $test_space = $this->get_namespace_of_class($this->check_class($this->search_class($test)));
+        return $this->isSubclassOf($test,$class);
+    }
+
+    
+    /**
+     * Naming convention compatible method
+     * The reimplementation of is_subclass_of() that works with class names too
+     * @param unknown $test
+     * @param unknown $class
+     * @return boolean
+     */
+    public function isSubclassOf($test,$class) {
+        $namespace = $this->getNamespaceOfClass($this->checkClass($this->searchClass($class)));
+        $test_space = $this->getNamespaceOfClass($this->checkClass($this->searchClass($test)));
         return is_subclass_of($test_space,$namespace);        
     }
     
+    /**
+     * Alias for @see migrateClass()
+     */
     public function migrate_class(string $class_name) {
-        $class_name = $this->check_class($this->search_class($class_name));
+        return $this->migrateClass($class_name);
+    }
+    
+    /**
+     * Creates the necessary tables for this class and checks if the fields are up to date
+     */
+    public function migrateClass(string $class_name) : void {
+        $class_name = $this->checkClass($this->search_class($class_name));
         $migrator = new object_migrator();
         $migrator->migrate($class_name);
     }
