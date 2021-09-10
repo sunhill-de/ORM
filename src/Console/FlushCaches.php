@@ -6,8 +6,8 @@
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2021-04-11
- * Localization: none
+ * Reviewstatus: 2021-08-25
+ * Localization: complete
  * Documentation: complete
  * Tests: Unit/ORMCheckTest.php
  * Coverage: unknown
@@ -26,8 +26,8 @@ class FlushCaches extends Command
     
     public function handle()
     {
-        $this->info('Rebuilding objects cache...');
+        $this->info(__('Rebuilding objects cache...'));
         Classes::create_cache();
-        $this->info('Rebuilding objects cache finished');
+        $this->info(__('Rebuilding objects cache finished'));
     }
 }
