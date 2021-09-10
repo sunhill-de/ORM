@@ -20,7 +20,6 @@ abstract class DBTestCase extends TestCase
             static::$db_inited = true;
             $this->do_migration();
             $this->do_seeding();
-            Classes::create_cache(dirname(__FILE__).'/../../tests/Objects');
         }
         Objects::flush_cache();
     }
