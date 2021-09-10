@@ -6,8 +6,8 @@
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2021-04-11
- * Localization: none
+ * Reviewstatus: 2021-08-25
+ * Localization: complete
  * Documentation: complete
  * Tests: Unit/ORMCheckTest.php
  * Coverage: unknown
@@ -52,9 +52,9 @@ class orm_checks extends checker {
      */
     public function check_tagswithnotexistingparents() {
         if ($entries = $this->check_for_dangling_pointers('tags','parent_id','tags','id',true)) {
-            return $this->create_result('FAILED','Check tags for not existing parents',"Parents of tags '$entries' dont exist.");            
+            return $this->create_result(__('FAILED'),__('Check tags for not existing parents'),__("Parents of tags ':entries' dont exist.",['entries'=>$entries]));            
         } else {
-            return $this->create_result('OK','Check tags for not existing parents');            
+            return $this->create_result(__('OK'),__('Check tags for not existing parents'));            
         }
     }
     
@@ -64,9 +64,9 @@ class orm_checks extends checker {
      */
     public function check_tagcachewithnotexistingtags() {
         if ($entries = $this->check_for_dangling_pointers('tagcache','tag_id','tags','id')) {
-            return $this->create_result('FAILED',"Check tagcache for not existing tags","Tags '$entries' dont exist.");            
+            return $this->create_result(__('FAILED'),__("Check tagcache for not existing tags"),__("Tags ':entries' dont exist.",['entries'=>$entries]));            
         } else {
-            return $this->create_result('OK','Check tagcache for not existing tags');
+            return $this->create_result(__('OK'),__('Check tagcache for not existing tags'));
             
         }        
     }
@@ -103,7 +103,7 @@ class orm_checks extends checker {
         $this->build_cache($result,$tags);
         $count = DB::table('tagcache')->count();
         if ($count !== count($result)) {
-            return $this->create_result('FAILED','Check tagcache consitency',"Entry count $count doenst match expected ".count($result));            
+            return $this->create_result(__('FAILED'),__('Check tagcache consitency'),__("Entry count :count doenst match expected :expect",['count'=>$count,'expect'=>count($result)]));            
         }
         $tagcache_entries = DB::table('tagcache')->get();
         $entries = '';
@@ -113,9 +113,9 @@ class orm_checks extends checker {
             }
         }
         if (empty($entries)) {
-            return $this->create_result('OK','Check tagcache consitency');            
+            return $this->create_result(__('OK'),__('Check tagcache consitency'));            
         } else {
-            return $this->create_result('FAILED','Check tagcache consitency',"Entries $entries don't match.");            
+            return $this->create_result(__('FAILED'),__('Check tagcache consitency'),__("Entries :entries don't match.",['entries'=>$entries]));            
         }
     }
     
@@ -125,9 +125,9 @@ class orm_checks extends checker {
      */
     public function check_tagobjectassignstagsexist() {
         if ($entries = $this->check_for_dangling_pointers('tagobjectassigns','tag_id','tags','id',true)) {
-            return $this->create_result('FAILED','Check tag-object-assigns for not existing tags',"Tags '$entries' dont exist.");
+            return $this->create_result(__('FAILED'),__('Check tag-object-assigns for not existing tags'),__("Tags ':entries' dont exist.",['entries'=>$entries]));
         } else {
-            return $this->create_result('OK','Check tag-object-assigns for not existing tags');
+            return $this->create_result(__('OK'),__('Check tag-object-assigns for not existing tags'));
         }
     }
     
@@ -137,9 +137,9 @@ class orm_checks extends checker {
      */
     public function check_tagobjectassignsobjectsexist() {
         if ($entries = $this->check_for_dangling_pointers('tagobjectassigns','container_id','objects','id',true)) {
-            return $this->create_result('FAILED','Check tag-object-assigns for not existing objects',"Objects '$entries' dont exist.");
+            return $this->create_result(__('FAILED'),__('Check tag-object-assigns for not existing objects'),__("Objects ':entries' dont exist.",array('entries'=>$entries));
         } else {
-            return $this->create_result('OK','Check tag-object-assigns for not existing objects');
+            return $this->create_result(__('OK'),__('Check tag-object-assigns for not existing objects'));
         }
     }
     
@@ -149,9 +149,9 @@ class orm_checks extends checker {
      */
     public function check_objectobjectassignscontainerexist() {
         if ($entries = $this->check_for_dangling_pointers('objectobjectassigns','container_id','objects','id',true)) {
-            return $this->create_result('FAILED','Check object-object-assigns for not existing container objects',"Objects '$entries' dont exist.");
+            return $this->create_result(__('FAILED'),__('Check object-object-assigns for not existing container objects'),__("Objects ':entries' dont exist.",array('entries'=>$entries)));
         } else {
-            return $this->create_result('OK','Check object-object-assigns for not existing container objects');
+            return $this->create_result(__('OK'),__('Check object-object-assigns for not existing container objects'));
         }
     }
     
@@ -161,9 +161,9 @@ class orm_checks extends checker {
      */
     public function check_objectobjectassignselementexist() {
         if ($entries = $this->check_for_dangling_pointers('objectobjectassigns','element_id','objects','id',true)) {
-            return $this->create_result('FAILED','Check object-object-assigns for not existing element objects',"Objects '$entries' dont exist.");
+            return $this->create_result(__('FAILED'),__('Check object-object-assigns for not existing element objects'),__("Objects ':entries' dont exist.",array('entries'=>$entries)));
         } else {
-            return $this->create_result('OK','Check object-object-assigns for not existing element objects');
+            return $this->create_result(__('OK'),__('Check object-object-assigns for not existing element objects'));
         }
     }
     
@@ -173,9 +173,9 @@ class orm_checks extends checker {
      */
     public function check_stringobjectassignscontainerexist() {
         if ($entries = $this->check_for_dangling_pointers('stringobjectassigns','container_id','objects','id',true)) {
-            return $this->create_result('FAILED','Check string-object-assigns for not existing container objects',"Objects '$entries' dont exist.");
+            return $this->create_result(__('FAILED'),__('Check string-object-assigns for not existing container objects'),__("Objects ':entries' dont exist.",array('entries'=>$entries)));
         } else {
-            return $this->create_result('OK','Check string-object-assigns for not existing container objects');
+            return $this->create_result(__('OK'),__('Check string-object-assigns for not existing container objects'));
         }
     }
     
@@ -192,9 +192,9 @@ class orm_checks extends checker {
             }
         }
         if (empty($bad_classes)) {
-            return $this->create_result('OK','Check for non existance classes in objects');            
+            return $this->create_result(__('OK'),__('Check for non existance classes in objects'));            
         } else {
-            return $this->create_result('FAILED','Check for non existance classes in objects',"Classes '$bad_classes' dont exist.");            
+            return $this->create_result(__('FAILED'),__('Check for non existance classes in objects'),__("Classes ':bad_classes' dont exist.",['bad_classes'=>$bad_classes]);            
         }
     }
     
@@ -209,9 +209,9 @@ class orm_checks extends checker {
         }
         
         if (empty($return)) {
-            return $this->create_result('OK','Check for gaps in object tables');
+            return $this->create_result(__('OK'),__('Check for gaps in object tables'));
         } else {
-            return $this->create_result('FAILED','Check for gaps in object tables',"Objects '$return' have gaps.");
+            return $this->create_result(__('FAILED'),__('Check for gaps in object tables'),__("Objects ':return' have gaps.",['return'=>$return]));
         }
     }
     
