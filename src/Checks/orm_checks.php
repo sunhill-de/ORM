@@ -137,7 +137,7 @@ class orm_checks extends checker {
      */
     public function check_tagobjectassignsobjectsexist() {
         if ($entries = $this->check_for_dangling_pointers('tagobjectassigns','container_id','objects','id',true)) {
-            return $this->create_result(__('FAILED'),__('Check tag-object-assigns for not existing objects'),__("Objects ':entries' dont exist.",array('entries'=>$entries));
+            return $this->create_result(__('FAILED'),__('Check tag-object-assigns for not existing objects'),__("Objects ':entries' dont exist.",array('entries'=>$entries)));
         } else {
             return $this->create_result(__('OK'),__('Check tag-object-assigns for not existing objects'));
         }
@@ -194,7 +194,7 @@ class orm_checks extends checker {
         if (empty($bad_classes)) {
             return $this->create_result(__('OK'),__('Check for non existance classes in objects'));            
         } else {
-            return $this->create_result(__('FAILED'),__('Check for non existance classes in objects'),__("Classes ':bad_classes' dont exist.",['bad_classes'=>$bad_classes]);            
+            return $this->create_result(__('FAILED'),__('Check for non existance classes in objects'),__("Classes ':bad_classes' dont exist.",['bad_classes'=>$bad_classes]));            
         }
     }
     
@@ -236,22 +236,22 @@ class orm_checks extends checker {
     }
     
     private function get_subtables(string $class) {        
-        $parent_classes = Classes::get_inheritance_of_class($class);
+        $parent_classes = Classes::getInheritanceOfClass($class);
         $result = [];
         
         foreach ($parent_classes as $parent) {
-            $result[] = Classes::get_table_of_class($parent);
+            $result[] = Classes::getTableOfClass($parent);
         }
         
         return $result;
     }
     
     private function get_table_tree() {
-        $classes = Classes::get_all_classes();
+        $classes = Classes::getAllClasses();
         $tables = [];
         foreach ($classes as $class) {
-            if ($class->name !== 'object') {
-                $tables[Classes::get_table_of_class($class->name)] = $this->get_subtables($class->name);
+            if ($class['name'] !== 'object') {
+                $tables[Classes::getTableOfClass($class['name'])] = $this->get_subtables($class['name']);
             }
         }
         

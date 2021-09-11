@@ -12,9 +12,18 @@ use Sunhill\ORM\Properties\oo_property_enum;
 use Sunhill\ORM\Validators\ValidatorException;
 use Sunhill\ORM\Tests\Objects\ts_testparent;
 use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Facades\Classes;
 
 class PropertyValidateTest extends TestCase
 {
+    
+    public function setUp() : void {
+        parent::setUp();
+        Classes::flushClasses();
+        Classes::registerClass(ts_testchild::class);
+        Classes::registerClass(ts_testparent::class);
+    }
+    
     /**
      * A basic test example.
      *

@@ -246,29 +246,33 @@ class tag_manager {
       * Deletes all tags and clears all refering tables
       */
      public function clear_tags() {
-        $this->clear_dependencies();
-        $this->clear_cache();
-        $this->clear_db();
+        $this->clearTags();
      }
     
+     public function clearTags() {
+         $this->clearDependencies();
+         $this->clearCache();
+         $this->clearDB();         
+     }
+     
      /**
       * Clears the tag-object-association
       */
-     protected function clear_dependencies() {
+     protected function clearDependencies() {
         DB::table('tagobjectassigns')->delete();
      }
     
      /**
       * Clears the tag cache
       */
-     protected function clear_cache() {
+     protected function clearCache() {
         DB::table('tagcache')->delete();
      }
     
      /**
       * Clears the tags table
       */
-     protected function clear_db() {
+     protected function clearDB() {
         DB::table('tags')->delete();
      }
     

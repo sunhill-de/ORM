@@ -28,8 +28,6 @@ class ScenarioWithTagsFeatureTestScenario extends ScenarioBase{
     }
     
     public function SetupBeforeTestsObjects() {
-        Classes::flush_cache();
-        Classes::create_cache(dirname(__FILE__).'/../../Objects');
         DB::statement('drop table if exists dummies');
         DB::statement('create table dummies (id int primary key,dummyint int)');
         DB::statement('drop table if exists simpleparents');
@@ -46,6 +44,14 @@ class ScenarioWithTagsTest extends SunhillScenarioTestCase
     
     use CreatesApplication;
 
+    public function setUp() : void {
+        parent::setUp();
+        Classes::flushClasses();
+        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(SimpleParent::class);
+        Classes::registerClass(SimpleChild::class);
+    }
+    
     protected function GetScenarioClass() {
         return ScenarioWithTagsFeatureTestScenario::class;
     }

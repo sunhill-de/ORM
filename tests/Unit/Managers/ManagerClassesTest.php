@@ -39,7 +39,7 @@ class ManagerClassesTest extends TestCase
 
         $this->callProtectedMethod($test,'flushClasses',[]);
 
-        $this->assertTrue(empty($this->getProtectedProperty($test,'classes')));
+        $this->assertEquals(1,count($this->getProtectedProperty($test,'classes')));
     }
     
     public function testGetClassEntry() {
@@ -106,27 +106,27 @@ class ManagerClassesTest extends TestCase
     public function testNumberOfClasses() {
         $test = new class_manager();
         $test->registerClass(ts_dummy::class);
-        $this->assertEquals(1,$test->getClassCount());
+        $this->assertEquals(2,$test->getClassCount());
     }
     
     public function testNumberOfClassesViaApp() {
         $manager = app('\Sunhill\ORM\Managers\class_manager');
         $manager->flushClasses();
         $manager->registerClass(ts_dummy::class);
-        $this->assertEquals(1,$manager->getClassCount());
+        $this->assertEquals(2,$manager->getClassCount());
     }
     
      public function testNumberOfClassesViaAlias() {
         $manager = app('classes');
         $manager->flushClasses();
         $manager->registerClass(ts_dummy::class);
-        $this->assertEquals(1,$manager->getClassCount());
+        $this->assertEquals(2,$manager->getClassCount());
     }
     
     public function testNumberOfClassesViaFacade() {
         Classes::flushClasses();
         Classes::registerClass(ts_dummy::class);
-        $this->assertEquals(1,Classes::getClassCount());
+        $this->assertEquals(2,Classes::getClassCount());
     }
     
     /**

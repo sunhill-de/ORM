@@ -15,6 +15,7 @@ namespace Sunhill\ORM\Tests\Scenario;
 
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\Basic\SunhillException;
+use Sunhill\ORM\Objects\oo_object;
 
 trait ScenarioWithObjects {
 
@@ -36,6 +37,7 @@ trait ScenarioWithObjects {
      *  class2 => ...
      */
     protected function SetUpObjects() {
+        Classes::flushClasses();
         $this->references = [];
         $objects = $this->GetObjects();
         foreach ($objects as $name => $description) {
@@ -77,13 +79,29 @@ trait ScenarioWithObjects {
         }
         
         // Get name class name with namespace and create an instance
-        $classname = Classes::get_namespace_of_class($name);
+        $classname = $this->getNamespace($name);
+        Classes::registerClass($classname);
         $class = new $classname();
         $this->handleFields($class,$fields,$values);
         $class->commit();
         
         if (is_string($reference)) {
             $this->storeReference($reference,$class);
+        }
+    }
+    
+    /**
+     * We can't depend on classmanager so implement this routine by hand
+     * @param unknown $test
+     */
+    private function getNamespace($test) {
+        $classes = get_declared_classes();
+        foreach ($classes as $class) {
+            if (is_a($class,oo_object::class,true)) {
+                if ($class::$object_infos['name'] == $test) {
+                    return $class;
+                }
+            }
         }
     }
     

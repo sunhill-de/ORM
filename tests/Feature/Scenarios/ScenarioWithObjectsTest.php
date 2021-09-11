@@ -50,8 +50,10 @@ class ScenarioWithObjectsFeatureTestScenario extends ScenarioBase{
     }
     
     public function SetupBeforeTestsObjects() {
-        Classes::flush_cache();
-        Classes::create_cache(dirname(__FILE__).'/../../Objects');
+        Classes::flushClasses();
+        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(SimpleParent::class);
+        Classes::registerClass(SimpleChild::class);
         DB::statement('drop table if exists dummies');
         DB::statement('create table dummies (id int primary key,dummyint int)');
         DB::statement('drop table if exists simpleparents');

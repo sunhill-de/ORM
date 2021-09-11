@@ -6,6 +6,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Database\Seeds\SimpleSeeder;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Tests\Objects\ts_testparent;
+use Sunhill\ORM\Tests\Objects\ts_passthru;
+use Sunhill\ORM\Tests\Objects\ts_secondlevelchild;
+use Sunhill\ORM\Tests\Objects\ts_thirdlevelchild;
+use Sunhill\ORM\Tests\Objects\ts_referenceonly;
+use Sunhill\ORM\Tests\Objects\ts_objectunit;
 
 abstract class DBTestCase extends TestCase
 {
@@ -22,6 +30,15 @@ abstract class DBTestCase extends TestCase
             $this->do_seeding();
         }
         Objects::flush_cache();
+        Classes::flushClasses();
+        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(ts_testparent::class);
+        Classes::registerClass(ts_testchild::class);
+        Classes::registerClass(ts_referenceonly::class);
+        Classes::registerClass(ts_passthru::class);
+        Classes::registerClass(ts_secondlevelchild::class);
+        Classes::registerClass(ts_thirdlevelchild::class);
+        Classes::registerClass(ts_objectunit::class);
     }
     
     /**
