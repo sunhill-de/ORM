@@ -464,6 +464,7 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate testchildren');
         DB::statement('truncate passthrus');
         DB::statement('truncate secondlevelchildren');
+        DB::statement('truncate objects');
         
         DB::table('objects')->insert([
             ['id'=>1,'classname'=>'dummy'],

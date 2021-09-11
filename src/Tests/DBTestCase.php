@@ -28,10 +28,6 @@ abstract class DBTestCase extends TestCase
             static::$db_inited = true;
             $this->do_migration();
             $this->do_seeding();
-<<<<<<< HEAD
-            Classes::create_cache(dirname(__FILE__).'/Objects');
-=======
->>>>>>> registerclasses
         }
         Objects::flush_cache();
         Classes::flushClasses();
