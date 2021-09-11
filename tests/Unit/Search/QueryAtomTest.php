@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit\Search;
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Search\query_builder;

@@ -1,5 +1,5 @@
 <?php
-namespace Sunhill\ORM\Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit\Utils;
 
 /**
  *

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit;
+namespace Sunhill\ORM\Tests\Unit\Traits;
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Traits\TestObject;

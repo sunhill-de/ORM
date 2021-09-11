@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Managers;
+namespace Sunhill\ORM\Tests\Unit\Managers;
 
 /**
  * @file ManagerObjectTest.php
