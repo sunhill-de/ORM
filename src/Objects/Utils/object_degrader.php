@@ -72,14 +72,14 @@ class object_degrader {
     protected function get_descriptor_diff($desc1,$desc2) {
         $arr_1 = [];
         foreach ($desc1 as $entry) {
-            if (($entry->type == 'object') || ($entry->type == 'array_of_strings') || ($entry->type == 'array_of_objects')) {
-                $arr_1[] = $entry->name;
+            if (($entry['type'] == 'object') || ($entry['type'] == 'array_of_strings') || ($entry['type'] == 'array_of_objects')) {
+                $arr_1[] = $entry['name'];
             }
         }
         $arr_2 = [];
         foreach ($desc2 as $entry) {
-            if (($entry->type == 'object') || ($entry->type == 'array_of_strings') || ($entry->type == 'array_of_objects')) {
-                $arr_2[] = $entry->name;
+            if (($entry['type'] == 'object') || ($entry['type'] == 'array_of_strings') || ($entry['type'] == 'array_of_objects')) {
+                $arr_2[] = $entry['name'];
             }
         }
         return array_diff($arr_1,$arr_2);
@@ -90,7 +90,7 @@ class object_degrader {
         $low_props = Classes::get_properties_of_class($low);
         $lost_fields = $this->get_descriptor_diff($high_props,$low_props);
         foreach ($lost_fields as $field) {
-            switch ($high_props->$field->type) {
+            switch ($high_props[$field]['type']) {
                 case 'array_of_strings':
                     DB::table('stringobjectassigns')->where('field',$field)->where('container_id',$id)->delete();
                     break;

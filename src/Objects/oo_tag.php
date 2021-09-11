@@ -17,8 +17,6 @@ use Sunhill\ORM\Facades\Objects;
 
 define('TO_LEAFABLE',0x0001);
 
-class TagException extends \Exception {}
-
 class oo_tag extends loggable {
 		
 	protected $tag_id;

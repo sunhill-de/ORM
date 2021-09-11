@@ -208,5 +208,21 @@ class object_manager  {
 		    $degrader = new object_degrader();
 		    return $degrader->degrade($this->get_object($object),$newclass);
 		}
-		
+
+        /**
+         * Deletes alls objects of the given class from the database
+         */
+        public function clear_objects($class) {
+            $inheritance = Classes::get_inheritance_of_class($class,false);
+            $master = Classes::get_table_of_class($class);
+            foreach ($inheritance as $subclass) {
+                $table = Classes::get_table_of_class($subclass);
+                DB::statement("delete from $table where id in (select id from $master)");
+            }
+            DB::statement("delete from tagobjectassigns where container_id in (select id from $master)");
+            DB::statement("delete from stringobjectassigns where container_id in (select id from $master)");
+            DB::statement("delete from objectobjectassigns where container_id in (select id from $master)");
+            DB::statement("delete from objectobjectassigns where element_id in (select id from $master)");
+            DB::table($master)->delete();
+        }    
 }

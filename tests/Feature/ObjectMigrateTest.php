@@ -1,21 +1,31 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Feature;
+namespace Sunhill\ORM\tests\Feature;
 
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\testing\WithFaker;
+use Illuminate\Foundation\testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Tests\Objects\TestA;
-use Sunhill\ORM\Tests\Objects\TestD;
-use Sunhill\ORM\Tests\Objects\TestE;
 use Sunhill\ORM\Facades\Classes;
+
+use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\testA;
+use Sunhill\ORM\Tests\Objects\testD;
+use Sunhill\ORM\Tests\Objects\testE;
 
 class ObjectMigrateTest extends DBTestCase
 {
+
+    public function setUp() : void {
+        parent::setUp();    
+        Classes::flushClasses();
+        Classes::registerClass(testA::class);
+        Classes::registerClass(testD::class);
+        Classes::registerClass(testE::class);
+        Classes::registerClass(ts_dummy::class);
+    }
     
     public function testSanity() {
         DB::statement('drop table if exists testA');
@@ -88,7 +98,7 @@ class ObjectMigrateTest extends DBTestCase
         $test->dummyint = 1;
         $test->testfield = $init;
         $test->commit();
-       Objects::flush_cache();
+        Objects::flush_cache();
         $read = Objects::load($test->get_id());
         $this->assertEquals($read->testfield,$init);
     }
@@ -141,7 +151,7 @@ class ObjectMigrateTest extends DBTestCase
         DB::statement('drop table if exists testE');
         DB::statement("create table testE (id int primary key)");
         testE::migrate();
-        $test = new TestE();
+        $test = new testE();
         $dummy = new ts_dummy;
         $dummy->dummyint = 2;
         $test->testfield[] = $dummy;

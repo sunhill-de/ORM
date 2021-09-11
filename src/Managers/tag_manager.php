@@ -243,6 +243,40 @@ class tag_manager {
      }
      
      /**
+      * Deletes all tags and clears all refering tables
+      */
+     public function clear_tags() {
+        $this->clearTags();
+     }
+    
+     public function clearTags() {
+         $this->clearDependencies();
+         $this->clearCache();
+         $this->clearDB();         
+     }
+     
+     /**
+      * Clears the tag-object-association
+      */
+     protected function clearDependencies() {
+        DB::table('tagobjectassigns')->delete();
+     }
+    
+     /**
+      * Clears the tag cache
+      */
+     protected function clearCache() {
+        DB::table('tagcache')->delete();
+     }
+    
+     /**
+      * Clears the tags table
+      */
+     protected function clearDB() {
+        DB::table('tags')->delete();
+     }
+    
+     /**
       * Deletes the tag with the id $id
       * @param int $id
       */
@@ -264,21 +298,107 @@ class tag_manager {
          DB::table('tagobjectassigns')->where('tag_id',$id)->delete();
      }
      
-     /**(
+     /**
       * Adds a tag with the given values
       * @param array $values
       */
-     public function add_tag(array $values) {
-            $tag = new oo_tag();
-            $tag->name = $values['name'];
-            if (isset($values['parent'])) {
-               $parent = $this->search_tag($values['parent'])->id;
-               $parent_tag = oo_tag::load_tag($parent);
-                $tag->parent = $parent_tag;
-            }
-            $tag->commit();  
+     public function add_tag($taginfo) {
+        if (is_array($taginfo)) {
+            $this->add_tag_by_array($taginfo);
+        } else if (is_a($taginfo,descriptor::class)) {
+            $this->add_tag_by_descriptor($taginfo);
+        } else if (is_string($taginfo)) {
+            $this->add_tag_by_string($taginfo);
+        } else if (is_a($taginfo,oo_tag::class)) {
+            $this->add_tag_by_object($taginfo);
+        } else {
+            throw new TagException(__("Unkown data passed to 'add_tag'."));
+        }
      }
-     
+    
+    /**
+     * Returns the id of the given tag or 0 if null is passed
+     */
+    protected function get_tag_id($parent) {
+        if (is_null($parent) || empty($parent)) {
+            return 0;
+        } else {
+            return $this->load_tag($parent)->get_id();
+        }
+    }
+    
+    /**
+     * Adds a tag with the given information to the tags table and add the necessary entries in the tagcache
+     * @param $name string The name of the tag
+     * @param $parent null|string|oo_tag|int The parent tag (or null if none)
+     * @param $options int The options (defaults 0)
+     */
+    protected function execute_add_tag(string $name,$parent=null,int $options=0) {
+        $parent_id = $this->GetParent($parent);
+        $id = DB::table('tags')->insertGetId(['name'=>$name,'parent_id'=>$parent_id,'options'=>$options]);
+        $tag = $this->load_tag($id);
+        $full_path = $tag->get_fullpath();
+	    $fullpath = explode('.',$full_path);
+	    while (!empty($fullpath)) {
+	        DB::table('tagcache')->insert([
+	            'name'=>implode('.',$fullpath),
+	            'tag_id'=>$id
+	        ]);
+	        array_shift($fullpath);
+	    }
+	    return $id;
+    }
+    
+    protected function GetParent($parent) {
+        if (!empty($parent)) {
+            if (is_a($parent,descriptor::class)) {
+                $name = $parent->name;
+                if (empty($name)) {
+                    return 0;           
+                }
+                $parent= $parent->name;
+            }
+            $parent_id = $this->search_tag($parent);
+            if (empty($parent_id)) {
+                return $this->add_tag_by_string($parent);
+            } else {
+                return $parent_id->id;
+            }
+        } else {
+            return 0;
+        }        
+    }
+    
+    /**
+     * The passed data is an array
+     */
+     protected function add_tag_by_array(array $values) {
+            $this->execute_add_tag($values['name'],isset($values['parent'])?$values['parent']:null);
+     }   
+    
+     /**
+      * The passed data is a descriptor
+      */
+     protected function add_tag_by_descriptor(descriptor $descriptor) {
+        $this->execute_add_tag($descriptor->name,$descriptor->assertHasKey('parent')?$descriptor->parent:null);
+     }
+    
+     /**
+      * The passed data is a string
+      */
+     protected function add_tag_by_string(string $tag) {
+         $tag_parts = explode('.',$tag);
+         $tag_name = array_pop($tag_parts);
+         return $this->execute_add_tag($tag_name,implode('.',$tag_parts));
+     }
+    
+     /**
+      * The passed data is a oo_tag object
+      */
+     protected function add_tag_by_object(oo_tag $tag) {
+        $this->execute_add_tag($tag->get_name(),$tag->get_parent());
+     }
+    
      /**
       * Lists tags with a condition and an (optional) delta and limit
       */

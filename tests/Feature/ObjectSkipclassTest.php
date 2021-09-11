@@ -9,6 +9,7 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\oo_object;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Classes;
 
 class SkipClass extends ts_dummy {
     
@@ -31,6 +32,9 @@ class ObjectSkipclassTest extends DBTestCase
         parent::setUp();
         DB::statement('drop table if exists skipclasses');
         DB::statement("create table skipclasses (id int primary key)");
+        Classes::flushClasses();
+        Classes::registerClass(SkipClass::class);
+        Classes::registerClass(ts_dummy::class);
     }
     
     

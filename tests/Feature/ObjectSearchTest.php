@@ -9,7 +9,10 @@ use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
+use Database\Seeds\SearchSeeder;
+
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 class searchtestA extends oo_object {
@@ -106,6 +109,13 @@ class searchtestC extends searchtestB {
 
 class ObjectSearchTest extends DBTestCase
 {
+    public function setUp() : void {
+        parent::setUp();
+        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(searchtestA::class);
+        Classes::registerClass(searchtestB::class);
+        Classes::registerClass(searchtestC::class);
+    }
     
     protected function do_migration() {
         Artisan::call('migrate:fresh --path=database/migrations/');
@@ -114,7 +124,7 @@ class ObjectSearchTest extends DBTestCase
     }
     
     protected function do_seeding() {
-        Artisan::call('db:seed --class=SearchSeeder');
+        $this->seed(SearchSeeder::class);
     }
     
     protected function simplify_result(objectlist $result) {

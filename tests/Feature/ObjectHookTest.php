@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 class HookingObject extends oo_object  {
@@ -206,6 +207,8 @@ class ObjectHookTest extends DBTestCase
         DB::statement("drop table if exists childhookings ");
         DB::statement("create table hookings (id int primary key,hooking_int int,hookstate varchar(100))");       
         DB::statement("create table childhookings (id int primary key,childhooking_int int)");
+        Classes::registerClass(HookingObject::class);
+        Classes::registerClass(HookingChild::class);
     }
     
     /**
