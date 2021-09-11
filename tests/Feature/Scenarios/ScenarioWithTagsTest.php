@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Feature;
 
 use Sunhill\Basic\Tests\SunhillScenarioTestCase;
 use Sunhill\Basic\Tests\Scenario\ScenarioBase;
-use Sunhill\ORM\Tests\Scenario\ScenarioWithObjects;
+use Sunhill\ORM\Tests\Scenario\ScenarioWithTags;
 use Tests\CreatesApplication;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
@@ -12,48 +12,22 @@ use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Tests\Objects\SimpleParent;
 use Sunhill\ORM\Tests\Objects\SimpleChild;
 
-class ScenarioWithObjectsFeatureTestScenario extends ScenarioBase{
+class ScenarioWithTagsFeatureTestScenario extends ScenarioBase{
 
-    use ScenarioWithObjects;
+    use ScenarioWithTags;
              
     protected $Requirements = [
-        'Objects'=>[
+        'Tags'=>[
             'destructive'=>true,
         ],
     ];
     
-    public function GetObjects() {
+    public function GetTags() {
         return [
-          'dummy'=>[
-              ['dummyint'],
-              [
-                  'dummy1'=>[11],
-                  'dummy2'=>[22],
-                  [33]
-              ]
-          ],
-          'SimpleParent'=>[
-              ['parentint','parentchar','parentobject','parentoarray'],
-              [
-                  'parent1'=>[111,'AAA','=>dummy1',['=>dummy1']],
-                  [222,'BBB',null,null]
-              ]
-          ],
-          'SimpleChild'=>[
-              ['parentint','parentchar','parentobject','parentoarray','childint','childchar'],
-              [
-                  'child1'=>[11,'AA','=>dummy2',['=>dummy2'],1111,'AAAA'],
-                  'child2'=>[22,'BB',null,null,2222,'BBBB'],
-              ]
-          ]
         ];
     }
     
     public function SetupBeforeTestsObjects() {
-        Classes::flushClasses();
-        Classes::registerClass(ts_dummy::class);
-        Classes::registerClass(SimpleParent::class);
-        Classes::registerClass(SimpleChild::class);
         DB::statement('drop table if exists dummies');
         DB::statement('create table dummies (id int primary key,dummyint int)');
         DB::statement('drop table if exists simpleparents');
@@ -63,15 +37,23 @@ class ScenarioWithObjectsFeatureTestScenario extends ScenarioBase{
     }
 }
 
-class ScenarioWithObjectsTest extends SunhillScenarioTestCase
+class ScenarioWithTagsTest extends SunhillScenarioTestCase
 {
    
-    static protected $ScenarioClass = 'Sunhill\\ORM\\Tests\\Feature\\ScenarioWithObjectsFeatureTestScenario';
+    static protected $ScenarioClass = 'Sunhill\\ORM\\Tests\\Feature\\ScenarioWithTagsFeatureTestScenario';
     
     use CreatesApplication;
 
+    public function setUp() : void {
+        parent::setUp();
+        Classes::flushClasses();
+        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(SimpleParent::class);
+        Classes::registerClass(SimpleChild::class);
+    }
+    
     protected function GetScenarioClass() {
-        return ScenarioWithObjectsFeatureTestScenario::class;    
+        return ScenarioWithTagsFeatureTestScenario::class;
     }
     
     public function SetupTables() {

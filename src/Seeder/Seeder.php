@@ -55,7 +55,7 @@ abstract class Seeder {
     
     private function SolveValue($value) {
         if (is_string($value)) {
-            if (substr($value,0,2) == '->') {
+            if ((substr($value,0,2) == '->') || (substr($value,0,2) == '=>')) {
                 $value = $this->getkeyObject(substr($value,2));
             } else if ($value == 'null') {
                 $value = null;

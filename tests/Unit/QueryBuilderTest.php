@@ -5,9 +5,21 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Search\query_builder;
 use Sunhill\ORM\Search\query_atom;
+use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\ts_testparent;
+use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Facades\Classes;
 
 class QueryBuilderTest extends TestCase
 {
+    public function setUp() : void {
+        parent::setUp();
+        Classes::flushClasses();
+        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(ts_testparent::class);
+        Classes::registerClass(ts_testchild::class);
+    }
+    
     public function testSetCallingClass() {
         $query = new query_builder();
         $query->set_calling_class('callingclass');

@@ -8,6 +8,7 @@ use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Tests\Objects\ts_testparent;
 use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Facades\Classes;
 
 class test_trait_class {
     
@@ -21,6 +22,14 @@ class test_trait_class {
 class TraitTestObjectTest extends TestCase
 {
 
+    public function setUp() : void {
+        parent::setUp();
+        Classes::flushClasses();
+        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(ts_testparent::class);
+        Classes::registerClass(ts_testchild::class);
+    }
+    
     /**
      * @dataProvider IsValidProvider
      * @param unknown $test

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use  Sunhill\ORM\Tests\Objects\ts_dummy;
 use  Sunhill\ORM\Tests\Objects\ts_testparent;
 use Sunhill\Basic\SunhillException;
+use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Tags;
 
 class ScenarioWithObjectsUnitTestScenario extends ScenarioBase{
 
@@ -25,6 +27,18 @@ class ScenarioWithObjectsTest extends SunhillTestCase
 {
    
     use CreatesApplication;
+    
+    public function setUp() : void {
+        parent::setUp();
+        Classes::flushClasses();
+        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(ts_testparent::class);
+        Tags::clearTags();
+        Tags::add_tag('TagA');
+        Tags::add_tag('TagB');
+        DB::statement('drop table if exists dummies');
+        DB::statement('create table dummies (id int primary key,dummyint int)');
+    }
     
     public function testSetReference() {
         $test = new ScenarioWithObjectsUnitTestScenario();

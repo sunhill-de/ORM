@@ -2,14 +2,14 @@
 
 namespace Sunhill\ORM\Tests\Unit;
 
-use Sunhill\ORM\Tests\TestCase;
+use Sunhill\ORM\Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Crawler;
 use Sunhill\ORM\Test\sunhill_testcase_db;
 use Illuminate\Support\Facades\DB;
 
-class StorageBase extends TestCase
+class StorageBase extends DBTestCase
 {
     use RefreshDatabase;
     

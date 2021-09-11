@@ -43,6 +43,10 @@ class class_manager {
     private $classes=[];
 // ********************************** Register class ******************************************
 
+    public function __construct() {
+        $this->flushClasses();    
+    }
+    
     /**
      * Get the fully qualified class name and adds it to $result
      */
@@ -116,7 +120,7 @@ class class_manager {
         if (!class_exists($classname)) {
             throw new ORMException("The class '$classname' is not accessible.");
             return false;
-        }
+        } 
         if (isset($this->classes[$classname])) {
             throw new ORMException("The class '$classname' is already registered.");
         }
@@ -129,7 +133,7 @@ class class_manager {
      * Clears the class information array
      */
     public function flushClasses() : void {
-        $this->classes = [];
+        $this->classes = ['object'=>['table'=>'objects','class'=>oo_object::class,'parent'=>null,'name'=>'object']];
     }
     
 // *************************** General class informations ===============================    
@@ -361,7 +365,7 @@ class class_manager {
         } else {
             if (in_array($field,static::$translatable)) {
                 return $this->translate($name,$field);
-            } else if (in_array($field,$class)) {
+            } else if (array_key_exists($field,$class)) {
                 return $class[$field];
             } else {
                 throw new ORMException("The class '$name' doesn't export '$field'.");
@@ -386,7 +390,7 @@ class class_manager {
      * @return unknown
      */
     public function getTableOfClass(string $name) {
-        $name = $this->checkClass($this->search_class($name));
+        $name = $this->checkClass($this->searchClass($name));
         return $this->get_class($name,'table');
     }
     
@@ -406,7 +410,7 @@ class class_manager {
      * @return unknown
      */
     public function getParentOfClass(string $name) {
-        $name = $this->checkClass($this->search_class($name));
+        $name = $this->checkClass($this->searchClass($name));
         return $this->get_class($name,'parent');
     }
     

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Classes;
 
 class TestClass extends oo_object {
 
@@ -55,6 +56,7 @@ class ObjectCalculatedTest extends DBTestCase
     }
     
     public function testCacheCalculated() {
+        Classes::registerClass(TestClass::class);
         $test = new TestClass;
         $test->dummyint = 1;
    //     $test->recalcualate();
@@ -64,6 +66,7 @@ class ObjectCalculatedTest extends DBTestCase
     }
     
     public function testChangeCache() {
+        Classes::registerClass(TestClass::class);
         $test = new TestClass;
         $test->dummyint = 1;
         $test->set_return('ABC');
@@ -77,6 +80,7 @@ class ObjectCalculatedTest extends DBTestCase
     }
     
     public function testChangeCalc() {
+        Classes::registerClass(TestClass::class);
         $test = new TestClass;
         $test->dummyint = 1;
         $test->set_return('ABC');
