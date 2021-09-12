@@ -33,7 +33,6 @@ class SunhillServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 MigrateObjects::class,
-                FlushCaches::class
             ]);
             
           if (! class_exists('CreateAttributesTable')) {

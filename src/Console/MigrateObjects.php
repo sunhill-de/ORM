@@ -25,19 +25,22 @@ class MigrateObjects extends Command
     
     protected $description = 'Migrates the provided objects';
     
+    public function __construct() {
+        parent::__construct();
+        $this->description = __('Migrates the provided objects');
+    }
+    
     public function handle()
     {
-        $this->info('Migrating objects...');
+        $this->info(__('Migrating objects...'));
         
-        $this->info('Rebuilding objects cache...');
-        Classes::create_cache();
-        $classes = Classes::get_all_classes();
+        $classes = Classes::getAllClasses();
         if (!empty($classes)) {
             foreach($classes as $name => $infos) {
-                $this->info('Migrating: '.$name);
-                Classes::migrate_class($name);
+                $this->info(__('Migrating :name: ',['name'=>$name]));
+                Classes::migrateClass($name);
             }
         }
-        $this->info('Migrating finished.');
+        $this->info(__('Migrating finished.'));
     }
 }

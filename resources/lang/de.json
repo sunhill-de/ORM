@@ -18,4 +18,11 @@
   "Check for non existance classes in objects":"Überprüfe auf nicht existente Klassen in Objekten",
   "Check for gaps in object tables":"Überprüfe auf Lücken in den Objekttabellen",
   "Objects ':return' have gaps.":"Objekte ':return' haben Lücken"
+  
+  "***** src/Console/MigrateObjects":"***** src/Console/MigrateObjects",
+  "Migrates the provided objects":"Migriert die zur Verfügung gestellten Objekte",
+  "Migrating objects...":"Migriert Objekte...",
+  "Migrating :name: ":"Migrierge :name: ",
+  "Migrating finished.":"Migration beendet"
+  
 }
