@@ -1,8 +1,8 @@
 <?php
  
 /**
- * @file object_manager.php
- * Provides the object_manager object for accessing information about the orm objects
+ * @file ObjectManager.php
+ * Provides the ObjectManager object for accessing information about the orm objects
  * @author Klaus Dimde
  * -----------------------------------------------------------------------------------------------
  * Lang en
@@ -11,7 +11,7 @@
  * Documentation: complete
  * Tests: tests/Unit/Managers/ManagerObjectTest.php
  * Coverage: unknown
- * Depenencies: class_manager
+ * Depenencies: ClassManager
  */
  namespace Sunhill\ORM\Managers;
 
@@ -22,13 +22,17 @@ use Sunhill\ORM\Objects\oo_object;
 use Sunhill\ORM\Objects\Utils\object_promotor;
 use Sunhill\ORM\Objects\Utils\object_degrader;
 
-class ObjectManagerException extends ORMException {}
+class ObjectManagerException extends ORMException 
+{
+}
 
-class object_manager  {
+class ObjectManager 
+{
  
     protected $object_cache = [];
     
-    protected function search_class_namespace($condition) {
+    protected function searchClassNamespace($condition) 
+    {
         if (is_array($condition)) {
             if (isset($condition['class'])) {
                 $condition = $condition['class'];
@@ -36,11 +40,11 @@ class object_manager  {
                 $condition = $condition['name'];
             }
         }
-        $class = Classes::search_class($condition); // Mock me in tests
+        $class = Classes::searchClass($condition); // Mock me in tests
         if (is_null($class)) {
             throw new ObjectManagerException("Class '$condition' not found.");
         }
-        return Classes::get_namespace_of_class($class);
+        return Classes::getNamespaceOfClass($class);
     }
     
 		/**
@@ -53,45 +57,50 @@ class object_manager  {
 		 *     if nochildren is false (default), that derrived objects are counted too otherwise only 
 		 * 		objects of this class
 		 */
-		public function count($condition=null,bool $nochildren=false) {
+		public function count($condition=null, bool $nochildren=false): int
+        {
 			if (is_null($condition)) {
-				return $this->get_raw_count();
+				return $this->getRawCount();
 			} else {
-                $namespace = $this->search_class_namespace($condition);
+                $namespace = $this->searchClassNamespace($condition);
                 if (!$nochildren) {
-                    return $this->get_count_for_class($namespace);
+                    return $this->getCountForClass($namespace);
                 } else {
-                    return $this->get_count_for_single_class($namespace);
+                    return $this->getCountForSingleClass($namespace);
                 }
 			}
 		}
 
-		private function get_raw_count() {
+		private function getRawCount(): int 
+        {
         	$count = DB::table('objects')->select(DB::raw('count(*) as count'))->first();
 			return $count->count;
 		}
 
-		private function get_count_for_class(string $class) {
+		private function getCountForClass(string $class): int 
+        {
 			$count = DB::table($class::$table_name)->select(DB::raw('count(*) as count'))->first();
 			return $count->count;
 		}
 
-		private function get_count_for_single_class(string $class) {
+		private function getCountForSingleClass(string $class): int
+        {
 			return static::get_object_list(['class'=>$class],true)->count();
 		}
 
 		/**
 		 * Returns a list of objects that match to the given condition
 		 */
-		public function get_object_list($condition='object',bool $nochildren=false) {
+		public function getObjectList($condition='object',bool $nochildren=false) 
+        {
 		    if ($condition == 'object') {
 		        $class = 'Sunhill\ORM\Objects\oo_object';
 		    } else {
-		      $class = $this->search_class_namespace($condition);
+		        $class = $this->searchClassNamespace($condition);
 		    }
 		    $objects = $class::search()->get();
 			if ($nochildren) {
-				$objects->filter_class($class,false);
+				$objects->filterClass($class,false);
 			}
 			return $objects;
 		}
@@ -101,7 +110,8 @@ class object_manager  {
 		 * @param int $id ID of the object we want to know the class name of
 		 * @return string The name (not the namespace!) of the class
 		 */
-		public function get_class_name_of(int $id) {
+		public function getClassNameOf(int $id): string
+        {
 		    $object = DB::table('objects')->where('id','=',$id)->first();
 		    if (empty($object)) {
 		        return false;
