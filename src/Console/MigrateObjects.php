@@ -9,7 +9,7 @@
  * Reviewstatus: 2021-04-11
  * Localization: none
  * Documentation: complete
- * Tests: none
+ * Tests: tests/Unit/Console/MigrateObjectsTest.php
  * Coverage: unknown
  * @todo localization
  */
