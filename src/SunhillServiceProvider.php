@@ -16,14 +16,14 @@ class SunhillServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->app->singleton(class_manager::class, function () { return new class_manager(); } );
-        $this->app->alias(class_manager::class,'classes');
-        $this->app->singleton(object_manager::class, function () { return new object_manager(); } );
-        $this->app->alias(object_manager::class,'objects');
-        $this->app->singleton(tag_manager::class, function () { return new tag_manager(); } );
-        $this->app->alias(tag_manager::class,'tags');
-        $this->app->singleton(operator_manager::class, function () { return new operator_manager(); } );
-        $this->app->alias(operator_manager::class,'operators');
+        $this->app->singleton(classManager::class, function () { return new classManager(); } );
+        $this->app->alias(classManager::class,'classes');
+        $this->app->singleton(objectManager::class, function () { return new objectManager(); } );
+        $this->app->alias(objectManager::class,'objects');
+        $this->app->singleton(tagManager::class, function () { return new tagManager(); } );
+        $this->app->alias(tagManager::class,'tags');
+        $this->app->singleton(operatorManager::class, function () { return new operatorManager(); } );
+        $this->app->alias(operatorManager::class,'operators');
     }
     
     public function boot()
