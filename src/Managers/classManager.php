@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @file class_manager.php
- * Provides the class_manager object for accessing information about the orm classes
+ * @file classManager.php
+ * Provides the classManager object for accessing information about the orm classes
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -32,7 +32,7 @@ use Sunhill\ORM\Objects\Utils\object_migrator;
   * @author lokal
   *
   */
-class class_manager {
+class classManager {
  
     private static $translatable = [/*'name_s','name_p','description'*/];
         
