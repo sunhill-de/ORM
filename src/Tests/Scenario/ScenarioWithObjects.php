@@ -16,6 +16,7 @@ namespace Sunhill\ORM\Tests\Scenario;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\Basic\SunhillException;
 use Sunhill\ORM\Objects\oo_object;
+use Illuminate\Support\Facades\DB;
 
 trait ScenarioWithObjects {
 
@@ -37,11 +38,34 @@ trait ScenarioWithObjects {
      *  class2 => ...
      */
     protected function SetUpObjects() {
-        Classes::flushClasses();
+       // Classes::flushClasses();
+        $this->clearTables();
         $this->references = [];
         $objects = $this->GetObjects();
         foreach ($objects as $name => $description) {
             $this->handleClass($name,$description);
+        }
+    }
+    
+    protected function gatherTables() {
+        $result = [];
+    
+        $classes = get_declared_classes();
+        foreach ($classes as $class) {
+            if (is_a($class,oo_object::class,true)) {
+                if (!in_array($class::$object_infos['table'],$result)) {
+                    $result[] = $class::$object_infos['table'];
+                }
+            }
+        }
+        
+        return $result;
+    }
+    
+    protected function clearTables() {
+        $tables = $this->gatherTables();
+        foreach ($tables as $table) {
+            DB::statement('truncate '.$table);
         }
     }
     
