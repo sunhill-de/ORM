@@ -48,7 +48,7 @@ trait ScenarioWithObjects {
     }
     
     protected function gatherTables() {
-        $result = [];
+        $result = ['objectobjectassigns','stringobjectassigns','tagobjectassigns','caching'];
     
         $classes = get_declared_classes();
         foreach ($classes as $class) {
