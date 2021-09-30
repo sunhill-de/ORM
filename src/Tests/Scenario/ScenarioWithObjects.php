@@ -37,7 +37,8 @@ trait ScenarioWithObjects {
      *             ],
      *  class2 => ...
      */
-    protected function SetUpObjects() {
+    protected function SetUpObjects() 
+    {
        // Classes::flushClasses();
         $this->clearTables();
         $this->references = [];
@@ -46,18 +47,40 @@ trait ScenarioWithObjects {
             $this->handleClass($name,$description);
         }
     }
+
+    protected function traverseClassHirarchy(string $class,array &$result)
+    {
+        if ($class == oo_object::class) {
+            return;
+        }
+        if (!in_array($class::$object_infos['table'],$result)) {
+            $result[] = $class::$object_infos['table'];
+        }
+        $this->traverseClassHirarchy(get_parent_class($class),$result);
+    }
     
-    protected function gatherTables() {
-        $result = ['objectobjectassigns','stringobjectassigns','tagobjectassigns','caching'];
-    
+    protected function addTablesOfObject(string $classname,array &$result)
+    {
         $classes = get_declared_classes();
         foreach ($classes as $class) {
             if (is_a($class,oo_object::class,true)) {
-                if (!in_array($class::$object_infos['table'],$result)) {
-                    $result[] = $class::$object_infos['table'];
+                if ($class::$object_infos['name'] == $classname) {
+                    $this->traverseClassHirarchy($class,$result);
+                    return;
                 }
             }
+        }        
+    }
+    
+    protected function gatherTables() 
+    {
+        $result = ['objectobjectassigns','stringobjectassigns','tagobjectassigns','caching'];
+    
+        $objects = $this->getObjects();
+        foreach ($objects as $classname => $fields) {
+            $this->addTablesOfObject($classname,$result);    
         }
+        
         
         return $result;
     }
