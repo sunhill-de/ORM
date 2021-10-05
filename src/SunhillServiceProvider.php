@@ -9,7 +9,9 @@ use \Sunhill\ORM\Managers\tag_manager;
 use Sunhill\ORM\Console\MigrateObjects;
 use Sunhill\ORM\Console\FlushCaches;
 use Sunhill\Basic\Facades\Checks;
-use Sunhill\ORM\Checks\orm_checks;
+
+use Sunhill\ORM\Checks\OrmChecks;
+
 use Sunhill\ORM\Managers\operator_manager;
 
 class SunhillServiceProvider extends ServiceProvider
@@ -28,7 +30,8 @@ class SunhillServiceProvider extends ServiceProvider
     
     public function boot()
     {
-        Checks::InstallChecker(orm_checks::class);
+        Checks::InstallChecker(OrmChecks::class);
+        
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang','ORM');
         if ($this->app->runningInConsole()) {
             $this->commands([

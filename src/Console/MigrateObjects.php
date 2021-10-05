@@ -25,7 +25,8 @@ class MigrateObjects extends Command
     
     protected $description = 'Migrates the provided objects';
     
-    public function __construct() {
+    public function __construct() 
+    {
         parent::__construct();
         $this->description = __('Migrates the provided objects');
     }

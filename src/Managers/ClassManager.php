@@ -1,12 +1,12 @@
 <?php
 
 /**
- * @file class_manager.php
- * Provides the class_manager object for accessing information about the orm classes
+ * @file ClassManager.php
+ * Provides the ClassManager object for accessing information about the orm classes
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2020-09-13
+ * Reviewstatus: 2021-10-05
  * Localization: unknown
  * Documentation: unknown
  * Tests: tests/Unit/Managers/ManagerClassesTest.php
@@ -32,7 +32,8 @@ use Sunhill\ORM\Objects\Utils\object_migrator;
   * @author lokal
   *
   */
-class class_manager {
+class ClassManager 
+{
  
     private static $translatable = [/*'name_s','name_p','description'*/];
         
@@ -43,14 +44,16 @@ class class_manager {
     private $classes=[];
 // ********************************** Register class ******************************************
 
-    public function __construct() {
+    public function __construct() 
+    {
         $this->flushClasses();    
     }
     
     /**
      * Get the fully qualified class name and adds it to $result
      */
-    private function getClassEntry(array &$result,string $class) : void {
+    private function getClassEntry(array &$result,string $class): void 
+    {
         $result['class'] = $class;
     }
     
@@ -58,20 +61,23 @@ class class_manager {
      * Get the class informations and adds them to $result
      * @
      */
-    private function getClassInformationEntries(array &$result,string $class) : void {
+    private function getClassInformationEntries(array &$result,string $class): void 
+    {
         foreach ($class::$object_infos as $key => $value) {
             $result[$key] = $value;
         }
     }
     
-    private function getClassParentEntry(array &$result,string $class) : void {
+    private function getClassParentEntry(array &$result,string $class): void 
+    {
         $parent = get_parent_class($class);
         if ($class !== 'object') { // Strange infinite loop bug
             $result['parent'] = $parent::$object_infos['name'];
         }
     }
     
-    private function getClassProperties(string $class) {
+    private function getClassProperties(string $class) 
+    {
         $properties = $class::static_get_properties_with_feature();
         $result = [];
         foreach ($properties as $name => $descriptor) {
@@ -82,7 +88,8 @@ class class_manager {
         return $result;
     }
     
-    private function getClassPropertyEntries(array &$result,string $class) : void {
+    private function getClassPropertyEntries(array &$result,string $class): void 
+    {
         $result['properties'] = [];
         $properties = $this->getClassProperties($class);
         foreach ($properties as $property) {
@@ -99,7 +106,8 @@ class class_manager {
      * @param $classname string The name of the class to collect values from
      * @return array associative array with informations about this class
      */
-    private function buildClassInformation(string $classname) : array {
+    private function buildClassInformation(string $classname): array 
+    {
         $result = [];
         
         $this->getClassEntry($result,$classname);
@@ -116,7 +124,8 @@ class class_manager {
      * @param $classname string The fully qualified name of the class to register
      * @return bool true if successful false if not
      */
-    public function registerClass(string $classname) : bool {
+    public function registerClass(string $classname): bool 
+    {
         if (!class_exists($classname)) {
             throw new ORMException("The class '$classname' is not accessible.");
             return false;
@@ -132,7 +141,8 @@ class class_manager {
     /**
      * Clears the class information array
      */
-    public function flushClasses() : void {
+    public function flushClasses(): void 
+    {
         $this->classes = ['object'=>['table'=>'objects','class'=>oo_object::class,'parent'=>null,'name'=>'object']];
     }
     
@@ -141,14 +151,16 @@ class class_manager {
      * Alias for getClassCount()
      * @deprecated use getClassCount()
      */
-    public function get_class_count() {
+    public function get_class_count(): int 
+    {
         return $this->getClassCount();
     }
 
     /**
      * Returns the number of registered classes
      */
-    public function getClassCount() : int {
+    public function getClassCount(): int 
+    {
 
         return count($this->classes);       
     }
@@ -158,7 +170,8 @@ class class_manager {
      * @deprecated use getAllClasses
      * @return unknown
      */
-    public function get_all_classes() {
+    public function get_all_classes() 
+    {
         return $this->getAllClasses();
     }
     
@@ -166,7 +179,8 @@ class class_manager {
      * Returns a treversable associative array of all registered classes
      * @return unknown
      */
-    public function getAllClasses() : array {
+    public function getAllClasses(): array 
+    {
         
         return $this->classes;        
     }
@@ -175,7 +189,8 @@ class class_manager {
      * Alias for getClassTree() 
      * @deprecated use getClassTree 
      */
-    public function get_class_tree(string $class = 'object') {
+    public function get_class_tree(string $class = 'object') 
+    {
         return $this->getClassTree($class);
     }
     
@@ -185,12 +200,14 @@ class class_manager {
      * Example:
      * ['object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
      */
-    public function getClassTree(string $class = 'object') {
+    public function getClassTree(string $class = 'object') 
+    {
         return [$class=>$this->getChildrenOfClass($class)];
     }
     
     // *************************** Informations about a specific class **************************    
-    private function notExists($test) {
+    private function notExists($test) 
+    {
         if ($this->search_class($test)) {
             return false;
         } else {
@@ -204,7 +221,8 @@ class class_manager {
      * @return string
      * @deprecated use normalizeNamespace()
      */
-    public function normalize_namespace(string $namespace) : string {
+    public function normalize_namespace(string $namespace): string 
+    {
         return $this->normalizeNamespace($namespace);
     }
 
@@ -213,7 +231,8 @@ class class_manager {
      * @param string $namespace
      * @return string
      */
-    public function normalizeNamespace(string $namespace) : string {
+    public function normalizeNamespace(string $namespace): string 
+    {
         $namespace = str_replace("\\\\","\\",$namespace);
         if (strpos($namespace,'\\') == 0) {
             return substr($namespace,1);
@@ -231,7 +250,8 @@ class class_manager {
      * if $needle is an object it gets the namespace of this object and searches it
      * @param string $needle
      */
-    public function search_class($needle) {
+    public function search_class($needle) 
+    {
         return $this->searchClass($needle);        
     }
     
@@ -242,9 +262,11 @@ class class_manager {
      * if $needle is an object it gets the namespace of this object and searches it
      * @param string $needle
      */
-    public function searchClass($needle) {
+    public function searchClass($needle) 
+    {
         
-        if (is_object($needle)) {
+        if (is_object($needle)) {        
+            
             $needle = get_class($needle);
         }
         if (strpos($needle,'\\') !== false) {
@@ -269,7 +291,8 @@ class class_manager {
      * @param unknown $test Could be either a string, an object or an integer
      * @deprecated use getClassName
      */
-    public function get_class_name($test) {
+    public function get_class_name($test) 
+    {
         return $this->getClassName($test);
     }
     
@@ -277,7 +300,8 @@ class class_manager {
      * Returns the (internal) name of the class. It doesn't matter how the class is passed (name, namespace, object or index)
      * @param unknown $test Could be either a string, an object or an integer
      */
-    public function getClassName($test) {
+    public function getClassName($test) 
+    {
         if (is_int($test)) {
             return $this->getClassnameWithIndex($test);
         } else if (is_string($test)) {
