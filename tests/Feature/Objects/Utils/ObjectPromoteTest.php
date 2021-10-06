@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Feature;
+namespace Sunhill\ORM\Tests\Feature\Objects\Utils;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
