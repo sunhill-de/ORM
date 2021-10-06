@@ -296,7 +296,7 @@ class ORMObject extends PropertiesHaving
 	 * The newly created (promoted) object is called after the promotion took place
 	 * @param ORMObject $from The old (lower) object
 	 */
-	public function postPromotion(oo_object $from): null 
+	public function postPromotion(ORMObject $from): null 
     {
 	    // Does nothing
 	}
@@ -312,7 +312,7 @@ class ORMObject extends PropertiesHaving
 	    
 	}
 	
-	public function postDegration(oo_object $from): null 
+	public function postDegration(ORMObject $from): null 
     {
 	    
 	}
@@ -375,7 +375,7 @@ class ORMObject extends PropertiesHaving
 	 * @param boolean $full
 	 * @return unknown
 	 */
-	public function getInheritance($full=false) 
+	public function getInheritance(bool $full = false) 
     {
 	    return Classes::getInheritanceOfClass(static::$object_infos['name'], $full);
 	}
@@ -410,7 +410,7 @@ class ORMObject extends PropertiesHaving
 	    $this->checkForHook('PROPERTY_ARRAY_NEW',$name,[$value]); 
 	}
 	
-	public function array_field_removed_entry($name,$index,$value) 
+	public function arrayFieldRemovedEntry($name,$index,$value) 
     {
 	    $this->checkForHook('PROPERTY_ARRAY_REMOVED',$name,[$value]);	    
 	}
@@ -478,7 +478,7 @@ class ORMObject extends PropertiesHaving
 	 */
 	protected static function setupProperties() 
     {
-	    parent::setup_properties(); 
+	    parent::setupProperties(); 
 	    self::add_property('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
