@@ -10,11 +10,12 @@
  * Documentation: complete
  * Tests: Unit/HookableTest.php
  * Coverage: unknown
+ * PSR-State: complete
  */
 namespace Sunhill\ORM;
 
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\Basic\loggable;
+use Sunhill\Basic\Loggable;
 
 /**
  * A basic class for classes, that make use of hooks
@@ -23,7 +24,8 @@ use Sunhill\Basic\loggable;
  * - CONSTRUCTED is called whenever a new object is created
  * @author Klaus
  */
-class hookable extends loggable {
+class Hookable extends Loggable 
+{
 
 	
 	protected $hooks = array();
@@ -34,7 +36,8 @@ class hookable extends loggable {
 	 * system will be performed. The initialization will take place via a call of ->setup_hooks(). 
 	 * Further the hook for CONSTRCUTED will be called if it exists
 	 */
-	public function __construct() {
+	public function __construct() 
+    {
 		parent::__construct();
 		$this->setup_hooks();
 		$this->check_for_hook('CONSTRUCTED');		
@@ -43,7 +46,8 @@ class hookable extends loggable {
     /**
      * This method will initialize the hooks for this class
      */
-	protected function setup_hooks() {
+	protected function setup_hooks() 
+    {
 	    // Does nothing in the basic class
 	}
 
@@ -54,13 +58,16 @@ class hookable extends loggable {
 	 * @param string $subaction
 	 * @param hookable $destination
 	 */
-	public function add_hook(string $action,string $hook,string $subaction='default',$destination=null,$payload=null) {
-	    if (is_null($destination)) { $destination = $this; }
-	    if ($this->hook_already_installed($action,$hook,$subaction,$destination,$payload)) {
+	public function addHook(string $action, string $hook, string $subaction = 'default', $destination = null, $payload=null) 
+    {
+	    if (is_null($destination)) { 
+            $destination = $this; 
+        }
+	    if ($this->hookAlreadyInstalled($action,$hook,$subaction,$destination,$payload)) {
 	        return;
 	    }
 	    if ($destination !== $this) {
-            $this->set_external_hook($action,$subaction,$destination,$payload,$hook);
+            $this->setExternalHook($action,$subaction,$destination,$payload,$hook);
 	    }
 	    if (!isset($this->hooks[$action])) {
 	        $this->hooks[$action] = array();
@@ -69,18 +76,20 @@ class hookable extends loggable {
 	        $this->hooks[$action][$subaction] = array();
 	    }
 	    if (strpos($subaction,'.')) {
-	        // Es handelt sich um einen komplexen hook
-	        $this->set_complex_hook($action,$hook,$subaction,$destination);
+	        // It's a complex hook
+	        $this->setComplexHook($action,$hook,$subaction,$destination);
 	    } else {	    
 	       $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook,'payload'=>$payload);
 	    }
 	}
 	
-	protected function set_external_hook($action,$subaction,$destination,$payload,$hook) {
+	protected function setExternalHook(string $action, string $subaction, $destination, $payload, string $hook) 
+    {
 	    $this->external_hooks[] = array('action'=>$action,'subaction'=>$subaction,'destination'=>$destination,'payload'=>$payload);	    
 	}
 	
-	private function hook_already_installed($action,$hook,$subaction,$destination,$payload) {
+	private function hookAlreadyInstalled($action,$hook,$subaction,$destination,$payload) 
+    {
 	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
 	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
 	            if (($hook == $descriptor['hook']) && ($this->target_equal($destination,$descriptor['destination']))) {
@@ -91,17 +100,20 @@ class hookable extends loggable {
 	    return false;
 	}
 	
-	protected function target_equal($test1,$test2) {
+	protected function target_equal($test1,$test2) 
+    {
 	    return ($test1 === $test2);
 	}
-	/**
-	 * Wird für komplexe Aufgabe aufgerufen
+	
+    /**
+	 * Is called for complex hooks
 	 * @param string $action
 	 * @param string $hook
 	 * @param string $subaction
 	 * @param unknown $destination
 	 */
-	protected function set_complex_hook(string $action,string $hook,string $subaction,$destination) {
+	protected function setComplexHook(string $action,string $hook,string $subaction,$destination) 
+    {
 	    $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook);	    
 	}
 	
@@ -111,7 +123,8 @@ class hookable extends loggable {
 	 * @param string $subaction
 	 * @param array $params
 	 */
-	public function check_for_hook(string $action,$subaction='default',array $params=null) {
+	public function checkForHook(string $action, $subaction = 'default', array $params=null) 
+    {
 	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
 	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
                 $destination = $descriptor['destination'];
@@ -130,7 +143,8 @@ class hookable extends loggable {
 	    }
 	}
 
-	public function get_external_hooks() {
+	public function getExternalHooks() 
+    {
 	    $result = [];
 	    foreach ($this->hooks as $actionname=>$actions) {
 	        foreach ($actions as $subactionname=>$subactions) {
