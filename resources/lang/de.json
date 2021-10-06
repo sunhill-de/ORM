@@ -23,7 +23,7 @@
   "Migrates the provided objects":"Migriert die zur Verfügung gestellten Objekte",
   "Migrating objects...":"Migriert Objekte...",
   "Migrating :name: ":"Migrierge :name: ",
-  "Migrating finished.":"Migration beendet"
+  "Migrating finished.":"Migration beendet",
   
   "***** src/Objects/PropertiesHaving":"src/Objects/PropertiesHaving *****",
   "Invalided object called.":"Invalidiertes Objekt aufgerufen",
