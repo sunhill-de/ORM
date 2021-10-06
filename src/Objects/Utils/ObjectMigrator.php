@@ -1,22 +1,24 @@
 <?php
 
 /**
- * @file object_migrator.php
- * Provides the object_migrator class that is a supporting class for the class manager
+ * @file ObjectMigrator.php
+ * Provides the ObjectMigrator class that is a supporting class for the class manager
  * Lang en
- * Reviewstatus: 2020-10-22
- * Localization: unknown
- * Documentation: unknown
- * Tests: unknown
+ * Reviewstatus: 2021-10-06
+ * Localization: none
+ * Documentation: incomplete
+ * Tests: Feature/Objects/Utils/ObjectMigrateTest.php
  * Coverage: unknown
  * Dependencies: Classes
+ * PSR-State: Type-Hints missing
  */
 namespace Sunhill\ORM\Objects\Utils;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
 
-class object_migrator {
+class object_migrator 
+{
  
     private $class_name = '';
     
@@ -30,25 +32,26 @@ class object_migrator {
      * to this class.
      * @param $class_name string: The (internal) name of this class
      */
-    public function migrate(string $class_name) {
+    public function migrate(string $class_name): null
+    {
         if ($class_name == 'object') {
             return; // Dont migrate object because its done with migrate:fresh
         }
         $this->class_name = $class_name;
-        $this->class_namespace = Classes::get_namespace_of_class($class_name);
-        $this->class_tablename = Classes::get_table_of_class($class_name);
+        $this->class_namespace = Classes::getNamespaceOfClass($class_name);
+        $this->class_tablename = Classes::getTableOfClass($class_name);
         
         // Initialize the properties otherwise we can't access them
-        $this->class_namespace::initialize_properties();
+        $this->class_namespace::initializeProperties();
             
-        if ($this->table_exists()) {
+        if ($this->tableExists()) {
             // If the table already exsists, check if we have to change it
-            $current = $this->get_current_properties();
-            $database = $this->get_database_properties();
-            $removed = $this->remove_columns($current,$database);
-            $added = $this->add_columns($current,$database);
-            $altered = $this->alter_colums($current,$database);
-            $this->post_migration($added,$removed,$altered);
+            $current = $this->getCurrentProperties();
+            $database = $this->getDatabaseProperties();
+            $removed = $this->removeColumns($current,$database);
+            $added = $this->addColumns($current,$database);
+            $altered = $this->alterColums($current,$database);
+            $this->postMigration($added,$removed,$altered);
         } else {
             // If the table doesn't exists, create it
             $this->create_table();
@@ -59,7 +62,8 @@ class object_migrator {
      * Check if the table of this object exists at all
      * @return boolean true, of the table exists otherwise false
      */
-    private function table_exists() {
+    private function tableExists(): bool
+    {
         $tables = DB::select(DB::raw("SHOW TABLES LIKE '".$this->class_tablename."'"));
         foreach ($tables as $name => $table) {
             foreach ($table as $field) {
@@ -76,7 +80,8 @@ class object_migrator {
      * @param string $type
      * @return string
      */
-    private function map_type($info) {
+    private function mapType(array $info): string
+    {
         switch ($info['type']) {
             case 'integer':
                 return 'int(11)'; break;
@@ -92,9 +97,10 @@ class object_migrator {
     /**
      * creates a new table with the current properties
      */
-    private function create_table() {
+    private function create_table(): null
+    {
         $statement = 'create table '.$this->class_tablename.' (id int primary key';
-        $simple = $this->get_current_properties();
+        $simple = $this->getCurrentProperties();
         foreach ($simple as $field => $info) {
             $statement .= ','.$field.' '.self::map_type($info);
         }
@@ -106,29 +112,32 @@ class object_migrator {
      * Returns the current properties of the class
      * @return array|string|NULL[][]
      */
-    private function get_current_properties() {
-        $properties = $this->class_namespace::static_get_properties_with_feature('simple','class');
+    private function getCurrentProperties() 
+    {
+        $properties = $this->class_namespace::staticGetPropertiesWithFeature('simple','class');
+        
         $result = array();
         if (!isset($properties[$this->class_name])) {
             return $result;
         }
+        
         foreach ($properties[$this->class_name] as $property) {
-            $result[$property->get_name()] = ['type'=>$property->get_type()];
-            switch ($property->get_type()) {
+            $result[$property->getName()] = ['type'=>$property->getType()];
+            switch ($property->getType()) {
                 case 'varchar':
-                    $result[$property->get_name()]['maxlen'] = $property->get_maxlen();
+                    $result[$property->getName()]['maxlen'] = $property->getMaxLen();
                     break;
                 case 'enum':
                     $first = true;
                     $resultstr = '';
-                    foreach ($property->get_enum_values() as $value) {
+                    foreach ($property->getEnumValues() as $value) {
                         if (!$first) {
                             $resultstr .= ',';
                         }
                         $resultstr .= "'$value'";
                         $first = false;
                     }
-                    $result[$property->get_name()]['enum'] = $resultstr;
+                    $result[$property->getName()]['enum'] = $resultstr;
                     break;
             }
         }
@@ -139,7 +148,8 @@ class object_migrator {
      * Return the current properties of the database
      * @return NULL[][]
      */
-    private function get_database_properties() {
+    private function getDatabaseProperties() 
+    {
         $fields = DB::select(DB::raw("SHOW COLUMNS FROM ".$this->class_tablename));
         $result = array();
         foreach ($fields as $field) {
@@ -154,7 +164,8 @@ class object_migrator {
      * @param unknown $database
      * @param array of string The name of the columns that were removed
      */
-    private function remove_columns($current,$database) {
+    private function removeColumns($current,$database) 
+    {
         $result = [];
         foreach ($database as $name => $info) {
             if (!array_key_exists($name,$current) && ($name !== 'id')) {
@@ -171,7 +182,8 @@ class object_migrator {
      * @param unknown $database
      * @param array of string The name of the columns that were added
      */
-    private function add_columns($current,$database) {
+    private function addColumns($current,$database) 
+    {
         $result = [];
         foreach ($current as $name => $info) {
             if (!array_key_exists($name,$database)) {
@@ -190,7 +202,8 @@ class object_migrator {
      * @param unknown $database
      * @param array of string The name of the columns that were changed
      */
-    private function alter_colums($current,$database) {
+    private function alterColums($current,$database) 
+    {
         $result = [];
         foreach ($current as $name => $info) {
             if (array_key_exists($name,$database)) {
@@ -213,7 +226,8 @@ class object_migrator {
      * @param array $deleted Name of the fields that were removed
      * @param array $changed Name of the fields that were changed
      */
-    private function post_migration(array $added,array $deleted,array $changed) {
+    private function postMigration(array $added, array $deleted, array $changed) 
+    {
         
     }
 }
