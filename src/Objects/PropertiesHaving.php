@@ -1,7 +1,7 @@
 <?php
 /**
- * @file propertieshaving.php
- * Defines the class propertyhaving. This is, as the name suggents, a class that has properties. 
+ * @file PropertiesHaving.php
+ * Defines the class PropertiesHaving. This is, as the name suggents, a class that has properties. 
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -24,25 +24,26 @@ use Sunhill\ORM\Facades\Classes;
  * This class inherits from hookable
  * * - CONSTRUCTED
  * 
- * Die Klasse definiert folgende Hooks:
- * - COMMITTING Wird vor dem Commit aufgerufen
- * - COMMITTED Wird nach dem Commit aufgerufen 
- * - LOADING Wird vor dem Laden aufgerufen
- * - LOADED Wird nach dem Laden aufgerufen
- * - INSERTING Wird vor dem Einfügen aufgerufen
- * - INSERTED Wird nach dem Einfügen aufgerufen
- * - UPDATING Wird vor dem Update aufgerufen
- * - UPDATED Wird nach dem Update aufgerufen
- * - DELETING Wird vor dem Löschen aufgerufen
- * - DELETED Wird nach dem Löschen aufgerufen
+ * The class defines following hooks
+ * - COMMITTING is called before a commit
+ * - COMMITTED is called after a commit
+ * - LOADING is called before loading
+ * - LOADED is called after loading
+ * - INSERTING is called before inserting
+ * - INSERTED is called after inserting
+ * - UPDATING is called before updating
+ * - UPDATED is called after updating
+ * - DELETING is called before deleting
+ * - DELETED is called after deleting
  * 
- * Über die Properties werden folgende Hooks definiert:
+ * The following hooks a defined via the properties
  * - PROPERTY_CHANGING
  * - PROPERTY_CHANGED
  *  
  * @author lokal
  */
-class propertieshaving extends hookable {
+class PopertiesHaving extends Hookable 
+{
 	
     protected $id;
     
@@ -61,16 +62,17 @@ class propertieshaving extends hookable {
         'options'=>0,           // Reserved for later purposes
     ];
     /**
-     * Konstruktur, ruft nur zusätzlich setup_properties auf
+     * Constructor calles setupProperties()
      */
-	public function __construct() {
+	public function __construct() 
+    {
 		parent::__construct();
-		self::initialize_properties();
-		$this->copy_properties();
+		self::initializeProperties();
+		$this->copyProperties();
 	}
 	
-	protected function setup_hooks() {
-	    $this->add_hook('COMMITTED','clear_dirty');
+	protected function setupHooks() {
+	    $this->addHook('COMMITTED','clear_dirty');
 	}
 	
 	// ================================= ID-Handling =======================================
@@ -78,7 +80,8 @@ class propertieshaving extends hookable {
 	 * Returns the current id of this object (or null, when this object wasn't stored yet) 
 	 * @return int|null
 	 */
-	public function get_id() {
+	public function getID(): int 
+    {
 	    return $this->id;
 	}
 	
@@ -86,24 +89,28 @@ class propertieshaving extends hookable {
 	 * Sets the ID for the current object
 	 * @param Integer $id
 	 */
-	public function set_id($id) {
+	public function setID(int $id): null
+    {
 	    $this->id = $id;
 	}
-	/**
+	
+    /**
 	 * Sets a new value for readonly
 	 * @param bool $value
 	 * @return \Sunhill\propertieshaving
 	 */
-	protected function set_readonly(bool $value) {
+	protected function setReadonly(bool $value): PropertiesHaving
+    {
 	    $this->readonly = $value;
 	    return $this;
 	}
 	
 	/**
 	 * Returns the value for readonly
-	 * @return boolean|\Sunhill\bool
+	 * @return bool
 	 */
-	protected function get_readonly() {
+	protected function getReadonly(): bool
+    {
 	    return $this->readonly;
 	}
 	
@@ -113,7 +120,8 @@ class propertieshaving extends hookable {
      * Sets the current state of this object
      * @param $state string the new state
      */
-	protected function set_state(string $state) {
+	protected function setState(string $state): PropertiesHaving 
+    {
 	    $this->state = $state;
 	    return $this;
 	}
@@ -122,7 +130,8 @@ class propertieshaving extends hookable {
      * Returns the current state of this object
      * @return string
      */
-	protected function get_state() {
+	protected function getState(): string
+    {
 	    return $this->state;
 	}
 
@@ -130,32 +139,36 @@ class propertieshaving extends hookable {
      * Returns true if this object is comitting right now
      * @return bool
      */
-	protected function is_committing() {
-	    return ($this->get_state() == 'committing');
+	protected function isCommitting(): bool
+    {
+	    return ($this->getState() == 'committing');
 	}
 	
     /**
      * Returns true if this object is invalid
      * @return bool
      */
-	protected function is_invalid() {
-	    return $this->get_state() == 'invalid';
+	protected function isInvalid(): bool
+    {
+	    return $this->getState() == 'invalid';
 	}
 	
     /**
      * Returns true if this object is loading right now
      * @return bool
      */
-    protected function is_loading() {
-	   return $this->get_state() == 'loading';    
+    protected function isLoading(): bool 
+    {
+	   return $this->getState() == 'loading';    
 	}
 	
 	/**
      * Raises an exception if the object is invalid
      */
-    protected function check_validity() {
-	    if ($this->is_invalid()) {
-	        throw new PropertiesHavingException('Invalided object called.');
+    protected function checkValidity(): null 
+    {
+	    if ($this->isInvalid()) {
+	        throw new PropertiesHavingException(__('Invalided object called.'));
 	    }
 	}
 // ==================================== Loading =========================================
@@ -166,21 +179,24 @@ class propertieshaving extends hookable {
      * @returns propertieshaving Reference to self
      * @throws PropertiesHavingException If the object is invalid
      */
-	public function load($id) {
-	    $this->check_validity(); // Is this object inavlid?
+	public function load(int $id): PropertiesHaving 
+    {
+	    $this->checkValidity(); // Is this object inavlid?
 	    
-        if ($result = $this->check_cache($id)) { // Is this object already in the cache
-	        $this->set_state('invalid'); // If yes, this object is invalid
+        if ($result = $this->checkCache($id)) { // Is this object already in the cache
+	        $this->setState('invalid'); // If yes, this object is invalid
 	        return $result; // Return the cache instead
 	    }
 	    
-        $this->insert_cache($id); // Insert into cache
-	    $this->set_id($id);       
-	    $this->check_for_hook('LOADING','default',array($id));
-	    $this->do_load();
-	    $this->clean_properties();
-	    $this->check_for_hook('LOADED','default',array($id));
-	    return $this;
+        $this->insertCache($id); // Insert into cache
+	    $this->setID($id);       
+	    
+        $this->checkForHook('LOADING','default',array($id));
+	    $this->doLoad();
+	    $this->cleanProperties();
+	    $this->checkForHook('LOADED','default',array($id));
+	    
+        return $this;
 	}
 	
 	/**
@@ -188,7 +204,8 @@ class propertieshaving extends hookable {
 	 * @param integer $id The id to check
      * @returns bool True if it is in the cache, false if not
 	 */
-	protected function check_cache(int $id) {
+	protected function check_cache(int $id): bool 
+    {
 	    return false;
 	}
 	
@@ -196,31 +213,34 @@ class propertieshaving extends hookable {
 	 * Add itself to the cache
 	 * @param Int $id
 	 */
-	protected function insert_cache(int $id) {
+	protected function insert_cache(int $id): null 
+    {
 	}
 	
     /**
      * Does the loading (has to be overwritten)
      */
-	protected function do_load() {
+	protected function do_load() 
+    {
 	}
 	
 // ===================================== Committing =======================================
 	/**
      * Stores the object into the storage
      */
-    public function commit($caller=null) {
-	    $this->check_validity();
-    	if (!$this->is_committing()) { // Guard to protect from circular calls
-	        $this->set_state('committing');
-	        $this->check_for_hook('COMMITTING');
-	        if ($this->get_id()) {
+    public function commit($caller=null) 
+    {
+	    $this->checkValidity();
+    	if (!$this->isCommitting()) { // Guard to protect from circular calls
+	        $this->setState('committing');
+	        $this->checkForHook('COMMITTING');
+	        if ($this->getID()) {
 	            $this->update(); // This object is already in a storage
 	        } else {
 	            $this->insert(); // This object is new
 	        }
-	        $this->check_for_hook('COMMITTED');
-	        $this->set_state('normal');
+	        $this->checkForHook('COMMITTED');
+	        $this->setState('normal');
 	    }
 	    return;
 	}
@@ -229,12 +249,12 @@ class propertieshaving extends hookable {
      * Returns if one of the properties is modified since the last commit(), rollback() or load()
      * @returns bool
      */
-	protected function get_dirty() {
-	    $dirty_properties = $this->get_properties_with_feature('',true);
+	protected function getDirty() {
+	    $dirty_properties = $this->getPropertiesWithFeature('',true);
 	    return (!empty($dirty_properties));	    
 	}
 	
-	protected function do_recommit() {
+	protected function doRecommit() {
 	    
 	}
 	
@@ -243,23 +263,23 @@ class propertieshaving extends hookable {
      * Checks for hooks and calls do_update
      */
     protected function update() {
-	    $this->check_for_hook('UPDATING');
-	    $this->do_update();
-	    $this->check_for_hook('UPDATED');
+	    $this->checkForHook('UPDATING');
+	    $this->doUpdate();
+	    $this->checkForHook('UPDATED');
 	}
 
     /**
      * Does the update work
      */
-	protected function do_update() {
+	protected function doUpdate() {
 	    // has to be overwritten in child objects
 	}
 	
 	/**
 	 * Cleans the dirty state
 	 */
-	protected function clear_dirty() {
-	    $this->clean_properties();
+	protected function clearDirty() {
+	    $this->cleanProperties();
 	}
 
 // ======================================= Inserting ===========================================
@@ -267,16 +287,17 @@ class propertieshaving extends hookable {
      * Checks for hooks and calls do_insert
      */
     protected function insert() {
-	    $this->check_for_hook('INSERTING');
-	    $this->do_insert();
-	    $this->check_for_hook('INSERTED');
+	    $this->checkForHook('INSERTING');
+	    $this->doInsert();
+	    $this->checkForHook('INSERTED');
 	}
 
 	/**
 	 * Does the insert work
 	 * @param bool $recommit
 	 */
-	protected function do_insert() {
+	protected function doInsert() 
+    {
 	   // has to be overwritten in child objects 
 	}
 	
@@ -285,23 +306,23 @@ class propertieshaving extends hookable {
      * Checks for hooks and calls do_delete and clears the cache
      */
     public function delete() {
-	    $this->check_for_hook('DELETING');
-	    $this->do_delete();
-	    $this->check_for_hook('DELETED');
-	    $this->clear_cache_entry();
+	    $this->checkForHook('DELETING');
+	    $this->doDelete();
+	    $this->checkForHook('DELETED');
+	    $this->clearCacheEntry();
 	}
 	
     /**
      * Does the delete work
      */
-	protected function do_delete() {
+	protected function doDelete() {
 	   // Has to be overwritten in child objects 
 	}
 	
     /**
      * Clears the cache (reomves this entry)
      */
-	protected function clear_cache_entry() {
+	protected function clearCacheEntry() {
 	   // Has to be overwritten in child objects 
 	}
 	
@@ -311,12 +332,12 @@ class propertieshaving extends hookable {
 	 * Is called by the constructor to initialize the properties
      * Child objects always have to call the parent method
      */
-	protected function copy_properties() {
+	protected function copyProperties() {
 	    $this->properties = array();
 	    foreach (static::$property_definitions as $name => $property) {
 	        $this->properties[$name] = clone $property;
-	        //$this->properties[$name]->set_class(get_class($this));
-	        $this->properties[$name]->set_owner($this);
+	        //$this->properties[$name]->setClass(get_class($this));
+	        $this->properties[$name]->setOwner($this);
 	    }
 	}
 
