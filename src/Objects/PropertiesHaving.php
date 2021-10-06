@@ -10,6 +10,7 @@
  * Documentation: in progress
  * Tests: none
  * Coverage: unknown
+ * PSR-State: some type hints missing
  */
 namespace Sunhill\ORM\Objects;
 
@@ -249,12 +250,14 @@ class PopertiesHaving extends Hookable
      * Returns if one of the properties is modified since the last commit(), rollback() or load()
      * @returns bool
      */
-	protected function getDirty() {
+	protected function getDirty() 
+    {
 	    $dirty_properties = $this->getPropertiesWithFeature('',true);
 	    return (!empty($dirty_properties));	    
 	}
 	
-	protected function doRecommit() {
+	protected function doRecommit() 
+    {
 	    
 	}
 	
@@ -262,7 +265,8 @@ class PopertiesHaving extends Hookable
 	/**
      * Checks for hooks and calls do_update
      */
-    protected function update() {
+    protected function update() 
+    {
 	    $this->checkForHook('UPDATING');
 	    $this->doUpdate();
 	    $this->checkForHook('UPDATED');
@@ -271,14 +275,16 @@ class PopertiesHaving extends Hookable
     /**
      * Does the update work
      */
-	protected function doUpdate() {
+	protected function doUpdate() 
+    {
 	    // has to be overwritten in child objects
 	}
 	
 	/**
 	 * Cleans the dirty state
 	 */
-	protected function clearDirty() {
+	protected function clearDirty() 
+    {
 	    $this->cleanProperties();
 	}
 
@@ -286,7 +292,8 @@ class PopertiesHaving extends Hookable
 	/**
      * Checks for hooks and calls do_insert
      */
-    protected function insert() {
+    protected function insert() 
+    {
 	    $this->checkForHook('INSERTING');
 	    $this->doInsert();
 	    $this->checkForHook('INSERTED');
@@ -305,7 +312,8 @@ class PopertiesHaving extends Hookable
 	/**
      * Checks for hooks and calls do_delete and clears the cache
      */
-    public function delete() {
+    public function delete() 
+    {
 	    $this->checkForHook('DELETING');
 	    $this->doDelete();
 	    $this->checkForHook('DELETED');
@@ -315,14 +323,16 @@ class PopertiesHaving extends Hookable
     /**
      * Does the delete work
      */
-	protected function doDelete() {
+	protected function doDelete() 
+    {
 	   // Has to be overwritten in child objects 
 	}
 	
     /**
      * Clears the cache (reomves this entry)
      */
-	protected function clearCacheEntry() {
+	protected function clearCacheEntry() 
+    {
 	   // Has to be overwritten in child objects 
 	}
 	
@@ -332,7 +342,8 @@ class PopertiesHaving extends Hookable
 	 * Is called by the constructor to initialize the properties
      * Child objects always have to call the parent method
      */
-	protected function copyProperties() {
+	protected function copyProperties() 
+    {
 	    $this->properties = array();
 	    foreach (static::$property_definitions as $name => $property) {
 	        $this->properties[$name] = clone $property;
@@ -344,7 +355,8 @@ class PopertiesHaving extends Hookable
     /**
      * Undirties all properties 
      */
-	public function clean_properties() {
+	public function clean_properties() 
+    {
 	    foreach ($this->properties as $property) {
 	        $property->set_dirty(false);
 	    }
@@ -354,7 +366,8 @@ class PopertiesHaving extends Hookable
      * Searches for a property with the given name. If there is one, return its value. If not pass it to the parent __get method
      * @param $name string The name of the unknown member variable
      */
-	public function &__get($name) {
+	public function &__get($name) 
+    {
 	    if (isset($this->properties[$name])) {
 	        $this->check_for_hook('GET',$name,null);
 	        return $this->properties[$name]->get_value();
@@ -368,7 +381,8 @@ class PopertiesHaving extends Hookable
      * @param $name string The name of the unknown member variable
      * @param $value void The valie for this member variable
      */
-	public function __set($name,$value) {
+	public function __set($name,$value) 
+    {
 	    if (isset($this->properties[$name])) {
 	        if ($this->get_readonly()) {
 	            throw new PropertiesHavingException("Property '$name' was changed in readonly state.");
@@ -397,7 +411,8 @@ class PopertiesHaving extends Hookable
 	 * @param unknown $value The value of the property
 	 * @return boolean
 	 */
-	protected function handle_unknown_property($name,$value) {
+	protected function handle_unknown_property($name,$value) 
+    {
 	   return false;    
 	}
 	
@@ -406,7 +421,8 @@ class PopertiesHaving extends Hookable
 	 * @param string $name Name of the property
 	 * @return oo_property
 	 */
-	public function get_property(string $name,bool $return_null=false) {
+	public function get_property(string $name,bool $return_null=false) 
+    {
 	    if (!isset($this->properties[$name])) {
 	        if ($return_null) {
 	            return null;
@@ -423,7 +439,8 @@ class PopertiesHaving extends Hookable
      * @param string $group, wenn nicht null, dann werden die Properties nach dem Ergebnis von get_$group gruppiert
 	 * @return unknown[]
 	 */
-	public function get_properties_with_feature(string $feature='',$dirty=null,$group=null) {
+	public function getPropertiesWithFeature(string $feature = '', $dirty = null, $group = null) 
+    {
 	    $result = array();
 	    if (isset($group)) {
 	        $group = 'get_'.$group;
@@ -449,7 +466,7 @@ class PopertiesHaving extends Hookable
 	                $result[$name] = $property;
 	            }
 	        } else {
-	           if ($property->has_feature($feature)) {
+	           if ($property->hasFeature($feature)) {
 	               if (isset($group)) { // Soll gruppiert werden
 	                   $group_value = $property->$group();
 	                   if (isset($result[$group_value])) {
@@ -466,48 +483,55 @@ class PopertiesHaving extends Hookable
 	    return $result;
 	}
 
-	protected function dynamic_add_property($name,$type) {
-	    $property = static::create_property($name, $type);
-	    $property->set_owner($this);
+	protected function dynamicAddProperty(string $name,string $type) 
+    {
+	    $property = static::createProperty($name, $type);
+	    $property->setOwner($this);
 	    $this->properties[$name] = $property;
 	    return $property;	    
 	}
-	// ========================== Statische Methoden ================================
+	// ========================== Static methods ================================
 	
 	protected static $property_definitions;
 	
-	public static function initialize_properties() {
+	public static function initializeProperties(): null 
+    {
  	       static::$property_definitions = array();
 	       static::setup_properties();
 	}
 	
-	protected static function setup_properties() {
+	protected static function setupProperties(): null 
+    {
 	    
 	}
 
-	private static function get_calling_class() {
+	private static function getCallingClass(): string 
+    {
 	    $caller = debug_backtrace();
 	    return $caller[4]['class'];
 	}
 	
-	protected static function create_property($name,$type,$class=null) {
+	protected static function createProperty(string $name, string $type, PropertiesHaving|null $class = null) 
+    {
 	    $property_name = '\Sunhill\ORM\Properties\oo_property_'.$type;
 	    $property = new $property_name();
-	    $property->set_name($name);
-	    $property->set_type($type);
-	    $property->set_class(is_null($class)?Classes::get_class_name(self::get_calling_class()):$class);
+	    $property->setName($name);
+	    $property->setType($type);
+	    $property->setClass(is_null($class)?Classes::getClassName(self::getCallingClass()):$class);
 	    $property->initialize();
 	    return $property;
 	}
 	
-	protected static function add_property($name,$type) {
-	    $property = static::create_property($name, $type);
+	protected static function addProperty(string $name,string $type) 
+    {
+	    $property = static::createProperty($name, $type);
 	    static::$property_definitions[$name] = $property;
 	    return $property;
 	}
 	
-	public static function get_property_object($name) {
-	    static::initialize_properties();
+	public static function getPropertyObject(string $name) 
+    {
+	    static::initializeProperties();
 	    if (isset(static::$property_definitions[$name])) {
 	        return static::$property_definitions[$name];
 	    } else {
@@ -516,26 +540,27 @@ class PopertiesHaving extends Hookable
 	}
 	
 	/**
-	 * Liefert alle Properties zurück, die ein bestimmtes Feature haben
-	 * @param string $feature, wenn ungleich null, werden nur die Properties zurückgegeben, die ein bestimmtes Feature haben
-	 * @param bool $dirty, wenn true, dann nur dirty-Properties, wenn false dann nur undirty, wenn null dann alle
-	 * @param string $group, wenn nicht null, dann werden die Properties nach dem Ergebnis von get_$group gruppiert
+     * Returns all properties that have a certain feature and group them 
+	 * @param string $feature, if not null returns only properties that have this feature 
+	 * @param string $group, if not null the results are grouped defined by $group
 	 * @return unknown[]
 	 */
-	public static function static_get_properties_with_feature(string $feature='',$group=null) {
+	public static function staticGetPropertiesWithFeature(string $feature = '', $group = null): array 
+    {
 	    $result = array();
 	    if (isset($group)) {
 	        $group = 'get_'.$group;
 	    }
 	    if (empty(static::$property_definitions)) {
-	        static::setup_properties();
+	        static::setupProperties();
 	        if (empty(static::$property_definitions)) {
 	            return $result;
 	        }
 	    }
-	    foreach (static::$property_definitions as $name => $property) {
-	        if (empty($feature)) { // Gibt es Features zu berücksichgigen
-	            if (isset($group)) { // Soll gruppiert werden
+	    foreach (static::$property_definitions as $name => $property) 
+        {
+	        if (empty($feature)) { // Are there features
+	            if (isset($group)) { // Should we group
 	                $group_value = $property->$group();
 	                if (isset($result[$group_value])) {
 	                    $result[$group_value][$name] = $property;
@@ -547,7 +572,7 @@ class PopertiesHaving extends Hookable
 	            }
 	        } else {
 	            if ($property->has_feature($feature)) {
-	                if (isset($group)) { // Soll gruppiert werden
+	                if (isset($group)) { // Should we group
 	                    $group_value = $property->$group();
 	                    if (isset($result[$group_value])) {
 	                        $result[$group_value][$name] = $property;
@@ -563,7 +588,8 @@ class PopertiesHaving extends Hookable
 	    return $result;
 	}
 	
-	public static function get_property_info($name) {
+	public static function getPropertyInfo(string $name) 
+    {
 	    static::initialize_properties();
 	    return static::$property_definitions[$name];
 	}
@@ -575,62 +601,72 @@ class PopertiesHaving extends Hookable
 	}
 	
 	protected static function timestamp($name) {
-	    $property = self::add_property($name, 'timestamp');
+	    $property = self::addProperty($name, 'timestamp');
 	    return $property;
 	}
 	
-	protected static function integer($name) {
-	    $property = self::add_property($name, 'integer');
+	protected static function integer($name) 
+    {
+	    $property = self::addProperty($name, 'integer');
 	    return $property;
 	}
 	
-	protected static function varchar($name) {
-	    $property = self::add_property($name, 'varchar');
+	protected static function varchar($name) 
+    {
+	    $property = self::addProperty($name, 'varchar');
 	    return $property;
 	}
 	
 	protected static function object($name) {
-	    $property = self::add_property($name, 'object');
+	    $property = self::addProperty($name, 'object');
 	    return $property;
 	}
 	
-	protected static function text($name) {
-	    $property = self::add_property($name, 'text');
+	protected static function text($name) 
+    {
+	    $property = self::addProperty($name, 'text');
 	    return $property;
 	}
 	
-	protected static function enum($name) {
-	    $property = self::add_property($name, 'enum');
+	protected static function enum($name) 
+    {
+	    $property = self::addProperty($name, 'enum');
 	    return $property;
 	}
 	
-	protected static function datetime($name) {
-	    $property = self::add_property($name, 'datetime');
+	protected static function datetime($name) 
+    {
+	    $property = self::addProperty($name, 'datetime');
 	    return $property;
 	}
 	
-	protected static function date($name) {
-	    $property = self::add_property($name, 'date');
+	protected static function date($name) 
+    {
+	    $property = self::addProperty($name, 'date');
 	    return $property;
 	}
 	
-	protected static function time($name) {
-	    $property = self::add_property($name, 'time');
+	protected static function time($name) 
+    {
+	    $property = self::addProperty($name, 'time');
 	    return $property;
 	}
 	
-	protected static function float($name) {
-	    $property = self::add_property($name, 'float');
+	protected static function float($name) 
+    {
+	    $property = self::addProperty($name, 'float');
 	    return $property;
 	}
 	
-	protected static function arrayofstrings($name) {
-	    $property = self::add_property($name, 'array_of_strings');
+	protected static function arrayOfStrings($name) 
+    {
+	    $property = self::addProperty($name, 'array_of_strings');
 	    return $property;
 	}
 	
-	protected static function arrayofobjects($name) {
-	    $property = self::add_property($name, 'array_of_objects');
+	protected static function arrayOfObjects($name) 
+    {
+	    $property = self::addProperty($name, 'array_of_objects');
 	    return $property;
 	}
 	
@@ -639,8 +675,9 @@ class PopertiesHaving extends Hookable
      * @param $name The name of this property
      * @see Sunhill/ORM/Properties/
      */     
-	protected static function calculated($name) {
-	    $property = self::add_property($name, 'calculated');
+	protected static function calculated($name) 
+    {
+	    $property = self::addProperty($name, 'calculated');
 	    return $property;
 	}
 	
