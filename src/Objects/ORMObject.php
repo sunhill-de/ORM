@@ -8,25 +8,18 @@
  * Documentation: unknown
  * Tests: unknown
  * Coverage: unknown
- * Dependencies: Objects, ORMException, base
+ * Dependencies: Objects, ObjectException, base
  */
 namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\ORMException;
+use Sunhill\ORM\Objects\ObjectException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-
-/**
- * Baseclass for errors that raise inside of oo_object
- * @author lokal
- */
-class ObjectException extends ORMException {}
-
-/**
- * This exception indicates that an unknown property was requested
- */
-class UnknownPropertyException extends ObjectException {}
+use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Storage\StorageMySQL;
+use Sunhill\ORM\Properties\oo_property_attribute;
+use \Sunhill\ORM\Properties\AttributeException;
 
 /**
  * As the central class of the ORM system oo_object provides the basic function for
@@ -41,7 +34,8 @@ class UnknownPropertyException extends ObjectException {}
  * - No direct database interaction. Should be handled by the storages
  * @author lokal
  */
-class oo_object extends propertieshaving {
+class ORMObject extends PropertiesHaving 
+{
 
     /**
      * Static variable that stores the name of the database table.
@@ -69,10 +63,11 @@ class oo_object extends propertieshaving {
      * Constructor for all orm classes. As a child of properties_having it calls its derrived constructor wich in turn initializes the properties.
      * Additionally it defines a few own intenal properties (tags and externalhooks)
      */
-	public function __construct() {
+	public function __construct() 
+    {
 	    parent::__construct();
-	    $this->properties['tags'] = self::create_property('tags','tags','object')->set_owner($this);
-	    $this->properties['externalhooks'] = self::create_property('externalhooks','externalhooks','object')->set_owner($this);
+	    $this->properties['tags'] = self::createProperty('tags','tags','object')->set_owner($this);
+	    $this->properties['externalhooks'] = self::createProperty('externalhooks','externalhooks','object')->set_owner($this);
 	}
 	
 	// ========================================== NeedID-Queries ========================================
@@ -86,44 +81,49 @@ class oo_object extends propertieshaving {
 	 * @param array $fixed
 	 * @param string $id_field
 	 */
-	public function add_needid_query(string $table,array $fixed,string $id_field) {
+	public function addNeedIDQuery(string $table,array $fixed,string $id_field): null 
+    {
 	    $this->needid_queries[] = ['table'=>$table,'fixed'=>$fixed,'id_field'=>$id_field];
 	}
 	
 	/**
 	 * Processes all entries in the need_id_query
-	 * @param \Sunhill\ORM\Storage\storage_base $storage
+	 * @param storage_base $storage
 	 */
-	protected function execute_need_id_queries(\Sunhill\ORM\Storage\storage_base $storage) {
+	protected function executeNeedIDQueries(storage_base $storage): null 
+    {
 	    $storage->entities['needid_queries'] = $this->needid_queries;
-	    $storage->execute_need_id_queries();
+	    $storage->executeNeedIDQueries();
 	}
 	
 // ============================ Storagefunktionen =======================================	
 	/**
 	 * Returns the current storage or creates one if it doesn't exist
-	 * @return \Sunhill\ORM\Storage\storage_base
+	 * @return StorageBase
 	 */
-	final protected function get_storage() {
-	    return $this->create_storage();
+	final protected function getStorage(): StorageBase 
+    {
+	    return $this->createStorage();
 	}
 	
 	/**
 	 * Creates a storage. By default this is a mysql storage. This method could be overwritten for debug purposes
-	 * @return \Sunhill\ORM\Storage\storage_mysql
+	 * @return StorageMySQL
 	 */
-	protected function create_storage() {
-	    return new \Sunhill\ORM\Storage\storage_mysql($this);
+	protected function createStorage(): StorageMySQL
+    {
+	    return new StorageMySQL($this);
 	}
 	    
 // ================================ Loading ========================================	
 	/**
 	 * Checks, if the object with ID $id is in the cache. If yes, return it, othwerwise return false
 	 * @param integer $id The id to search for
-	 * @return bool|oo_object false if not in cache otherwise the cache entry
+	 * @return bool|ORMObject false if not in cache otherwise the cache entry
 	 */ 	 
-	protected function check_cache(int $id) {
-	    if (Objects::is_cached($id)) {
+	protected function checkCache(int $id): bool|ORMObject 
+    {
+	    if (Objects::isCached($id)) {
 	        return Objects::load($id);
 	    }
 	    return false;
@@ -133,25 +133,27 @@ class oo_object extends propertieshaving {
 	 * Puts itself in the objects cache
 	 * @param Int $id
 	 */
-	protected function insert_cache(int $id) {
-	    Objects::insert_cache($id,$this);	    
+	protected function insertCache(int $id): null 
+    {
+	    Objects::insertCache($id,$this);	    
 	}
 	
 	/**
 	 * Loads the object from the storage
 	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\propertieshaving::do_load()
+	 * @see \Sunhill\ORM\PropertiesHaving::do_load()
 	 */
-	protected function do_load() {
+	protected function doLoad(): null 
+    {
 	    if (!$this->is_loading()) {
 	        $this->state = 'loading';
-	        $loader = $this->get_storage();
-	        $this->walk_properties('loading',$loader);
-	        $loader->load_object($this->get_id());
-            $this->walk_properties('load',$loader);
-            $this->load_attributes($loader);
-            $this->load_external_hooks($loader);
-            $this->walk_properties('loaded', $loader);
+	        $loader = $this->getStorage();
+	        $this->walkProperties('loading',$loader);
+	        $loader->loadObject($this->get_id());
+            $this->walkProperties('load',$loader);
+            $this->loadAttributes($loader);
+            $this->loadExternalHooks($loader);
+            $this->walkProperties('loaded', $loader);
             $this->state = 'normal';
 	    }
 	}
@@ -159,17 +161,18 @@ class oo_object extends propertieshaving {
 	/**
 	 * Read the attributes from the storage
 	 */
-	protected function load_attributes(\Sunhill\ORM\Storage\storage_base $storage) {
-	    if (empty($storage->get_entity('attributes'))) {
+	protected function loadAttributes(storage_base $storage): null 
+    {
+	    if (empty($storage->getEntity('attributes'))) {
 	        return;
 	    }
-	    foreach ($storage->get_entity('attributes') as $name => $value) {
+	    foreach ($storage->getEntity('attributes') as $name => $value) {
 	        if (!empty($value['property'])) {
 	            $property_name = $value['property'];
 	        } else {
 	            $property_name = 'attribute_'.$value['type'];
 	        }
-	        $property = $this->dynamic_add_property($name, $property_name);
+	        $property = $this->dynamicAddProperty($name, $property_name);
 	        $property->load($storage);	        
 	    }
 	}
@@ -177,7 +180,8 @@ class oo_object extends propertieshaving {
 	/**
 	 * Reads the external hook from the storage
 	 */
-	protected function load_external_hooks(\Sunhill\ORM\Storage\storage_base $storage) {
+	protected function loadExternalHooks(storage_base $storage): null
+    {
 	}
 	
 // ========================= Insert =============================	
@@ -186,48 +190,53 @@ class oo_object extends propertieshaving {
      * inserts an object into the storage
 	 * First for every property inserting is called, afterwards insert and finally inserted.
 	 */
-	protected function do_insert() {
-	       $storage = $this->get_storage();
-    	   $this->walk_properties('inserting', $storage);
-           $this->walk_properties('insert',$storage);
-           $this->set_id($storage->insert_object());
-           $this->execute_need_id_queries($storage);
-           $this->walk_properties('inserted',$storage);
-           $this->insert_cache($this->get_id());
+	protected function doInsert(): null
+    {
+	       $storage = $this->getStorage();
+    	   $this->walkProperties('inserting', $storage);
+           $this->walkProperties('insert',$storage);
+           $this->setID($storage->insert_object());
+           $this->executeNeedIDQueries($storage);
+           $this->walkProperties('inserted',$storage);
+           $this->insertCache($this->get_id());
 	}
 
 // ========================== Update ===================================	
-	protected function do_update() {
-	    $storage = $this->get_storage();
-	    $storage->set_entity('id',$this->get_id());
-	    $this->walk_properties('updating', $storage);
-	    $this->walk_properties('update',$storage);
-	    $storage->update_object($this->get_id());
-	    $this->walk_properties('updated',$storage);
+	protected function doUpdate(): null 
+    {
+	    $storage = $this->getStorage();
+	    $storage->setEntity('id',$this->get_id());
+	    $this->walkProperties('updating', $storage);
+	    $this->walkProperties('update',$storage);
+	    $storage->updateObject($this->get_id());
+	    $this->walkProperties('updated',$storage);
 	}
 		
 	/**
 	 * Creates a new empty storage
 	 */
-	public function create_empty() {
+	public function createEmpty(): null 
+    {
 		
 	}
 	
 	// ================================= Delete =============================================
-	protected function do_delete() {
-	    $storage = $this->get_storage();
-	    $this->walk_properties('deleting',$storage);
-	    $this->walk_properties('delete',$storage);
-	    $storage->delete_object($this->get_id());
-	    $this->walk_properties('deleted',$storage);
-	    $this->clear_cache_entry();
+	protected function doDelete(): null 
+    {
+	    $storage = $this->getStorage();
+	    $this->walkProperties('deleting',$storage);
+	    $this->walkProperties('delete',$storage);
+	    $storage->deleteObject($this->getID());
+	    $this->walkProperties('deleted',$storage);
+	    $this->clearCacheEntry();
 	}
 	
     /**
      * Removes the entry from the cache
      */
-	protected function clear_cache_entry() {
-	    Objects::clear_cache($this->get_id());
+	protected function clearCacheEntry(): null 
+    {
+	    Objects::clearCache($this->getID());
 	}
 	
 	// ********************* Property handling *************************************	
@@ -237,12 +246,13 @@ class oo_object extends propertieshaving {
 	 * If $property is set, only this one is recalculated
 	 * @param unknown $property
 	 */
-	public function recalculate($property=null) {
+	public function recalculate($property = null): null
+    {
 	    if (!is_null($property)) {
-	        $property_obj = $this->get_property($property);
+	        $property_obj = $this->getProperty($property);
 	        $property_obj->recalculate();
 	    } else {
-	        $properties = $this->get_properties_with_feature('calculated');
+	        $properties = $this->getPropertiesWithFeature('calculated');
 	        foreach ($properties as $property) {
 	            $property->recalculate();
 	        }	        
@@ -254,50 +264,56 @@ class oo_object extends propertieshaving {
 	 * @param string $action The name of the method that has to get called
 	 * @param \Sunhill\ORM\Storage\storage_base $storage the storage
 	 */
-	protected function walk_properties(string $action,\Sunhill\ORM\Storage\storage_base $storage) {
-	    $properties = $this->get_properties_with_feature();
+	protected function walkProperties(string $action, StorageBase $storage): null
+    {
+	    $properties = $this->getPropertiesWithFeature();
 	    foreach ($properties as $property) {
 	        $property->$action($storage);
 	    }
 	}
 
-// ================================== Promotion ===========================================	
-	
+// ================================== Promotion ===========================================		
 	/**
 	 * Raises this object to a (higher) class
 	 * @param String $newclass
 	 * @return unknown
 	 */
-	public function promote(String $newclass) {
-        return Objects::promote_object($this,$newclass);    
+	public function promote(string $newclass): ORMObject 
+    {
+        return Objects::promoteObject($this,$newclass);    
 	}
 	
 	/**
 	 * The old (lower) object is called before the promotion takes place.
 	 * @param string $newclass
 	 */
-	public function pre_promotion(string $newclass) {
+	public function prePromotion(string $newclass): null 
+    {
 	    // Does nothing
 	}
 	
 	/**
 	 * The newly created (promoted) object is called after the promotion took place
-	 * @param oo_object $from The old (lower) object
+	 * @param ORMObject $from The old (lower) object
 	 */
-	public function post_promotion(oo_object $from) {
+	public function postPromotion(oo_object $from): null 
+    {
 	    // Does nothing
 	}
 
 // ===================================== Degration =============================================	
-	public function degrade(String $newclass) {
-	    return Objects::degrade_object($this,$newclass);
+	public function degrade(String $newclass): ORMObject 
+    {
+	    return Objects::degradeObject($this,$newclass);
 	}
 	
-	public function pre_degration(string $newclass) {
+	public function preDegration(string $newclass): null
+    {
 	    
 	}
 	
-	public function post_degration(oo_object $from) {
+	public function postDegration(oo_object $from): null 
+    {
 	    
 	}
 
@@ -306,11 +322,12 @@ class oo_object extends propertieshaving {
 	 * This routine copies the properties to $newobject
 	 * @param oo_object $newobject
 	 */
-	public function copy_to(oo_object $newobject) {
-	    $newobject->set_id($this->get_id());
+	public function copyTo(ORMObject $newobject): null 
+    {
+	    $newobject->setID($this->getID());
 	    foreach ($this->properties as $property) {
-	        $name = $property->get_name();
-	        switch ($property->get_type()) {
+	        $name = $property->getName();
+	        switch ($property->getType()) {
 	            case 'array_of_objects':
 	            case 'array_of_strings':
 	            case 'external_references':
@@ -331,11 +348,12 @@ class oo_object extends propertieshaving {
 	 * This routine copies the properties of the $source to this object
 	 * @param oo_object $source
 	 */
-	public function copy_from(oo_object $source) {
-	    $this->set_id($source->get_id());
+	public function copyFrom(ORMObject $source) 
+    {
+	    $this->set_id($source->getID());
 	    foreach ($this->properties as $property) {
-	        $name = $property->get_name();
-	        switch ($property->get_type()) {
+	        $name = $property->getName();
+	        switch ($property->getType()) {
 	            case 'array_of_objects':
 	            case 'array_of_strings':
 	            case 'external_references':
@@ -357,8 +375,9 @@ class oo_object extends propertieshaving {
 	 * @param boolean $full
 	 * @return unknown
 	 */
-	public function get_inheritance($full=false) {
-	    return Classes::get_inheritance_of_class(static::$object_infos['name'],$full);
+	public function getInheritance($full=false) 
+    {
+	    return Classes::getInheritanceOfClass(static::$object_infos['name'], $full);
 	}
 	
 	/**
@@ -368,59 +387,66 @@ class oo_object extends propertieshaving {
 	 * @param string $subaction
 	 * @param unknown $destination
 	 */
-	protected function set_complex_hook(string $action,string $hook,string $subaction,$destination) {
+	protected function setComplexHook(string $action, string $hook, string $subaction, $destination) 
+    {
 	    $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook);
 	    
 	    $parts = explode('.',$subaction);
 	    $field = array_shift($parts);
 	    $restaction = implode('.',$parts);
-	    $property = $this->get_property($field);
-	    $property->add_hook($action,$hook,$restaction,$destination);
+	    $property = $this->getProperty($field);
+	    $property->addHook($action,$hook,$restaction,$destination);
 	//    $this->add_hook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
 	}
 	
-	protected function set_external_hook($action,$subaction,$destination,$payload,$hook) {
-	    parent::set_external_hook($action,$subaction,$destination,$payload,$hook);
-        $this->get_property('externalhooks')->set_dirty(true);
+	protected function setExternalHook(string $action, string $subaction, $destination, $payload, string $hook)
+    {
+	    parent::setExternalHook($action,$subaction,$destination,$payload,$hook);
+        $this->getProperty('externalhooks')->setDirty(true);
 	}
 	
-	public function array_field_new_entry($name,$index,$value) {
-	    $this->check_for_hook('PROPERTY_ARRAY_NEW',$name,[$value]); 
+	public function arrayFieldNewEntry($name,$index,$value) 
+    {
+	    $this->checkForHook('PROPERTY_ARRAY_NEW',$name,[$value]); 
 	}
 	
-	public function array_field_removed_entry($name,$index,$value) {
-	    $this->check_for_hook('PROPERTY_ARRAY_REMOVED',$name,[$value]);	    
+	public function array_field_removed_entry($name,$index,$value) 
+    {
+	    $this->checkForHook('PROPERTY_ARRAY_REMOVED',$name,[$value]);	    
 	}
 	
-	protected function handle_unknown_property($name,$value) {
-	    if ($attribute = \Sunhill\ORM\Properties\oo_property_attribute::search($name)) {
-	        return $this->add_attribute($attribute,$value);
+	protected function handleUnknownProperty($name,$value) 
+    {
+	    if ($attribute = oo_property_attribute::search($name)) {
+	        return $this->addAttribute($attribute,$value);
 	    } else {
-	        return parent::handle_unknown_property($name, $value);
+	        return parent::handleUnknownProperty($name, $value);
 	    }
 	}
 	
-	private function add_attribute($attribute,$value) {
-	   $this->check_allowed_class($attribute);
-	   // Es gibt das Attribut und es darf für dieses Objekt benutzt werden
-	   $this->check_for_hook('ATTRIBUTE_ADDING',$attribute->name,[$value]);
+	private function addAttribute($attribute,$value) 
+    {
+	   $this->checkAllowedClass($attribute);
+	   // The attribute exists and may be used for this object
+	   $this->checkForHook('ATTRIBUTE_ADDING',$attribute->name,[$value]);
 	   if (!empty($attribute->property)) {
 	       $property_name = $attribute->property;
 	   } else {
 	       $property_name = 'attribute_'.$attribute->type;
 	   }
-	   $property = $this->dynamic_add_property($attribute->name, $property_name);
-	   $property->set_allowed_objects($attribute->allowedobjects)
-	   ->set_attribute_name($attribute->name)
-	   ->set_attribute_type($attribute->type)
-	   ->set_attribute_property($attribute->property)
-	   ->set_attribute_id($attribute->id);
-	   $property->set_value($value);
-	   $property->set_dirty(true);
+	   $property = $this->dynamicAddProperty($attribute->name, $property_name);
+	   $property->setAllowedObjects($attribute->allowedobjects)
+	   ->setAttributeName($attribute->name)
+	   ->setAttributeType($attribute->type)
+	   ->setAttributeProperty($attribute->property)
+	   ->setAttributeID($attribute->id);
+	   $property->setValue($value);
+	   $property->setDirty(true);
 	   return true;
 	}
 	
-	private function check_allowed_class($attribute) {
+	private function checkAllowedClass($attribute) 
+    {
 	    $allowed_classes = explode(',',$attribute->allowedobjects);
 	    if (!empty($allowed_classes)) {
 	        $allowed = false;
@@ -431,7 +457,7 @@ class oo_object extends propertieshaving {
 	        }
 	    }
 	    if (!$allowed) {
-	        throw new \Sunhill\ORM\Properties\AttributeException("Das Attribut '".$attribute->name."' ist nicht für dieses Objekt erlaubt.");
+	        throw new \Sunhill\ORM\Properties\AttributeException(__("The attribute ':attribute' is not allowed for this object.",['attribute'=>$attribute->name]));
 	    }	    
 	}
 	
@@ -440,7 +466,8 @@ class oo_object extends propertieshaving {
 	 * @param unknown $added_fields
 	 * @param unknown $removed_fields
 	 */
-	public function object_migrated(array $added_fields,array $removed_fields,array $changed_fields) {
+	public function objectMigrated(array $added_fields, array $removed_fields, array $changed_fields) 
+    {
 	    
 	}
 	
@@ -449,7 +476,8 @@ class oo_object extends propertieshaving {
 	/**
 	 * Initializes the properties of this object. Any child has to call its parents setup_properties() method
 	 */
-	protected static function setup_properties() {
+	protected static function setupProperties() 
+    {
 	    parent::setup_properties(); 
 	    self::add_property('tags','tags')->searchable();
 	    self::timestamp('created_at');
@@ -460,8 +488,9 @@ class oo_object extends propertieshaving {
 	/**
 	 * @deprecated The migration should be done via Classes facade. This method is to be removed
 	 */
-	public static function migrate() {
-        Classes::migrate_class(static::$object_infos['name']);
+	public static function migrate() 
+    {
+        Classes::migrateClass(static::$object_infos['name']);
 	}
 	
 	/**
@@ -470,10 +499,10 @@ class oo_object extends propertieshaving {
 	 * @param string $name
 	 * @return array
 	 */
-	public static function get_hirarchic_array(string $name)
+	public static function getHirarchicArray(string $name)
 	{
 	    if (! property_exists(get_called_class(), $name)) {
-	        throw new ORMException("The property '$name' doesn't exists.");
+	        throw new ObjectException(__("The property ':name' doesn't exists.",['name'=>$name]));
 	    }
 	    $result = [];
 	    $pointer = get_called_class();
@@ -484,19 +513,21 @@ class oo_object extends propertieshaving {
 	    return $result;
 	}
 	
-	public static function SearchKeyfield(string $keyfield) {
+	public static function searchKeyField(string $keyfield) 
+    {
 	   $query = static::search();
-	   $keyfields = static::DefineKeyfields($keyfield);
+	   $keyfields = static::defineKeyFields($keyfield);
 	   if (empty($keyfields)) {
-	       throw new ORMException("The class doesn't support keyfield search");
+	       throw new ObjectException(__("The class doesn't support keyfield search"));
 	   }
 	   foreach ($keyfields as $key => $value) {
 	       $query = $query->where($key,$value);
 	   }
-	   return $query->load_if_exists();
+	   return $query->loadIfExists();
 	}
 	
-	protected static function DefineKeyfields(string $keyfield) {
+	protected static function defineKeyFields(string $keyfield) 
+    {
 	    
 	}
 	
