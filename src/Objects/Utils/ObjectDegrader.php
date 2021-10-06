@@ -6,10 +6,11 @@
  * Lang en
  * Reviewstatus: 2021-10-06
  * Localization: complete
- * Documentation: unknown
- * Tests: unknown
+ * Documentation: complete
+ * Tests: Feature\Objects\Utils\ObjectDegradeTest.php
  * Coverage: unknown
  * Dependencies: Classes
+ * PSR-State: complete
  */
 namespace Sunhill\ORM\Objects\Utils;
 
