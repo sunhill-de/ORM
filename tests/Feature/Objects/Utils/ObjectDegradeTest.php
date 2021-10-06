@@ -1,14 +1,18 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Feature;
+namespace Sunhill\ORM\Tests\Feature\Objects\Utils;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Objects\oo_object;
+
+use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\Tag;
+
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Tests\Objects\ts_thirdlevelchild;
+
 
 class ObjectDegradeTest extends DBTestCase
 {
@@ -29,17 +33,17 @@ class ObjectDegradeTest extends DBTestCase
         $test->parentoarray[] = $add;
         $test->childint = 1;
         $test->childchildint = 2;
-        $tag = new \Sunhill\ORM\Objects\oo_tag('TestTag',true);
+        $tag = new Tag('TestTag',true);
         $test->tags->stick($tag);
         $test->commit();
-        $id = $test->get_id();
+        $id = $test->getID();
         $new = $test->degrade('secondlevelchild');
         $new->commit();
         
-        Objects::flush_cache();
+        Objects::flushCache();
         $read = Objects::load($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
-        $this->assertEquals('secondlevelchild',Objects::get_class_name_of($id));
+        $this->assertEquals('secondlevelchild',Objects::getClassNameOf($id));
     }
     
     public function testTwoStepDegration() {
@@ -61,16 +65,16 @@ class ObjectDegradeTest extends DBTestCase
         $test->thirdlevelobject = $add;
         $test->thirdlevelsarray[] = 'AAA';
         $test->thirdlevelsarray[] = 'BBB';
-        $tag = new \Sunhill\ORM\Objects\oo_tag('TestTag',true);
+        $tag = new Tag('TestTag',true);
         $test->tags->stick($tag);
         $test->commit();
         $id = $test->get_id();
         $new = $test->degrade('testparent');
         $new->commit();
-        Objects::flush_cache();
+        Objects::flushCache();
         $read = Objects::load($id);
         $this->assertEquals(123,$read->parentoarray[0]->dummyint);
-        $this->assertEquals('testparent',Objects::get_class_name_of($id));
+        $this->assertEquals('testparent',Objects::getClassNameOf($id));
         return $test;
     }
        
@@ -102,6 +106,5 @@ class ObjectDegradeTest extends DBTestCase
         $this->assertTrue(empty($result));
         return $test;
     }
-    
-    
+        
 }
