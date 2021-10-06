@@ -5,7 +5,7 @@
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2021-08-20
+ * Reviewstatus: 2021-10-06
  * Localization: none
  * Documentation: complete
  * Tests: none
@@ -21,4 +21,6 @@ use Sunhill\Basic\SunhillException;
  * @author klaus
  *
  */
-class ORMException extends SunhillException {}
+class ORMException extends SunhillException 
+{
+}
