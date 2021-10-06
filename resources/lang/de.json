@@ -17,7 +17,7 @@
   "Check string-object-assigns for not existing container objects":"Überprüfe die String-Objekt-Verknüfungen auf nichtexistente Container-Objekte",
   "Check for non existance classes in objects":"Überprüfe auf nicht existente Klassen in Objekten",
   "Check for gaps in object tables":"Überprüfe auf Lücken in den Objekttabellen",
-  "Objects ':return' have gaps.":"Objekte ':return' haben Lücken"
+  "Objects ':return' have gaps.":"Objekte ':return' haben Lücken",
   
   "***** src/Console/MigrateObjects":"***** src/Console/MigrateObjects",
   "Migrates the provided objects":"Migriert die zur Verfügung gestellten Objekte",
@@ -25,4 +25,8 @@
   "Migrating :name: ":"Migrierge :name: ",
   "Migrating finished.":"Migration beendet"
   
+  "***** src/Objects/ORMObject":"src/Objects/ORMObject ***",
+  "The attribute ':attribute' is not allowed for this object.":"Das Attribut ':attribute' ist nicht für dieses Objekt erlaubt.",
+  "The property ':name' doesn't exists.":"Die Eigenschaft ':name' existiert nicht.",
+  "The class doesn't support keyfield search":"Die Klasse unterstützt keine Schlüsselfeldsuche"
 }
