@@ -6,11 +6,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Tests\Objects\ts_testparent;
 use Sunhill\ORM\Tests\Objects\ts_testchild;
-use Sunhill\ORM\Objects\oo_tag;
+use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Seeder\Seeder;
 

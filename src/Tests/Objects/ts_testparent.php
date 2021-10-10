@@ -2,9 +2,9 @@
 
 namespace Sunhill\ORM\Tests\Objects;
 
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
-class ts_testparent extends oo_object {
+class ts_testparent extends ORMObject {
     
     public static $table_name = 'testparents';
     public static $object_infos = [

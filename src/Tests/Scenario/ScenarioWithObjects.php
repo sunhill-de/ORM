@@ -15,7 +15,7 @@ namespace Sunhill\ORM\Tests\Scenario;
 
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\Basic\SunhillException;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Illuminate\Support\Facades\DB;
 
 trait ScenarioWithObjects {
@@ -50,7 +50,7 @@ trait ScenarioWithObjects {
 
     protected function traverseClassHirarchy(string $class,array &$result)
     {
-        if ($class == oo_object::class) {
+        if ($class == ORMObject::class) {
             return;
         }
         if (!in_array($class::$object_infos['table'],$result)) {
@@ -63,7 +63,7 @@ trait ScenarioWithObjects {
     {
         $classes = get_declared_classes();
         foreach ($classes as $class) {
-            if (is_a($class,oo_object::class,true)) {
+            if (is_a($class,ORMObject::class,true)) {
                 if ($class::$object_infos['name'] == $classname) {
                     $this->traverseClassHirarchy($class,$result);
                     return;
@@ -93,17 +93,17 @@ trait ScenarioWithObjects {
     }
     
     /**
-     * For each row in the descriptor array this method is called with the name of the class and the descriptor of this class
-     * The descriptor is the two element array described above
+     * For each row in the Descriptor array this method is called with the name of the class and the Descriptor of this class
+     * The Descriptor is the two element array described above
      * @param $name string The name of the class
-     * @param $description array The descriptor of this class (an two element array)
+     * @param $description array The Descriptor of this class (an two element array)
      */
-    protected function handleClass(string $name,array $descriptor) {
-        if (count($descriptor) !== 2) {
-            throw new SunhillException("Invalid object descriptor: Elementcount is not 2");
+    protected function handleClass(string $name,array $Descriptor) {
+        if (count($Descriptor) !== 2) {
+            throw new SunhillException("Invalid object Descriptor: Elementcount is not 2");
             return;
         }
-        list($fields,$values) = $descriptor;
+        list($fields,$values) = $Descriptor;
         
         // Traverse through the values array and create an object for each row
         foreach ($values as $reference=>$single_values) {
@@ -121,7 +121,7 @@ trait ScenarioWithObjects {
      */
     protected function handleObject(string $name,$reference,array $fields,array $values) {
         if (count($fields) !== count($values)) {
-            throw new SunhillException("Invalid object descriptor: The count of values has to be the same as the count of fields");
+            throw new SunhillException("Invalid object Descriptor: The count of values has to be the same as the count of fields");
             return;
         }
         
@@ -144,7 +144,7 @@ trait ScenarioWithObjects {
     private function getNamespace($test) {
         $classes = get_declared_classes();
         foreach ($classes as $class) {
-            if (is_a($class,oo_object::class,true)) {
+            if (is_a($class,ORMObject::class,true)) {
                 if ($class::$object_infos['name'] == $test) {
                     return $class;
                 }
@@ -210,7 +210,7 @@ trait ScenarioWithObjects {
     /**
      * Writes the reference in the array
      * @param $reference string: The name of the reference
-     * @param $class oo_object: The object to store
+     * @param $class ORMObject: The object to store
      * @throws SunhillException if the reference is already in use
      */
     protected function storeReference(string $reference,$class) {
@@ -224,7 +224,7 @@ trait ScenarioWithObjects {
     /**
      * Returns the reference from the array
      * @param $reference string: The name of the reference
-     * @return oo_object: The stored object 
+     * @return ORMObject: The stored object 
      * @throws SunhillException if the reference does not exist
      */
     protected function getReference(string $reference) {

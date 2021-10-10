@@ -29,7 +29,7 @@ abstract class DBTestCase extends TestCase
             $this->do_migration();
             $this->do_seeding();
         }
-        Objects::flush_cache();
+        Objects::flushCache();
         Classes::flushClasses();
         Classes::registerClass(ts_dummy::class);
         Classes::registerClass(ts_testparent::class);

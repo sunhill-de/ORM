@@ -2,7 +2,7 @@
 
 /**
  * @file Tag.php
- * A facade to the tag_manager
+ * A facade to the TagManager
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en

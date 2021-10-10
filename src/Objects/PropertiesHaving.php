@@ -17,12 +17,12 @@ namespace Sunhill\ORM\Objects;
 use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Search\query_builder;
 use Sunhill\ORM\ORMException;
-use Sunhill\ORM\hookable;
+use Sunhill\ORM\Hookable;
 use Sunhill\ORM\Facades\Classes;
 
 /**
  * Basic class for all classes that have properties.
- * This class inherits from hookable
+ * This class inherits from Hookable
  * * - CONSTRUCTED
  * 
  * The class defines following hooks
@@ -55,11 +55,11 @@ class PopertiesHaving extends Hookable
     protected $properties;
     
     public static $object_infos = [
-        'name'=>'propertieshaving',       // A repetition of static:$object_name @todo see above
+        'name'=>'PropertiesHaving',       // A repetition of static:$object_name @todo see above
         'table'=>'',     // A repitition of static:$table_name
         'name_s'=>'properties having',     // A human readable name in singular
         'name_p'=>'properties having',    // A human readable name in plural
-        'description'=>'Baseclass of all other classes in the ORM system. An oo_object should\'t be initiated directly',
+        'description'=>'Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly',
         'options'=>0,           // Reserved for later purposes
     ];
     /**
@@ -98,7 +98,7 @@ class PopertiesHaving extends Hookable
     /**
 	 * Sets a new value for readonly
 	 * @param bool $value
-	 * @return \Sunhill\propertieshaving
+	 * @return \Sunhill\PropertiesHaving
 	 */
 	protected function setReadonly(bool $value): PropertiesHaving
     {
@@ -177,7 +177,7 @@ class PopertiesHaving extends Hookable
     /**
      * Loads the object with the id $id from the storage
      * @param $id int The id of the object to load
-     * @returns propertieshaving Reference to self
+     * @returns PropertiesHaving Reference to self
      * @throws PropertiesHavingException If the object is invalid
      */
 	public function load(int $id): PropertiesHaving 
@@ -347,7 +347,7 @@ class PopertiesHaving extends Hookable
 	    $this->properties = array();
 	    foreach (static::$property_definitions as $name => $property) {
 	        $this->properties[$name] = clone $property;
-	        //$this->properties[$name]->setClass(get_class($this));
+	        //$this->properties[$name]->setClass(getClass($this));
 	        $this->properties[$name]->setOwner($this);
 	    }
 	}
@@ -355,7 +355,7 @@ class PopertiesHaving extends Hookable
     /**
      * Undirties all properties 
      */
-	public function clean_properties() 
+	public function cleanProperties() 
     {
 	    foreach ($this->properties as $property) {
 	        $property->set_dirty(false);
@@ -377,15 +377,15 @@ class PopertiesHaving extends Hookable
 	}
 
     /**
-     * Searches for a property with the given name. If there is one, set its value. if not call handle_unknown_property()
+     * Searches for a property with the given name. If there is one, set its value. if not call handleUnknownProperty()
      * @param $name string The name of the unknown member variable
      * @param $value void The valie for this member variable
      */
-	public function __set($name,$value) 
+	public function __set(string $name, mixed $value) 
     {
 	    if (isset($this->properties[$name])) {
 	        if ($this->get_readonly()) {
-	            throw new PropertiesHavingException("Property '$name' was changed in readonly state.");
+	            throw new PropertiesHavingException(__("Property ':name' was changed in readonly state.",['name'=>$name]));
 	        } else {
 	            $this->properties[$name]->set_value($value);
 	            $this->check_for_hook('SET',$name,array(
@@ -400,8 +400,8 @@ class PopertiesHaving extends Hookable
 	                    'to'=>$this->properties[$name]->get_value()));
 	            }
 	        }
-	    } else if (!$this->handle_unknown_property($name,$value)){
-	        throw new PropertiesHavingException("Unknown property '$name'");
+	    } else if (!$this->handleUnknownProperty($name,$value)){
+	        throw new PropertiesHavingException(__("Unknown property ':name'",['name'=>$name]));
 	    }
 	}
 	
@@ -411,7 +411,7 @@ class PopertiesHaving extends Hookable
 	 * @param unknown $value The value of the property
 	 * @return boolean
 	 */
-	protected function handle_unknown_property($name,$value) 
+	protected function handleUnknownProperty(string $name, mixed $value) 
     {
 	   return false;    
 	}
@@ -419,15 +419,15 @@ class PopertiesHaving extends Hookable
 	/**
 	 * Returns the property object with the given name or raises an exception if there is no such property
 	 * @param string $name Name of the property
-	 * @return oo_property
+	 * @return Property
 	 */
-	public function get_property(string $name,bool $return_null=false) 
+	public function getProperty(string $name, bool $return_null = false) 
     {
 	    if (!isset($this->properties[$name])) {
 	        if ($return_null) {
 	            return null;
 	        }
-	        throw new PropertiesHavingException("Unknown property '$name'");
+	        throw new PropertiesHavingException(__("Unknown property ':name'",['name'=>$name]));
 	    }
 	    return $this->properties[$name];
 	}
@@ -522,7 +522,7 @@ class PopertiesHaving extends Hookable
 	    return $property;
 	}
 	
-	protected static function addProperty(string $name,string $type) 
+	protected static function addProperty(string $name, string $type) 
     {
 	    $property = static::createProperty($name, $type);
 	    static::$property_definitions[$name] = $property;
@@ -660,13 +660,13 @@ class PopertiesHaving extends Hookable
 	
 	protected static function arrayOfStrings($name) 
     {
-	    $property = self::addProperty($name, 'array_of_strings');
+	    $property = self::addProperty($name, 'arrayOfStrings');
 	    return $property;
 	}
 	
 	protected static function arrayOfObjects($name) 
     {
-	    $property = self::addProperty($name, 'array_of_objects');
+	    $property = self::addProperty($name, 'arrayOfObject');
 	    return $property;
 	}
 	

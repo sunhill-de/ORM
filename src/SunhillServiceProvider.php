@@ -5,14 +5,14 @@ namespace Sunhill\ORM;
 use Illuminate\Support\ServiceProvider;
 use \Sunhill\ORM\Managers\class_manager;
 use \Sunhill\ORM\Managers\object_manager;
-use \Sunhill\ORM\Managers\tag_manager;
+use \Sunhill\ORM\Managers\TagManager;
 use Sunhill\ORM\Console\MigrateObjects;
 use Sunhill\ORM\Console\FlushCaches;
 use Sunhill\Basic\Facades\Checks;
 
 use Sunhill\ORM\Checks\OrmChecks;
 
-use Sunhill\ORM\Managers\operator_manager;
+use Sunhill\ORM\Managers\OperatorManager;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -22,10 +22,10 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->alias(class_manager::class,'classes');
         $this->app->singleton(object_manager::class, function () { return new object_manager(); } );
         $this->app->alias(object_manager::class,'objects');
-        $this->app->singleton(tag_manager::class, function () { return new tag_manager(); } );
-        $this->app->alias(tag_manager::class,'tags');
-        $this->app->singleton(operator_manager::class, function () { return new operator_manager(); } );
-        $this->app->alias(operator_manager::class,'operators');
+        $this->app->singleton(TagManager::class, function () { return new TagManager(); } );
+        $this->app->alias(TagManager::class,'tags');
+        $this->app->singleton(OperatorManager::class, function () { return new OperatorManager(); } );
+        $this->app->alias(OperatorManager::class,'operators');
     }
     
     public function boot()

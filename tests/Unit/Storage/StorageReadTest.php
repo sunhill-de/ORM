@@ -39,7 +39,7 @@ class StorageReadTest extends StorageBase
             [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','dummyint',123],                       // Wird ein einfaches Feld gelesen?
             [2,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','dummyint',234],                       // Wird ein einfaches Feld mit höherem Index gelesen?
             [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','tags',[1,2]],                         // Werden die Tags vernünftig ausgelesen?
-            [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','created_at','2019-05-15 10:00:00'],   // Werden die Felder aus oo_object ausgelesen?
+            [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','created_at','2019-05-15 10:00:00'],   // Werden die Felder aus ORMObject ausgelesen?
             [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','tags[0]',1],                          // Werden Felder richtig indiziert
             [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','attributes[int_attribute][value]',111],      // Werden Attribute richtig ausgelesen
             [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','externalhooks[0][hook]','dummyint_updated'],

@@ -202,7 +202,7 @@ class OrmChecks extends Checker
         $tables = DB::table('objects')->distinct('classname')->get();
         $bad_classes = '';
         foreach ($tables as $table) {
-            if (!Classes::search_class($table->classname)) {
+            if (!Classes::searchClass($table->classname)) {
                 $bad_classes .= (empty($bad_classes)?'':', ').$table->classname;
             }
         }

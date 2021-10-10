@@ -6,7 +6,7 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\Objects\ts_objectunit;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
 class ObjectReadTest extends DBTestCase
 {
@@ -34,7 +34,7 @@ class ObjectReadTest extends DBTestCase
                 'value'=>12,
                 'textvalue'=>'',
                 'name'=>'general_attribute',
-                'allowedobjects'=>"\\Sunhill\\Objects\\oo_object",
+                'allowedobjects'=>"\\Sunhill\\Objects\\ORMObject",
                 'type'=>'int',
                 'property'=>''                
             ]]

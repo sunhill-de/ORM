@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Properties\AttributeException;
@@ -28,13 +28,13 @@ class ObjectAttributeTest extends DBTestCase
             $test->dummyint = 123;
             $test->commit();
             
-            Objects::flush_cache();
+            Objects::flushCache();
             $read = Objects::load($test->get_id());
             $this->assertEquals($init,$read->$attributename);
             $read->$attributename = $change;
             $read->commit();
             
-            Objects::flush_cache();
+            Objects::flushCache();
             $reread = Objects::load($test->get_id());
             $this->assertEquals($change,$reread->$attributename);
         } catch (\Exception $e) {

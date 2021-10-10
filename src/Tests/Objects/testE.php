@@ -11,9 +11,9 @@
  */
 namespace Sunhill\ORM\Tests\Objects;
 
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
-class testE extends oo_object {
+class testE extends ORMObject {
     
     public static $object_infos = [
         'name'=>'testE',            // A repetition of static:$object_name @todo see above

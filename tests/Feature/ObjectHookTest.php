@@ -4,13 +4,13 @@ namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 
-class HookingObject extends oo_object  {
+class HookingObject extends ORMObject  {
 
     public static $table_name = 'hookings';
     
@@ -222,7 +222,7 @@ class ObjectHookTest extends DBTestCase
         $test = $init_hook();
         $test->commit();
         
-        Objects::flush_cache();
+        Objects::flushCache();
         $read = Objects::load($test->get_id());
         $change_hook($read);
         $read->commit();
@@ -539,9 +539,9 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeObjectIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
-       Objects::flush_cache();
+       Objects::flushCache();
         // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
-        Objects::insert_cache($test->get_id(), $test);
+        Objects::insertCache($test->get_id(), $test);
         $readdummy = Objects::load($dummy->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
@@ -554,11 +554,11 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeObjectBothIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
-       Objects::flush_cache();
+       Objects::flushCache();
         $readdummy = Objects::load($dummy->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
-       Objects::flush_cache();
+       Objects::flushCache();
         $readtest = Objects::load($test->get_id());
         $this->assertEquals('(Cofield:123->234)',$readtest->get_hook_str());
         
@@ -594,9 +594,9 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeArrayIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
-        Objects::flush_cache();
+        Objects::flushCache();
         // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
-        Objects::insert_cache($test->get_id(), $test);
+        Objects::insertCache($test->get_id(), $test);
         $readdummy = Objects::load($dummy1->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
@@ -608,11 +608,11 @@ class ObjectHookTest extends DBTestCase
      */
     public function testChildChangeArrayBothIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
-        Objects::flush_cache();
+        Objects::flushCache();
         $readdummy = Objects::load($dummy1->get_id());
         $readdummy->dummyint = 234;
         $readdummy->commit();
-        Objects::flush_cache();
+        Objects::flushCache();
         $readtest = Objects::load($test->get_id());
         $this->assertEquals('(Cobjarray:123->234)',$readtest->get_hook_str());
     }

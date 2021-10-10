@@ -3,7 +3,7 @@ namespace Sunhill\ORM\Tests\Unit\Operators;
 
 use \Sunhill\ORM\Tests\TestCase;
 use \Sunhill\ORM\Operators\OperatorBase;
-use \Sunhill\Basic\Utils\descriptor;
+use \Sunhill\Basic\Utils\Descriptor;
 use \Sunhill\ORM\Tests\Objects\ts_dummy;
 use \Sunhill\ORM\Tests\Objects\ts_testparent;
 use \Sunhill\ORM\Tests\Objects\ts_testchild;
@@ -16,11 +16,11 @@ class TestOperator extends OperatorBase {
     
     public $flag = '';
     
-    protected function cond_something(descriptor $descriptor) {
+    protected function cond_something(Descriptor $Descriptor) {
         return $this->condition;
     }
     
-    protected function do_execute(descriptor $descriptor) {
+    protected function doExecute(Descriptor $Descriptor) {
         $this->flag = 'executed';    
     }
     
@@ -35,30 +35,30 @@ class OperatorTest extends TestCase
         $test = new TestOperator();
         $test->condition = true;
         
-        $descriptor = new descriptor();
-        $descriptor->command = 'TestA';
+        $Descriptor = new Descriptor();
+        $Descriptor->command = 'TestA';
         
-        $this->assertTrue($test->check($descriptor));
+        $this->assertTrue($test->check($Descriptor));
     }
 
     public function testWithoutAction() {
         $test = new TestOperator();
         $test->condition = true;
         
-        $descriptor = new descriptor();
-        $descriptor->command = 'TestC';
+        $Descriptor = new Descriptor();
+        $Descriptor->command = 'TestC';
         
-        $this->assertFalse($test->check($descriptor));
+        $this->assertFalse($test->check($Descriptor));
     }
 
     public function testWithoutCondition() {
         $test = new TestOperator();
         $test->condition = false;
         
-        $descriptor = new descriptor();
-        $descriptor->command = 'TestA';
+        $Descriptor = new Descriptor();
+        $Descriptor->command = 'TestA';
         
-        $this->assertFalse($test->check($descriptor));
+        $this->assertFalse($test->check($Descriptor));
     }
     
     public function testExecution() {
@@ -66,11 +66,11 @@ class OperatorTest extends TestCase
         $test->condition = true;
         $test->set_class(ts_testparent::class);
         
-        $descriptor = new descriptor();
-        $descriptor->command = 'TestA';
-        $descriptor->object = new ts_dummy();
+        $Descriptor = new Descriptor();
+        $Descriptor->command = 'TestA';
+        $Descriptor->object = new ts_dummy();
         
-        $test->execute($descriptor);
+        $test->execute($Descriptor);
         $this->assertEquals('executed',$test->flag);
     }
     

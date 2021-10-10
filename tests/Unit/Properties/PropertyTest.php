@@ -5,8 +5,8 @@ namespace Sunhill\ORM\Tests\Unit\Properties;
 use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Properties\oo_property;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Properties\Property;
+use Sunhill\ORM\Objects\ORMObject;
 
 class PropertyTest extends TestCase
 {
@@ -17,7 +17,7 @@ class PropertyTest extends TestCase
 	 */
 	public function testPropertyConstructor()
 	{
-		$test = new oo_property(null);
+		$test = new Property(null);
 		$this->assertFalse(is_null($test));
 		return $test;
 	}
@@ -131,9 +131,9 @@ class PropertyTest extends TestCase
 	 * Tests the same as above for objects
 	 */
 	public function testDirtyIfNoChangeWithObjects() {
-//		$object = new oo_object();
-		$value = new oo_object();
-		$test = new oo_property(null);
+//		$object = new ORMObject();
+		$value = new ORMObject();
+		$test = new Property(null);
 		$test->set_value($value);
 		$test->commit();
 		$test->set_value($value);
@@ -144,7 +144,7 @@ class PropertyTest extends TestCase
 	 * Tests if a commit with a default value is ok
 	 */
 	public function testCommitUninitialiedWithDefault() {
-	    $test = new oo_property(null);
+	    $test = new Property(null);
 		$test->set_default('ERF');
 		$test->commit();
 		$this->assertEquals('ERF',$test->get_value());
@@ -155,7 +155,7 @@ class PropertyTest extends TestCase
 	 */
 	public function testCommitUninitialiedWithoutDefault() {
 	    $this->expectException(\Exception::class);
-	    $test = new oo_property(null);
+	    $test = new Property(null);
 		$test->commit();
 	}
 	
@@ -164,7 +164,7 @@ class PropertyTest extends TestCase
 	 */
 	public function testExceptionUninitialized() {
 	    $this->expectException(\Exception::class);
-	    $test = new oo_property(null);
+	    $test = new Property(null);
 		$wert = $test->get_value();
 	}
 	
@@ -172,7 +172,7 @@ class PropertyTest extends TestCase
 	 * Tests if assign of null makes property dirty
 	 */
 	public function testSetNullDirty() {
-		$test = new oo_property(null);
+		$test = new Property(null);
 		$test->set_value(null);
 		$this->assertTrue($test->get_dirty());
 		return $test;
@@ -192,7 +192,7 @@ class PropertyTest extends TestCase
 	 * Tests if commit of a null value is correct
 	 */
 	public function testSetToNullAgain() {
-		$test = new oo_property(null);
+		$test = new Property(null);
 		$test->set_value('ABC');
 		$test->commit();
 		$test->set_value(null);
@@ -204,7 +204,7 @@ class PropertyTest extends TestCase
      * Tests if defaults null is working
      */
 	public function testDefaultsNull() {
-		$test = new oo_property(null);
+		$test = new Property(null);
 		$test->set_default(null);
 		$this->assertTrue(is_null($test->value));
 	}
@@ -213,7 +213,7 @@ class PropertyTest extends TestCase
      * Tests if property can implement additional fields
      */
 	public function testAdditinalFields() {
-	    $test = new oo_property(null);
+	    $test = new Property(null);
 	    $test->set_additional('ABC')->set_another('DEF');
 	    $this->assertEquals('ABC',$test->get_additional());
 	    $this->assertEquals('DEF',$test->get_another());

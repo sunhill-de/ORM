@@ -16,7 +16,7 @@ namespace Sunhill\ORM\Search;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Utils\objectlist;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
 
 class query_builder {
@@ -115,10 +115,10 @@ class query_builder {
             case 'attribute_float':
                 $part = new query_where_attribute($this,$property,$relation,$value);
                 break;
-            case 'array_of_objects':
+            case 'arrayOfObject':
                 $part = new query_where_array_of_objects($this,$property,$relation,$value);
                 break;
-            case 'array_of_strings':
+            case 'arrayOfStrings':
                 $part = new query_where_array_of_strings($this,$property,$relation,$value);
                 break;
             case 'varchar':

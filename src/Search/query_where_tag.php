@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Search;
 
-use Sunhill\ORM\Properties\oo_property;
+use Sunhill\ORM\Properties\Property;
 
 class query_where_tag extends query_where_array {
     

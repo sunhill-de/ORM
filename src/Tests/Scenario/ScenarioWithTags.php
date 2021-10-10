@@ -22,7 +22,7 @@ trait ScenarioWithTags {
    * This is called by the Test to setup set Tags
    */
   protected function SetUpTags() {
-    Tags::clear_tags();  // Delete all tags and clear the tag cache
+    Tags::clearTags();  // Delete all tags and clear the tag cache
     $tags = $this->GetTags();
     foreach ($tags as $tag) {
       $this->SetupTag($tag);
@@ -30,7 +30,7 @@ trait ScenarioWithTags {
   }
   
   protected function SetupTag(string $tag) {
-     Tags::add_tag($tag);
+     Tags::addTag($tag);
   }
   
   /**

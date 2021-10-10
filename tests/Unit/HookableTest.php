@@ -2,7 +2,7 @@
 /**
  *
  * @file HookableTest.php
- * Unittest for the class hookable
+ * Unittest for the class Hookable
  * Lang en
  * Reviewstate: 2020-08-10
  */
@@ -12,9 +12,9 @@ namespace Sunhill\ORM\Tests\Unit;
 use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\hookable;
+use Sunhill\ORM\Hookable;
 
-class testhookable extends hookable {
+class testhookable extends Hookable {
 
     public $parent;
     

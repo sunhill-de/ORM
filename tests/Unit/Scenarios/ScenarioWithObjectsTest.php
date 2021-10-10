@@ -34,8 +34,8 @@ class ScenarioWithObjectsTest extends SunhillTestCase
         Classes::registerClass(ts_dummy::class);
         Classes::registerClass(ts_testparent::class);
         Tags::clearTags();
-        Tags::add_tag('TagA');
-        Tags::add_tag('TagB');
+        Tags::addTag('TagA');
+        Tags::addTag('TagB');
         DB::statement('drop table if exists dummies');
         DB::statement('create table dummies (id int primary key,dummyint int)');
     }

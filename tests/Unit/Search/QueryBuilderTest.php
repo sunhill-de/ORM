@@ -65,17 +65,17 @@ class QueryBuilderTest extends TestCase
     
     public function QueryProvider() {
         return [
-            ['\Sunhill\ORM\Objects\oo_object', // Test simple count
+            ['\Sunhill\ORM\Objects\ORMObject', // Test simple count
                 function($query) {
                 return $query->count(true); 
                 },'select count(a.id) as count from objects as a',false
             ],
-            ['\Sunhill\ORM\Objects\oo_object', // Test simple get
+            ['\Sunhill\ORM\Objects\ORMObject', // Test simple get
                 function($query) {
                     return $query->get(true);
                 },'select a.id from objects as a',false
             ],
-            ['\Sunhill\ORM\Objects\oo_object', // Test simple first
+            ['\Sunhill\ORM\Objects\ORMObject', // Test simple first
                 function($query) {
                     return $query->first(true);
                 },'select a.id from objects as a limit 0,1',false

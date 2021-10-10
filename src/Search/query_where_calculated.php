@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Search;
 
-use Sunhill\ORM\Properties\oo_property;
+use Sunhill\ORM\Properties\Property;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Search\QueryException;
 

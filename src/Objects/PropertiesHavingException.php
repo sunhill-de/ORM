@@ -16,7 +16,7 @@ namespace Sunhill\ORM\Objects;
 use Sunhill\ORM\ORMException;
 
 /**
- * This exception should be raised for errors in propertieshaving classes
+ * This exception should be raised for errors in PropertiesHaving classes
  * @author lokal
  */
 class PropertiesHavingException extends ORMException {}

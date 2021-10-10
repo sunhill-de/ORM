@@ -42,7 +42,7 @@ class ObjectMigrateTest extends DBTestCase
     public function testNewField() {
         DB::statement('drop table if exists testA');
         DB::statement('create table testA (id int primary key,testint int)');
-        Classes::migrate_class('testA');
+        Classes::migrateClass('testA');
         $test = new testA();
         $test->testint = 123;
         $test->testchar = 'AAA';

@@ -4,9 +4,9 @@ namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 
-class oo_property_array_of_strings extends oo_property_arraybase {
+class PropertyArrayOfStrings extends PropertyArrayBase {
 	
-	protected $type = 'array_of_strings';
+	protected $type = 'arrayOfStrings';
 	
 	protected $features = ['object','complex','array','strings'];
 	

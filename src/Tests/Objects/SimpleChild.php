@@ -11,7 +11,7 @@
  */
 namespace Sunhill\ORM\Tests\Objects;
 
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
 class SimpleChild extends SimpleParent {
     

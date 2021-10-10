@@ -1,26 +1,28 @@
 <?php
 /**
- * @file operator_manager.php
- * Provides the operator_manager class for managing the handling of operators on objects
+ * @file OperatorManager.php
+ * Provides the OperatorManager class for managing the handling of operators on objects
  * @author Klaus Dimde
  * --------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2021-03-14
- * Localization: unknown
- * Documentation: unknown
+ * Reviewstatus: 2021-10-10
+ * Localization: none
+ * Documentation: compleze
  * Tests: Unit/Operators/OperatorManagerTest.php
  * Coverage: unknown
+ * PSR-State: complete
  */
 namespace Sunhill\ORM\Managers;
 
 use Sunhill\ORM\ORMException;
-use Sunhill\Basic\Utils\descriptor;
+use Sunhill\Basic\Utils\Descriptor;
 
 /**
- The operator manager provides access to the operator subsystem. An operator is a piece of code that works on a Sunhill\Basic\Utils\descriptor object if 
+ The operator manager provides access to the operator subsystem. An operator is a piece of code that works on a Sunhill\Basic\Utils\Descriptor object if 
  certain conditions meet.
  */
-class operator_manager {
+class OperatorManager 
+{
  
     protected $operators = null; /**< Saves the loaded operators */
     
@@ -30,7 +32,8 @@ class operator_manager {
      * Adds a new operator class to the manager
      * @param string $class
      */
-    public function add_operator(string $class) {
+    public function addOperator(string $class): OperatorManager 
+    {
         $this->operator_classes[] = $class;
         return $this;
     }
@@ -39,57 +42,61 @@ class operator_manager {
      * Returns the number of registered operators
      * @return number
      */
-    public function get_operator_count() {
+    public function getOperatorCount(): int 
+    {
         return count($this->operator_classes);
     }
     
     /**
      * Clears the caches
      */
-    public function flush() {
+    public function flush(): null 
+    {
         $this->operators = null;
         $this->operator_classes = [];
     }
     
     /**
-    * Executes all operators that meet the conditions. At least a command has to be passed. If no descriptor is passed
-    * one is created. If no object is passed an empty descriptor is used. 
+    * Executes all operators that meet the conditions. At least a command has to be passed. If no Descriptor is passed
+    * one is created. If no object is passed an empty Descriptor is used. 
     * @param $command string The current command that is executed
-    * @param $object oo_object|null The objects that should be used for the operators (or null, if none)
-    * @param $descriptor descriptor|null The descriptor that should be used for the operators. If null, an empty descriptor is created
+    * @param $object ORMObject|null The objects that should be used for the operators (or null, if none)
+    * @param $Descriptor Descriptor|null The Descriptor that should be used for the operators. If null, an empty Descriptor is created
     */
-    public function ExecuteOperators(string $command='',$object=null,&$descriptor=null) {
+    public function ExecuteOperators(string $command = '', $object = null, &$Descriptor = null) 
+    {
         if (is_null($this->operators)) {
             $this->loadOperators();
         }
         
-        if (is_null($descriptor)) {
-            $descriptor = new descriptor();
+        if (is_null($Descriptor)) {
+            $Descriptor = new Descriptor();
         }
         if (!is_null($object))  {
-            $descriptor->object = $object;
+            $Descriptor->object = $object;
         }
         if (!empty($command)) {
-            $descriptor->command = $command;
+            $Descriptor->command = $command;
         }        
         
         foreach ($this->operators as $operator) {
-            if ($operator->check($descriptor)) {
-                $operator->execute($descriptor);
+            if ($operator->check($Descriptor)) {
+                $operator->execute($Descriptor);
             }
         }
     }
     
-    private function loadOperators() {
+    private function loadOperators() 
+    {
         $this->operators = [];
         foreach ($this->operator_classes as $class) {
             $this->operators[] = new $class();
         }
         usort($this->operators,function($x,$y) {
-            if ($x->get_prio() == $y->get_prio()) {
+            if ($x->getPrio() == $y->getPrio()) {
                 return 0;
             }
-            return ($x->get_prio() < $y->get_prio())? -1:1;
+            return ($x->getPrio() < $y->getPrio())? -1:1;
         });
     }
 }

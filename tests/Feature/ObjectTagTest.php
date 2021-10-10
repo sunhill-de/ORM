@@ -3,8 +3,8 @@
 namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Sunhill\ORM\Objects\oo_object;
-use Sunhill\ORM\Objects\oo_tag;
+use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
@@ -21,14 +21,14 @@ class ObjectTagTest extends DBTestCase
         for ($i=0;$i<count($set);$i++) {
             if ($expect[$i]=='except') {
                 try {
-                    $tag = new oo_tag($set[$i],$create);
+                    $tag = new Tag($set[$i],$create);
                 } catch (\Exception $e) {
                     $this->assertTrue(true);
                     return;
                 }
                 $this->fail();
             } else {
-                $tag = new oo_tag($set[$i],$create);
+                $tag = new Tag($set[$i],$create);
             }
             $test->tags->stick($tag);
         }
@@ -38,7 +38,7 @@ class ObjectTagTest extends DBTestCase
             $this->assertEquals($expect[$i],$test->tags[$i]);
         }
         $reread =  new ts_dummy();
-        Objects::flush_cache();
+        Objects::flushCache();
         $reread = Objects::load($test->get_id());
         for ($i=0;$i<count($expect);$i++) {
             $this->assertEquals($expect[$i],$reread->tags[$i]);
@@ -61,26 +61,26 @@ class ObjectTagTest extends DBTestCase
     public function testChangeTags($init,$add,$delete,$expect,$changestr) {
         $test = new ts_dummy();        
         for ($i=0;$i<count($init);$i++) {
-            $tag = new oo_tag($init[$i],true);
+            $tag = new Tag($init[$i],true);
             $test->tags->stick($tag);
         }
         $test->dummyint = 1;
         $test->commit();
         
-        Objects::flush_cache();
+        Objects::flushCache();
         $read =  new ts_dummy();
         $read = Objects::load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
-            $tag = new oo_tag($add[$i],true);
+            $tag = new Tag($add[$i],true);
             $read->tags->stick($tag);            
         }
         for ($i=0;$i<count($delete);$i++) {
-            $tag = new oo_tag($delete[$i],true);
+            $tag = new Tag($delete[$i],true);
             $read->tags->remove($tag);            
         }
         $read->commit();
         
-        Objects::flush_cache();
+        Objects::flushCache();
         $reread = Objects::load($test->get_id());
         
         $given_tags = array();
@@ -99,20 +99,20 @@ class ObjectTagTest extends DBTestCase
     public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
         $test = new ts_dummy();
         for ($i=0;$i<count($init);$i++) {
-            $tag = new oo_tag($init[$i],true);
+            $tag = new Tag($init[$i],true);
             $test->tags->stick($tag);
         }
         $test->dummyint = 1;
         $test->commit();
         
-        Objects::flush_cache();
+        Objects::flushCache();
         $read = Objects::load($test->get_id());
         for ($i=0;$i<count($add);$i++) {
-            $tag = new oo_tag($add[$i],true);
+            $tag = new Tag($add[$i],true);
             $read->tags->stick($tag);
         }
         for ($i=0;$i<count($delete);$i++) {
-            $tag = new oo_tag($delete[$i],true);
+            $tag = new Tag($delete[$i],true);
             $read->tags->remove($tag);
         }
         $read->commit();

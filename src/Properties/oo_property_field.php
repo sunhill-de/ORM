@@ -3,7 +3,7 @@
 namespace Sunhill\ORM\Properties;
 
 
-class oo_property_field extends oo_property {
+class oo_property_field extends Property {
 		
 	protected $type;
 	

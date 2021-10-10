@@ -5,12 +5,12 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 
-class TestClass extends oo_object {
+class TestClass extends ORMObject {
 
     public static $object_infos = [
         'name'=>'TestClass',            // A repetition of static:$object_name @todo see above
@@ -71,7 +71,7 @@ class ObjectCalculatedTest extends DBTestCase
         $test->dummyint = 1;
         $test->set_return('ABC');
         $test->commit();
-        Objects::flush_cache();
+        Objects::flushCache();
         $read = Objects::load($test->get_id());
         $read->set_return('DEF');
         $read->commit();
@@ -85,7 +85,7 @@ class ObjectCalculatedTest extends DBTestCase
         $test->dummyint = 1;
         $test->set_return('ABC');
         $test->commit();
-        Objects::flush_cache();
+        Objects::flushCache();
         $read = Objects::load($test->get_id());
         $this->assertEquals('ABC',$read->calcfield);
         $read->set_return('DEF');

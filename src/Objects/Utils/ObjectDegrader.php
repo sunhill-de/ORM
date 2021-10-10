@@ -71,22 +71,22 @@ class ObjectDegrader {
     }
     
     /**
-     * Calculates the difference in complex properties between the given descriptor arrays
-     * @param $desc1 The first descriptor array
-     * @param $desc2 The second descriptor array
+     * Calculates the difference in complex properties between the given Descriptor arrays
+     * @param $desc1 The first Descriptor array
+     * @param $desc2 The second Descriptor array
      * @return array The difference between these regarding to complex fields
      */
     protected function getDescriptorDiff(array $desc1, array $desc2): array
     {
         $arr_1 = [];
         foreach ($desc1 as $entry) {
-            if (($entry['type'] == 'object') || ($entry['type'] == 'array_of_strings') || ($entry['type'] == 'array_of_objects')) {
+            if (($entry['type'] == 'object') || ($entry['type'] == 'arrayOfStrings') || ($entry['type'] == 'arrayOfObject')) {
                 $arr_1[] = $entry['name'];
             }
         }
         $arr_2 = [];
         foreach ($desc2 as $entry) {
-            if (($entry['type'] == 'object') || ($entry['type'] == 'array_of_strings') || ($entry['type'] == 'array_of_objects')) {
+            if (($entry['type'] == 'object') || ($entry['type'] == 'arrayOfStrings') || ($entry['type'] == 'arrayOfObject')) {
                 $arr_2[] = $entry['name'];
             }
         }
@@ -107,10 +107,10 @@ class ObjectDegrader {
         $lost_fields = $this->getDescriptorDiff($high_props,$low_props);
         foreach ($lost_fields as $field) {
             switch ($high_props[$field]['type']) {
-                case 'array_of_strings':
+                case 'arrayOfStrings':
                     DB::table('stringobjectassigns')->where('field',$field)->where('container_id',$id)->delete();
                     break;
-                case 'array_of_objects':
+                case 'arrayOfObject':
                 case 'object':
                     DB::table('objectobjectassigns')->where('field',$field)->where('container_id',$id)->delete();
                     break;

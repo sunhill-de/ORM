@@ -25,7 +25,7 @@ class RegressionTest extends DBTestCase
 	   $test->testint = 666;
 	   $test->commit();
        
-	   Objects::flush_cache();
+	   Objects::flushCache();
 	   $read = Objects::load($test->get_id());
 	   $read->testobject->dummyint = 11;
 	   $read->testoarray[0]->dummyint = 22;
@@ -35,7 +35,7 @@ class RegressionTest extends DBTestCase
 	   $read->testoarray[] = $obj4;
 	   $read->commit();
 	   
-	   Objects::flush_cache();	   
+	   Objects::flushCache();	   
 	   $reread = Objects::load($test->get_id());	   
 	   $this->assertEquals([11,22,33,44],
 	       [$reread->testobject->dummyint,
@@ -48,17 +48,17 @@ class RegressionTest extends DBTestCase
 	public function testRegression2() {
 	    $test = new ts_dummy();
 	    $test->dummyint = 1;
-	    $tag = new \Sunhill\ORM\Objects\oo_tag('TagA',true);
+	    $tag = new \Sunhill\ORM\Objects\Tag('TagA',true);
 	    $test->tags->stick($tag);
 	    $test->commit();
 	    
-	   Objects::flush_cache();
+	   Objects::flushCache();
 	    $read = Objects::load($test->get_id());
-	    $tag = new \Sunhill\ORM\Objects\oo_tag('TagB',true);
+	    $tag = new \Sunhill\ORM\Objects\Tag('TagB',true);
 	    $read->tags->stick($tag);
 	    $read->commit();
 	    
-	   Objects::flush_cache();
+	   Objects::flushCache();
 	    $reread = Objects::load($test->get_id());
 	    $this->assertEquals('TagB',$reread->tags[1]);
 	}

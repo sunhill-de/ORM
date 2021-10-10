@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class AttributeException extends \Exception {}
 
-class oo_property_attribute extends oo_property {
+class oo_property_attribute extends Property {
 	
 	protected $type = 'attribute';
 	
@@ -99,14 +99,14 @@ class oo_property_attribute extends oo_property {
 	 * FROM ist der alte Wert
 	 * TO ist der neue Wert
 	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\ORM\Properties\oo_property[]
+	 * @return void[]|\Sunhill\ORM\Properties\Property[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
         $result = [
             'attribute_id'=>$this->attribute_id,
             'object_id'=>$this->owner->get_id(),
             'name'=>'general_attribute',
-            'allowedobjects'=>"\\Sunhill\\Objects\\oo_object",
+            'allowedobjects'=>"\\Sunhill\\Objects\\ORMObject",
             'type'=>'int',
             'property'=>''            
         ];

@@ -14,7 +14,7 @@
 
 namespace Sunhill\ORM\Traits;
 
-use Sunhill\Basic\Utils\descriptor;
+use Sunhill\Basic\Utils\Descriptor;
 
 /**
  * Implements the trait "TraversableArray" which provides a combination of the Interfaces countable, array_access and Iterator

@@ -2,7 +2,7 @@
 
 /**
  * @file Operators.php
- * A facade to the operator_manager
+ * A facade to the OperatorManager
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en

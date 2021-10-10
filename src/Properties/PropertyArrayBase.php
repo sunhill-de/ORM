@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file oo_property_arraybase.php
+ * @file PropertyArrayBase.php
  * The base class for array like properties
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
@@ -15,7 +15,7 @@
 
 namespace Sunhill\ORM\Properties;
 
-class oo_property_arraybase extends oo_property implements \ArrayAccess,\Countable,\Iterator {
+class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Iterator {
     
 	protected $initialized = true;
 	

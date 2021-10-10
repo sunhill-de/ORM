@@ -1,7 +1,7 @@
 <?php
 namespace Sunhill\ORM\Tests\Objects;
 
-class ts_referenceonly extends \Sunhill\ORM\Objects\oo_object {
+class ts_referenceonly extends \Sunhill\ORM\Objects\ORMObject {
     public static $table_name = 'referenceonlies';
     
     public static $object_infos = [

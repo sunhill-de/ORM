@@ -3,8 +3,8 @@
 namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Objects\oo_tag;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\Tag;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\TagException;
 use Sunhill\ORM\Storage\storage_base;
@@ -12,11 +12,11 @@ use Sunhill\ORM\Facades\Tags;
 
 /**
  * Diese Klasse repräsentiert die Property "Tags". Hier werden die Tags eines Objektes gespeichert.
- * @see Sunhill::Objects::oo_tag
+ * @see Sunhill::Objects::Tag
  * @author lokal
  *
  */
-class oo_property_tags extends oo_property_arraybase {
+class oo_property_tags extends PropertyArrayBase {
 	
 	protected $type = 'tags';
 	
@@ -50,12 +50,12 @@ class oo_property_tags extends oo_property_arraybase {
 // =========================== Hinzufügen und Löschen =======================================	
 	/**
 	 * Fügt ein neues Tag in die Liste ein
-	 * @param oo_tag|int|string $tag
+	 * @param Tag|int|string $tag
 	 * @return void|\Sunhill\ORM\Properties\oo_property_tags
 	 * @todo Hier könnte man auch über ein Lazy-Loading nachdenken, falls es überhaupt Performancegewinn bringt
 	 */
 	public function stick($tag) {
-	    $tag = $this->get_tag($tag);      // Das wahre Tag ermitteln
+	    $tag = $this->getTag($tag);      // Das wahre Tag ermitteln
 	    if ($this->is_duplicate($tag)) {  // Ist es schon in der Liste ?
 	        return; // Ja, dann abbrechen
 	    }
@@ -68,11 +68,11 @@ class oo_property_tags extends oo_property_arraybase {
 	
 	/**
 	 * Fügt ein neues Tag in die Liste ein
-	 * @param oo_tag|int|string $tag
+	 * @param Tag|int|string $tag
 	 * @return void|\Sunhill\ORM\Properties\oo_property_tags
 	 */
 	public function remove($tag) {
-        $tag = $this->get_tag($tag);
+        $tag = $this->getTag($tag);
     	    for ($i=0;$i<count($this->value);$i++) {
 	        if ($this->value[$i]->get_id() === $tag->get_id()) {
 	            if (!$this->get_dirty()) {
@@ -88,10 +88,10 @@ class oo_property_tags extends oo_property_arraybase {
 
 	/**
 	 * Tests if this tag is already in the list
-	 * @param oo_object $test
+	 * @param ORMObject $test
 	 * @return boolean
 	 */
-	protected function is_duplicate(oo_tag $test) {
+	protected function is_duplicate(Tag $test) {
 	    foreach ($this->value as $listed) {
 	        if ($listed->get_id() == $test->get_id()) {
 	            return $test;
@@ -102,11 +102,11 @@ class oo_property_tags extends oo_property_arraybase {
 	
 	/**
 	 * Tests if the object is associatied with the given tag
-	 * @param id|string|oo_tag $test the tag to test
+	 * @param id|string|Tag $test the tag to test
 	 * @return boolean
 	 */
 	public function HasTag($test) {
-	    $tag_desc = Tags::find_tag($test);
+	    $tag_desc = Tags::findTag($test);
 	    foreach ($this->value as $listed) {
 	        if ($listed->get_id() == $tag_desc->id) {
 	            return true;
@@ -117,22 +117,22 @@ class oo_property_tags extends oo_property_arraybase {
 	
 	/**
 	 * Ermittelt das Tag-Objekt zum übergebenen Tag
-	 * Wenn $tag ein oo_object ist, nur zurückgeben
+	 * Wenn $tag ein ORMObject ist, nur zurückgeben
 	 * Wenn $tag ein int ist, Tag laden und zurückgeben
 	 * Wenn $tag ein String ist, Tag suchen und in Abhängigkeit von add_missing hinzufügen oder nicht
-	 * @param $tag oo_tag|int|string 
-	 * @return oo_tag
+	 * @param $tag Tag|int|string 
+	 * @return Tag
 	 */
-	protected function get_tag($tag) {
-	    if (is_a($tag,oo_tag::class)) {
+	protected function getTag($tag) {
+	    if (is_a($tag,Tag::class)) {
 	        return $tag; // Trivial, ist bereits ein Objekt
 	    } else if (is_int($tag)) {
-	        return oo_tag::load_tag($tag); // Tag mit der ID laden
+	        return Tag::loadTag($tag); // Tag mit der ID laden
 	    } else if (is_string($tag)) {
 	        if ($this->add_missing) {
-	            return oo_tag::search_or_add_tag($tag);
+	            return Tag::search_or_add_tag($tag);
 	        } else {
-	            return oo_tag::search_tag($tag);
+	            return Tag::searchTag($tag);
 	        }
 	    }
 	    throw new TagException("Unbekannter Typ für ein Tag.");
@@ -169,7 +169,7 @@ class oo_property_tags extends oo_property_arraybase {
     /**
      * Überschriebene Methode, die bei Tags den Typ respektiert und zurück gibt
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Properties\oo_property::get_diff_entry()
+     * @see \Sunhill\ORM\Properties\Property::get_diff_entry()
      */
 	protected function get_diff_entry($tag,$type) {
 	    switch ($type) {
@@ -177,24 +177,24 @@ class oo_property_tags extends oo_property_arraybase {
 	            if (is_int($tag)) {
 	                return $tag;
 	            }
-	            return $this->get_tag($tag)->get_id();
+	            return $this->getTag($tag)->get_id();
 	            break;
 	        case PD_KEEP: // Es wird das zurückgegeben, was gerade geladen ist
 	            return $tag;
 	            break;
 	        case PD_VALUE: // Es wird immer das Tag-Objekt zurückgegeben
-	            return $this->get_tag($tag);
+	            return $this->getTag($tag);
 	            break;
 	    }
 	}
 
 	protected function NormalizeValue($value) {
-	    if (is_a($value,oo_tag::class)) {
+	    if (is_a($value,Tag::class)) {
 	        return $value->get_fullpath();
 	    } else if (is_string($value)) {
 	        return $value;
 	    } else if (is_int($value)) {
-	        $tag = Tags::load_tag($value);
+	        $tag = Tags::loadTag($value);
 	        return $tag->get_fullpath();
 	    }
 	}

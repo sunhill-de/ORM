@@ -3,12 +3,12 @@
 namespace Sunhill\ORM\Tests\Unit\Properties;
 
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Properties\oo_property_array_of_strings;
+use Sunhill\ORM\Properties\PropertyArrayOfStrings;
 
 class ArrayOfStringsTest extends TestCase
 {
     public function testArrayCount() {
-        $test = new oo_property_array_of_strings();
+        $test = new PropertyArrayOfStrings();
         $test[] = 'A';
         $test[] = 'B';
         $test[] = 'C';

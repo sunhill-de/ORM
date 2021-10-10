@@ -3,14 +3,14 @@
 namespace Sunhill\ORM\Tests\Unit\Properties;
 
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Properties\oo_property_arraybase;
+use Sunhill\ORM\Properties\PropertyArrayBase;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Properties\oo_property_array_of_objects;
+use Sunhill\ORM\Properties\PropertyArrayOfObjects;
 
 class ArrayOfObjectsTest extends TestCase
 {
     public function testArrayEmpty() {
-        $test = new oo_property_array_of_objects();
+        $test = new PropertyArrayOfObjects();
         $this->assertTrue($test->empty());
         return $test;
     }
@@ -38,10 +38,10 @@ class ArrayOfObjectsTest extends TestCase
     }
     
     /**
-     * @return \Sunhill\ORM\Tests\Unit\Properties\oo_property_array_of_objects
+     * @return \Sunhill\ORM\Tests\Unit\Properties\PropertyArrayOfObjects
      */
     public function testArrayCount() {
-        $test = new oo_property_array_of_objects();
+        $test = new PropertyArrayOfObjects();
         $dummy1 = new ts_dummy(); $dummy1->dummyint = 11; $dummy1->set_ID(1);
         $dummy2 = new ts_dummy(); $dummy2->dummyint = 22; $dummy2->set_ID(2);
         $dummy3 = new ts_dummy(); $dummy3->dummyint = 33; $dummy3->set_ID(3);
@@ -102,7 +102,7 @@ class ArrayOfObjectsTest extends TestCase
     }
     
     public function testNormalize_bothnormalized() {
-        $test = new oo_property_array_of_objects();
+        $test = new PropertyArrayOfObjects();
         $test[] = 1;
         $test[] = 2;
         $dummy = new ts_dummy(); $dummy->set_ID(3);        
@@ -112,7 +112,7 @@ class ArrayOfObjectsTest extends TestCase
     }
     
     public function testNormalize_testnormalized() {
-        $test = new oo_property_array_of_objects();
+        $test = new PropertyArrayOfObjects();
         $test[] = 1;
         $test[] = 2;
         $dummy = new ts_dummy(); $dummy->set_ID(3);
@@ -121,7 +121,7 @@ class ArrayOfObjectsTest extends TestCase
     }
     
     public function testNormalize_nonenormalized() {
-        $test = new oo_property_array_of_objects();
+        $test = new PropertyArrayOfObjects();
         $test[] = 1;
         $test[] = 2;
         $dummy = new ts_dummy(); $dummy->set_ID(3);

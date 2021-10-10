@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 
@@ -14,11 +14,11 @@ class ObjectCacheTest extends DBTestCase
 {
     
     public function testGetClassOf() {
-        $this->assertEquals('dummy',Objects::get_class_name_of(1));    
+        $this->assertEquals('dummy',Objects::getClassNameOf(1));    
     }
     
     public function testIsNotCached() {
-        $this->assertFalse(Objects::is_cached(1));
+        $this->assertFalse(Objects::isCached(1));
     }
     
     /**
@@ -29,15 +29,15 @@ class ObjectCacheTest extends DBTestCase
         if (!$first) {
             $this->fail('Objekt nicht gefunden.');
         }
-        $this->assertTrue(Objects::is_cached(1));        
+        $this->assertTrue(Objects::isCached(1));        
     }
     
     /**
      * @depends testIsCached
      */
     public function testFlushCache() {
-        Objects::flush_cache();
-        $this->assertFalse(Objects::is_cached(1));        
+        Objects::flushCache();
+        $this->assertFalse(Objects::isCached(1));        
     }
     
     /**
@@ -54,7 +54,7 @@ class ObjectCacheTest extends DBTestCase
      * @depends testLoadFromCache
      */
     public function testLoadMethod() {
-        Objects::flush_cache();
+        Objects::flushCache();
         $first  = Objects::load(1);
         $second = new ts_dummy();
         $second = Objects::load(1);
@@ -66,17 +66,17 @@ class ObjectCacheTest extends DBTestCase
      * @depends testFlushCache
      */
     public function testLoadMethodInsertCache() {
-        Objects::flush_cache();
+        Objects::flushCache();
         $second = new ts_dummy();
         $second = Objects::load(1);
-        $this->assertTrue(Objects::is_cached(1));
+        $this->assertTrue(Objects::isCached(1));
     }
 
     /**
      * @depends testFlushCache
      */
     public function testLoadMethodChange() {
-        Objects::flush_cache();
+        Objects::flushCache();
         $first = new ts_dummy();
         $first = Objects::load(1);
         $second = Objects::load(1);
@@ -88,7 +88,7 @@ class ObjectCacheTest extends DBTestCase
      * @depends testFlushCache
      */
     public function testLoadMethodChange2() {
-        Objects::flush_cache();
+        Objects::flushCache();
         $first = new ts_dummy();
         $first = Objects::load(1);
         $second = new ts_dummy();

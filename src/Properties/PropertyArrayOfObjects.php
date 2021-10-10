@@ -1,6 +1,6 @@
 <?php
 /**
- * @file oo_property_array_of_objects.php
+ * @file PropertyArrayOfObjects.php
  * A propertx that represents an array of objects
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
@@ -16,11 +16,11 @@ namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
-class oo_property_array_of_objects extends oo_property_arraybase {
+class PropertyArrayOfObjects extends PropertyArrayBase {
 
-	protected $type = 'array_of_objects';
+	protected $type = 'arrayOfObject';
 		
 	protected $features = ['object','complex','array','objectid'];
 	
@@ -45,7 +45,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	protected function NormalizeValue($value) {
 	    if (is_int($value)) {
 	        return $value;
-	    } else if (is_a($value,oo_object::class)) {
+	    } else if (is_a($value,ORMObject::class)) {
 	        return $value->get_id();
 	    }
 	}
@@ -84,7 +84,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	        foreach ($this->value as $index=>$element) {
 	            if (!is_int($element)) {
 	                $element->commit();
-	            } else if (Objects::is_cached($element)) {
+	            } else if (Objects::isCached($element)) {
 	                // Wenn es im Cache ist, kann es per seiteneffekt manipuliert worden sein
 	                $this->value[$index] = Objects::load($element);	
 	                $this->value[$index]->commit();
@@ -109,7 +109,7 @@ class oo_property_array_of_objects extends oo_property_arraybase {
 	 * FROM ist der alte Wert
 	 * TO ist der neue Wert
 	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\ORM\Properties\oo_property[]
+	 * @return void[]|\Sunhill\ORM\Properties\Property[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
 	    $diff = parent::get_diff_array($type);

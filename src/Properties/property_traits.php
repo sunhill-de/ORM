@@ -27,7 +27,7 @@ trait LazyIDLoading {
     protected function commit_child_if_loaded($child) {
         if (!empty($child)) {
             if (is_numeric($child)) {
-                if (Objects::is_cached($child)) {
+                if (Objects::isCached($child)) {
                     // Wenn es im Cache ist, kann es per seiteneffekt manipuliert worden sein
                     $child = Objects::load($child);
                 } else {

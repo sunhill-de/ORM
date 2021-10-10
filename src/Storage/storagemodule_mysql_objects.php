@@ -20,7 +20,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
             return;
         }
         foreach ($references as $reference) {
-            if ($this->storage->get_caller()->get_property($reference->field)->has_feature('array')) {
+            if ($this->storage->get_caller()->getProperty($reference->field)->has_feature('array')) {
                 if (!isset($this->storage->entities[$reference->field])) {
                     $this->storage->entities[$reference->field] = [];
                 }
@@ -56,7 +56,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
             } else {
                 $element = $this->storage->$fieldname;
                 if (empty($element)) {
-                    if (is_a($property->value,'\\Sunhill\\ORM\\Objects\\oo_object')) {
+                    if (is_a($property->value,'\\Sunhill\\ORM\\Objects\\ORMObject')) {
                         $property->value->add_needid_query('objectobjectassigns',['container_id'=>$id,'field'=>$fieldname,'index'=>0],'element_id');
                     }
                 } else {

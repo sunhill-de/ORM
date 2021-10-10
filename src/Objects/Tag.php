@@ -53,8 +53,8 @@ class Tag extends Loggable
 	
 	/**
 	 * Setzt das Eltern-Tag
-	 * @param oo_tag $parent
-	 * @return \Crawler\oo_tag
+	 * @param Tag $parent
+	 * @return \Crawler\Tag
 	 */
 	public function setParent(Tag $parent): Tag
     {
@@ -175,7 +175,7 @@ class Tag extends Loggable
 		$this->name = $data->name;
 		$this->tag_id = $id;
 		if ($data->parent_id) {
-		    $this->parent = self::load_tag($data->parent_id);
+		    $this->parent = self::loadTag($data->parent_id);
 		}
 	}
 	
@@ -199,10 +199,10 @@ class Tag extends Loggable
 	 */
 	protected function search($tag,$autocreate)
     {
-		$results = self::search_tag($tag);
+		$results = self::searchTag($tag);
 		if (is_null($results)) {
 		    if ($autocreate) {
-		        $tag_obj = self::add_tag($tag);
+		        $tag_obj = self::addTag($tag);
 		        $this->name = $tag_obj->get_name();
 		        $this->parent = $tag_obj->get_parent();
 		        $this->options = $tag_obj->get_options();

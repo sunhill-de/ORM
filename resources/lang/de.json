@@ -27,15 +27,26 @@
   
   "***** src/Objects/PropertiesHaving":"src/Objects/PropertiesHaving *****",
   "Invalided object called.":"Invalidiertes Objekt aufgerufen",
+  "Unknown property ':name'":"Unbekannte Property ':name'",
+  "Property ':name' was changed in readonly state.":"Property ':name' wurde im nur-lesen-Modus geändert",
     
   "***** src/Objects/ORMObject":"src/Objects/ORMObject ***",
   "The attribute ':attribute' is not allowed for this object.":"Das Attribut ':attribute' ist nicht für dieses Objekt erlaubt.",
   "The property ':name' doesn't exists.":"Die Eigenschaft ':name' existiert nicht.",
   "The class doesn't support keyfield search":"Die Klasse unterstützt keine Schlüsselfeldsuche",
-
+  
   "***** src/Objects/Utils/ObjectPromotor":"src/Objects/Utils/ObjectPromotor ***",
   "The target class ':newclass' doesn't exist.":"Die Zielklasse ':newclass' existiert nicht.",
   "':newclass' is not a subclass of ':oldclass'":"':newclass' ist keine Unterklasse von ':oldclass'",
-  "':oldclass' is not a subclass of ':newclass'":"':oldclass' ist keine Unterklasse von ':newclass'"  
+  "':oldclass' is not a subclass of ':newclass'":"':oldclass' ist keine Unterklasse von ':newclass'",  
+  
+  "***** src/Managers/ObjectManager":"src/Managers/ObjectManager",
+  "Class ':condition' not found.":"Klasse ':condition' nicht gefunden.",
+  "Passed parameter is not resolvable to an object.":"Der übergebene Parameter lässt sich nicht zu einem Objekt auflösen.",
+  
+  "***** src/Managers/TagManager":"src/Managers/TagManager",
+  "Unkown data passed to 'addTag'.":"'addTag' wurden unbekannten Daten übergeben",
+  "Tag ':tag' not found.":"Tag ':tag' nicht gefunden",
+  "Tag ':tag' not unique.":"Tag ':tag' nicht eindeutig"
     
 }

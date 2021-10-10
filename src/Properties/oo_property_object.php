@@ -28,7 +28,7 @@ class oo_property_object extends oo_property_field {
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt geladen wurde
 	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\Properties\oo_property::load()
+	 * @see \Sunhill\ORM\Properties\Property::load()
 	 */
 	protected function do_load(storage_base $storage,$name) {
         $reference = $storage->$name;
@@ -38,10 +38,10 @@ class oo_property_object extends oo_property_field {
 	}
 	
 	/**
-	 * Überschriebene Methode von oo_property. Prüft, ob die Objekt-ID bisher nur als Nummer gespeichert war. Wenn ja, wird das
+	 * Überschriebene Methode von Property. Prüft, ob die Objekt-ID bisher nur als Nummer gespeichert war. Wenn ja, wird das
 	 * Objekt lazy geladen.
 	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\Properties\oo_property::do_get_value()
+	 * @see \Sunhill\ORM\Properties\Property::do_get_value()
 	 */
 	protected function &do_get_value() {
 	    if (is_int($this->value)) {
@@ -72,7 +72,7 @@ class oo_property_object extends oo_property_field {
 	 * FROM ist der alte Wert
 	 * TO ist der neue Wert
 	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\ORM\Properties\oo_property[]
+	 * @return void[]|\Sunhill\ORM\Properties\Property[]
 	 */
 	public function get_diff_array(int $type=PD_VALUE) {
 	    $diff = parent::get_diff_array($type);

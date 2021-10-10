@@ -1,6 +1,6 @@
 <?php
 /**
- * @file hookable.php
+ * @file Hookable.php
  * A basic class for classes that use hooks to trigger certain events
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class Hookable extends Loggable
 	 * @param string $action
 	 * @param string $hook
 	 * @param string $subaction
-	 * @param hookable $destination
+	 * @param Hookable $destination
 	 */
 	public function addHook(string $action, string $hook, string $subaction = 'default', $destination = null, $payload=null) 
     {
@@ -91,8 +91,8 @@ class Hookable extends Loggable
 	private function hookAlreadyInstalled($action,$hook,$subaction,$destination,$payload) 
     {
 	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
-	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
-	            if (($hook == $descriptor['hook']) && ($this->target_equal($destination,$descriptor['destination']))) {
+	        foreach ($this->hooks[$action][$subaction] as $Descriptor) {
+	            if (($hook == $Descriptor['hook']) && ($this->target_equal($destination,$Descriptor['destination']))) {
 	                return true;
 	            }
 	        }
@@ -126,18 +126,18 @@ class Hookable extends Loggable
 	public function checkForHook(string $action, $subaction = 'default', array $params=null) 
     {
 	    if (isset($this->hooks[$action]) && isset($this->hooks[$action][$subaction])) {
-	        foreach ($this->hooks[$action][$subaction] as $descriptor) {
-                $destination = $descriptor['destination'];
-                $hook = $descriptor['hook'];
+	        foreach ($this->hooks[$action][$subaction] as $Descriptor) {
+                $destination = $Descriptor['destination'];
+                $hook = $Descriptor['hook'];
 	            if (is_int($destination)) {
-	                $destination = Objects::load($descriptor['destination']);
+	                $destination = Objects::load($Descriptor['destination']);
 	            }
 	            if (!isset($params)) {
 	                $params = array();
 	            }
 	            $params['action']    = $action;
 	            $params['subaction'] = $subaction;
-	            $params['payload'] = $descriptor['payload'];
+	            $params['payload'] = $Descriptor['payload'];
 	            $destination->$hook($params);
 	        }
 	    }

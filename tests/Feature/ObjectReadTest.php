@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
 
 class ObjectReadTest extends DBTestCase
@@ -27,7 +27,7 @@ class ObjectReadTest extends DBTestCase
         return [
             [1,'dummyint',123],                       // Wird ein einfaches Feld gelesen?
             [2,'dummyint',234],                       // Wird ein einfaches Feld mit höherem Index gelesen?
-            [1,'created_at','2019-05-15 10:00:00'],   // Werden die Felder aus oo_object ausgelesen?
+            [1,'created_at','2019-05-15 10:00:00'],   // Werden die Felder aus ORMObject ausgelesen?
             [1,'tags[0]','TagA'],                     // Werden Felder richtig indiziert
             [1,'int_attribute',111],                  // Werden Attribute richtig ausgelesen
             

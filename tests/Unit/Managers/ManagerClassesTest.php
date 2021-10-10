@@ -472,7 +472,7 @@ class ManagerClassesTest extends TestCase
     }
 /**    
     public function testSearchClassWithTranslation() {
-        $this->assertEquals('dummies',Classes::get_class('dummy','name_p'));
+        $this->assertEquals('dummies',Classes::getClass('dummy','name_p'));
     }
 */    
 }

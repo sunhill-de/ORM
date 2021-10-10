@@ -14,7 +14,7 @@
 
 namespace Sunhill\ORM\Seeder;
 
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Classes;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +25,7 @@ abstract class Seeder {
     abstract public function Seed();
     
     protected function SeedObject(string $class,array $fields,array $values) {
-        $object_name = Classes::get_namespace_of_class($class);
+        $object_name = Classes::getNamespaceOfClass($class);
         foreach ($values as $key => $value_array) {
             $object = new $object_name();
             $i=0;

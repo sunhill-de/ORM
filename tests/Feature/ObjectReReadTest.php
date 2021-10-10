@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
@@ -23,7 +23,7 @@ class ObjectReReadTest extends DBTestCase
 	 * @group simple
 	 */
 	public function testSimpleFields($classname,$init,$modify,$expect) {
-	    Objects::flush_cache();
+	    Objects::flushCache();
 	    $classname = 'Sunhill\\ORM\\Tests\\Objects\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -43,7 +43,7 @@ class ObjectReReadTest extends DBTestCase
 	        }
 	    }
 	    $init_object->commit();
-	    Objects::flush_cache();
+	    Objects::flushCache();
 	    
 // Read
 	    $read_object = Objects::load($init_object->get_id());
@@ -65,7 +65,7 @@ class ObjectReReadTest extends DBTestCase
 	    }
 	    $read_object->commit();
 
-	    Objects::flush_cache();
+	    Objects::flushCache();
 	    $reread_object = Objects::load($init_object->get_id());
 	    if (!is_null($expect)) {
 	        foreach ($expect as $key => $value) {
@@ -245,7 +245,7 @@ class ObjectReReadTest extends DBTestCase
 	 * @group complex
 	 */
 	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
-	    Objects::flush_cache();
+	    Objects::flushCache();
 	    $classname = 'Sunhill\\ORM\\Tests\\Objects\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
@@ -266,7 +266,7 @@ class ObjectReReadTest extends DBTestCase
 	    }
 	    $init_object->commit(); 
 	    $id = $init_object->get_id();
-	    Objects::flush_cache();
+	    Objects::flushCache();
 	    // Read
 	    $read_object = Objects::load($id);
 	    if (!is_null($read_callback)) {
@@ -282,7 +282,7 @@ class ObjectReReadTest extends DBTestCase
 	    }
 	    $read_object->commit();
 
-	    Objects::flush_cache();
+	    Objects::flushCache();
 	    $reread_object = Objects::load($init_object->get_id());
 	    if (!is_null($expect_callback)) {
 	        if (!$expect_callback($reread_object)) {
@@ -601,7 +601,7 @@ class ObjectReReadTest extends DBTestCase
 	}
 	
 	public function testChildChange() {
-	       Objects::flush_cache();
+	       Objects::flushCache();
 	       $object = new ts_referenceonly();
 	       $child  = new ts_dummy();
 	       $object->testint = 123;
@@ -619,7 +619,7 @@ class ObjectReReadTest extends DBTestCase
 	 * @group many
 	 */
 	public function testManyObjects() {
-	    Objects::flush_cache();
+	    Objects::flushCache();
 	    $sub = array();
 	    $main = array();
 	    for ($i=0;$i<100;$i++) {

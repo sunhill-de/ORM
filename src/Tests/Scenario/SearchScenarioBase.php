@@ -204,7 +204,7 @@ class SearchScenarioBase extends ScenarioBase{
                 'int_attribute'=>['int_attribute','int',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
                 'attribute1'=>['attribute1','int',"\\Sunhill\\ORM\\Test\\ts_testparent",''],
 	              'attribute2'=>['attribute2','int',"\\Sunhill\\ORM\\Test\\ts_testparent",''],
-	              ['general_attribute','int',"\\Sunhill\\ORM\\Objects\\oo_object",''],
+	              ['general_attribute','int',"\\Sunhill\\ORM\\Objects\\ORMObject",''],
 	              ['char_attribute','char',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
 	              ['float_attribute','float',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
 	              ['text_attribute','text',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],

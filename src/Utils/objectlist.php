@@ -16,7 +16,7 @@ namespace Sunhill\ORM\Utils;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
 class ObjectListException extends ORMException
 {
@@ -153,10 +153,10 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
         return (($index >= 0) && ($index < count($this->items)));
     }
 
-    public function get_class(int $index)
+    public function getClass(int $index)
     {
         if (! isset($this->class_cache[$index])) {
-            $this->class_cache[$index] = Classes::normalize_namespace(Objects::get_class_namespace_of($this->get_id($index)));
+            $this->class_cache[$index] = Classes::normalizeNamespace(Objects::getClassNamespaceOf($this->get_id($index)));
         }
         return $this->class_cache[$index];
     }
@@ -168,7 +168,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
     {
         $result = [];
         for ($i = 0; $i < count($this->items); $i ++) {
-            $class = $this->get_class($i);
+            $class = $this->getClass($i);
             if (! in_array($class, $result)) {
                 $result[] = $class;
             }
@@ -183,17 +183,17 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
      */
     public function filter_class(string $class, bool $children = true)
     {
-        $class = Classes::get_namespace_of_class($class);
+        $class = Classes::getNamespaceOfClass($class);
         $shadow_items = [];
         $shadow_classes = [];
         for ($i = 0; $i < count($this->items); $i ++) {
             if ($children) {
                 if (is_a($this->get($i), $class)) {
                     $shadow_items[] = $this->items[$i];
-                    $shadow_classes[] = $this->get_class($i);
+                    $shadow_classes[] = $this->getClass($i);
                 }
             } else {
-                if ($this->get_class($i) === $class) {
+                if ($this->getClass($i) === $class) {
                     $shadow_items[] = $this->items[$i];
                     $shadow_classes[] = $this->class_cache[$i];
                 }
@@ -210,19 +210,19 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
      */
     public function remove_class(string $class, bool $children = true)
     {
-        $class = Classes::get_namespace_of_class(Classes::search_class($class));
+        $class = Classes::getNamespaceOfClass(Classes::searchClass($class));
         $shadow_items = [];
         $shadow_classes = [];
         for ($i = 0; $i < count($this->items); $i ++) {
             if ($children) {
                 if (! is_a($this->get($i), $class)) {
                     $shadow_items[] = $this->items[$i];
-                    $shadow_classes[] = $this->get_class($i);
+                    $shadow_classes[] = $this->getClass($i);
                 }
             } else {
-                if ($this->get_class($i) !== $class) {
+                if ($this->getClass($i) !== $class) {
                     $shadow_items[] = $this->items[$i];
-                    $shadow_classes[] = $this->get_class($i);
+                    $shadow_classes[] = $this->getClass($i);
                 }
             }
         }

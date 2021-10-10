@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
@@ -43,13 +43,13 @@ class ObjectSkipclassTest extends DBTestCase
         $init_object->dummyint = 1243;
         $init_object->commit();
 
-        Objects::flush_cache();
+        Objects::flushCache();
         $read_object = Objects::load($init_object->get_id());
         $this->assertEquals(1243,$read_object->dummyint);
         $read_object->dummyint = 4312;
         $read_object->commit();
         
-        Objects::flush_cache();
+        Objects::flushCache();
         $reread_object = Objects::load($init_object->get_id());
         $this->assertEquals(4312,$reread_object->dummyint);
         

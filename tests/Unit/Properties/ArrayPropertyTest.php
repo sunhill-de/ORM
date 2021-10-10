@@ -3,9 +3,9 @@
 namespace Sunhill\ORM\Tests\Unit\Properties;
 
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Properties\oo_property_arraybase;
+use Sunhill\ORM\Properties\PropertyArrayBase;
 
-class TestArray1 extends oo_property_arraybase {
+class TestArray1 extends PropertyArrayBase {
 
     protected $type = 'test_array';
     
@@ -13,7 +13,7 @@ class TestArray1 extends oo_property_arraybase {
     
 }
 
-class TestArray2 extends oo_property_arraybase {
+class TestArray2 extends PropertyArrayBase {
 
     protected $type = 'test_array';
     

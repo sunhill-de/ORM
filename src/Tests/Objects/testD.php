@@ -11,7 +11,7 @@
  */
 namespace Sunhill\ORM\Tests\Objects;
 
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 
 class testD extends ts_dummy {

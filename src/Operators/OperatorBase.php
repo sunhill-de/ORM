@@ -12,14 +12,14 @@
 
 namespace Sunhill\ORM\Operators;
 
-use \Sunhill\Basic\Utils\descriptor;
-use Sunhill\ORM\oo_object;
+use Sunhill\Basic\Utils\Descriptor;
+use Sunhill\ORM\ORMObject;
 
 /**
  * Base class for operators. An operator is a class that performs a certain action on
  * an object if the conditions matches. A derrived class can use methods with the prefix
  * 'cond_' to implement on condition checks. These methods (and the parent method check) 
- * are passed a descriptor object with some input and output variables. This descriptor
+ * are passed a Descriptor object with some input and output variables. This Descriptor
  * must implement as least the command field, that defines the action that should be
  * performed on this object.
  * @author klaus
@@ -36,17 +36,19 @@ abstract class OperatorBase
     
     protected $prio = 50;
     
-    public function get_prio() {
+    public function getPrio(): int 
+    {
         return $this->prio;
     }
     
     /**
      * The public check method which in turn calls all methods with the prefix cond_ to
      * check if the condition matches
-     * @param descriptor $descriptor
+     * @param Descriptor $Descriptor
      * @return boolean
      */
-    public function check(descriptor $descriptor) {
+    public function check(Descriptor $descriptor) 
+    {
         $methods = get_class_methods($this);
         foreach ($methods as $method) {
             if (substr($method,0,5) === 'cond_') {
@@ -60,25 +62,27 @@ abstract class OperatorBase
 
     /**
      * Checks if the command matches
-     * @param descriptor $descriptor
+     * @param Descriptor $Descriptor
      * @return boolean
      */
-    protected function cond_command(descriptor $descriptor) {
-        return (in_array($descriptor->command,$this->commands));
+    protected function condCommand(Descriptor $descriptor) 
+    {
+        return (in_array($descriptor->command, $this->commands));
     }
     
     /**
-     * Performs the action on the object (which is a field of $descriptor)
-     * @param descriptor $descriptor
+     * Performs the action on the object (which is a field of $Descriptor)
+     * @param Descriptor $Descriptor
      * @return unknown
      */
-    public function execute(descriptor $descriptor) {
-        return $this->do_execute($descriptor);
+    public function execute(Descriptor $descriptor) 
+    {
+        return $this->doExecute($descriptor);
     }
     
     /**
      * The abstract execution method
-     * @param descriptor $descriptor
+     * @param Descriptor $Descriptor
      */
-    abstract protected function do_execute(descriptor $descriptor);
+    abstract protected function doExecute(Descriptor $descriptor);
 }

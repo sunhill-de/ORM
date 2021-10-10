@@ -17,7 +17,7 @@ class ObjectUpdateTest extends DBTestCase
      * @param unknown $test_callback
      */
     public function testStorageUpdate($update_callback,$expectations) {
-        Objects::flush_cache();
+        Objects::flushCache();
         $object = new ts_objectunit();
         $object->storage_values = [
             'id'=>1,
@@ -36,7 +36,7 @@ class ObjectUpdateTest extends DBTestCase
                 'value'=>12,
                 'textvalue'=>'',
                 'name'=>'general_attribute',
-                'allowedobjects'=>"\\Sunhill\\Objects\\oo_object",
+                'allowedobjects'=>"\\Sunhill\\Objects\\ORMObject",
                 'type'=>'int',
                 'property'=>''
             ]]
@@ -232,7 +232,7 @@ class ObjectUpdateTest extends DBTestCase
     }
     
     public function testAttribute1() {
-        Objects::flush_cache();
+        Objects::flushCache();
         $object = new ts_objectunit();
         $object->storage_values = [
             'id'=>1,
@@ -251,7 +251,7 @@ class ObjectUpdateTest extends DBTestCase
                 'value'=>12,
                 'textvalue'=>'',
                 'name'=>'general_attribute',
-                'allowedobjects'=>"\\Sunhill\\Objects\\oo_object",
+                'allowedobjects'=>"\\Sunhill\\Objects\\ORMObject",
                 'type'=>'int',
                 'property'=>''
             ]]
@@ -265,7 +265,7 @@ class ObjectUpdateTest extends DBTestCase
     }
         
     public function testAttribute2() {
-        Objects::flush_cache();
+        Objects::flushCache();
         $object = new ts_objectunit();
         $object->storage_values = [
             'id'=>1,
@@ -284,7 +284,7 @@ class ObjectUpdateTest extends DBTestCase
                 'value'=>12,
                 'textvalue'=>'',
                 'name'=>'general_attribute',
-                'allowedobjects'=>"\\Sunhill\\Objects\\oo_object",
+                'allowedobjects'=>"\\Sunhill\\Objects\\ORMObject",
                 'type'=>'int',
                 'property'=>''
             ]]

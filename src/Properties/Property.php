@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file oo_property.php
+ * @file Property.php
  * Provides an access to a single property of an object 
  * Lang de,en
  * Reviewstatus: 2020-08-06
@@ -18,9 +18,9 @@ namespace Sunhill\ORM\Properties;
  * be layed out completely to the storage
  */
 use Illuminate\Support\Facades\DB;
-use Sunhill\Basic\Utils\descriptor;
+use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\ORMException;
-use Sunhill\Basic\loggable;
+use Sunhill\Basic\Loggable;
 use Sunhill\ORM\propertyhaving;
 
 /** 
@@ -60,7 +60,7 @@ class InvalidValueException extends PropertyException {}
  * @author lokal
  *
  */
-class oo_property extends loggable {
+class Property extends Loggable {
 	
     /**
      * Properties get the possibility to add additinal fields (like property->set_additional)
@@ -69,21 +69,21 @@ class oo_property extends loggable {
     
     /**
      * This array store special "features" of this property so properties can be filtered by this featured.
-     * To check if a certain feature is set the method oo_property->has_feature() is used.
+     * To check if a certain feature is set the method Property->has_feature() is used.
      * @var array
      */
     protected $features = array();
     
     /**
-     * This field stores the owner of this property. It points to an descendand of propertieshaving 
-     * oo_property->get_owner() reads, oo_property->set_owner() writes
-     * @var \Sunhill\ORM\propertieshaving
+     * This field stores the owner of this property. It points to an descendand of PropertiesHaving 
+     * Property->get_owner() reads, Property->set_owner() writes
+     * @var \Sunhill\ORM\PropertiesHaving
      */
 	protected $owner;
 	
     /**
      * The name of this property
-     * oo_property->get_name() reads, oo_property->set_name() writes
+     * Property->get_name() reads, Property->set_name() writes
      * @var string
      */
 	protected $name;
@@ -95,8 +95,8 @@ class oo_property extends loggable {
 	protected $value;
 	
 	/**
-	 * The shadow value of this property. This is the value after the last oo_property->commit()
-     * It is used for rollback and creation of the diff array (oo_property->get_diff_array())
+	 * The shadow value of this property. This is the value after the last Property->commit()
+     * It is used for rollback and creation of the diff array (Property->get_diff_array())
 	 * @var void
 	 */
 	protected $shadow;
@@ -108,7 +108,7 @@ class oo_property extends loggable {
 	protected $type;
 	
 	/**
-	 * The default value for the value field. In combination with oo_property->defaults_null this default value 
+	 * The default value for the value field. In combination with Property->defaults_null this default value 
      * is used:
      * $default  | $defaults_null | Default value
      * ----------+----------------+------------------------------
@@ -128,8 +128,8 @@ class oo_property extends loggable {
 	
 	/**
 	 * Shows if this property is dirty. If false the value wasn't change since initialization or the last
-     * commit. If true than it was changed. An access should be performed via oo_property->get_dirty() and
-     * oo_property->set_dirty().
+     * commit. If true than it was changed. An access should be performed via Property->get_dirty() and
+     * Property->set_dirty().
 	 * @var bool
 	 */
 	protected $dirty=false;
@@ -196,7 +196,7 @@ class oo_property extends loggable {
 	 * Extends the property with the possibility to deal with additional getters and setters
 	 * @param unknown $method
 	 * @param unknown $params
-	 * @return mixed|NULL|\Sunhill\ORM\Properties\oo_property
+	 * @return mixed|NULL|\Sunhill\ORM\Properties\Property
 	 */
 	public function __call($method,$params) {
 	    if (substr($method,0,4) == 'get_') {
@@ -234,9 +234,9 @@ class oo_property extends loggable {
 
 // =========================== Setter and getter ========================================	
     /**
-     * sets the field oo_property->owner
+     * sets the field Property->owner
      * @param $owner a class of propertyhaving
-     * @return oo_property a reference to this to make setter chains possible
+     * @return Property a reference to this to make setter chains possible
      */
     public function set_owner($owner) {
 	    $this->owner = $owner;
@@ -248,9 +248,9 @@ class oo_property extends loggable {
 	}
 	
     /**
-     * sets the field oo_property->name
+     * sets the field Property->name
      * @param $name The name of the property
-     * @return oo_property a reference to this to make setter chains possible
+     * @return Property a reference to this to make setter chains possible
      */
 	public function set_name(string $name) {
 		$this->name = $name;
@@ -262,9 +262,9 @@ class oo_property extends loggable {
 	}
 	
     /**
-     * sets the field oo_property->type
+     * sets the field Property->type
      * @param $type The type of the property
-     * @return oo_property a reference to this to make setter chains possible
+     * @return Property a reference to this to make setter chains possible
      */
 	public function set_type(string $type) {
 	    $this->type = $type;
@@ -276,9 +276,9 @@ class oo_property extends loggable {
 	}
 	
     /**
-     * sets the field oo_property->default (and perhaps oo_property->defaults_null too)
+     * sets the field Property->default (and perhaps Property->defaults_null too)
      * 
-     * @return oo_property a reference to this to make setter chains possible
+     * @return Property a reference to this to make setter chains possible
      */
 	public function set_default($default) {
 	    if (!isset($default)) {
@@ -297,7 +297,7 @@ class oo_property extends loggable {
 	    return $this;
 	}
 	
-	public function get_class() {
+	public function getClass() {
 	    return $this->class;
 	}
 	
@@ -326,7 +326,7 @@ class oo_property extends loggable {
 	 * @param unknown $value
 	 * @param unknown $index
 	 * @throws PropertyException
-	 * @return \Sunhill\ORM\Properties\oo_property
+	 * @return \Sunhill\ORM\Properties\Property
 	 */
 	final public function set_value($value,$index=null) {
 		if ($this->read_only) {
@@ -430,7 +430,7 @@ class oo_property extends loggable {
 	
     /**
      * Returns the value of the shadow field 
-     * @return void: The value of oo_property->shadow
+     * @return void: The value of Property->shadow
      */
 	public function get_old_value() {
 		return $this->shadow;
@@ -659,11 +659,11 @@ class oo_property extends loggable {
 	}
 
     /**
-     * Returns a descriptor array with all static (unchangable) values of this property.
-     * @return \Sunhill\basic\Utils\descriptor The collection of values
+     * Returns a Descriptor array with all static (unchangable) values of this property.
+     * @return \Sunhill\basic\Utils\Descriptor The collection of values
      */
 	public function get_static_attributes() {
-	    $result = new descriptor();
+	    $result = new Descriptor();
 	    $result->class = $this->class;
 	    $result->default = $this->default;
 	    $result->defaults_null = $this->defaults_null;
@@ -679,8 +679,8 @@ class oo_property extends loggable {
 	}
 	
     /**
-     * Completes the mthod oo_property->get_static_attributes() with values that a volatile.
-     * @return \Sunhill\basic\Utils\descriptor The collection of values
+     * Completes the mthod Property->get_static_attributes() with values that a volatile.
+     * @return \Sunhill\basic\Utils\Descriptor The collection of values
      */
 	public function get_all_attributes() {
 	    $result = $this->get_static_attributes();

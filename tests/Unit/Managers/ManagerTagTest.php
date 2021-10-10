@@ -3,12 +3,12 @@
 namespace Sunhill\ORM\Tests\Unit\Managers;
 
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Managers\tag_manager;
+use Sunhill\ORM\Managers\TagManager;
 use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\ORMException;
-use Sunhill\ORM\Objects\oo_tag;
+use Sunhill\ORM\Objects\Tag;
 use Illuminate\Support\Facades\DB;
-use Sunhill\Basic\Utils\descriptor;
+use Sunhill\Basic\Utils\Descriptor;
 
 define('NUMBER_OF_TAGS', 8);
 define('NUMBER_OF_ORPHANED_TAGS', 6);
@@ -20,17 +20,17 @@ class ManagerTagTest extends DBTestCase
     // ========================== Test count with different accessibilities  ==================================
     // total number of tags
     public function testCount() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->assertEquals(NUMBER_OF_TAGS,$test->get_count());
     }
     
     public function testCountViaApp() {
-        $test = app('\Sunhill\ORM\Managers\tag_manager');
+        $test = app('\Sunhill\ORM\Managers\TagManager');
         $this->assertEquals(NUMBER_OF_TAGS,$test->get_count());
     }
     
     public function testCountViaFacade() {
-        $this->assertEquals(NUMBER_OF_TAGS,Tags::get_count());        
+        $this->assertEquals(NUMBER_OF_TAGS,Tags::getCount());        
     }
     
     // ========================== tests with orphaned tags ==============================    
@@ -39,7 +39,7 @@ class ManagerTagTest extends DBTestCase
      * @group orphaned
      */
     public function testOrphanedCount() {
-        $this->assertEquals(NUMBER_OF_ORPHANED_TAGS,Tags::get_orphaned_count());
+        $this->assertEquals(NUMBER_OF_ORPHANED_TAGS,Tags::getOrphanedCount());
     }
     
     // Find orphaned tags
@@ -47,7 +47,7 @@ class ManagerTagTest extends DBTestCase
      * @group orphaned
      */
     public function testAllOrphaned() {
-        $this->assertEquals('TagC',Tags::get_all_orphaned()[0]->name);    
+        $this->assertEquals('TagC',Tags::getAllOrphaned()[0]->name);    
     }
     
     // Find orphaned tags
@@ -55,7 +55,7 @@ class ManagerTagTest extends DBTestCase
      * @group orphaned
      */
     public function testOrphaned() {
-        $this->assertEquals('TagC',Tags::get_orphaned(0)->name);
+        $this->assertEquals('TagC',Tags::getOrphaned(0)->name);
     }
 
 // ========================= tests with root tags ===================================    
@@ -64,7 +64,7 @@ class ManagerTagTest extends DBTestCase
      * @group root
      */
     public function testRootCount() {
-        $this->assertEquals(NUMBER_OF_ROOT_TAGS,Tags::get_root_count());
+        $this->assertEquals(NUMBER_OF_ROOT_TAGS,Tags::getRootCount());
     }
                     
     // get 'index' root tags
@@ -73,7 +73,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testRoot() {
         
-        $tag = Tags::get_root(1);
+        $tag = Tags::getRoot(1);
         $this->assertEquals('TagB',$tag->name);
     }
 
@@ -83,7 +83,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testAllRoot() {
         
-        $this->assertEquals('TagB',Tags::get_all_root()[1]->name);    
+        $this->assertEquals('TagB',Tags::getAllRoot()[1]->name);    
     }
 
     // get 'index' tag
@@ -92,10 +92,10 @@ class ManagerTagTest extends DBTestCase
      */
     public function testTag() {
         
-        $this->assertEquals('TagB',Tags::get_tag(2)->name);
-        $this->assertEquals('TagB',Tags::get_tag(2)->fullpath);
-        $this->assertEquals(0,Tags::get_tag(2)->parent_id);
-        $this->assertTrue(Tags::get_tag(2)->parent_name->empty());
+        $this->assertEquals('TagB',Tags::getTag(2)->name);
+        $this->assertEquals('TagB',Tags::getTag(2)->fullpath);
+        $this->assertEquals(0,Tags::getTag(2)->parent_id);
+        $this->assertTrue(Tags::getTag(2)->parent_name->empty());
     }
 
     /**
@@ -103,28 +103,28 @@ class ManagerTagTest extends DBTestCase
      */
     public function testTagWithParent() {
         
-        $this->assertEquals('TagE',Tags::get_tag(8)->name);
-        $this->assertEquals('TagF.TagG.TagE',Tags::get_tag(8)->fullpath);
-        $this->assertEquals(7,Tags::get_tag(8)->parent_id);
-        $this->assertEquals('TagG',Tags::get_tag(8)->parent_name);
+        $this->assertEquals('TagE',Tags::getTag(8)->name);
+        $this->assertEquals('TagF.TagG.TagE',Tags::getTag(8)->fullpath);
+        $this->assertEquals(7,Tags::getTag(8)->parent_id);
+        $this->assertEquals('TagG',Tags::getTag(8)->parent_name);
     }
     
     // get fullpath of 'index' tag
     public function testFullpathTag() {
         
-        $this->assertEquals('TagF.TagG.TagE',Tags::get_tag_fullpath(8));
+        $this->assertEquals('TagF.TagG.TagE',Tags::getTagFullpath(8));
     }
 
     // get all Tags
     public function testAllTags() {
         
-        $this->assertEquals('TagC',Tags::get_all_tags()[2]->name);        
+        $this->assertEquals('TagC',Tags::getAllTags()[2]->name);        
     }
     
     // get all Tags with delta and limit
     public function testAllTagsWithDelta() {
         
-        $this->assertEquals('TagC',Tags::get_all_tags(2,1)[0]->name);
+        $this->assertEquals('TagC',Tags::getAllTags(2,1)[0]->name);
     }
     
     // ========================== Test edit tags ==============================
@@ -133,9 +133,9 @@ class ManagerTagTest extends DBTestCase
      */
     public function testChangeTagName_TagChanged() {
         
-        Tags::change_tag(3,['name'=>'NewTagC']);
-        $this->assertEquals('NewTagC',Tags::get_tag(3)->name);
-        $this->assertEquals('TagB.NewTagC',Tags::get_tag(3)->fullpath);
+        Tags::changeTag(3,['name'=>'NewTagC']);
+        $this->assertEquals('NewTagC',Tags::getTag(3)->name);
+        $this->assertEquals('TagB.NewTagC',Tags::getTag(3)->fullpath);
     }
     
     // check if the tag cache was updated after the name of a tag changed
@@ -144,7 +144,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testChangeTagName_CacheUpdated() {
         
-        Tags::change_tag(3,['name'=>'NewTagC']);    
+        Tags::changeTag(3,['name'=>'NewTagC']);    
         $result = DB::table('tagcache')->where('tag_id',3)->get();
         $this->assertEquals($result[0]->name,'NewTagC');
     }
@@ -155,8 +155,8 @@ class ManagerTagTest extends DBTestCase
      */
     public function testChangeTagParent_TagChanged() {
         
-        Tags::change_tag(3,['parent'=>'TagD']);   
-        $this->assertEquals('TagD.TagC',Tags::get_tag(3)->fullpath);
+        Tags::changeTag(3,['parent'=>'TagD']);   
+        $this->assertEquals('TagD.TagC',Tags::getTag(3)->fullpath);
     }
 
     // Check if tag cache was updated wheren parent of tag was changed
@@ -165,7 +165,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testChangeTagParent_CacheUpdated() {
         
-        Tags::change_tag(3,['parent'=>'TagD']);
+        Tags::changeTag(3,['parent'=>'TagD']);
         $result = DB::table('tagcache')->where('tag_id',3)->get();
         $this->assertEquals($result[1]->name,'TagD.TagC');
         $this->assertEquals($result[0]->name,'TagC');
@@ -173,19 +173,19 @@ class ManagerTagTest extends DBTestCase
     
     // Clear tags
     public function testClearTags_CacheEmpty() {
-        Tags::clear_tags();
+        Tags::clearTags();
         $result = DB::table('tagcache')->get();
         $this->assertTrue($result->isEmpty());
     }
     
     public function testClearTags_ReferenceEmpty() {
-        Tags::clear_tags();
+        Tags::clearTags();
         $result = DB::table('tagobjectassigns')->get();
         $this->assertTrue($result->isEmpty());
     }
     
     public function testClearTags_TagsEmpty() {
-        Tags::clear_tags();
+        Tags::clearTags();
         $result = DB::table('tags')->get();
         $this->assertTrue($result->isEmpty());
     }
@@ -196,8 +196,8 @@ class ManagerTagTest extends DBTestCase
      */
     public function testDeleteTag_TagDeleted() {
         
-        Tags::delete_tag(3);
-        $this->assertNull(Tags::get_tag(3));
+        Tags::deleteTag(3);
+        $this->assertNull(Tags::getTag(3));
     }
     
     // Check if tag cache was updated wheren tag was deleted
@@ -206,7 +206,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testDeleteTag_CacheUpdated() {
         
-        Tags::delete_tag(3);
+        Tags::deleteTag(3);
         $result = DB::table('tagcache')->where('tag_id',3)->get();
         $this->assertTrue($result->isEmpty());
     }
@@ -217,7 +217,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testDeleteTag_AssociationsUpdated() {
         
-        Tags::delete_tag(3);
+        Tags::deleteTag(3);
         $result = DB::table('tagobjectassigns')->where('tag_id',3)->get();
         $this->assertTrue($result->isEmpty());
     }
@@ -227,7 +227,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function test_get_tag_id($parent,$expect) {
-        $test = new tag_manager();
+        $test = new TagManager();
         if (is_callable($parent)) {
             $parent = $parent();
         }
@@ -241,7 +241,7 @@ class ManagerTagTest extends DBTestCase
             [1,1],
             ['TagA',1],
             ['TagB.TagC',3],
-            [function(){ return Tags::load_tag(3); },3]
+            [function(){ return Tags::loadTag(3); },3]
         ];
     }
     
@@ -249,7 +249,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testExecuteAddTag_TagAdded() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->callProtectedMethod($test,'execute_add_tag',['Test','TagA']);
         $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);                
@@ -259,7 +259,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testExecuteAddTag_TagAddedNoParent() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->callProtectedMethod($test,'execute_add_tag',['Test',null]);
         $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(0,$result->parent_id);                
@@ -269,7 +269,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testExecuteAddTag_TagCacheAdded() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->callProtectedMethod($test,'execute_add_tag',['Test','TagA']);
         $result = DB::table('tagcache')->where('name','TagA.Test')->get();
         $this->assertTrue($result->count()>0);
@@ -279,7 +279,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testAddTag_withString_no_parent() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->callProtectedMethod($test,'add_tag_by_string',['Test']);
         $result = DB::table('tags')->where('name','Test')->get();
         $this->assertTrue($result->count()>0);
@@ -289,7 +289,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testAddTag_withString_parent() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->callProtectedMethod($test,'add_tag_by_string',['TagA.Test']);
         $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);
@@ -299,7 +299,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testAddTag_withString_missingparent() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->callProtectedMethod($test,'add_tag_by_string',['TagZ.Test']);
         $result = DB::table('tags')->where('name','Test')->first();
         $this->assertTrue($result->parent_id>1);
@@ -309,7 +309,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testAddTag_withArray_no_parent() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->callProtectedMethod($test,'add_tag_by_string',['Test']);
         $result = DB::table('tags')->where('name','Test')->get();
         $this->assertTrue($result->count()>0);
@@ -319,7 +319,7 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testAddTag_withArray_parent() {
-        $test = new tag_manager();
+        $test = new TagManager();
         $this->callProtectedMethod($test,'add_tag_by_string',['name'=>'TagA.Test']);
         $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);
@@ -329,11 +329,11 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testAddTag_withDescriptor_no_parent() {
-        $test = new tag_manager();
-        $descriptor = new descriptor();
-        $descriptor->name = 'Test';
-        $descriptor->parent = 'TagA';
-        $this->callProtectedMethod($test,'add_tag_by_descriptor',[$descriptor]);
+        $test = new TagManager();
+        $Descriptor = new Descriptor();
+        $Descriptor->name = 'Test';
+        $Descriptor->parent = 'TagA';
+        $this->callProtectedMethod($test,'add_tag_by_descriptor',[$Descriptor]);
         $result = DB::table('tags')->where('name','Test')->get();
         $this->assertTrue($result->count()>0);
     }
@@ -342,11 +342,11 @@ class ManagerTagTest extends DBTestCase
      * @group add
      */
     public function testAddTag_withDescriptor_parent() {
-        $test = new tag_manager();
-        $descriptor = new descriptor();
-        $descriptor->name = 'Test';
-        $descriptor->parent = 'TagA';
-        $this->callProtectedMethod($test,'add_tag_by_descriptor',[$descriptor]);
+        $test = new TagManager();
+        $Descriptor = new Descriptor();
+        $Descriptor->name = 'Test';
+        $Descriptor->parent = 'TagA';
+        $this->callProtectedMethod($test,'add_tag_by_descriptor',[$Descriptor]);
         $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);
     }
@@ -359,7 +359,7 @@ class ManagerTagTest extends DBTestCase
         if (is_callable($tag)) {
             $tag = $tag();
         }
-        Tags::add_tag($tag);
+        Tags::addTag($tag);
         $result = DB::table('tags')->where('name',$expect)->get();
         $this->assertEquals($expect,$result[0]->name);
     }
@@ -369,8 +369,8 @@ class ManagerTagTest extends DBTestCase
             ['Test','Test'],
             ['TagA.Test','Test'],
             [['name'=>'Test'],'Test'],
-            [function() { $descriptor = new descriptor(); $descriptor->name = 'Test'; return $descriptor; },'Test'],
-            [function() { $tag = new oo_tag(); $tag->set_name('Test'); return $tag; },'Test'],
+            [function() { $Descriptor = new Descriptor(); $Descriptor->name = 'Test'; return $Descriptor; },'Test'],
+            [function() { $tag = new Tag(); $tag->set_name('Test'); return $tag; },'Test'],
         ];
     }                                                                
                                                                 
@@ -380,7 +380,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testListConiditional() {
         
-        $result = Tags::list_tags("name<'TagC'");
+        $result = Tags::listTags("name<'TagC'");
         $this->assertEquals('TagB',$result[1]->name);
     }
 
@@ -390,7 +390,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testListConiditionalWithDelta() {
         
-        $result = Tags::list_tags("name<'TagC'",1,1);
+        $result = Tags::listTags("name<'TagC'",1,1);
         $this->assertEquals('TagB',$result[0]->name);
     }
                                                                                                     
@@ -400,7 +400,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testSearchUnique() {
         
-        $result = Tags::search_tag('TagA');
+        $result = Tags::searchTag('TagA');
        $this->assertEquals(1,$result->id);
     }
     
@@ -410,7 +410,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testSearchMultiple() {
         
-        $result = Tags::search_tag('TagE');
+        $result = Tags::searchTag('TagE');
         $this->assertEquals(5,$result[0]->id);        
     }
     
@@ -420,7 +420,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testSearchNoResult() {
         
-        $result = Tags::search_tag('NonExistingTag');
+        $result = Tags::searchTag('NonExistingTag');
         $this->assertNull($result);
     }
          

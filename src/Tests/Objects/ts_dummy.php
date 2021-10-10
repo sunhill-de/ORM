@@ -11,13 +11,13 @@
  */
 namespace Sunhill\ORM\Tests\Objects;
 
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
 /**
  * Only for testing purposes
  * @author klaus
  */
-class ts_dummy extends oo_object {
+class ts_dummy extends ORMObject {
 	
     public static $table_name = 'dummies';
     

@@ -15,7 +15,7 @@
 namespace Sunhill\ORM\Storage;
 
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
 /**
  * Basisklasse für Storages. Die abgeleiteten Klassen müssen die protected property $modules definieren, welche die eigentlichen
@@ -33,7 +33,7 @@ abstract class storage_base  {
     
     /** 
      * Speichert das aufrufende Objekt
-     * @var oo_object
+     * @var ORMObject
      */
     protected $caller;
     
@@ -48,7 +48,7 @@ abstract class storage_base  {
      * Konstruktor, übernimmt das aufrufende Objekt als Parameter.
      * @param unknown $caller
      */
-    public function __construct(oo_object $caller) {
+    public function __construct(ORMObject $caller) {
         $this->caller = $caller;    
     }
     
@@ -63,7 +63,7 @@ abstract class storage_base  {
     
     /**
      * Liefert das aufrufende Objekt zurück
-     * @return oo_object
+     * @return ORMObject
      */
     public function get_caller() {
         return $this->caller;    
@@ -149,14 +149,14 @@ abstract class storage_base  {
         return $this->execute_chain('delete',$id);    
     }
     
-    public function degrade_object(int $id,array $degration_info) {
+    public function degradeObject(int $id,array $degration_info) {
         return $this->execute_chain('degrade',$id,$degration_info);
     }
     
     public function filter_storage($features,$grouping=null) {
         $result = [];
         foreach ($this->entities as $entity => $value) {
-            $property = $this->get_caller()->get_property($entity,true);
+            $property = $this->get_caller()->getProperty($entity,true);
             if (is_null($property)) { continue; }
             if (is_array($features)) {
                 $pass = true;

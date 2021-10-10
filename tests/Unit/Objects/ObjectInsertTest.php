@@ -11,7 +11,7 @@ namespace Sunhill\ORM\Tests\Unit\Objects;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Objects\ts_objectunit;
 use Sunhill\ORM\Facades\Objects;
 

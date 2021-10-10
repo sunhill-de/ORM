@@ -2,7 +2,7 @@
 
 /**
  * @file ObjectPromotor.php
- * Provides the object_promotor class that is a supporting class for the object manager
+ * Provides the ObjectPromotor class that is a supporting class for the object manager
  * Lang en
  * Reviewstatus: 2021-10-06
  * Localization: complete
@@ -38,7 +38,7 @@ class ObjectPromotor
         if (empty(Classes::getClassName($object))) {
             throw new ObjectException(__("The target class ':newclass' doesn't exist.",['newclass'=>$newclass]));            
         }
-        $this->original_namespace = Classes::get_namespace_of_class($this->original_name);
+        $this->original_namespace = Classes::getNamespaceOfClass($this->original_name);
         if (!Classes::isSubclassOf($newclass, $this->original_namespace)) {
             throw new ObjectManagerException(__("':newclass' is not a subclass of ':oldclass'",['newclass'=>$newclass,'oldclass'=>$this->original_name]));
         }
@@ -54,7 +54,7 @@ class ObjectPromotor
      * @todo Has an direct database access
      * @param String $newclass
      */
-    private function promotion(oo_object $oldobject, string $newclass): ORMObject
+    private function promotion(ORMObject $oldobject, string $newclass): ORMObject
     {
         $new_namespace = Classes::getNamespaceOfClass($newclass);
         $newobject = new $new_namespace; // Create a new object

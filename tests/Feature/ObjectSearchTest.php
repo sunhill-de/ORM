@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Utils\objectlist;
 use Sunhill\ORM\Facades\Objects;
@@ -15,7 +15,7 @@ use Database\Seeds\SearchSeeder;
 
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 
-class searchtestA extends oo_object {
+class searchtestA extends ORMObject {
    
     public static $table_name = 'searchtestA';
     

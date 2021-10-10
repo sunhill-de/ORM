@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Search;
 
-use Sunhill\ORM\Properties\oo_property;
+use Sunhill\ORM\Properties\Property;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Search\QueryException;
 use Sunhill\ORM\Facades\Classes;
@@ -36,7 +36,7 @@ abstract class query_where extends query_atom {
     
     protected $parent_query;
     
-    public function __construct(query_builder $parent_query,oo_property $field,$relation,$value=null) {
+    public function __construct(query_builder $parent_query,Property $field,$relation,$value=null) {
         if (is_null($value)) {
             if (!isset($this->allowed_relations[$relation])) {
                 $value = $relation;
@@ -53,13 +53,13 @@ abstract class query_where extends query_atom {
         $this->get_table($field);
     }
     
-    protected function get_table(oo_property $field) {
+    protected function get_table(Property $field) {
         $this->alias = $this->parent_query->get_table($this->get_table_name($field));
         $this->field = $field->get_name();        
     }
     
-    protected function get_table_name(oo_property $field) {
-        return Classes::get_table_of_class($field->get_class());
+    protected function get_table_name(Property $field) {
+        return Classes::getTableOfClass($field->getClass());
     }
     
     /**

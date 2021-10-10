@@ -14,7 +14,7 @@ class oo_property_externalhooks extends oo_property_field {
     /**
      * Läd Externe Hooks aus dem Storage
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Properties\oo_property::do_load()
+     * @see \Sunhill\ORM\Properties\Property::do_load()
      */
 	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {
         $hooks = $loader->get_entity('externalhooks');

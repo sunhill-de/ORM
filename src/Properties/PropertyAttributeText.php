@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Properties;
 
-class oo_property_attribute_text extends oo_property_attribute {
+class PropertyAttributeText extends oo_property_attribute {
 	
     protected $type = 'attribute_text';
 

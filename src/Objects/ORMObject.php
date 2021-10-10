@@ -1,7 +1,7 @@
 <?php
 /**
- * @file oo_object.php
- * Provides the core object of the orm system named oo_object
+ * @file ORMObject.php
+ * Provides the core object of the orm system named ORMObject
  * Lang en (complete)
  * Reviewstatus: 2021-04-07
  * Localization: unknown
@@ -22,7 +22,7 @@ use Sunhill\ORM\Properties\oo_property_attribute;
 use \Sunhill\ORM\Properties\AttributeException;
 
 /**
- * As the central class of the ORM system oo_object provides the basic function for
+ * As the central class of the ORM system ORMObject provides the basic function for
  * - loading and storing
  * - creating and erasing
  * - searching
@@ -49,7 +49,7 @@ class ORMObject extends PropertiesHaving
         'table'=>'objects',     // A repitition of static:$table_name
         'name_s'=>'object',     // A human readable name in singular
         'name_p'=>'objects',    // A human readable name in plural
-        'description'=>'Baseclass of all other classes in the ORM system. An oo_object should\'t be initiated directly',
+        'description'=>'Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly',
         'options'=>0,           // Reserved for later purposes
     ];
     
@@ -81,7 +81,7 @@ class ORMObject extends PropertiesHaving
 	 * @param array $fixed
 	 * @param string $id_field
 	 */
-	public function addNeedIDQuery(string $table,array $fixed,string $id_field): null 
+	public function addNeedIDQuery(string $table, array $fixed, string $id_field): null 
     {
 	    $this->needid_queries[] = ['table'=>$table,'fixed'=>$fixed,'id_field'=>$id_field];
 	}
@@ -320,7 +320,7 @@ class ORMObject extends PropertiesHaving
 // =============================== Copying ====================================	
 	/**
 	 * This routine copies the properties to $newobject
-	 * @param oo_object $newobject
+	 * @param ORMObject $newobject
 	 */
 	public function copyTo(ORMObject $newobject): null 
     {
@@ -328,8 +328,8 @@ class ORMObject extends PropertiesHaving
 	    foreach ($this->properties as $property) {
 	        $name = $property->getName();
 	        switch ($property->getType()) {
-	            case 'array_of_objects':
-	            case 'array_of_strings':
+	            case 'arrayOfObject':
+	            case 'arrayOfStrings':
 	            case 'external_references':
 	            case 'tags':
 	                for ($i=0;$i<count($this->$name);$i++) {
@@ -346,7 +346,7 @@ class ORMObject extends PropertiesHaving
 	
 	/**
 	 * This routine copies the properties of the $source to this object
-	 * @param oo_object $source
+	 * @param ORMObject $source
 	 */
 	public function copyFrom(ORMObject $source) 
     {
@@ -354,8 +354,8 @@ class ORMObject extends PropertiesHaving
 	    foreach ($this->properties as $property) {
 	        $name = $property->getName();
 	        switch ($property->getType()) {
-	            case 'array_of_objects':
-	            case 'array_of_strings':
+	            case 'arrayOfObject':
+	            case 'arrayOfStrings':
 	            case 'external_references':
 	            case 'tags':
 	                for ($i=0;$i<count($source->$name);$i++) {
@@ -509,7 +509,7 @@ class ORMObject extends PropertiesHaving
 	    do {
 	        $result = array_merge($result, $pointer::$$name);
 	        $pointer = get_parent_class($pointer);
-	    } while (property_exists($pointer, $name)); // at least oo_object shouldn't define it
+	    } while (property_exists($pointer, $name)); // at least ORMObject shouldn't define it
 	    return $result;
 	}
 	

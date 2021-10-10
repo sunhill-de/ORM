@@ -2,9 +2,9 @@
 namespace Sunhill\ORM\Tests\Unit;
 
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Objects\oo_object;
+use Sunhill\ORM\Objects\ORMObject;
 
-class parent_object extends oo_object
+class parent_object extends ORMObject
 {
 
     public static $object_infos = [

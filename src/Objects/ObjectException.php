@@ -16,7 +16,7 @@ namespace Sunhill\ORM\Objects;
 use Sunhill\ORM\ORMException;
 
 /**
- * Baseclass for errors that raise inside of oo_object
+ * Baseclass for errors that raise inside of ORMObject
  * @author lokal
  */
 class ObjectException extends ORMException 

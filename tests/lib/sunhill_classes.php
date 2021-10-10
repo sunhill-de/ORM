@@ -10,7 +10,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -19,7 +19,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -79,7 +79,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -88,7 +88,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -103,7 +103,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -112,7 +112,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -172,7 +172,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -181,7 +181,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -196,7 +196,7 @@
         "parent"=>"HookingObject",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -205,7 +205,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -265,7 +265,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -274,7 +274,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -289,7 +289,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -298,7 +298,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -358,7 +358,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -367,7 +367,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -382,7 +382,7 @@
         "parent"=>"dummy",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -391,7 +391,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -421,7 +421,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -430,7 +430,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -490,7 +490,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -499,7 +499,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -514,7 +514,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -523,7 +523,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -553,7 +553,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -562,7 +562,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -622,7 +622,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -631,7 +631,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -646,7 +646,7 @@
         "parent"=>"searchtestA",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -655,7 +655,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -715,7 +715,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -724,7 +724,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -739,7 +739,7 @@
         "parent"=>"searchtestB",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -748,7 +748,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -808,7 +808,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -817,7 +817,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -832,7 +832,7 @@
         "parent"=>"dummy",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -841,7 +841,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -871,7 +871,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -880,7 +880,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -940,7 +940,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -949,7 +949,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -964,7 +964,7 @@
         "parent"=>"parent_object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -973,7 +973,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -1033,7 +1033,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -1042,7 +1042,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -1057,7 +1057,7 @@
         "parent"=>"secondlevelchild",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -1066,7 +1066,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -1162,7 +1162,7 @@
              "name"=>"parentsarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1171,7 +1171,7 @@
              "name"=>"parentoarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1216,7 +1216,7 @@
              "name"=>"thirdlevelsarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],
@@ -1231,7 +1231,7 @@
         "parent"=>"passthru",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -1240,7 +1240,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -1336,7 +1336,7 @@
              "name"=>"parentsarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1345,7 +1345,7 @@
              "name"=>"parentoarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1378,7 +1378,7 @@
         "parent"=>"testparent",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -1387,7 +1387,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -1483,7 +1483,7 @@
              "name"=>"parentsarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1492,7 +1492,7 @@
              "name"=>"parentoarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1516,7 +1516,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -1525,7 +1525,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -1621,7 +1621,7 @@
              "name"=>"parentsarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1630,7 +1630,7 @@
              "name"=>"parentoarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1654,7 +1654,7 @@
         "parent"=>"testparent",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -1663,7 +1663,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -1759,7 +1759,7 @@
              "name"=>"parentsarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1768,7 +1768,7 @@
              "name"=>"parentoarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
              "class"=>"Sunhill\ORM\Test\ts_testparent",
@@ -1867,7 +1867,7 @@
              "name"=>"childsarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
           "childoarray"=>[
              "class"=>"Sunhill\ORM\Test\ts_testchild",
@@ -1876,7 +1876,7 @@
              "name"=>"childoarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
         ],
     ],
@@ -1891,7 +1891,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -1900,7 +1900,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -1933,7 +1933,7 @@
              "name"=>"testoarray",
              "read_only"=>false,
              "searchable"=>false,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
         ],
     ],
@@ -1948,7 +1948,7 @@
         "parent"=>"object",
         "properties"=>[
           "created_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"created_at",
@@ -1957,7 +1957,7 @@
              "type"=>"timestamp",
              ],
           "updated_at"=>[
-             "class"=>"Sunhill\ORM\Objects\oo_object",
+             "class"=>"Sunhill\ORM\Objects\ORMObject",
              "defaults_null"=>false,
              "features"=>["object","complex",],
              "name"=>"updated_at",
@@ -2017,7 +2017,7 @@
              "name"=>"Aoarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_objects",
+             "type"=>"arrayOfObject",
              ],
           "Asarray"=>[
              "class"=>"Sunhill\ORM\Tests\Feature\searchtestA",
@@ -2026,7 +2026,7 @@
              "name"=>"Asarray",
              "read_only"=>false,
              "searchable"=>true,
-             "type"=>"array_of_strings",
+             "type"=>"arrayOfStrings",
              ],
         ],
     ],

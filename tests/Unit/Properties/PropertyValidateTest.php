@@ -6,8 +6,8 @@ use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Properties\oo_property_object;
-use Sunhill\ORM\Properties\oo_property_array_of_objects;
-use Sunhill\ORM\Properties\oo_property_array_of_strings;
+use Sunhill\ORM\Properties\PropertyArrayOfObjects;
+use Sunhill\ORM\Properties\PropertyArrayOfStrings;
 use Sunhill\ORM\Properties\oo_property_enum;
 use Sunhill\ORM\Validators\ValidatorException;
 use Sunhill\ORM\Tests\Objects\ts_testparent;
@@ -114,7 +114,7 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testArrayOfObjectsPropertyPass() {
-    	$test = new oo_property_array_of_objects(null);
+    	$test = new PropertyArrayOfObjects(null);
     	$test->set_allowed_objects(['testparent']);
     	$object = new ts_testparent();
     	$object->parentint = 22;
@@ -123,7 +123,7 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testArrayOfObjectsPropertyPassWithChild() {
-    	$test = new oo_property_array_of_objects(null);
+    	$test = new PropertyArrayOfObjects(null);
     	$test->set_allowed_objects(['testparent']);
     	$object = new ts_testchild();
     	$object->parentint = 23;
@@ -134,7 +134,7 @@ class PropertyValidateTest extends TestCase
      * @group reindex
      */
     public function testArrayOfObjectReindex() {
-        $test = new oo_property_array_of_objects(null);
+        $test = new PropertyArrayOfObjects(null);
         $test->set_allowed_objects(['testparent']);
         $object1 = new ts_testchild();
         $object1->parentint = 23;
@@ -149,14 +149,14 @@ class PropertyValidateTest extends TestCase
     
     public function testArrayOfObjectsFail() {
     	$this->expectException(ValidatorException::class);
-        $test = new oo_property_array_of_objects(null);
+        $test = new PropertyArrayOfObjects(null);
     	$test->set_allowed_objects(['testchild']);
     	$object = new ts_testparent();
     	$test->get_value()[] = $object;
     }
     
     public function testArrayOfString() {
-    	$test = new oo_property_array_of_strings(null);
+    	$test = new PropertyArrayOfStrings(null);
     	$test->get_value()[] = 'ABC';
     	$test->get_value()[] = 'DEF';
     	$hilf = $test->get_value();

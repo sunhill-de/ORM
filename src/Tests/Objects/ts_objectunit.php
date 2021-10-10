@@ -30,7 +30,7 @@ class FakeStorage extends \Sunhill\ORM\Storage\storage_base {
     
 }
 
-class ts_objectunit extends \Sunhill\ORM\Objects\oo_object {
+class ts_objectunit extends \Sunhill\ORM\Objects\ORMObject {
 	
     public static $table_name = 'objectunits';
 
