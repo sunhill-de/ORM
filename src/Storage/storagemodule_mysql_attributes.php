@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 
-class storagemodule_mysql_attributes extends storagemodule_base {
+class storagemodule_mysql_attributes extends StorageModuleBase {
     
     public function load(int $id) {
         $values = DB::table('attributevalues')->join('attributes','attributevalues.attribute_id','=','attributes.id')->

@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\DB;
  * @author Klaus
  *
  */
-class storagemodule_mysql_tags extends storagemodule_base {
+class storagemodule_mysql_tags extends StorageModuleBase {
     
     /**
      * Läd sämtliche Tags aus der assoziativen Liste in das Storage
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::load()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::load()
      */
     public function load(int $id) {
         $assigns = DB::table('tagobjectassigns')->where('container_id','=',$id)->get();
@@ -30,7 +30,7 @@ class storagemodule_mysql_tags extends storagemodule_base {
     /**
      * Fügt alle Tags zur assoziativen Liste hinzu
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::insert()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::insert()
      */
     public function insert(int $id) {
         if (is_null($this->storage->tags)) {
@@ -57,7 +57,7 @@ class storagemodule_mysql_tags extends storagemodule_base {
     /**
      * Update der Assoziativtabelle mit den hinzuzufügenden und zu löschenden Tags
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::update()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::update()
      */
     public function update(int $id) {
         if (is_null($this->storage->tags)) {
@@ -75,7 +75,7 @@ class storagemodule_mysql_tags extends storagemodule_base {
     /**
      * Löscht die zu dem Objekt mit der ID $id gehörenden Tags aus der Assoziativliste
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::delete()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::delete()
      */
     public function delete(int $id) {
         DB::table('tagobjectassigns')->where('container_id','=',$id)->delete();

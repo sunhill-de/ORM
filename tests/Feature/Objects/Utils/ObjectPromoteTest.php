@@ -21,7 +21,7 @@ class ObjectPromoteTest extends DBTestCase
      */
     public function testInheritance($classname,$expected) {
         $test = new $classname;
-        $this->assertEquals($expected,$test->get_inheritance());
+        $this->assertEquals($expected,$test->getInheritance());
     }
     
     public function InheritanceProvider(){    

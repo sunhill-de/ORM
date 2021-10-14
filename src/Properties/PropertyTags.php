@@ -175,7 +175,7 @@ class PropertyTags extends PropertyArrayBase
 	            $result[] = $tag->getID();
 	        }
 	    }
-	    $storage->set_entity('tags',$result);
+	    $storage->setEntity('tags',$result);
 	}
 	
 	protected function doLoad(StorageBase $loader,$name)  

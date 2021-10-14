@@ -6,7 +6,7 @@ use Sunhill\ORM\Objects;
 
 class FakeStorage extends \Sunhill\ORM\Storage\StorageBase {
     
-    protected function execute_chain(string $chainname,int $id, $payload=null) {
+    protected function executeChain(string $chainname,int $id, $payload=null) {
         switch ($chainname) {
             case 'load':
                 $this->entities = $this->caller->storage_values;
@@ -24,7 +24,7 @@ class FakeStorage extends \Sunhill\ORM\Storage\StorageBase {
         return 1;
     }
     
-    public function execute_need_id_queries() {
+    public function executeNeedIDQueries() {
         
     }
     

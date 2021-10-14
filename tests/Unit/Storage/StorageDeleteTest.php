@@ -6,7 +6,7 @@ use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Storage\storage_mysql;
+use Sunhill\ORM\Storage\storageMySQL;
 
 class StorageDeleteTest extends StorageBase
 {
@@ -21,9 +21,9 @@ class StorageDeleteTest extends StorageBase
      */
     public function testDelete($id,$class,$table,$field) {
         $object = new $class();
-        $changer = new storage_mysql($object);
+        $changer = new storageMySQL($object);
         $this->assertDatabaseHas($table,[$field=>$id]);
-        $changer->delete_object($id);        
+        $changer->deleteObject($id);        
         $this->assertDatabaseMissing($table,[$field=>$id]);
     }
     

@@ -57,7 +57,7 @@ class Property extends Loggable
     
     /**
      * This array store special "features" of this property so properties can be filtered by this featured.
-     * To check if a certain feature is set the method Property->has_feature() is used.
+     * To check if a certain feature is set the method Property->hasFeature() is used.
      * @var array
      */
     protected $features = array();
@@ -546,7 +546,7 @@ class Property extends Loggable
      */
 	public function is_array() 
 	{
-		return $this->has_feature('array');
+		return $this->hasFeature('array');
 	}
 	
     /**
@@ -555,14 +555,14 @@ class Property extends Loggable
      */
 	public function is_simple() 
 	{
-		return $this->has_feature('simple');
+		return $this->hasFeature('simple');
 	}
 	
     /**
      * Tests if the property has the given feature
      * @return bool: True if it has the feature otherwise false
      */
-	public function has_feature(string $test) 
+	public function hasFeature(string $test) 
 	{
 	    return in_array($test,$this->features);
 	}
@@ -641,7 +641,7 @@ class Property extends Loggable
 	 */
 	protected function doInsert(StorageBase $storage, string $name) 
 	{
-	    $storage->set_entity($name, $this->value);
+	    $storage->setEntity($name, $this->value);
 	}
 	
     /**
@@ -676,7 +676,7 @@ class Property extends Loggable
 	
 	protected function doUpdate(StorageBase $storage, string $name) {
         $diff = $this->getDiffArray(PD_ID);
-	    $storage->set_entity($name,$diff);	    
+	    $storage->setEntity($name,$diff);	    
 	}
 	
     /**

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 
-class storagemodule_mysql_calculated extends storagemodule_base {
+class storagemodule_mysql_calculated extends StorageModuleBase {
     
     public function load(int $id) {
         $values = DB::table('caching')->where('object_id','=',$id)->get();
@@ -17,7 +17,7 @@ class storagemodule_mysql_calculated extends storagemodule_base {
     
     public function insert(int $id) {
         $inserts = [];
-        $properties = $this->storage->filter_storage('calculated');
+        $properties = $this->storage->filterStorage('calculated');
         foreach ($properties as $property=>$value) {
                 $inserts[] = ['object_id'=>$id,'value'=>is_null($value)?'null':$value,'fieldname'=>$property];
         }
@@ -26,7 +26,7 @@ class storagemodule_mysql_calculated extends storagemodule_base {
     }
     
     public function update(int $id) {
-        $properties = $this->storage->filter_storage('calculated');
+        $properties = $this->storage->filterStorage('calculated');
         foreach ($properties as $property=>$value) {
             DB::table('caching')->where('object_id',$id)->where('fieldname',$property)->update(['value'=>is_null($value['TO'])?'null':$value['TO']]);
         }

@@ -85,7 +85,7 @@ class PropertyArrayOfObjects extends PropertyArrayBase
 	            $result[$index] = $value->getID();
 	        }
 	    }
-	    $storage->set_entity($name,$result);
+	    $storage->setEntity($name,$result);
 	}
 	
 	public function inserting(StorageBase $storage) 

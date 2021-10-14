@@ -571,7 +571,7 @@ class PopertiesHaving extends Hookable
 	                $result[$name] = $property;
 	            }
 	        } else {
-	            if ($property->has_feature($feature)) {
+	            if ($property->hasFeature($feature)) {
 	                if (isset($group)) { // Should we group
 	                    $group_value = $property->$group();
 	                    if (isset($result[$group_value])) {

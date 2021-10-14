@@ -1,15 +1,15 @@
 <?php
 /**
- * @file Seeder.php
- * Defines the Seeder class, a base class for object seeds
- * @author Klaus Dimde
- * ---------------------------------------------------------------------------------------------------------
+ * @file QueryWhereSimple.php
+ * Provides the QueryWhereSimple class
  * Lang en
- * Reviewstatus: 2021-05-21
- * Localization: in progress
- * Documentation: complete
- * Tests: Unit/PropertyTest.php
+ * Reviewstatus: 2020-08-06
+ * Localization: none
+ * Documentation: incomplete
+ * Tests:
  * Coverage: unknown
+ * Dependencies: none
+ * PSR-State: completed
  */
 
 namespace Sunhill\ORM\Seeder;
@@ -24,7 +24,8 @@ abstract class Seeder {
     
     abstract public function Seed();
     
-    protected function SeedObject(string $class,array $fields,array $values) {
+    protected function SeedObject(string $class,array $fields,array $values) 
+    {
         $object_name = Classes::getNamespaceOfClass($class);
         foreach ($values as $key => $value_array) {
             $object = new $object_name();
@@ -53,10 +54,11 @@ abstract class Seeder {
         }        
     }
     
-    private function SolveValue($value) {
+    private function SolveValue($value) 
+    {
         if (is_string($value)) {
             if ((substr($value,0,2) == '->') || (substr($value,0,2) == '=>')) {
-                $value = $this->getkeyObject(substr($value,2));
+                $value = $this->getKeyObject(substr($value,2));
             } else if ($value == 'null') {
                 $value = null;
             }
@@ -64,7 +66,8 @@ abstract class Seeder {
         return $value;
     }
     
-    public function GetKeyObject(string $key) {
+    public function GetKeyObject(string $key) 
+    {
         if (isset($this->key_objects[$key])) {
             return $this->key_objects[$key];
         } else {

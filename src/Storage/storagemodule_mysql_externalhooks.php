@@ -7,13 +7,13 @@ use Illuminate\Support\Facades\DB;
  * @author lokal
  *
  */
-class storagemodule_mysql_externalhooks extends storagemodule_base {
+class storagemodule_mysql_externalhooks extends StorageModuleBase {
     
     /**
      * Läd aus der Datenbanktabelle externalhooks als zur id $id passenden externen Hooks und
      * schreibt diese in das entities Feld des Storages.
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::load()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::load()
      */
     public function load(int $id) {
         $hooks = DB::table('externalhooks')->where('container_id','=',$id)->get();
@@ -34,7 +34,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
      * Liest aus dem entity-Feld des Storages die Informationen über externe Hooks und fügt diese in die
      * Datenbanktabelle externalhooks ein. 
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::insert()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::insert()
      */
     public function insert(int $id) {
         $lines = [];
@@ -43,7 +43,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
         }
         foreach ($this->storage->entities['externalhooks'] as $hook) {
             if (is_null($hook['target_id'])) {
-                $hook['destination']->add_needid_query('externalhooks',
+                $hook['destination']->addNeedIDQuery('externalhooks',
                     [
                         'container_id'=>$id,
                         'action'=>$hook['action'],
@@ -71,7 +71,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
      * Liest aus dem entity-Feld des Storages die Subfelder für externe Hooks NEW und REMOVED
      * Die neuen werden eingefügt, die alten gelöscht.
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::update()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::update()
      */
     public function update(int $id) {
         if (empty($this->storage->entities['externalhooks'])) {
@@ -87,7 +87,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
         }
         foreach ($this->storage->entities['externalhooks']['NEW'] as $hook) {
             if (empty($hook['target_id'])) {
-                $hook['destination']->add_needid_query('externalhooks',[
+                $hook['destination']->addNeedIDQuery('externalhooks',[
                     'container_id'=>$id,
                     'action'=>$hook['action'],
                     'subaction'=>$hook['subaction'],
@@ -113,7 +113,7 @@ class storagemodule_mysql_externalhooks extends storagemodule_base {
     /**
      * Löscht aus der Tabelle externalhooks alle Referenzen auf die übergebene ID $id
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::delete()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::delete()
      */
     public function delete(int $id) {
         DB::table('externalhooks')->where('container_id',$id)->orWhere('target_id',$id)->delete();

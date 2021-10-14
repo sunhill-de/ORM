@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 
-class storagemodule_mysql_strings extends storagemodule_base {
+class storagemodule_mysql_strings extends StorageModuleBase {
     
     public function load(int $id) {
         $references = DB::table('stringobjectassigns')->where('container_id','=',$id)->get();
@@ -19,7 +19,7 @@ class storagemodule_mysql_strings extends storagemodule_base {
     }
     
     public function insert(int $id) {
-        $properties = $this->storage->filter_storage('strings');
+        $properties = $this->storage->filterStorage('strings');
         if (empty($properties)) {
             return $id;
         }
@@ -34,7 +34,7 @@ class storagemodule_mysql_strings extends storagemodule_base {
     }
     
     public function update(int $id) {
-        $properties = $this->storage->filter_storage('strings');
+        $properties = $this->storage->filterStorage('strings');
         if (empty($properties)) {
             return $id;
         }
@@ -62,10 +62,10 @@ class storagemodule_mysql_strings extends storagemodule_base {
     /**
      * Löscht die höhergestellten Tabellen
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Storagestoragemodule_base::degrade()
+     * @see \Sunhill\ORM\StorageStorageModuleBase::degrade()
      */
     public function degrade(int $id,array $degration_info) {
-        $properties = $this->storage->filter_storage('strings');
+        $properties = $this->storage->filterStorage('strings');
         foreach ($properties as $property=>$payload) {
                 DB::table('stringobjectassigns')
                 ->where('container_id',$id)

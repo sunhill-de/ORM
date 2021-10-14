@@ -195,7 +195,7 @@ class ORMObject extends PropertiesHaving
 	       $storage = $this->getStorage();
     	   $this->walkProperties('inserting', $storage);
            $this->walkProperties('insert',$storage);
-           $this->setID($storage->insert_object());
+           $this->setID($storage->insertObject());
            $this->executeNeedIDQueries($storage);
            $this->walkProperties('inserted',$storage);
            $this->insertCache($this->getID());
