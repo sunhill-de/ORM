@@ -2,10 +2,10 @@
 /**
  * @file PropertyCalculated.php
  * Provides the property for calcualted fields
- * Lang en (complete)
- * Reviewstatus: 2021-04-07
- * Localization: unknown
- * Documentation: unknown
+ * Lang en
+ * Reviewstatus: 2021-10-14
+ * Localization: complete
+ * Documentation: complete
  * Tests: unknown
  * Coverage: unknown
  * Dependencies: Objects, ObjectException, base
@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\ObjectException;
 use Sunhill\ORM\Storage\StorageBase;
 
+/**
+ * The property class for calculated fields
+ */
 class PropertyCalculated extends PropertyField 
 {
 	
@@ -28,15 +31,19 @@ class PropertyCalculated extends PropertyField
 	
 //	protected $initialized = true;
 	
-	protected function doSetValue($value) 
+	/**
+	 * Raises an exception when called (property fields mustn't be written to)
+	 */
+	protected function doSetValue(mixed $value) 
 	{
-	    throw new ObjectException("Tried to write to a calculate field");
+	    throw new PropertyException(__("Tried to write to a calculate field"));
 	}
 	
 	/**
-	 * Fordert das Property auf, sich neu zu berechnen (lassen)
+	 * Lets this property recalculate it self
 	 */
-	public function recalculate() {
+	public function recalculate() 
+	{
 	    $method_name = 'calculate_'.$this->name;
 	    $newvalue = $this->owner->$method_name();
 	    if ($this->value !== $newvalue) { // Was there a change at all?
@@ -49,12 +56,20 @@ class PropertyCalculated extends PropertyField
 	    }
 	}
 	
-	protected function initializeValue() {
+	/**
+	 * A calculated field is never uninitialized, if it is marked a so, do recalculate
+	 */
+	protected function initializeValue(): bool 
+	{
 	    $this->recalculate();
 	    return true;
 	}
 	
-	protected function do_insert(StorageBase $storage, string $name) {
+	/**
+	 * Inserts its value into the storage. if not already initialized, do this first
+	 */
+	protected function doInsert(StorageBase $storage, string $name) 
+	{
 	    if (!$this->initialized) {
 	        $this->recalculate();
 	    }
