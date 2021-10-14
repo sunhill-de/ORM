@@ -19,9 +19,9 @@ namespace Sunhill\ORM\Properties;
  */
 use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\Descriptor;
-use Sunhill\ORM\ORMException;
 use Sunhill\Basic\Loggable;
-use Sunhill\ORM\propertyhaving;
+use Sunhill\ORM\PropertiesHaving;
+use Sunhill\ORM\Storage\StorageBase;
 
 /** 
  * These constants are used in get_diff_array as an optional parameter. They decide how object references should 
@@ -43,24 +43,12 @@ define ('PD_ID',2);
 define ('PD_KEEP',3);  
 
 /**
- * a basic exception class that deal with properties
- * @author lokal
- *
- */
-class PropertyException extends ORMException {}
-
-/**
- * An exception that is raised, if a reference is assigned an invalid value
- * @author lokal
- */
-class InvalidValueException extends PropertyException {}
-
-/**
  * A basic class for properties. 
  * @author lokal
  *
  */
-class Property extends Loggable {
+class Property extends Loggable 
+{
 	
     /**
      * Properties get the possibility to add additinal fields (like property->set_additional)
@@ -181,7 +169,8 @@ class Property extends Loggable {
 	/**
 	 * The constructor sets all values to a default
 	 */
-	public function __construct() {
+	public function __construct() 
+	{
 		$this->dirty = false;
 		$this->defaults_null = false;
 		$this->read_only = false;
@@ -189,7 +178,7 @@ class Property extends Loggable {
 			$this->value = array();
 		}
 		$this->initialize();
-		$this->init_validator();
+		$this->init_Vlidator();
 	}
 	
 	/**
@@ -198,7 +187,8 @@ class Property extends Loggable {
 	 * @param unknown $params
 	 * @return mixed|NULL|\Sunhill\ORM\Properties\Property
 	 */
-	public function __call($method,$params) {
+	public function __call($method, $params) 
+	{
 	    if (substr($method,0,4) == 'get_') {
 	        $name = substr($method,4);
 	        if (isset($this->additional_fields[$name])) {
@@ -217,17 +207,19 @@ class Property extends Loggable {
 	 * A method to provide the possibility to initialize this property. Is not the same as
      * setting initialized to true.
 	 */
-	public function initialize() {
+	public function initialize() 
+	{
 	}
 	
 	/**
 	 * Initializes the validator 
 	 * @throws PropertyException if the validator class dosn't exist
 	 */
-	protected function init_validator() {
+	protected function initValidator() 
+	{
 	    $validator_name = "\\Sunhill\\ORM\\Validators\\".$this->validator_name;
 	    if (!class_exists($validator_name)) {
-	        throw new PropertyException("Unknown validator '".$this->validator_name."' called.");
+	        throw new PropertyException(__("Unknown validator ':validator' called.",['validator'=>$this->validator_name]));
 	    }
 	    $this->validator = new $validator_name();    
 	}
@@ -235,143 +227,167 @@ class Property extends Loggable {
 // =========================== Setter and getter ========================================	
     /**
      * sets the field Property->owner
-     * @param $owner a class of propertyhaving
+     * @param $owner a class of PropertiesHaving
      * @return Property a reference to this to make setter chains possible
      */
-    public function set_owner($owner) {
+    public function set_owner(PropertiesHaving $owner): Property 
+    {
 	    $this->owner = $owner;
 	    return $this;	    
-	}
+    }
 
-	public function get_owner() {
+    /**
+     * Returns the value of the owner field
+     * @return PropertiesHaving
+     */
+    public function get_owner(): PropertyHaving 
+    {
 	    return $this->owner;
-	}
+    }
 	
     /**
      * sets the field Property->name
      * @param $name The name of the property
      * @return Property a reference to this to make setter chains possible
      */
-	public function set_name(string $name) {
-		$this->name = $name;
-		return $this;
-	}
-	 
-	public function get_name() {
-		return $this->name;
-	}
+    public function set_name(string $name): Property 
+    {
+	    $this->name = $name;
+	    return $this;
+    }
+    
+    /**
+     * Returns the name of this property
+     */
+    public function get_name(): string 
+    {
+	    return $this->name;
+    }
 	
     /**
      * sets the field Property->type
      * @param $type The type of the property
      * @return Property a reference to this to make setter chains possible
      */
-	public function set_type(string $type) {
+    public function set_type(string $type): Property
+    {
 	    $this->type = $type;
 	    return $this;
-	}
+    }
 	
-	public function get_type() {
+    public function get_type(): string
+    {
 	    return $this->type;
-	}
+    }
 	
     /**
      * sets the field Property->default (and perhaps Property->defaults_null too)
      * 
      * @return Property a reference to this to make setter chains possible
      */
-	public function set_default($default) {
+    public function set_default(mixed $default): Property 
+    {
 	    if (!isset($default)) {
 	        $this->defaults_null = true;
 	    }
 	    $this->default = $default;
 	    return $this;
-	}
+    }
 	
-	public function get_default() {
+    public function get_default(): mixed
+    {
 	    return $this->default;
-	}
+    }
 	
-	public function set_class(string $class) {
+    public function set_class(string $class): Property 
+    {
 	    $this->class = $class;
 	    return $this;
-	}
+    }
 	
-	public function getClass() {
+    public function getClass() 
+    {
 	    return $this->class;
-	}
+    }
 	
-	public function set_readonly($value) {
+    public function set_readonly(bool $value) 
+    {
 	    $this->read_only = $value;
 	    return $this;
-	}
+    }
 	
-	public function get_readonly() {
+    public function get_readonly(): bool
+    {
 	    return $this->read_only;
-	}
+    }
 	
-	public function searchable() {
+    public function searchable(): Property 
+    {
 	    $this->searchable = true;
 	    return $this;
-	}
+    }
 	
-	public function get_searchable() {
+    public function get_searchable(): bool 
+    {
 	    return $this->searchable;
-	}
+    }
 	
 	
 // ============================== Value Handling =====================================	
 	/**
-	 * Greift schreibend auf den Wert von $value zu. Darf nicht überschrieben werden.
+	 * Writes the value of this property
 	 * @param unknown $value
 	 * @param unknown $index
 	 * @throws PropertyException
 	 * @return \Sunhill\ORM\Properties\Property
 	 */
-	final public function set_value($value,$index=null) {
+	final public function set_value($value, $index = null): Property
+	{
 		if ($this->read_only) {
-			throw new PropertyException("Write to a read only property.");
+			throw new PropertyException(__("Write to a read only property."));
 		}
 		
 		// Prüfen, ob sich der Wert überhaupt ändert
 		if ($this->initialized && ($value === $this->value)) {
     		return $this;
 		}
-        $oldvalue = $this->value;
-        $this->value_changing($oldvalue,$value);
+        	$oldvalue = $this->value;
+        	$this->valueChanging($oldvalue,$value);
 		if (!$this->dirty) {
 		    $this->shadow = $this->value;
 		    $this->dirty = true;
 		}
 		
 		if (is_null($index)) {
-		      $this->do_set_value((is_null($value)?null:$this->validate($value)));
+		      $this->doSetValue((is_null($value)?null:$this->validate($value)));
 		} else {
-		    $this->do_set_indexed_value($index,(is_null($value)?null:$this->validate($value)));
+		    $this->doSetIndexedValue($index,(is_null($value)?null:$this->validate($value)));
 		}
 		    
 		$this->initialized = true;
-		$this->value_changed($oldvalue,$this->value);
+		$this->valueChanged($oldvalue,$this->value);
 		return $this;
 	}
 
 	/**
-	 * Schreibt den neuen Wert nach $value
-	 * @param unknown $value
+	 * Writes the new value 
+	 * @param mixed $value
 	 */
-	protected function do_set_value($value) {
+	protected function doSetValue(mixed $value) 
+	{
 	    $this->value = $value;
 	}
 	
 	/**
-	 * Prüft, ob ein Owner gesetzt ist. Wenn ja wird dessen Methode check_for_hook aufgerufen
+	 * If there is an owner this method calls its checkForHook method
 	 * @param unknown $action
 	 * @param unknown $subaction
 	 * @param unknown $info
 	 */
-	protected function check_owner_hook($action,$subaction,$info) {
+	protected function checkOwnerHook($action, $subaction, $info) 
+	{
 	    if (!empty($this->owner)) {
-	        $this->owner->check_for_hook($action,$subaction,$info);
+	        $this->owner->checkForHook($action, $subaction, $info);
 	    }
 	}
 	
@@ -380,8 +396,9 @@ class Property extends Loggable {
 	 * @param unknown $from Alter Wert der Property
 	 * @param unknown $to Neuer Wert der Property
 	 */
-	protected function value_changing($from,$to) {
-	    $this->check_owner_hook('PROPERTY_CHANGING',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
+	protected function valueChanging($from, $to) 
+	{
+	    $this->checkOwnerHook('PROPERTY_CHANGING',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
 	/**
@@ -389,19 +406,21 @@ class Property extends Loggable {
 	 * @param unknown $from Alter Wert der Property
 	 * @param unknown $to Neuer Wert der Property
 	 */
-	protected function value_changed($from,$to) {
-	    $this->check_owner_hook('PROPERTY_CHANGED',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
+	protected function valueChanged($from, $to) 
+	{
+	    $this->checkOwnerHook('PROPERTY_CHANGED',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
-	final public function &get_value() {
+	final public function &get_value() 
+	{
 		if (!$this->initialized) {
 			if (isset($this->default) || $this->defaults_null) {
 				$this->value = $this->default;
 				$this->shadow = $this->default;
 				$this->initialized = true;
 			} else {
-			    if (!$this->initialize_value()) {
-			         throw new PropertyException("Read of a not initialized property: '".$this->name."'");
+			    if (!$this->initializeValue()) {
+			         throw new PropertyException(__("Read of a not initialized property: ':name'",['name'=>$this->name]));
 			    }
 			}
 		}
@@ -413,18 +432,21 @@ class Property extends Loggable {
 	}
 
 	/**
-	 * Hier kann man noch zusätzlich versuchen, einem uninitialisierten Wert einen solchen noch zuzuweisen (z.B. Calculate-Felder)
-	 * @return boolean
+	 * A last possibility to initialize a value (e.g. calculated field)
+	 * @return bool, true if successful otherwise false
 	 */
-	protected function initialize_value() {
+	protected function initializeValue(): bool 
+	{
 	    return false;
 	}
 	
-	protected function &do_get_value() {
+	protected function &do_get_value() 
+	{
 	    return $this->value;    
 	}
 	
-	protected function &do_get_indexed_value($index) {
+	protected function &do_get_indexed_value($index) 
+	{
 	    return $this->value[$index];
 	}
 	
@@ -432,7 +454,8 @@ class Property extends Loggable {
      * Returns the value of the shadow field 
      * @return void: The value of Property->shadow
      */
-	public function get_old_value() {
+	public function get_old_value() 
+	{
 		return $this->shadow;
 	}
 	
@@ -445,7 +468,8 @@ class Property extends Loggable {
 	 * @param int $type One of the PD_XXXX fields (see above)
 	 * @return void[]
 	 */
-	public function get_diff_array(int $type=PD_VALUE) {
+	public function get_diff_array(int $type=PD_VALUE)
+	{
 	    return array('FROM'=>$this->get_diff_entry($this->shadow,$type),
 	                 'TO'=>$this->get_diff_entry($this->value,$type));
 	}
@@ -457,7 +481,8 @@ class Property extends Loggable {
 	 * @param int $type
 	 * @return unknown
 	 */
-	protected function get_diff_entry($entry,int $type) {
+	protected function get_diff_entry($entry,int $type) 
+	{
 	    return $entry;
 	}
 //========================== Dirtyness ===============================================	
@@ -466,7 +491,8 @@ class Property extends Loggable {
      * Tests, if the property is dirty
      * @return bool: True if it is dirty otherwise false 
      */
-    public function get_dirty() {
+    public function get_dirty()
+    {
 		return $this->dirty;	
 	}
 	
@@ -474,19 +500,21 @@ class Property extends Loggable {
      * Sets the value of dirty to $value
      * @param bool $value The new value of dirty
      */
-    public function set_dirty(bool $value) {
+    public function set_dirty(bool $value) 
+    {
 		$this->dirty = $value;
 	}
 	
     /**
      * Commit the changes that where made since the last commit() or loading
      */
-	public function commit() {
+	public function commit() 
+	{
 		if (!$this->initialized) {
 			if (isset($this->default) || $this->defaults_null) {
 				$this->value = $this->default;	
 			} else {
-				throw new PropertyException("Commit of a not initialized property: '".$this->name."'");
+				throw new PropertyException(__("Commit of a not initialized property: ':name'",['name'=>$this->name]));
 			}
 		}
 		$this->dirty = false;
@@ -496,7 +524,8 @@ class Property extends Loggable {
     /**
      * Rollback the changes that were made this the last commit() or loading
      */
-	public function rollback() {
+	public function rollback()
+	{
 		$this->dirty = false;
 		$this->value = $this->shadow;
 	}
@@ -506,7 +535,8 @@ class Property extends Loggable {
      * @param $value The value to test
      * @return bool: True if it's valid otherwise false
      */
-	protected function validate($value) {
+	protected function validate($value) 
+	{
 		return $this->validator->validate($value);
 	}
 	
@@ -514,7 +544,8 @@ class Property extends Loggable {
      * Checks if this property is an array 
      * @return bool: True if it's an array otherwise false
      */
-	public function is_array() {
+	public function is_array() 
+	{
 		return $this->has_feature('array');
 	}
 	
@@ -522,7 +553,8 @@ class Property extends Loggable {
      * Checks if this property is a simple property 
      * @return bool: True if it's a simple property otherwise false
      */
-	public function is_simple() {
+	public function is_simple() 
+	{
 		return $this->has_feature('simple');
 	}
 	
@@ -530,15 +562,18 @@ class Property extends Loggable {
      * Tests if the property has the given feature
      * @return bool: True if it has the feature otherwise false
      */
-	public function has_feature(string $test) {
+	public function has_feature(string $test) 
+	{
 	    return in_array($test,$this->features);
 	}
 	
-	public function deleting(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function deleting(StorageBase $storage) 
+	{
 	   // Does nothing by default	    
 	}
 	
-	public function deleted(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function deleted(StorageBase $storage) 
+	{
 	   // Does nothing by default	    
 	}
 	
@@ -552,9 +587,10 @@ class Property extends Loggable {
 	 * Ruft wiederrum die überschreibbare Methode do_load auf, die property-Individuelle Dinge erledigen kann
 	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 */
-	final public function load(\Sunhill\ORM\Storage\storage_base $loader) {
+	final public function load(StorageBase $loader) 
+	{
 	    $name = $this->get_name();
-        $this->do_load($loader,$name);
+            $this->do_load($loader,$name);
 	    $this->initialized = true; 
 	    $this->dirty = false;
 	}
@@ -564,7 +600,8 @@ class Property extends Loggable {
 	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {
+	protected function do_load(StorageBase $loader, $name) 
+	{
 	    $this->value = $loader->$name;
 	}
 
@@ -572,7 +609,8 @@ class Property extends Loggable {
 	 * Wird aufgerufen, bevor das Property geladen wird
 	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
-	public function loading(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function loading(StorageBase $storage) 
+	{
 	   // Does nothing by default
 	}
 	
@@ -580,7 +618,8 @@ class Property extends Loggable {
 	 * Wird aufgerufen, nachdem das Property geladen ist
 	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
-	public function loaded(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function loaded(StorageBase $storage) 
+	{
 	   // Does nothing by default
 	}
 	
@@ -588,7 +627,8 @@ class Property extends Loggable {
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert in das Storage zu schreiben
 	 */
-	public function insert(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function insert(StorageBase $storage) 
+	{
 	    $this->do_insert($storage,$this->get_name());
 	    $this->dirty = false;	    
 	}
@@ -599,7 +639,8 @@ class Property extends Loggable {
 	 * @param string $tablename
 	 * @param string $name
 	 */
-	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
+	protected function do_insert(StorageBase $storage, string $name) 
+	{
 	    $storage->set_entity($name, $this->value);
 	}
 	
@@ -607,7 +648,8 @@ class Property extends Loggable {
      * Wird vor dem Einfügen aufgerufen
      * @param \Sunhill\ORM\Storage\storage_base $storage
      */
-	public function inserting(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function inserting(StorageBase $storage) 
+	{
 	   // Does nothing by default
 	}
 	
@@ -615,12 +657,14 @@ class Property extends Loggable {
 	 * Wird nach dem Einfügen aufgerufen
 	 * @param \Sunhill\ORM\Storage\storage_base $storage
 	 */
-	public function inserted(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function inserted(StorageBase $storage) 
+	{
 	   // Does nothing by default
 	}
 
 // ================================= Update ====================================	
-	public function update(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function update(StorageBase $storage) 
+	{
 	    if ($this->dirty) {
             $diff = $this->get_diff_array(PD_KEEP);
 	        $this->get_owner()->check_for_hook('UPDATING_PROPERTY',$this->get_name(),$diff);
@@ -639,7 +683,8 @@ class Property extends Loggable {
      * Is called before an update
      * @param \Sunhill\ORM\Storage\storage_base $storage
      */
-	public function updating(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function updating(StorageBase $storage) 
+	{
 	    // Does nothis by default
 	}
 	
@@ -647,14 +692,16 @@ class Property extends Loggable {
      * Is called after an update
      * @param \Sunhill\ORM\Storage\storage_base $storage
      */
-	public function updated(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function updated(StorageBase $storage) 
+	{
 	   // Does nothing by default
 	}
 	
     /**
      * Adds an hook for this property
      */
-	public function add_hook($action,$hook,$subaction,$target) {
+	public function add_hook($action,$hook,$subaction,$target) 
+	{
 	   $this->hooks[] = ['action'=>$action,'hook'=>$hook,'subaction'=>$subaction,'target'=>$target];    
 	}
 
@@ -662,7 +709,8 @@ class Property extends Loggable {
      * Returns a Descriptor array with all static (unchangable) values of this property.
      * @return \Sunhill\basic\Utils\Descriptor The collection of values
      */
-	public function get_static_attributes() {
+	public function get_static_attributes() 
+	{
 	    $result = new Descriptor();
 	    $result->class = $this->class;
 	    $result->default = $this->default;
@@ -679,10 +727,11 @@ class Property extends Loggable {
 	}
 	
     /**
-     * Completes the mthod Property->get_static_attributes() with values that a volatile.
+     * Completes the method Property->get_static_attributes() with values that a volatile.
      * @return \Sunhill\basic\Utils\Descriptor The collection of values
      */
-	public function get_all_attributes() {
+	public function get_all_attributes() 
+	{
 	    $result = $this->get_static_attributes();
 	    $result->value = $this->value;
 	    $result->shadow = $this->shadow;
