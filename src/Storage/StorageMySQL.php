@@ -18,12 +18,12 @@ namespace Sunhill\ORM\Storage;
 use Illuminate\Support\Facades\DB;
 
 /** 
- * Die Klasse storageMySQL ist die Standardklasse für Storages. Sie definiert zusätzlich nur die mysql Module für
+ * Die Klasse StorageMySQL ist die Standardklasse für Storages. Sie definiert zusätzlich nur die mysql Module für
  * die einzelnen Entity-Klassen
  * @author lokal
  *
  */
-class storageMySQL extends StorageBase  
+class StorageMySQL extends StorageBase  
 {
     
     protected $modules = ['mysql_simple','mysql_objects','mysql_strings','mysql_calculated',

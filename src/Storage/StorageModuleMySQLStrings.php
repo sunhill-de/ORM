@@ -1,10 +1,25 @@
-<?php namespace Sunhill\ORM\Storage;
+<?php 
+/**
+ * @file StorageModuleMySQLStrings.php
+ * @author Klaus Dimde
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ * PSR-State: completed
+ */
+
+namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 
-class storagemodule_mysql_strings extends StorageModuleBase {
+class StorageModuleMySQLStrings extends StorageModuleBase 
+{
     
-    public function load(int $id) {
+    public function load(int $id) 
+    {
         $references = DB::table('stringobjectassigns')->where('container_id','=',$id)->get();
         if (empty($references)) {
             return;
@@ -18,7 +33,8 @@ class storagemodule_mysql_strings extends StorageModuleBase {
         return $id;
     }
     
-    public function insert(int $id) {
+    public function insert(int $id) 
+    {
         $properties = $this->storage->filterStorage('strings');
         if (empty($properties)) {
             return $id;
@@ -33,7 +49,8 @@ class storagemodule_mysql_strings extends StorageModuleBase {
         return $id;
     }
     
-    public function update(int $id) {
+    public function update(int $id) 
+    {
         $properties = $this->storage->filterStorage('strings');
         if (empty($properties)) {
             return $id;
@@ -54,7 +71,8 @@ class storagemodule_mysql_strings extends StorageModuleBase {
         return $id;
     }
     
-    public function delete(int $id) {
+    public function delete(int $id) 
+    {
         DB::table('stringobjectassigns')->where('container_id','=',$id)->delete(); 
         return $id;
     }
@@ -64,7 +82,8 @@ class storagemodule_mysql_strings extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::degrade()
      */
-    public function degrade(int $id,array $degration_info) {
+    public function degrade(int $id,array $degration_info) 
+    {
         $properties = $this->storage->filterStorage('strings');
         foreach ($properties as $property=>$payload) {
                 DB::table('stringobjectassigns')

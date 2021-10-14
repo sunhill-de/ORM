@@ -18,7 +18,8 @@ use Sunhill\Basic\SunhillException;
 use Sunhill\ORM\Objects\ORMObject;
 use Illuminate\Support\Facades\DB;
 
-trait ScenarioWithObjects {
+trait ScenarioWithObjects 
+{
 
     protected $references = []; /**<< Storage for the references */
     
@@ -85,7 +86,8 @@ trait ScenarioWithObjects {
         return $result;
     }
     
-    protected function clearTables() {
+    protected function clearTables() 
+    {
         $tables = $this->gatherTables();
         foreach ($tables as $table) {
             DB::statement('truncate '.$table);
@@ -98,7 +100,8 @@ trait ScenarioWithObjects {
      * @param $name string The name of the class
      * @param $description array The Descriptor of this class (an two element array)
      */
-    protected function handleClass(string $name,array $Descriptor) {
+    protected function handleClass(string $name, array $Descriptor) 
+    
         if (count($Descriptor) !== 2) {
             throw new SunhillException("Invalid object Descriptor: Elementcount is not 2");
             return;
@@ -119,7 +122,8 @@ trait ScenarioWithObjects {
      * @param $values array of void: The value of the fields of this objects
      * @throws SunhillException If the number of values is not equal to the number of fields
      */
-    protected function handleObject(string $name,$reference,array $fields,array $values) {
+    protected function handleObject(string $name,$reference,array $fields,array $values) 
+    {
         if (count($fields) !== count($values)) {
             throw new SunhillException("Invalid object Descriptor: The count of values has to be the same as the count of fields");
             return;
@@ -141,7 +145,8 @@ trait ScenarioWithObjects {
      * We can't depend on classmanager so implement this routine by hand
      * @param unknown $test
      */
-    private function getNamespace($test) {
+    private function getNamespace($test) 
+    {
         $classes = get_declared_classes();
         foreach ($classes as $class) {
             if (is_a($class,ORMObject::class,true)) {
@@ -152,7 +157,8 @@ trait ScenarioWithObjects {
         }
     }
     
-    protected function handleFields($class,$fields,$values) {
+    protected function handleFields($class,$fields,$values) 
+    {
         // Traverse both array at the same time, therefore an for loop
         for ($i=0;$i<count($fields);$i++) {
                 $field_name = $fields[$i];
@@ -169,7 +175,8 @@ trait ScenarioWithObjects {
             }
     }
     
-    protected function handleTags($class,$tags) {
+    protected function handleTags($class,$tags) 
+    {
         if (is_null($tags)) {
             return;
         }
@@ -183,11 +190,13 @@ trait ScenarioWithObjects {
         }
     }
     
-    protected function handleReference($class,$field_name,$reference) {
+    protected function handleReference($class,$field_name,$reference) 
+    {
         $class->$field_name = $this->getReference($reference);
     }
     
-    protected function handleArray($class,string $field_name,array $values) {
+    protected function handleArray($class,string $field_name,array $values) 
+    {
         foreach ($values as $value) {
             if (is_string($value) && (substr($value,0,2) == '=>')) {
                 $class->$field_name[] = $this->getReference($value);
@@ -200,7 +209,8 @@ trait ScenarioWithObjects {
     /**
      * Handles a simple field assigns
      */
-    protected function handleField($class,string $field_name,$value) {
+    protected function handleField($class,string $field_name,$value) 
+    {
         if (is_null($value)) { // Ignore null fields
             return;
         }
@@ -213,7 +223,8 @@ trait ScenarioWithObjects {
      * @param $class ORMObject: The object to store
      * @throws SunhillException if the reference is already in use
      */
-    protected function storeReference(string $reference,$class) {
+    protected function storeReference(string $reference,$class) 
+    {
         if (isset($this->references[$reference])) {
             throw new SunhillException("The reference '$reference' is already in use.");
             return;
@@ -227,7 +238,8 @@ trait ScenarioWithObjects {
      * @return ORMObject: The stored object 
      * @throws SunhillException if the reference does not exist
      */
-    protected function getReference(string $reference) {
+    protected function getReference(string $reference)
+    {
         if (substr($reference,0,2) == '=>') { // Remove reference string
             $reference = substr($reference,2);
         }

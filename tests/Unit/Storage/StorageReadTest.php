@@ -29,7 +29,7 @@ class StorageReadTest extends StorageBase
             self::$is_prepared = true;
         }
         $object = new $class();
-        $loader = new \Sunhill\ORM\Storage\storageMySQL($object);
+        $loader = new \Sunhill\ORM\Storage\StorageMySQL($object);
         $loader->loadObject($id);
         $this->assertEquals($expected,$this->get_field($loader,$fieldname));
     }

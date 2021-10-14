@@ -1,10 +1,24 @@
-<?php namespace Sunhill\ORM\Storage;
+<?php 
+/**
+ * @file StorageModuleMySQLAttributes.php
+ * @author Klaus Dimde
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ * PSR-State: completed
+ */
+
+namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 
-class storagemodule_mysql_attributes extends StorageModuleBase {
+class StorageModuleMySQLAttributes extends StorageModuleBase {
     
-    public function load(int $id) {
+    public function load(int $id) 
+    {
         $values = DB::table('attributevalues')->join('attributes','attributevalues.attribute_id','=','attributes.id')->
         where('attributevalues.object_id','=',$id)->get();
         foreach ($values as $value) {
@@ -24,7 +38,8 @@ class storagemodule_mysql_attributes extends StorageModuleBase {
         return $id;
     }
     
-    public function insert(int $id) {
+    public function insert(int $id) 
+    {
         if (! isset($this->storage->entities['attributes'])) {
             return $id;
         }
@@ -39,7 +54,8 @@ class storagemodule_mysql_attributes extends StorageModuleBase {
         return $id;
     }
     
-    public function update(int $id) {
+    public function update(int $id) 
+    {
         if (! isset($this->storage->entities['attributes'])) {
             return $id;
         }
@@ -52,7 +68,8 @@ class storagemodule_mysql_attributes extends StorageModuleBase {
         return $id;
     }
     
-    public function delete(int $id) {
+    public function delete(int $id) 
+    {
        DB::table('attributevalues')->where('object_id','=',$id)->delete(); 
        return $id;
     }

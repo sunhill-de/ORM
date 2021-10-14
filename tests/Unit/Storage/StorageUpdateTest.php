@@ -19,12 +19,12 @@ class StorageUpdateTest extends StorageBase
     public function testUpdate($id,$class,$change_callback,$fieldname,$expected) {
         $this->prepare_read();
         $object = new $class();
-        $changer = new \Sunhill\ORM\Storage\storageMySQL($object);
+        $changer = new \Sunhill\ORM\Storage\StorageMySQL($object);
         $change_callback($changer);
         $changer->updateObject($id);
 
         $readobject = new $class();
-        $loader = new \Sunhill\ORM\Storage\storageMySQL($readobject);
+        $loader = new \Sunhill\ORM\Storage\StorageMySQL($readobject);
         $loader->loadObject($id);
         $this->assertEquals($expected,$this->get_field($loader,$fieldname));
     }

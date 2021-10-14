@@ -1,13 +1,14 @@
 <?php 
 /**
- * @file storagemodule_mysql_simple.php
- * Provides the storage module that uses mysql for simple properties
+ * @file StorageModuleMysqlSimple.php
+ * @author Klaus Dimde
  * Lang en
- * Reviewstatus: 2020-09-11
- * Localization: unknown
+ * Reviewstatus: 2021-04-11
+ * Localization: none
  * Documentation: unknown
  * Tests: unknown
  * Coverage: unknown
+ * PSR-State: completed
  */
 
 namespace Sunhill\ORM\Storage;
@@ -16,11 +17,13 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Objects;
 
-class storagemodule_mysql_simple extends StorageModuleBase {
+class StorageModuleMySQLSimple extends StorageModuleBase 
+{
     
     private $sorted;
     
-    public function load(int $id) {
+    public function load(int $id) 
+    {
         foreach ($this->storage->getInheritance() as $inheritance) {
             $table = ($inheritance=='object')?'objects':Classes::getTableOfClass($inheritance); 
             $result = DB::table($table)->where('id','=',$id)->first();
@@ -35,23 +38,27 @@ class storagemodule_mysql_simple extends StorageModuleBase {
         return $id;
     }
    
-    public function prepare_insert(int $id) {
+    public function prepare_insert(int $id) 
+    {
             
     }
     
-    private function store_core() {
+    private function store_core() 
+    {
         return DB::table('objects')->insertGetId(['classname'=>Classes::getClassName($this->storage->getCaller()),
                                                   'created_at'=>DB::raw('now()'),
                                                   'updated_at'=>DB::raw('now()')
         ]);
     }
     
-    private function store_table($id,$table,$fields) {
+    private function store_table($id, $table, $fields)
+    {    
         $fields['id'] = $id;
         DB::table($table)->insert($fields);
     }
     
-    public function insert(int $id) {
+    public function insert(int $id) 
+    {
         $id = $this->store_core();
         $fields = $this->storage->filterStorage('simple','class');
         foreach ($this->storage->getInheritance() as $inheritance) {
@@ -68,11 +75,13 @@ class storagemodule_mysql_simple extends StorageModuleBase {
         return $id;
     }
     
-    private function update_core(int $id) {
+    private function update_core(int $id) 
+    {
         DB::table('objects')->where('id',$id)->update(['updated_at'=>DB::raw('now()')]);
     }
     
-    private function update_table($id,$table,$fields) {
+    private function update_table($id, $table, $fields) 
+    {
         $change = array();
         foreach ($fields as $field=>$diff) {
             $change[$field] = $diff['TO'];
@@ -80,7 +89,8 @@ class storagemodule_mysql_simple extends StorageModuleBase {
         DB::table($table)->updateOrInsert(['id'=>$id],$change);
     }
     
-    public function update(int $id) {
+    public function update(int $id) 
+    {
         $fields = $this->storage->filterStorage('simple','class');
         if (empty($fields)) {
             return $id;
@@ -97,7 +107,8 @@ class storagemodule_mysql_simple extends StorageModuleBase {
         return $id;
     }
     
-    public function delete(int $id) {
+    public function delete(int $id)
+    {
         foreach ($this->storage->getInheritance() as $inheritance) {
             $table = Classes::getTableOfClass($inheritance);
             DB::table($table)->where('id',$id)->delete();
@@ -110,7 +121,8 @@ class storagemodule_mysql_simple extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::degrade()
      */
-    public function degrade(int $id,array $degration_info) {
+    public function degrade(int $id, array $degration_info)
+    {
         DB::table('objects')->where('id',$id)->update(['classname'=>$degration_info['newclass']]);
         foreach ($degration_info['diff'] as $class) {
             DB::table(Classes::getTableOfClass($class))->where('id',$id)->delete();

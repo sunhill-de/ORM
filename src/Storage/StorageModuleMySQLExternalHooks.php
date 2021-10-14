@@ -1,4 +1,18 @@
-<?php namespace Sunhill\ORM\Storage;
+<?php 
+/**
+ * @file StorageModuleMySQLExternalHooks.php
+ * @author Klaus Dimde
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ * PSR-State: completed
+ */
+
+
+namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 
@@ -7,7 +21,8 @@ use Illuminate\Support\Facades\DB;
  * @author lokal
  *
  */
-class storagemodule_mysql_externalhooks extends StorageModuleBase {
+class StorageModuleMySQLExternalHooks extends StorageModuleBase 
+{
     
     /**
      * Läd aus der Datenbanktabelle externalhooks als zur id $id passenden externen Hooks und
@@ -15,7 +30,8 @@ class storagemodule_mysql_externalhooks extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::load()
      */
-    public function load(int $id) {
+    public function load(int $id) 
+    {
         $hooks = DB::table('externalhooks')->where('container_id','=',$id)->get();
         if (empty($hooks)) {
             return;
@@ -36,7 +52,8 @@ class storagemodule_mysql_externalhooks extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::insert()
      */
-    public function insert(int $id) {
+    public function insert(int $id) 
+    {
         $lines = [];
         if (empty($this->storage->entities['externalhooks'])) {
             return $id;
@@ -73,7 +90,8 @@ class storagemodule_mysql_externalhooks extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::update()
      */
-    public function update(int $id) {
+    public function update(int $id) 
+    {
         if (empty($this->storage->entities['externalhooks'])) {
             return $id;
         }
@@ -115,7 +133,8 @@ class storagemodule_mysql_externalhooks extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::delete()
      */
-    public function delete(int $id) {
+    public function delete(int $id) 
+    {
         DB::table('externalhooks')->where('container_id',$id)->orWhere('target_id',$id)->delete();
         return $id;
     }

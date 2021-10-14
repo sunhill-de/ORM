@@ -1,7 +1,7 @@
 <?php
 /**
  * @file StorageBase.php
- * The basic class for storages (at the moment there is only storageMySQL)
+ * The basic class for storages (at the moment there is only StorageMySQL)
  * @author Klaus Dimde
  * Lang en
  * Reviewstatus: 2021-04-11

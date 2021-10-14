@@ -1,4 +1,18 @@
-<?php namespace Sunhill\ORM\Storage;
+<?php 
+/**
+ * @file StorageModuleMysqlTags.php
+ * @author Klaus Dimde
+ * Lang en
+ * Reviewstatus: 2021-04-11
+ * Localization: none
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ * PSR-State: completed
+ */
+
+
+namespace Sunhill\ORM\Storage;
 
 use Illuminate\Support\Facades\DB;
 
@@ -9,14 +23,16 @@ use Illuminate\Support\Facades\DB;
  * @author Klaus
  *
  */
-class storagemodule_mysql_tags extends StorageModuleBase {
+class StorageModuleMySQLTags extends StorageModuleBase 
+{
     
     /**
      * Läd sämtliche Tags aus der assoziativen Liste in das Storage
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::load()
      */
-    public function load(int $id) {
+    public function load(int $id) 
+    {
         $assigns = DB::table('tagobjectassigns')->where('container_id','=',$id)->get();
         if (empty($assigns)) {
             return;
@@ -32,7 +48,8 @@ class storagemodule_mysql_tags extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::insert()
      */
-    public function insert(int $id) {
+    public function insert(int $id) 
+    {
         if (is_null($this->storage->tags)) {
             return $id;
         }
@@ -46,7 +63,8 @@ class storagemodule_mysql_tags extends StorageModuleBase {
      * @param int $id
      * @param array $list
      */
-    protected function insert_list(int $id,array $list) {
+    protected function insert_list(int $id,array $list) 
+    {
         $inserts = [];
         foreach ($list as $tag) {
             $inserts[] = ['container_id'=>$id,'tag_id'=>$tag];
@@ -59,7 +77,8 @@ class storagemodule_mysql_tags extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::update()
      */
-    public function update(int $id) {
+    public function update(int $id) 
+    {
         if (is_null($this->storage->tags)) {
             return $id;
         }
@@ -77,7 +96,8 @@ class storagemodule_mysql_tags extends StorageModuleBase {
      * {@inheritDoc}
      * @see \Sunhill\ORM\StorageStorageModuleBase::delete()
      */
-    public function delete(int $id) {
+    public function delete(int $id) 
+    {
         DB::table('tagobjectassigns')->where('container_id','=',$id)->delete();
         return $id;
     }

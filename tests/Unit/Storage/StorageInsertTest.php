@@ -19,12 +19,12 @@ class StorageInsertTest extends StorageBase {
     public function testInsert($class,$init_callback,$fieldname,$expected) {
         $this->prepare_write();
         $object = new $class();
-        $storage = new \Sunhill\ORM\Storage\storageMySQL($object);
+        $storage = new \Sunhill\ORM\Storage\StorageMySQL($object);
         $init_callback($storage);
         $id = $storage->insertObject();        
         
         $readobject = new $class();
-        $loader = new \Sunhill\ORM\Storage\storageMySQL($readobject);
+        $loader = new \Sunhill\ORM\Storage\StorageMySQL($readobject);
         $loader->loadObject($id);
         $this->assertEquals($expected,$this->get_field($loader,$fieldname));
         
@@ -143,14 +143,14 @@ class StorageInsertTest extends StorageBase {
     public function testInsertHooks() {
         $this->prepare_write();
         $object = new ts_dummy();
-        $storage = new \Sunhill\ORM\Storage\storageMySQL($object);
+        $storage = new \Sunhill\ORM\Storage\StorageMySQL($object);
         $storage->dummyint = 123;
         $storage->setEntity('externalhooks', 
          [['target_id'=>2,'action'=>'PROPERTY_UPDATED','subaction'=>'dummyint','hook'=>'dummychanged','payload'=>'']]);
         $id = $storage->insertObject();
         
         $readobject = new ts_dummy();
-        $loader = new \Sunhill\ORM\Storage\storageMySQL($readobject);
+        $loader = new \Sunhill\ORM\Storage\StorageMySQL($readobject);
         $loader->loadObject($id);
         $this->assertEquals('dummyint',$this->get_field($loader,'externalhooks[0][subaction]'));
     }
