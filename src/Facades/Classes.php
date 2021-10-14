@@ -2,7 +2,7 @@
 
 /**
  * @file Classes.php
- * A facade to the class_manager
+ * A facade to the ClassManager
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en

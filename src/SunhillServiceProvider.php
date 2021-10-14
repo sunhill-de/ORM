@@ -3,8 +3,8 @@
 namespace Sunhill\ORM;
 
 use Illuminate\Support\ServiceProvider;
-use \Sunhill\ORM\Managers\class_manager;
-use \Sunhill\ORM\Managers\object_manager;
+use \Sunhill\ORM\Managers\ClassManager;
+use \Sunhill\ORM\Managers\ObjectManager;
 use \Sunhill\ORM\Managers\TagManager;
 use Sunhill\ORM\Console\MigrateObjects;
 use Sunhill\ORM\Console\FlushCaches;
@@ -18,10 +18,10 @@ class SunhillServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->app->singleton(class_manager::class, function () { return new class_manager(); } );
-        $this->app->alias(class_manager::class,'classes');
-        $this->app->singleton(object_manager::class, function () { return new object_manager(); } );
-        $this->app->alias(object_manager::class,'objects');
+        $this->app->singleton(ClassManager::class, function () { return new ClassManager(); } );
+        $this->app->alias(ClassManager::class,'classes');
+        $this->app->singleton(ObjectManager::class, function () { return new ObjectManager(); } );
+        $this->app->alias(ObjectManager::class,'objects');
         $this->app->singleton(TagManager::class, function () { return new TagManager(); } );
         $this->app->alias(TagManager::class,'tags');
         $this->app->singleton(OperatorManager::class, function () { return new OperatorManager(); } );

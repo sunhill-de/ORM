@@ -121,7 +121,7 @@ class ORMObject extends PropertiesHaving
 	 * @param integer $id The id to search for
 	 * @return bool|ORMObject false if not in cache otherwise the cache entry
 	 */ 	 
-	protected function checkCache(int $id): bool|ORMObject 
+	protected function checkCache(int $id): mixed 
     {
 	    if (Objects::isCached($id)) {
 	        return Objects::load($id);

@@ -11,7 +11,7 @@
  * Documentation: complete
  * Tests: tests/Unit/Managers/ManagerObjectTest.php
  * Coverage: unknown
- * Depenencies: class_manager
+ * Depenencies: ClassManager
  * PSR-State: complete
  */
  namespace Sunhill\ORM\Managers;

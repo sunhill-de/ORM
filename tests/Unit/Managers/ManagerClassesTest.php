@@ -3,7 +3,7 @@
 namespace Sunhill\ORM\Tests\Unit\Managers;
 
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Managers\class_manager;
+use Sunhill\ORM\Managers\ClassManager;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
@@ -33,7 +33,7 @@ class ManagerClassesTest extends TestCase
     }
     
     public function testFlushClasses() {
-        $test = new class_manager();
+        $test = new ClassManager();
         $this->setProtectedProperty($test,'classes',['test']);
         $this->assertFalse(empty($this->getProtectedProperty($test,'classes')));
 
@@ -43,7 +43,7 @@ class ManagerClassesTest extends TestCase
     }
     
     public function testGetClassEntry() {
-        $test = new class_manager();
+        $test = new ClassManager();
         
         $result = [];
         $this->callProtectedMethod($test,'getClassEntry',[&$result,ts_dummy::class]);
@@ -52,7 +52,7 @@ class ManagerClassesTest extends TestCase
     }
     
     public function testGetClassInformationEntries() {
-        $test = new class_manager();
+        $test = new ClassManager();
     
         $result = [];
         $this->callProtectedMethod($test,'getClassInformationEntries',[&$result,ts_dummy::class]);
@@ -61,7 +61,7 @@ class ManagerClassesTest extends TestCase
     }
     
     public function testGetClassParentEntry() {
-        $test = new class_manager();
+        $test = new ClassManager();
         
         $result = [];
         $this->callProtectedMethod($test,'getClassParentEntry',[&$result,ts_dummy::class]);
@@ -70,7 +70,7 @@ class ManagerClassesTest extends TestCase
     }
     
     public function testGetClassPropertyEntries() {
-        $test = new class_manager();
+        $test = new ClassManager();
         
         $result = [];
         $this->callProtectedMethod($test,'getClassPropertyEntries',[&$result,ts_dummy::class]);
@@ -79,7 +79,7 @@ class ManagerClassesTest extends TestCase
     }
     
     public function testBuildClassInformation() {
-        $test = new class_manager();
+        $test = new ClassManager();
     
         $result = $this->callProtectedMethod($test,'buildClassInformation',[ts_dummy::class]);
         
@@ -90,7 +90,7 @@ class ManagerClassesTest extends TestCase
     }
     
     public function testRegisterClass() {
-        $test = new class_manager();
+        $test = new ClassManager();
         
         $this->callProtectedMethod($test,'registerClass',[ts_dummy::class]);
         
@@ -104,13 +104,13 @@ class ManagerClassesTest extends TestCase
     }
     
     public function testNumberOfClasses() {
-        $test = new class_manager();
+        $test = new ClassManager();
         $test->registerClass(ts_dummy::class);
         $this->assertEquals(2,$test->getClassCount());
     }
     
     public function testNumberOfClassesViaApp() {
-        $manager = app('\Sunhill\ORM\Managers\class_manager');
+        $manager = app('\Sunhill\ORM\Managers\ClassManager');
         $manager->flushClasses();
         $manager->registerClass(ts_dummy::class);
         $this->assertEquals(2,$manager->getClassCount());

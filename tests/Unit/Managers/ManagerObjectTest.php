@@ -8,7 +8,7 @@ namespace Sunhill\ORM\Tests\Unit\Managers;
  * dependencies: FilesystemComplexTestCase, ObjectList
  */
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Managers\object_manager;
+use Sunhill\ORM\Managers\ObjectManager;
 use Sunhill\ORM\Facades\Objects;
 use \Sunhill\ORM\ORMException;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +18,7 @@ class ManagerObjectTest extends DBTestCase
 {
     public function testCountObjectsViaClass() {
         $count = DB::table('objects')->select(DB::raw('count(*) as count'))->first();
-        $test = new object_manager();
+        $test = new ObjectManager();
         $this->assertEquals($count->count,$test->count());
         return $count->count;
     }
@@ -28,7 +28,7 @@ class ManagerObjectTest extends DBTestCase
      * @return unknown
      */
     public function testCountObjectsViaApp($count) {
-        $manager = app('\Sunhill\ORM\Managers\object_manager');
+        $manager = app('\Sunhill\ORM\Managers\ObjectManager');
         $this->assertEquals($count,$manager->count());
         return $count;
     }
