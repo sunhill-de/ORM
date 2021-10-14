@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Properties;
 
-class oo_property_integer extends oo_property_field {
+class PropertyInteger extends PropertyField {
 	
 	protected $type = 'integer';
 

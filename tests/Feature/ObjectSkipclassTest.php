@@ -44,13 +44,13 @@ class ObjectSkipclassTest extends DBTestCase
         $init_object->commit();
 
         Objects::flushCache();
-        $read_object = Objects::load($init_object->get_id());
+        $read_object = Objects::load($init_object->getID());
         $this->assertEquals(1243,$read_object->dummyint);
         $read_object->dummyint = 4312;
         $read_object->commit();
         
         Objects::flushCache();
-        $reread_object = Objects::load($init_object->get_id());
+        $reread_object = Objects::load($init_object->getID());
         $this->assertEquals(4312,$reread_object->dummyint);
         
 	}

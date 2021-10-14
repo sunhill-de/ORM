@@ -16,7 +16,7 @@ class ObjectReReadStampsTest extends DBTestCase
         $add->dummyint = 123;
         $add->commit();
         Objects::flushCache();
-        $read = Objects::load($add->get_id());
+        $read = Objects::load($add->getID());
         $this->assertFalse(is_null($read->created_at));
     }
 }

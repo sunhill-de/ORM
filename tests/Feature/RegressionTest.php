@@ -26,7 +26,7 @@ class RegressionTest extends DBTestCase
 	   $test->commit();
        
 	   Objects::flushCache();
-	   $read = Objects::load($test->get_id());
+	   $read = Objects::load($test->getID());
 	   $read->testobject->dummyint = 11;
 	   $read->testoarray[0]->dummyint = 22;
 	   $read->testoarray[1]->dummyint = 33;
@@ -36,7 +36,7 @@ class RegressionTest extends DBTestCase
 	   $read->commit();
 	   
 	   Objects::flushCache();	   
-	   $reread = Objects::load($test->get_id());	   
+	   $reread = Objects::load($test->getID());	   
 	   $this->assertEquals([11,22,33,44],
 	       [$reread->testobject->dummyint,
 	        $reread->testoarray[0]->dummyint,
@@ -53,13 +53,13 @@ class RegressionTest extends DBTestCase
 	    $test->commit();
 	    
 	   Objects::flushCache();
-	    $read = Objects::load($test->get_id());
+	    $read = Objects::load($test->getID());
 	    $tag = new \Sunhill\ORM\Objects\Tag('TagB',true);
 	    $read->tags->stick($tag);
 	    $read->commit();
 	    
 	   Objects::flushCache();
-	    $reread = Objects::load($test->get_id());
+	    $reread = Objects::load($test->getID());
 	    $this->assertEquals('TagB',$reread->tags[1]);
 	}
 
@@ -67,10 +67,10 @@ class RegressionTest extends DBTestCase
 	    $test = new ts_dummy();
 	    $test->dummyint = 3;
 	    $test->commit();
-	    $read = Objects::load($test->get_id());
+	    $read = Objects::load($test->getID());
 	    $read->dummyint = 4;
 	    $read->commit();
-	    $reread = Objects::load($test->get_id());
+	    $reread = Objects::load($test->getID());
 	    $this->assertEquals(4,$reread->dummyint);
 	}
 	

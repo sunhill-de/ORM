@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Objects;
 
 use Sunhill\ORM\Objects;
 
-class FakeStorage extends \Sunhill\ORM\Storage\storage_base {
+class FakeStorage extends \Sunhill\ORM\Storage\StorageBase {
     
     protected function execute_chain(string $chainname,int $id, $payload=null) {
         switch ($chainname) {
@@ -51,9 +51,9 @@ class ts_objectunit extends \Sunhill\ORM\Objects\ORMObject {
     protected static function setup_properties() {
         parent::setup_properties();
         self::integer('intvalue');
-        self::object('objectvalue')->set_allowed_objects(['dummy'])->set_default(null);
+        self::object('objectvalue')->setAllowedObjects(['dummy'])->setDefault(null);
         self::arrayofstrings('sarray');
-        self::arrayofobjects('oarray')->set_allowed_objects(['dummy']);
+        self::arrayofobjects('oarray')->setAllowedObjects(['dummy']);
         self::calculated('calcvalue');
     }
 

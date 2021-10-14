@@ -60,7 +60,7 @@ class ObjectPromotor
         $newobject = new $new_namespace; // Create a new object
         $newobject->setID($oldobject->getID()); // Copy the ID
         $oldobject->copyTo($newobject); // Copy the common properties      
-        DB::table('objects')->where('id','=',$oldobject->get_id())->update(['classname'=>Classes::getClassName($newclass)]); // Update the class in the database
+        DB::table('objects')->where('id','=',$oldobject->getID())->update(['classname'=>Classes::getClassName($newclass)]); // Update the class in the database
         $newobject->recalculate(); // Recalculate the calculated fields  
         $newobject->cleanProperties(); // Make everything clean
         return $newobject; // And return 

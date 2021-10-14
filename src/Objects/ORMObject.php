@@ -18,7 +18,7 @@ use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Storage\StorageMySQL;
-use Sunhill\ORM\Properties\oo_property_attribute;
+use Sunhill\ORM\Properties\PropertyAttribute;
 use \Sunhill\ORM\Properties\AttributeException;
 
 /**
@@ -66,8 +66,8 @@ class ORMObject extends PropertiesHaving
 	public function __construct() 
     {
 	    parent::__construct();
-	    $this->properties['tags'] = self::createProperty('tags','tags','object')->set_owner($this);
-	    $this->properties['externalhooks'] = self::createProperty('externalhooks','externalhooks','object')->set_owner($this);
+	    $this->properties['tags'] = self::createProperty('tags','tags','object')->setOwner($this);
+	    $this->properties['externalhooks'] = self::createProperty('externalhooks','externalhooks','object')->setOwner($this);
 	}
 	
 	// ========================================== NeedID-Queries ========================================
@@ -88,9 +88,9 @@ class ORMObject extends PropertiesHaving
 	
 	/**
 	 * Processes all entries in the need_id_query
-	 * @param storage_base $storage
+	 * @param StorageBase $storage
 	 */
-	protected function executeNeedIDQueries(storage_base $storage): null 
+	protected function executeNeedIDQueries(StorageBase $storage): null 
     {
 	    $storage->entities['needid_queries'] = $this->needid_queries;
 	    $storage->executeNeedIDQueries();
@@ -141,7 +141,7 @@ class ORMObject extends PropertiesHaving
 	/**
 	 * Loads the object from the storage
 	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\PropertiesHaving::do_load()
+	 * @see \Sunhill\ORM\PropertiesHaving::doLoad()
 	 */
 	protected function doLoad(): null 
     {
@@ -149,7 +149,7 @@ class ORMObject extends PropertiesHaving
 	        $this->state = 'loading';
 	        $loader = $this->getStorage();
 	        $this->walkProperties('loading',$loader);
-	        $loader->loadObject($this->get_id());
+	        $loader->loadObject($this->getID());
             $this->walkProperties('load',$loader);
             $this->loadAttributes($loader);
             $this->loadExternalHooks($loader);
@@ -161,7 +161,7 @@ class ORMObject extends PropertiesHaving
 	/**
 	 * Read the attributes from the storage
 	 */
-	protected function loadAttributes(storage_base $storage): null 
+	protected function loadAttributes(StorageBase $storage): null 
     {
 	    if (empty($storage->getEntity('attributes'))) {
 	        return;
@@ -180,7 +180,7 @@ class ORMObject extends PropertiesHaving
 	/**
 	 * Reads the external hook from the storage
 	 */
-	protected function loadExternalHooks(storage_base $storage): null
+	protected function loadExternalHooks(StorageBase $storage): null
     {
 	}
 	
@@ -198,17 +198,17 @@ class ORMObject extends PropertiesHaving
            $this->setID($storage->insert_object());
            $this->executeNeedIDQueries($storage);
            $this->walkProperties('inserted',$storage);
-           $this->insertCache($this->get_id());
+           $this->insertCache($this->getID());
 	}
 
 // ========================== Update ===================================	
 	protected function doUpdate(): null 
     {
 	    $storage = $this->getStorage();
-	    $storage->setEntity('id',$this->get_id());
+	    $storage->setEntity('id',$this->getID());
 	    $this->walkProperties('updating', $storage);
 	    $this->walkProperties('update',$storage);
-	    $storage->updateObject($this->get_id());
+	    $storage->updateObject($this->getID());
 	    $this->walkProperties('updated',$storage);
 	}
 		
@@ -262,7 +262,7 @@ class ORMObject extends PropertiesHaving
 	/**
 	 * A helper method that calls for every propery the given method an passes the given storage to it
 	 * @param string $action The name of the method that has to get called
-	 * @param \Sunhill\ORM\Storage\storage_base $storage the storage
+	 * @param \Sunhill\ORM\Storage\StorageBase $storage the storage
 	 */
 	protected function walkProperties(string $action, StorageBase $storage): null
     {
@@ -396,7 +396,7 @@ class ORMObject extends PropertiesHaving
 	    $restaction = implode('.',$parts);
 	    $property = $this->getProperty($field);
 	    $property->addHook($action,$hook,$restaction,$destination);
-	//    $this->add_hook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
+	//    $this->addHook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
 	}
 	
 	protected function setExternalHook(string $action, string $subaction, $destination, $payload, string $hook)
@@ -417,7 +417,7 @@ class ORMObject extends PropertiesHaving
 	
 	protected function handleUnknownProperty($name,$value) 
     {
-	    if ($attribute = oo_property_attribute::search($name)) {
+	    if ($attribute = PropertyAttribute::search($name)) {
 	        return $this->addAttribute($attribute,$value);
 	    } else {
 	        return parent::handleUnknownProperty($name, $value);

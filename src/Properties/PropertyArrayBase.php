@@ -15,7 +15,8 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Iterator {
+class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Iterator 
+{
     
 	protected $initialized = true;
 	
@@ -25,7 +26,8 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * Checks if the property exports the array feature
 	 * @throws \Exception
 	 */
-	private function check_array() {
+	private function checkArray() 
+	{
 	    if (!$this->is_array()) {
 	        throw new \Exception('The property "'.$this->name.'" if of type "'.$this->type.'" and doesnt have the array feature');
 	    }
@@ -35,7 +37,8 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * Returns the current element of the foreach loop
 	 * @return mixed
 	 */
-	public function current (  ) {
+	public function current () 
+	{
 	    return $this->value[$this->pointer];
 	}
 	
@@ -43,21 +46,24 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * Returns the current key of the foreach loop
 	 * @return unknown
 	 */
-	public function key (  ) {
+	public function key () 
+	{
 	    return $this->pointer;
 	}
 	
 	/**
 	 * Sets the pointer to the next element
 	 */
-	public function next (  ) {
+	public function next () 
+	{
 	    $this->pointer++;
 	}
 	
 	/**
 	 * Rewinds the pointer
 	 */
-	public function rewind (  ) {
+	public function rewind () 
+	{
 	    $this->pointer = 0;
 	}
 	
@@ -65,22 +71,26 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * Checks if the pointer points to a valid element
 	 * @return boolean
 	 */
-	public function valid (  ) {
+	public function valid () 
+	{
 	    return (($this->pointer >= 0) && ($this->pointer < count($this->value)));
 	}
 	
-	public function offsetExists($offset) {
-	    $this->check_array();
+	public function offsetExists($offset) 
+	{
+	    $this->checkArray();
 	    return isset($this->value[$offset]);
 	}
 	
-	public function offsetGet($offset) {
-	    $this->check_array();
-	    return $this->do_get_indexed_value($offset);
+	public function offsetGet($offset) 
+	{
+	    $this->checkArray();
+	    return $this->doGetIndexedValue($offset);
 	}
 	
-	public function offsetSet($offset, $value) {
-	    $this->check_array();
+	public function offsetSet($offset, $value) 
+	{
+	    $this->checkArray();
 	    if (!$this->dirty) {
 	        $this->shadow = $this->value;
 	        $this->dirty = true;
@@ -92,31 +102,34 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	    } else {
 	        $this->value[] = $value;
 	    }
-	    $this->value_added($value);
+	    $this->valueAdded($value);
 	    if (!empty($this->owner)) {
-	       $this->owner->array_field_new_entry($this->get_name(),$offset,$value);
+	       $this->owner->arrayFieldNewEntry($this->getName(),$offset,$value);
 	    }
 	}
 	
-	public function offsetUnset($offset) {
-	    $this->check_array();
+	public function offsetUnset($offset) 
+	{
+	    $this->checkArray();
 	    if (!$this->dirty) {
 	        $this->shadow = $this->value;
 	        $this->dirty = true;
 	    }
 	    if (!empty($this->owner)) {
-	        $this->owner->array_field_removed_entry($this->get_name(),$offset,$this->value[$offset]);
+	        $this->owner->arrayFieldRemovedEntry($this->getName(),$offset,$this->value[$offset]);
 	    }
-	    $this->value_removed($this->value[$offset]);
+	    $this->valueRemoved($this->value[$offset]);
 	    unset($this->value[$offset]);
 	    $this->value = array_values($this->value); // Reindex
 	}
 	
-	protected function value_added($value) {
+	protected function valueAdded($value) 
+	{
 	       
 	}
 	
-	protected function value_removed($value) {
+	protected function valueRemoved($value) 
+	{
 	    
 	}
 	
@@ -125,12 +138,14 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * {@inheritDoc}
 	 * @see Countable::count()
 	 */
-	public function count() {
-	    $this->check_array();
+	public function count() 
+	{
+	    $this->checkArray();
 	    return count($this->value);
 	}
 	
-	private function array_search($needle,$haystack) {
+	private function arraySearch($needle, $haystack) 
+	{
 	    if (!is_array($haystack)) {
 	        return false;
 	    }
@@ -146,31 +161,33 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * Überschreibt die geerbte Methode und ergänzt das Resultat noch um die Einträge ADD,DELETE, NEW und REMOVED
 	 * @return array[]
 	 */
-	public function get_diff_array(int $type=PD_VALUE) {
-	    $this->check_array();
+	public function getDiffArray(int $type = PD_VALUE) 
+	{
+	    $this->checkArray();
 	    $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[],'NEW'=>[],'REMOVED'=>[]];
 	    if (isset($this->shadow)) {
 	        foreach ($this->shadow as $index=>$oldentry) {
-	            $result['FROM'][$index] = $this->get_diff_entry($oldentry, $type);
-	            if ($this->array_search($oldentry,$this->value)===false) {
-	                $result['DELETE'][$index] = $this->get_diff_entry($oldentry,$type);
-	                $result['REMOVED'][] = $this->get_diff_entry($oldentry,$type);
+	            $result['FROM'][$index] = $this->getDiffEntry($oldentry, $type);
+	            if ($this->arraySearch($oldentry,$this->value)===false) {
+	                $result['DELETE'][$index] = $this->getDiffEntry($oldentry,$type);
+	                $result['REMOVED'][] = $this->getDiffEntry($oldentry,$type);
 	            }
 	        }
 	    }
 	    if (isset($this->value)) {
     	    foreach ($this->value as $index=>$newentry) {
-    	        $result['TO'][$index] = $this->get_diff_entry($newentry,$type);
-    	        if ($this->array_search($newentry,$this->shadow)===false) {
-    	            $result['ADD'][$index] = $this->get_diff_entry($newentry,$type);
-    	            $result['NEW'][] = $this->get_diff_entry($newentry,$type);
+    	        $result['TO'][$index] = $this->getDiffEntry($newentry,$type);
+    	        if ($this->arraySearch($newentry,$this->shadow)===false) {
+    	            $result['ADD'][$index] = $this->getDiffEntry($newentry,$type);
+    	            $result['NEW'][] = $this->getDiffEntry($newentry,$type);
     	        }
     	    }
 	    }
     	return $result;
 	}
 	
-	protected function is_allowed_relation(string $relation,$value) {
+	protected function isAllowedRelation(string $relation, $value) 
+	{
 	    switch ($relation) {
 	        case 'has':
 	        case 'has not':
@@ -192,7 +209,8 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * @param unknown $value
 	 * @return unknown
 	 */
-	protected function NormalizeValue($value) {
+	protected function NormalizeValue($value) 
+	{
 	    return $value;
 	}
 	
@@ -201,7 +219,8 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * @param unknown $value
 	 * @return boolean true if its in otherwise false
 	 */
-	public function IsElementIn($value) {
+	public function IsElementIn($value) 
+	{
 	   $value = $this->NormalizeValue($value);
 	   foreach ($this->value as $test) {
 	       if ($this->NormalizeValue($test) == $value) {
@@ -215,14 +234,16 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * Tests if this array property is empty (has no entries)
 	 * @return true if empty otherwise false
 	 */
-	public function empty() {
+	public function empty() 
+	{
 	    return (empty($this->value));
 	}
 	
 	/**
 	 * Clears the array. Removes all entries
 	 */
-	public function clear() {
+	public function clear() 
+	{
 	    $this->value = [];
 	}
 }

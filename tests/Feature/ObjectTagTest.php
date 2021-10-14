@@ -39,7 +39,7 @@ class ObjectTagTest extends DBTestCase
         }
         $reread =  new ts_dummy();
         Objects::flushCache();
-        $reread = Objects::load($test->get_id());
+        $reread = Objects::load($test->getID());
         for ($i=0;$i<count($expect);$i++) {
             $this->assertEquals($expect[$i],$reread->tags[$i]);
         }
@@ -69,7 +69,7 @@ class ObjectTagTest extends DBTestCase
         
         Objects::flushCache();
         $read =  new ts_dummy();
-        $read = Objects::load($test->get_id());
+        $read = Objects::load($test->getID());
         for ($i=0;$i<count($add);$i++) {
             $tag = new Tag($add[$i],true);
             $read->tags->stick($tag);            
@@ -81,7 +81,7 @@ class ObjectTagTest extends DBTestCase
         $read->commit();
         
         Objects::flushCache();
-        $reread = Objects::load($test->get_id());
+        $reread = Objects::load($test->getID());
         
         $given_tags = array();
         for ($i=0;$i<count($reread->tags);$i++) {
@@ -106,7 +106,7 @@ class ObjectTagTest extends DBTestCase
         $test->commit();
         
         Objects::flushCache();
-        $read = Objects::load($test->get_id());
+        $read = Objects::load($test->getID());
         for ($i=0;$i<count($add);$i++) {
             $tag = new Tag($add[$i],true);
             $read->tags->stick($tag);

@@ -31,9 +31,9 @@ class ts_testparent extends ORMObject {
 		self::date('parentdate');
 		self::time('parenttime');
 		self::enum('parentenum')->set_values(['testA','testB','testC']);
-		self::object('parentobject')->set_allowed_objects(['dummy'])->set_default(null);
+		self::object('parentobject')->setAllowedObjects(['dummy'])->setDefault(null);
 		self::arrayofstrings('parentsarray');
-		self::arrayofobjects('parentoarray')->set_allowed_objects(['dummy']);
+		self::arrayofobjects('parentoarray')->setAllowedObjects(['dummy']);
 		self::calculated('parentcalc');
 	}
 	

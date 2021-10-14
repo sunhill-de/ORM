@@ -36,7 +36,7 @@ class ObjectInsertTest extends DBTestCase
         $object->tags->stick(2);
         $object->general_attribute = 321;
         $object->commit();
-        $this->assertEquals(1,$object->get_id());
+        $this->assertEquals(1,$object->getID());
         return $object;
     }
     

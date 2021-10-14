@@ -36,7 +36,7 @@ class TagManager
    private function getQueryDescriptor($result): Descriptor 
    {
         $part = new Descriptor();
-        $part->set_id($result->id)->set_name($result->name)->set_parent_id($result->parent_id)
+        $part->set_id($result->id)->setName($result->name)->set_parent_id($result->parent_id)
                  ->set_parent_name($result->parent_name)->set_fullpath(static::getTagFullpath($result->id));
         return $part;
     }
@@ -346,7 +346,7 @@ class TagManager
         if (is_null($parent) || empty($parent)) {
             return 0;
         } else {
-            return $this->loadTag($parent)->get_id();
+            return $this->loadTag($parent)->getID();
         }
     }
     
@@ -361,7 +361,7 @@ class TagManager
         $parent_id = $this->GetParent($parent);
         $id = DB::table('tags')->insertGetId(['name'=>$name,'parent_id'=>$parent_id,'options'=>$options]);
         $tag = $this->loadTag($id);
-        $full_path = $tag->get_fullpath();
+        $full_path = $tag->getFullPath();
 	    $fullpath = explode('.',$full_path);
 	    while (!empty($fullpath)) {
 	        DB::table('tagcache')->insert([
@@ -425,7 +425,7 @@ class TagManager
       */
      protected function addTagByObject(Tag $tag) 
      {
-        $this->executeAddTag($tag->get_name(),$tag->get_parent());
+        $this->executeAddTag($tag->getName(),$tag->get_parent());
      }
     
      /**

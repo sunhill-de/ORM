@@ -24,7 +24,7 @@ class TestOperator extends OperatorBase {
         $this->flag = 'executed';    
     }
     
-    public function set_class(string $class) {
+    public function setClass(string $class) {
         $this->target_class = $class;
     }
 }
@@ -64,7 +64,7 @@ class OperatorTest extends TestCase
     public function testExecution() {
         $test = new TestOperator();
         $test->condition = true;
-        $test->set_class(ts_testparent::class);
+        $test->setClass(ts_testparent::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';

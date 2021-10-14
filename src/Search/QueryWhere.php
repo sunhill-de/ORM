@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * @file QueryWhere.php
+ * Provides the QueryWhere class
+ * Lang en
+ * Reviewstatus: 2020-08-06
+ * Localization: none
+ * Documentation: incomplete
+ * Tests:
+ * Coverage: unknown
+ * Dependencies: none
+ * PSR-State: completed
+ */
+
 namespace Sunhill\ORM\Search;
 
 use Sunhill\ORM\Properties\Property;
@@ -12,7 +25,7 @@ use Sunhill\ORM\Facades\Classes;
  * @author klaus
  *
  */
-abstract class query_where extends query_atom {
+abstract class QueryWhere extends QueryAtom {
     
     protected $field;
     
@@ -36,7 +49,8 @@ abstract class query_where extends query_atom {
     
     protected $parent_query;
     
-    public function __construct(query_builder $parent_query,Property $field,$relation,$value=null) {
+    public function __construct(QueryBuilder $parent_query, Property $field, $relation, $value = null) 
+    {
         if (is_null($value)) {
             if (!isset($this->allowed_relations[$relation])) {
                 $value = $relation;
@@ -44,7 +58,7 @@ abstract class query_where extends query_atom {
             }
         }
         parent::__construct($parent_query);
-        if (!$this->is_allowed_relation($relation,$value)) {
+        if (!$this->isAllowedRelation($relation,$value)) {
             throw new QueryException("'$relation' is not an allowed relation in this context.");
         }
         $this->parent_query = $parent_query;
@@ -53,12 +67,14 @@ abstract class query_where extends query_atom {
         $this->get_table($field);
     }
     
-    protected function get_table(Property $field) {
-        $this->alias = $this->parent_query->get_table($this->get_table_name($field));
-        $this->field = $field->get_name();        
+    protected function get_table(Property $field) 
+    {
+        $this->alias = $this->parent_query->get_table($this->getTableName($field));
+        $this->field = $field->getName();        
     }
     
-    protected function get_table_name(Property $field) {
+    protected function getTableName(Property $field) 
+    {
         return Classes::getTableOfClass($field->getClass());
     }
     
@@ -67,7 +83,8 @@ abstract class query_where extends query_atom {
      * @param string $relation
      * @return boolean true, if its an allowed relation, otherwise false
      */
-    protected function is_allowed_relation(string $relation,$value) {
+    protected function isAllowedRelation(string $relation,$value) 
+    {
         if (!isset($this->allowed_relations[$relation])) {
             // Is this relation allowed at all?
             return false;
@@ -86,7 +103,8 @@ abstract class query_where extends query_atom {
         }
     }
     
-    protected function get_query_prefix() {
+    protected function getQueryPrefix() 
+    {
         if (is_null($this->prev)) {
             return ' where';
         } else {
@@ -94,9 +112,10 @@ abstract class query_where extends query_atom {
         }
     }
     
-    protected function get_this_where_part() {
+    protected function getThisWherePart() 
+    {
         if ($this->relation == 'in') {
-            $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' in (';
+            $result = $this->getQueryPrefix().' '.$this->alias.'.'.$this->field.' in (';
             $first = true;
             foreach ($this->value as $value) {
                 $result .= ($first?'':',').$this->escape($value);
@@ -104,20 +123,22 @@ abstract class query_where extends query_atom {
             }
             $result .= ')';
         } else {
-            $result = $this->get_query_prefix().' '.$this->alias.'.'.$this->field.' '.$this->relation." ".$this->escape($this->value);
+            $result = $this->getQueryPrefix().' '.$this->alias.'.'.$this->field.' '.$this->relation." ".$this->escape($this->value);
         }
         return $result;
     }
     
-    public function get_query_part() {
-        $result = $this->get_this_where_part();
+    public function getQueryPart() 
+    {
+        $result = $this->getThisWherePart();
         if (isset($this->next)) {
-            $result .= ' '.$this->connection.=$this->next->get_query_part();
+            $result .= ' '.$this->connection.=$this->next->getQueryPart();
         }
         return $result;
     }
     
-    protected function escape(string $sample) {
+    protected function escape(string $sample) 
+    {
         return DB::connection()->getPdo()->quote($sample);
     }
 }

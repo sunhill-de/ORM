@@ -3,21 +3,21 @@ namespace Sunhill\ORM\Tests\Unit\Utils;
 
 /**
  *
- * @file UtilObjectlistTest.php
+ * @file UtilObjectListTest.php
  * lang: en
  * dependencies: FilesystemComplexTestCase
  */
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Utils\objectlist;
+use Sunhill\ORM\Utils\ObjectList;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Facades\Objects;
 
-class UtilObjectlistTest extends DBTestCase
+class UtilObjectListTest extends DBTestCase
 {
 
     public function testAddObject_method_count()
     {
-        $test = new objectlist();
+        $test = new ObjectList();
         $test->add(1);
         $test->add(2);
         $test->add(3);
@@ -39,9 +39,9 @@ class UtilObjectlistTest extends DBTestCase
      *
      * @depends testAddObject_method_count
      */
-    public function testAddObject_method_get_id($test)
+    public function testAddObject_method_getID($test)
     {
-        $this->assertEquals(2, $test->get_id(1));
+        $this->assertEquals(2, $test->getID(1));
         return $test;
     }
 
@@ -81,7 +81,7 @@ class UtilObjectlistTest extends DBTestCase
 
     public function testAddObject_array()
     {
-        $test = new objectlist();
+        $test = new ObjectList();
         $test[] = 1;
         $test[] = 2;
         $test[] = 3;
@@ -91,7 +91,7 @@ class UtilObjectlistTest extends DBTestCase
 
     public function testAddObject_array_mixed()
     {
-        $test = new objectlist();
+        $test = new ObjectList();
         $dummy = Objects::load(1);
         $test[] = $dummy;
         $test[] = 2;
@@ -102,7 +102,7 @@ class UtilObjectlistTest extends DBTestCase
 
     public function testEmpty()
     {
-        $test = new objectlist();
+        $test = new ObjectList();
         $before = $test->empty();
         $test->add(1);
         $this->assertEquals($test->empty(), ! $before);
@@ -110,7 +110,7 @@ class UtilObjectlistTest extends DBTestCase
 
     protected function get_mixed_test()
     {
-        $test = new objectlist();
+        $test = new ObjectList();
         $test[] = 1;
         $test[] = 5;
         $test[] = 2;
@@ -141,7 +141,7 @@ class UtilObjectlistTest extends DBTestCase
 
     protected function get_filter_test()
     {
-        $test = new objectlist();
+        $test = new ObjectList();
         $test[] = 1;
         $test[] = 5;
         $test[] = 6;
@@ -154,7 +154,7 @@ class UtilObjectlistTest extends DBTestCase
     {
         $result = [];
         for ($i = 0; $i < count($test); $i ++) {
-            $result[] = $test->get_id($i);
+            $result[] = $test->getID($i);
         }
         return $result;
     }

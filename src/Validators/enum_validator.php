@@ -13,7 +13,7 @@ class enum_validator extends validator_base {
         return true;
     }
     
-    public function set_enum_values($values) {
+    public function setEnumValues($values) {
         if (is_array($values)) {
             $this->allowed = $values;
         } else {
@@ -22,7 +22,7 @@ class enum_validator extends validator_base {
         return $this;
     }
     
-    public function get_enum_values() {
+    public function getEnumValues() {
         return $this->allowed;
     }
 }

@@ -26,11 +26,11 @@ class HookingObject extends ORMObject  {
     ];
     protected static function setup_properties() {
         parent::setup_properties();
-        self::integer('hooking_int')->set_default(0);
-        self::varchar('hookstate')->set_default('');
-        self::object('ofield')->set_allowed_objects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
+        self::integer('hooking_int')->setDefault(0);
+        self::varchar('hookstate')->setDefault('');
+        self::object('ofield')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
         self::arrayofstrings('strarray');
-        self::arrayofobjects('objarray')->set_allowed_objects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
+        self::arrayofobjects('objarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
     }
     
     protected function setup_hooks() {
@@ -165,14 +165,14 @@ class HookingChild extends HookingObject {
     
     protected static function setup_properties() {
         parent::setup_properties();
-        self::integer('childhooking_int')->set_default(0);
-        self::arrayofobjects('childhooking_oarray')->set_allowed_objects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
+        self::integer('childhooking_int')->setDefault(0);
+        self::arrayofobjects('childhooking_oarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
     }
     
     protected function setup_hooks() {
         parent::setup_hooks();
-        $this->add_hook('UPDATED_PROPERTY','childint_changed','childhooking_int');
-        $this->add_hook('UPDATED_PROPERTY','childoarray_changed','childhooking_oarray');
+        $this->addHook('UPDATED_PROPERTY','childint_changed','childhooking_int');
+        $this->addHook('UPDATED_PROPERTY','childoarray_changed','childhooking_oarray');
         
     }
     
@@ -223,7 +223,7 @@ class ObjectHookTest extends DBTestCase
         $test->commit();
         
         Objects::flushCache();
-        $read = Objects::load($test->get_id());
+        $read = Objects::load($test->getID());
         $change_hook($read);
         $read->commit();
         
@@ -269,7 +269,7 @@ class ObjectHookTest extends DBTestCase
                  return $result;
             },
             function($change,$postfix='ING') {
-                $change->add_hook('UPDATING_PROPERTY','field_changing','hooking_int');
+                $change->addHook('UPDATING_PROPERTY','field_changing','hooking_int');
                 $change->hooking_int = 333;
             },'(hooking_int:222=>333)'],
             
@@ -279,7 +279,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ING') { 
-                $change->add_hook('UPDATING_PROPERTY','sarray_changing','strarray');
+                $change->addHook('UPDATING_PROPERTY','sarray_changing','strarray');
                 $change->strarray[] = 'DEF';
             },'(sarray:NEW:DEF REMOVED:)'],
             
@@ -289,7 +289,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ING') {
-                $change->add_hook('UPDATING_PROPERTY','sarray_changing','strarray');
+                $change->addHook('UPDATING_PROPERTY','sarray_changing','strarray');
                 unset($change->strarray[0]);
             },'(sarray:NEW: REMOVED:ABC)'],
 
@@ -298,7 +298,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ING') {
-                $change->add_hook('UPDATING_PROPERTY','field_changing','ofield');
+                $change->addHook('UPDATING_PROPERTY','field_changing','ofield');
                 $dummy = new ts_dummy();
                 $dummy->dummyint = 123;
                 $change->ofield = $dummy;
@@ -312,7 +312,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },            
             function($change,$postfix='ING') {
-                $change->add_hook('UPDATING_PROPERTY','field_changing','ofield');
+                $change->addHook('UPDATING_PROPERTY','field_changing','ofield');
                 $change->ofield = null;
             },'(ofield:123=>NULL)'],            
 
@@ -324,7 +324,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ING') {
-                $change->add_hook('UPDATING_PROPERTY','oarray_changing','objarray');
+                $change->addHook('UPDATING_PROPERTY','oarray_changing','objarray');
                 $dummy = new ts_dummy();
                 $dummy->dummyint = 345;
                 $change->objarray[] = $dummy;
@@ -338,7 +338,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ING') {
-                $change->add_hook('UPDATING_PROPERTY','oarray_changing','objarray');
+                $change->addHook('UPDATING_PROPERTY','oarray_changing','objarray');
                 unset($change->objarray[0]);
             },'(oarray:NEW: REMOVED:345)'],
             
@@ -353,7 +353,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ING') {
-                $change->add_hook('UPDATING_PROPERTY','oarray_changing','objarray');
+                $change->addHook('UPDATING_PROPERTY','oarray_changing','objarray');
                 unset($change->objarray[1]);
             },'(oarray:NEW: REMOVED:456)'],
             
@@ -368,7 +368,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ED') {
-                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','field_changed','hooking_int');
+                $change->addHook('UPDAT'.$postfix.'_PROPERTY','field_changed','hooking_int');
                 $change->hooking_int = 333;
             },'(hooking_int:222=>333)'],
             
@@ -378,7 +378,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ED') {
-                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','sarray_changed','strarray');
+                $change->addHook('UPDAT'.$postfix.'_PROPERTY','sarray_changed','strarray');
                 $change->strarray[] = 'DEF';
             },'(sarray:NEW:DEF REMOVED:)'],
             
@@ -388,7 +388,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ED') {
-                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','sarray_changed','strarray');
+                $change->addHook('UPDAT'.$postfix.'_PROPERTY','sarray_changed','strarray');
                 unset($change->strarray[0]);
             },'(sarray:NEW: REMOVED:ABC)'],
             
@@ -397,7 +397,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ED') {
-                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','field_changed','ofield');
+                $change->addHook('UPDAT'.$postfix.'_PROPERTY','field_changed','ofield');
                 $dummy = new ts_dummy();
                 $dummy->dummyint = 123;
                 $change->ofield = $dummy;
@@ -411,7 +411,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ED') {
-                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','field_changed','ofield');
+                $change->addHook('UPDAT'.$postfix.'_PROPERTY','field_changed','ofield');
                 $change->ofield = null;
             },'(ofield:123=>NULL)'],
             
@@ -423,7 +423,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ED') {
-                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
+                $change->addHook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
                 $dummy = new ts_dummy();
                 $dummy->dummyint = 345;
                 $change->objarray[] = $dummy;
@@ -437,7 +437,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ED') {
-                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
+                $change->addHook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
                 unset($change->objarray[0]);
             },'(oarray:NEW: REMOVED:345)'],
             
@@ -452,7 +452,7 @@ class ObjectHookTest extends DBTestCase
                 return $result;
             },
             function($change,$postfix='ED') {
-                $change->add_hook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
+                $change->addHook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
                 unset($change->objarray[1]);
             },'(oarray:NEW: REMOVED:456)'],
             
@@ -518,7 +518,7 @@ class ObjectHookTest extends DBTestCase
         $dummy->dummyint = 123;
         $dummy->commit();
         $test = new HookingObject();
-        $test->add_hook('UPDATED_PROPERTY', 'child_changed', 'ofield.dummyint');
+        $test->addHook('UPDATED_PROPERTY', 'child_changed', 'ofield.dummyint');
         $test->ofield = $dummy;
         $test->commit();
         return [$dummy,$test];
@@ -541,8 +541,8 @@ class ObjectHookTest extends DBTestCase
         list($dummy,$test) = $this->prepare_object_test();
        Objects::flushCache();
         // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
-        Objects::insertCache($test->get_id(), $test);
-        $readdummy = Objects::load($dummy->get_id());
+        Objects::insertCache($test->getID(), $test);
+        $readdummy = Objects::load($dummy->getID());
         $readdummy->dummyint = 234;
         $readdummy->commit();
         $this->assertEquals('(Cofield:123->234)',$test->get_hook_str());
@@ -555,11 +555,11 @@ class ObjectHookTest extends DBTestCase
     public function testChildChangeObjectBothIndirect() {
         list($dummy,$test) = $this->prepare_object_test();
        Objects::flushCache();
-        $readdummy = Objects::load($dummy->get_id());
+        $readdummy = Objects::load($dummy->getID());
         $readdummy->dummyint = 234;
         $readdummy->commit();
        Objects::flushCache();
-        $readtest = Objects::load($test->get_id());
+        $readtest = Objects::load($test->getID());
         $this->assertEquals('(Cofield:123->234)',$readtest->get_hook_str());
         
     }
@@ -571,7 +571,7 @@ class ObjectHookTest extends DBTestCase
         $dummy2 = new ts_dummy();
         $dummy2->dummyint = 666;
         $test = new HookingObject();
-        $test->add_hook('UPDATED_PROPERTY', 'arraychild_changed', 'objarray.dummyint');
+        $test->addHook('UPDATED_PROPERTY', 'arraychild_changed', 'objarray.dummyint');
         $test->objarray[] = $dummy1;
         $test->objarray[] = $dummy2;
         $test->commit();
@@ -596,8 +596,8 @@ class ObjectHookTest extends DBTestCase
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
         Objects::flushCache();
         // Das folgende ist ein Kunstgriff, weil einen drüber der Cache geleert wurde
-        Objects::insertCache($test->get_id(), $test);
-        $readdummy = Objects::load($dummy1->get_id());
+        Objects::insertCache($test->getID(), $test);
+        $readdummy = Objects::load($dummy1->getID());
         $readdummy->dummyint = 234;
         $readdummy->commit();
         $this->assertEquals('(Cobjarray:123->234)',$test->get_hook_str());        
@@ -609,11 +609,11 @@ class ObjectHookTest extends DBTestCase
     public function testChildChangeArrayBothIndirect() {
         list($dummy1,$dummy2,$test) = $this->prepare_array_test();
         Objects::flushCache();
-        $readdummy = Objects::load($dummy1->get_id());
+        $readdummy = Objects::load($dummy1->getID());
         $readdummy->dummyint = 234;
         $readdummy->commit();
         Objects::flushCache();
-        $readtest = Objects::load($test->get_id());
+        $readtest = Objects::load($test->getID());
         $this->assertEquals('(Cobjarray:123->234)',$readtest->get_hook_str());
     }
 }

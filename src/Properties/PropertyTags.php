@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * @file PropertyTags.php
+ * Provides the tags property
+ * Lang de,en
+ * Reviewstatus: 2020-08-06
+ * Localization: incomplete
+ * Documentation: incomplete
+ * Tests: 
+ * Coverage: unknown
+ */
+
 namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
@@ -7,7 +18,7 @@ use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\TagException;
-use Sunhill\ORM\Storage\storage_base;
+use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Facades\Tags;
 
 /**
@@ -16,7 +27,8 @@ use Sunhill\ORM\Facades\Tags;
  * @author lokal
  *
  */
-class oo_property_tags extends PropertyArrayBase {
+class PropertyTags extends PropertyArrayBase 
+{
 	
 	protected $type = 'tags';
 	
@@ -34,7 +46,8 @@ class oo_property_tags extends PropertyArrayBase {
 	 * Setzt den Wert für "add_missing"
 	 * @param boolean $value
 	 */
-	public function set_add_missing(bool $value) {
+	public function setAddMissing(bool $value) 
+	{
 	   $this->add_missing = $value;    
 	   return $this;
 	}
@@ -43,7 +56,8 @@ class oo_property_tags extends PropertyArrayBase {
 	 * Gibt den Wert für add_missing zurück
 	 * @return boolean
 	 */
-	public function get_add_missing() {
+	public function getAddMissing() 
+	{
 	    return $this->add_missing;
 	}
 	
@@ -51,16 +65,17 @@ class oo_property_tags extends PropertyArrayBase {
 	/**
 	 * Fügt ein neues Tag in die Liste ein
 	 * @param Tag|int|string $tag
-	 * @return void|\Sunhill\ORM\Properties\oo_property_tags
+	 * @return void|\Sunhill\ORM\Properties\PropertyTags
 	 * @todo Hier könnte man auch über ein Lazy-Loading nachdenken, falls es überhaupt Performancegewinn bringt
 	 */
-	public function stick($tag) {
+	public function stick($tag) 
+	{
 	    $tag = $this->getTag($tag);      // Das wahre Tag ermitteln
-	    if ($this->is_duplicate($tag)) {  // Ist es schon in der Liste ?
+	    if ($this->isDuplicate($tag)) {  // Ist es schon in der Liste ?
 	        return; // Ja, dann abbrechen
 	    }
-        if (!$this->get_dirty()) {
-            $this->set_dirty(true);       // Und als dirty setzen
+        if (!$this->getDirty()) {
+            $this->setDirty(true);       // Und als dirty setzen
             $this->shadow = $this->value; // Schattenverzeichnis setzen
         }
         $this->value[] = $tag;  // Und an die Liste anfügen
@@ -69,21 +84,22 @@ class oo_property_tags extends PropertyArrayBase {
 	/**
 	 * Fügt ein neues Tag in die Liste ein
 	 * @param Tag|int|string $tag
-	 * @return void|\Sunhill\ORM\Properties\oo_property_tags
+	 * @return void|\Sunhill\ORM\Properties\PropertyTags
 	 */
-	public function remove($tag) {
+	public function remove($tag) 
+	{
         $tag = $this->getTag($tag);
     	    for ($i=0;$i<count($this->value);$i++) {
-	        if ($this->value[$i]->get_id() === $tag->get_id()) {
-	            if (!$this->get_dirty()) {
-	                $this->set_dirty(true);       // Und als dirty setzen
+	        if ($this->value[$i]->getID() === $tag->getID()) {
+	            if (!$this->getDirty()) {
+	                $this->setDirty(true);       // Und als dirty setzen
 	                $this->shadow = $this->value; // Schattenverzeichnis setzen
 	            }
 	            array_splice($this->value,$i,1);
 	            return $this;
 	        }	        
 	    }	    
-	    throw new PropertyException("Das zu löschende Tag '".$tag->get_fullpath()."' ist gar nicht gesetzt");
+	    throw new PropertyException("Das zu löschende Tag '".$tag->getFullPath()."' ist gar nicht gesetzt");
 	}
 
 	/**
@@ -91,9 +107,10 @@ class oo_property_tags extends PropertyArrayBase {
 	 * @param ORMObject $test
 	 * @return boolean
 	 */
-	protected function is_duplicate(Tag $test) {
+	protected function isDuplicate(Tag $test) 
+	{
 	    foreach ($this->value as $listed) {
-	        if ($listed->get_id() == $test->get_id()) {
+	        if ($listed->getID() == $test->getID()) {
 	            return $test;
 	        }
 	    }
@@ -105,10 +122,11 @@ class oo_property_tags extends PropertyArrayBase {
 	 * @param id|string|Tag $test the tag to test
 	 * @return boolean
 	 */
-	public function HasTag($test) {
+	public function HasTag($test) 
+	{
 	    $tag_desc = Tags::findTag($test);
 	    foreach ($this->value as $listed) {
-	        if ($listed->get_id() == $tag_desc->id) {
+	        if ($listed->getID() == $tag_desc->id) {
 	            return true;
 	        }
 	    }
@@ -123,14 +141,15 @@ class oo_property_tags extends PropertyArrayBase {
 	 * @param $tag Tag|int|string 
 	 * @return Tag
 	 */
-	protected function getTag($tag) {
+	protected function getTag($tag)
+	{
 	    if (is_a($tag,Tag::class)) {
 	        return $tag; // Trivial, ist bereits ein Objekt
 	    } else if (is_int($tag)) {
 	        return Tag::loadTag($tag); // Tag mit der ID laden
 	    } else if (is_string($tag)) {
 	        if ($this->add_missing) {
-	            return Tag::search_or_add_tag($tag);
+	            return Tag::searchOrAddTag($tag);
 	        } else {
 	            return Tag::searchTag($tag);
 	        }
@@ -140,24 +159,27 @@ class oo_property_tags extends PropertyArrayBase {
 
 	
 // ================================== Ermittlung des Wertes ====================================	
-	protected function &do_get_indexed_value($index) {
-	    $value = $this->value[$index]->get_fullpath();
+	protected function &doGetIndexedValue($index) 
+	{
+	    $value = $this->value[$index]->getFullPath();
 	    return $value;
 	}
 	
-	protected function do_insert(storage_base $storage,string $name) {
+	protected function doInsert(StorageBase $storage,string $name) 
+	{
 	    $result = [];
 	    foreach ($this->value as $tag) {
 	        if (is_int($tag)) {
 	            $result[] = $tag;
 	        } else {
-	            $result[] = $tag->get_id();
+	            $result[] = $tag->getID();
 	        }
 	    }
 	    $storage->set_entity('tags',$result);
 	}
 	
-	protected function do_load(storage_base $loader,$name)  {
+	protected function doLoad(StorageBase $loader,$name)  
+	{
 	    if (empty($loader->entities['tags'])) {
 	        return;
 	    }
@@ -169,15 +191,16 @@ class oo_property_tags extends PropertyArrayBase {
     /**
      * Überschriebene Methode, die bei Tags den Typ respektiert und zurück gibt
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Properties\Property::get_diff_entry()
+     * @see \Sunhill\ORM\Properties\Property::getDiffEntry()
      */
-	protected function get_diff_entry($tag,$type) {
+	protected function getDiffEntry($tag,$type) 
+	{
 	    switch ($type) {
 	        case PD_ID: // Es wird immer die ID des Tags zurückgegeben
 	            if (is_int($tag)) {
 	                return $tag;
 	            }
-	            return $this->getTag($tag)->get_id();
+	            return $this->getTag($tag)->getID();
 	            break;
 	        case PD_KEEP: // Es wird das zurückgegeben, was gerade geladen ist
 	            return $tag;
@@ -188,14 +211,15 @@ class oo_property_tags extends PropertyArrayBase {
 	    }
 	}
 
-	protected function NormalizeValue($value) {
+	protected function NormalizeValue($value) 
+	{
 	    if (is_a($value,Tag::class)) {
-	        return $value->get_fullpath();
+	        return $value->getFullPath();
 	    } else if (is_string($value)) {
 	        return $value;
 	    } else if (is_int($value)) {
 	        $tag = Tags::loadTag($value);
-	        return $tag->get_fullpath();
+	        return $tag->getFullPath();
 	    }
 	}
 	

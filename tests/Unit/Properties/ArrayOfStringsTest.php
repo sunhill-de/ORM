@@ -56,9 +56,9 @@ class ArrayOfStringsTest extends TestCase
      * @depends testArrayCount
      */
     public function testArrayDirty($test) {
-        $test->set_dirty(false);
+        $test->setDirty(false);
         $test[] = 'D';
-        $this->assertTrue($test->get_dirty());
+        $this->assertTrue($test->getDirty());
         return $test;
     }
     

@@ -1,25 +1,27 @@
 <?php
+
 /**
- * @file query_builder.php
- * Provides the query_builder class
- * @author Klaus Dimde
- * ---------------------------------------------------------------------------------------------------------
+ * @file QueryBuilder.php
+ * Provides the QueryBuilder class
  * Lang en
- * Reviewstatus: 2021-08-20
+ * Reviewstatus: 2020-08-06
  * Localization: none
- * Documentation: complete
- * Tests: none
+ * Documentation: incomplete
+ * Tests: 
  * Coverage: unknown
+ * Dependencies: none
+ * PSR-State: incompleted
  */
 
 namespace Sunhill\ORM\Search;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Utils\objectlist;
+use Sunhill\ORM\Utils\ObjectList;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
 
-class query_builder {
+class QueryBuilder 
+{
 
     protected $query_parts = [];
     
@@ -32,7 +34,8 @@ class query_builder {
     /**
      * Creates a new query object and passes the calling object class over
      */
-    public function __construct(string $classname='') {
+    public function __construct(string $classname = '') 
+    {
         if (!empty($classname)) {
             $this->set_calling_class($classname);
         }
@@ -41,9 +44,10 @@ class query_builder {
     /**
      * Since a search is initiazied by a specific class, the class is set here 
      * @param unknown $calling_class
-     * @return \Sunhill\ORM\Search\query_builder
+     * @return \Sunhill\ORM\Search\QueryBuilder
      */
-    public function set_calling_class($calling_class) {
+    public function set_calling_class($calling_class) 
+    {
         $this->calling_class = $calling_class;
         return $this;
     }
@@ -52,7 +56,8 @@ class query_builder {
      * Returns the calling class
      * @return unknown
      */
-    public function get_calling_class() {
+    public function get_calling_class() 
+    {
         return $this->calling_class;    
     }
     
@@ -61,22 +66,24 @@ class query_builder {
      * @param string $part_id
      * @return string|unknown
      */
-    protected function get_query_part(string $part_id) {
-        return isset($this->query_parts[$part_id])?$this->query_parts[$part_id]->get_query_part():'';
+    protected function getQueryPart(string $part_id) 
+    {
+        return isset($this->query_parts[$part_id])?$this->query_parts[$part_id]->getQueryPart():'';
     }
     
     /**
      * Sets a new query part identified by $part_id
      * @param string $part_id
-     * @param query_atom $part
+     * @param QueryAtom $part
      */
-    protected function set_query_part(string $part_id,query_atom $part,$connection=null) {
+    protected function setQueryPart(string $part_id,QueryAtom $part,$connection = null) 
+    {
         if (!isset($this->query_parts[$part_id])) {
             // This part is not set yet, so just set it
             $this->query_parts[$part_id] = $part;
         } else {
             // This part is already set, so decide what to do
-            if ($part->is_singleton()) {
+            if ($part->isSingleton()) {
                 // replace a singleton
                 $this->query_parts[$part_id] = $part;
             } else {
@@ -90,72 +97,78 @@ class query_builder {
      * @param string $table_name
      * @return string
      */
-    public function get_table(string $table_name) {
+    public function getTable(string $table_name) 
+    {
         if (!isset($this->used_tables[$table_name])) {
             $this->used_tables[$table_name] = $this->next_table++;
         }         
         return $this->used_tables[$table_name];
     }
     
-    protected function get_where_part($field,$relation,$value) {
+    protected function get_where_part($field, $relation, $value) 
+    {
         $property = ($this->calling_class)::get_property_object($field);
         if (is_null($property)) {
             throw new QueryException("The field '$field' is not found.");
         }
-        if (! $property->get_searchable()) {
+        if (! $property->getSearchable()) {
             throw new QueryException("The field '$field' is not searchable.");
         }
         switch ($property->type) {
             case 'tags':
-                $part = new query_where_tag($this,$property,$relation,$value);
+                $part = new QueryWhereTag($this,$property,$relation,$value);
                 break;
             case 'attribute_char':
             case 'attribute_float':
             case 'attribute_int':
             case 'attribute_float':
-                $part = new query_where_attribute($this,$property,$relation,$value);
+                $part = new QueryWhere_attribute($this,$property,$relation,$value);
                 break;
             case 'arrayOfObject':
-                $part = new query_where_array_of_objects($this,$property,$relation,$value);
+                $part = new QueryWhereArrayOfObjects($this,$property,$relation,$value);
                 break;
             case 'arrayOfStrings':
-                $part = new query_where_array_of_strings($this,$property,$relation,$value);
+                $part = new QueryWhereArrayOfStrings($this,$property,$relation,$value);
                 break;
             case 'varchar':
-                $part = new query_where_string($this,$property,$relation,$value);
+                $part = new QueryWhereString($this,$property,$relation,$value);
                 break;
             case 'object':
-                $part = new query_where_object($this,$property,$relation,$value);
+                $part = new QueryWhereObject($this,$property,$relation,$value);
                 break;
             case 'calculated':
-                $part = new query_where_calculated($this,$property,$relation,$value);
+                $part = new QueryWhereCalculated($this,$property,$relation,$value);
                 break;
             default:
-                $part = new query_where_simple($this,$property,$relation,$value);
+                $part = new QueryWhereSimple($this,$property,$relation,$value);
                 break;
         }
         return $part;
     }
     
-    public function where($field,$relation,$value=null) {
+    public function where($field, $relation, $value = null) 
+    {
         $part = $this->get_where_part($field,$relation,$value);
-        $this->set_query_part('where',$part,'and');
+        $this->setQueryPart('where',$part,'and');
         return $this;
     }
     
-    public function orWhere($field,$relation,$value=null) {
+    public function orWhere($field, $relation, $value = null) 
+    {
         $part = $this->get_where_part($field,$relation,$value);
-        $this->set_query_part('where',$part,'or');
+        $this->setQueryPart('where',$part,'or');
         return $this;
     }
     
-    public function order_by($field,$asc=true) {    
-        $this->set_query_part('order', new query_order($this,$field,$asc));
+    public function order_by($field, $asc = true) 
+    {    
+        $this->setQueryPart('order', new QueryOrder($this,$field,$asc));
         return $this;
     }
     
-    public function limit($delta,$limit) {
-        $this->set_query_part('limit', new query_limit($this,$delta,$limit));
+    public function limit($delta, $limit) 
+    {
+        $this->setQueryPart('limit', new QueryLimit($this,$delta,$limit));
         return $this;
     }
     
@@ -164,7 +177,8 @@ class query_builder {
      * Returns the used tables for this query. All tables are joined as inner joins
      * @return string
      */
-    protected function get_tables() {
+    protected function getTables() 
+    {
         $first = true;
         $result = ' from ';
         foreach ($this->used_tables as $table_name => $alias) {
@@ -186,34 +200,37 @@ class query_builder {
      * Assembles the queryparts togeteher and return the pure query-string
      * @return string
      */
-    protected function finalize() {
+    protected function finalize() 
+    {
         $query_str =
-        $this->get_query_part('target').
-        $this->get_tables().
-        $this->get_query_part('where').
-        $this->get_query_part('group').
-        $this->get_query_part('order').
-        $this->get_query_part('limit');
+        $this->getQueryPart('target').
+        $this->getTables().
+        $this->getQueryPart('where').
+        $this->getQueryPart('group').
+        $this->getQueryPart('order').
+        $this->getQueryPart('limit');
  
         return $query_str;
         
     }
     
-    protected function prepare_query(bool $dump) {
+    protected function prepareQuery(bool $dump) 
+    {
         $query_str = $this->finalize();
         if ($dump) {
             return $query_str;
         } else {
-            return $this->execute_query($query_str);
+            return $this->executeQuery($query_str);
         }
     }
     
     /**
      * Returns all result of this query
      */
-    public function get(bool $dump=false) {
-        $this->set_query_part('target', new query_target_id($this));
-        return $this->postprocess_results($this->prepare_query($dump));
+    public function get(bool $dump = false) 
+    {
+        $this->setQueryPart('target', new QueryTargetID($this));
+        return $this->postprocessResults($this->prepareQuery($dump));
     }
     
     /**
@@ -221,9 +238,10 @@ class query_builder {
      * @param bool $dump
      * @return string|NULL|\Sunhill\ORM\Search\unknown|NULL[]
      */
-    public function count(bool $dump=false) {
-        $this->set_query_part('target', new query_target_count($this));
-        $result = $this->prepare_query($dump);
+    public function count(bool $dump = false) 
+    {
+        $this->setQueryPart('target', new QueryTargetCount($this));
+        $result = $this->prepareQuery($dump);
         if ($dump) {
             return $result;
         } else {
@@ -233,12 +251,13 @@ class query_builder {
     
     /**
      * Returns the first entry of the query
-     * @deprecated Should be replaces by ->first_id() or ->load()
+     * @deprecated Should be replaced by ->firstID() or ->load()
      * @param bool $dump
      * @return \Sunhill\ORM\Search\unknown
      */
-    public function first(bool $dump=false) {
-        return $this->first_id($dump);
+    public function first(bool $dump = false) 
+    {
+        return $this->firstID($dump);
     }
     
     /**
@@ -246,10 +265,11 @@ class query_builder {
      * @param bool $dump
      * @return \Sunhill\ORM\Search\unknown
      */
-    public function first_id(bool $dump=false) {
-        $this->set_query_part('target', new query_target_id($this));
-        $this->set_query_part('limit', new query_limit($this,0,1));
-        $result = $this->prepare_query($dump);
+    public function firstID(bool $dump = false) 
+    {
+        $this->setQueryPart('target', new QueryTargetID($this));
+        $this->setQueryPart('limit', new QueryLimit($this,0,1));
+        $result = $this->prepareQuery($dump);
         if ($dump) {
             return $result;
         } else {
@@ -266,8 +286,9 @@ class query_builder {
      * @throws QueryException
      * @return NULL
      */
-    public function load() {
-        $result = $this->load_if_exists();        
+    public function load() 
+    {
+        $result = $this->loadIfExists();        
         if (empty($result)) {
             throw new QueryException("load() expects at least one result. Non returned");
         }
@@ -278,10 +299,11 @@ class query_builder {
      * return the laoded first entry of the query or null if it doesn't exist
      * @return unknown|NULL
      */
-    public function load_if_exists() {
-        $this->set_query_part('target', new query_target_id($this));
-        $this->set_query_part('limit', new query_limit($this,0,1));
-        $result = $this->prepare_query(false);
+    public function loadIfExists() 
+    {
+        $this->setQueryPart('target', new QueryTargetID($this));
+        $this->setQueryPart('limit', new QueryLimit($this,0,1));
+        $result = $this->prepareQuery(false);
         if (!empty($result)) {
             return Objects::load($result[0]->id);       
         } else {
@@ -290,15 +312,16 @@ class query_builder {
     }
     
     /**
-     * Converts the database result into a objectlist 
+     * Converts the database result into a ObjectList 
      * @param unknown $result
      * @return unknown
      */
-    protected function postprocess_results($result) {
+    protected function postprocessResults($result) 
+    {
         if (is_string($result)) {
             return $result; // We requested a dump
         } else {
-            $return = new objectlist();
+            $return = new ObjectList();
             foreach ($result as $entry) {
                 $return[] = $entry->id;
             }
@@ -307,7 +330,8 @@ class query_builder {
     }
     
 // ********************* Query-Management  ****************************
-    protected function execute_query(string $querystr) {
+    protected function executeQuery(string $querystr) 
+    {
         return DB::select(DB::raw($querystr));
     }
     

@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Unit\Managers;
 /**
  * @file ManagerObjectTest.php
  * lang: en
- * dependencies: FilesystemComplexTestCase, objectlist
+ * dependencies: FilesystemComplexTestCase, ObjectList
  */
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Managers\object_manager;
@@ -66,14 +66,14 @@ class ManagerObjectTest extends DBTestCase
 
     public function testObjectListClassFilter() {
         $list = Objects::getObjectList('dummy');
-        $this->assertEquals(2,$list[1]->get_id());
+        $this->assertEquals(2,$list[1]->getID());
         $count = DB::table('dummies')->select(DB::raw('count(*) as count'))->first();
         $this->assertEquals($count->count,count($list));
     }
 
     public function testObjectListClassFilter_nochildren() {
         $list = Objects::getObjectList('testparent',true);
-        $this->assertEquals(5,$list[0]->get_id());
+        $this->assertEquals(5,$list[0]->getID());
         $count1 = DB::table('testparents')->select(DB::raw('count(*) as count'))->first();
         $count2 = DB::table('testchildren')->select(DB::raw('count(*) as count'))->first();
         $count3 = DB::table('passthrus')->select(DB::raw('count(*) as count'))->first();

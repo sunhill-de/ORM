@@ -27,8 +27,8 @@ class PropertyTest extends TestCase
 	 * @depends testPropertyConstructor
 	 */
 	public function testPropertyDefault($test) {
-		$test->set_default('ABC');
-		$this->assertEquals('ABC',$test->get_value());
+		$test->setDefault('ABC');
+		$this->assertEquals('ABC',$test->getValue());
 		return $test;
 	}
 	
@@ -37,8 +37,8 @@ class PropertyTest extends TestCase
 	 * @depends testPropertyDefault
 	 */
 	public function testPropertySetValue($test) {
-	    $test->set_value('DEF');
-		$this->assertEquals('DEF',$test->get_value());
+	    $test->setValue('DEF');
+		$this->assertEquals('DEF',$test->getValue());
 		return $test;
 	}
 	
@@ -47,7 +47,7 @@ class PropertyTest extends TestCase
 	 * @depends testPropertySetValue
 	 */
 	public function testPropertyDirty($test) {
-		$this->assertTrue($test->get_dirty());
+		$this->assertTrue($test->getDirty());
 		return $test;
 	}
 	
@@ -57,7 +57,7 @@ class PropertyTest extends TestCase
 	 */
 	public function testRollback($test) {
 		$test->rollback();
-		$this->assertEquals('ABC',$test->get_value());
+		$this->assertEquals('ABC',$test->getValue());
 		return $test;
 	}
 	
@@ -66,7 +66,7 @@ class PropertyTest extends TestCase
 	 * @depends testRollback
 	 */
 	public function testUndirtyAfterRollback($test) {
-		$this->assertFalse($test->get_dirty());
+		$this->assertFalse($test->getDirty());
 		return $test;
 	}
 	
@@ -75,9 +75,9 @@ class PropertyTest extends TestCase
 	 * @depends testUndirtyAfterRollback
 	 */
 	public function testUndirtyAfterCommit($test) {
-		$test->set_value('GHI');
+		$test->setValue('GHI');
 		$test->commit();
-		$this->assertFalse($test->get_dirty());
+		$this->assertFalse($test->getDirty());
 		return $test;
 	}
 	
@@ -87,7 +87,7 @@ class PropertyTest extends TestCase
 	 */
 	public function testRollbackAfterCommit($test) {
 		$test->rollback();
-		$this->assertEquals('GHI',$test->get_value());
+		$this->assertEquals('GHI',$test->getValue());
 		return $test;
 	}
 	
@@ -96,11 +96,11 @@ class PropertyTest extends TestCase
 	 * @depends testRollbackAfterCommit
 	 */
 	public function testDoubleCommit($test) {
-		$test->set_value('XYZ');
+		$test->setValue('XYZ');
 		$test->commit();
-		$test->set_value('ZXY');
+		$test->setValue('ZXY');
 		$test->commit();
-		$this->assertEquals('ZXY',$test->get_value());
+		$this->assertEquals('ZXY',$test->getValue());
 		return $test;
 	}
 	
@@ -109,12 +109,12 @@ class PropertyTest extends TestCase
 	 * @depends testDoubleCommit
 	 */
 	public function testDoubleChange($test) {
-		$test->set_value('XYZ');
+		$test->setValue('XYZ');
 		$test->commit();
-		$test->set_value('ZXY');
-		$test->set_value('FOO');
+		$test->setValue('ZXY');
+		$test->setValue('FOO');
 		$test->rollback();
-		$this->assertEquals('XYZ',$test->get_value());
+		$this->assertEquals('XYZ',$test->getValue());
 		return $test;
 	}
 	
@@ -123,8 +123,8 @@ class PropertyTest extends TestCase
 	 * @depends testDoubleChange
 	 */
 	public function testDirtyIfNoChange($test) {
-		$test->set_value('XYZ');
-		$this->assertFalse($test->get_dirty());
+		$test->setValue('XYZ');
+		$this->assertFalse($test->getDirty());
 	}
 	
 	/**
@@ -134,10 +134,10 @@ class PropertyTest extends TestCase
 //		$object = new ORMObject();
 		$value = new ORMObject();
 		$test = new Property(null);
-		$test->set_value($value);
+		$test->setValue($value);
 		$test->commit();
-		$test->set_value($value);
-		$this->assertFalse($test->get_dirty());
+		$test->setValue($value);
+		$this->assertFalse($test->getDirty());
 	}
 	
 	/**
@@ -145,9 +145,9 @@ class PropertyTest extends TestCase
 	 */
 	public function testCommitUninitialiedWithDefault() {
 	    $test = new Property(null);
-		$test->set_default('ERF');
+		$test->setDefault('ERF');
 		$test->commit();
-		$this->assertEquals('ERF',$test->get_value());
+		$this->assertEquals('ERF',$test->getValue());
 	}
 	
 	/**
@@ -165,7 +165,7 @@ class PropertyTest extends TestCase
 	public function testExceptionUninitialized() {
 	    $this->expectException(\Exception::class);
 	    $test = new Property(null);
-		$wert = $test->get_value();
+		$wert = $test->getValue();
 	}
 	
 	/**
@@ -173,8 +173,8 @@ class PropertyTest extends TestCase
 	 */
 	public function testSetNullDirty() {
 		$test = new Property(null);
-		$test->set_value(null);
-		$this->assertTrue($test->get_dirty());
+		$test->setValue(null);
+		$this->assertTrue($test->getDirty());
 		return $test;
 	}
 	
@@ -183,8 +183,8 @@ class PropertyTest extends TestCase
 	 * @depends testSetNullDirty
 	 */
 	public function testSetNullInitialized($test) {
-		$test->set_value(null);
-		$this->assertEquals(null,$test->get_value());
+		$test->setValue(null);
+		$this->assertEquals(null,$test->getValue());
 		return $test;
 	}
 	
@@ -193,10 +193,10 @@ class PropertyTest extends TestCase
 	 */
 	public function testSetToNullAgain() {
 		$test = new Property(null);
-		$test->set_value('ABC');
+		$test->setValue('ABC');
 		$test->commit();
-		$test->set_value(null);
-		$this->assertEquals(null,$test->get_value());
+		$test->setValue(null);
+		$this->assertEquals(null,$test->getValue());
 		return $test;
 	}
 	
@@ -205,7 +205,7 @@ class PropertyTest extends TestCase
      */
 	public function testDefaultsNull() {
 		$test = new Property(null);
-		$test->set_default(null);
+		$test->setDefault(null);
 		$this->assertTrue(is_null($test->value));
 	}
 	

@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Properties;
 
-class oo_property_float extends oo_property_field {
+class PropertyFloat extends PropertyField {
 	
 	protected $type = 'float';
 	

@@ -3,10 +3,9 @@
 namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Storage\StorageBase;
 
-class AttributeException extends \Exception {}
-
-class oo_property_attribute extends Property {
+class PropertyAttribute extends Property {
 	
 	protected $type = 'attribute';
 	
@@ -22,31 +21,37 @@ class oo_property_attribute extends Property {
 
     protected $attribute_type;
     
-	public function initialize() {
+	public function initialize() 
+	{
 		$this->initialized = true;
 	}
 
-	public function set_allowed_objects(string $allowed_objects) {
+	public function setAllowedObjects(string $allowed_objects) 
+	{
 	    $this->allowed_objects = $allowed_objects;
 	    return $this;
 	}
 	
-	public function set_attribute_id(int $id) {
+	public function setAttributeID(int $id) 
+	{
 	    $this->attribute_id = $id;
 	    return $this;
 	}
 	
-	public function set_attribute_name(string $name) {
+	public function setAttributeName(string $name) 
+	{
 	    $this->attribute_name = $name;
 	    return $this;
 	}
 	
-	public function set_attribute_type(string $type) {
+	public function setAttributeType(string $type) 
+	{
 	    $this->attribute_type = $type;
 	    return $this;
 	}
 	
-	public function set_attribute_property(string $property) {
+	public function setAttributeProperty(string $property) 
+	{
 	    $this->attribute_property = $property;
 	    return $this;
 	}
@@ -57,10 +62,11 @@ class oo_property_attribute extends Property {
 	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {	    
+	protected function doLoad(StorageBase $loader,$name) 
+	{	    
 	    $this->attribute_name = $name;
 	    $this->attribute_id = $loader->entities['attributes'][$name]['attribute_id'];	    
-	    $this->value = $this->extract_value($loader);
+	    $this->value = $this->extractValue($loader);
 	    $this->allowed_objects = $loader->entities['attributes'][$name]['allowedobjects'];
 	    $this->attribute_type = $loader->entities['attributes'][$name]['type'];
 	    $this->property = $loader->entities['attributes'][$name]['property'];
@@ -69,14 +75,16 @@ class oo_property_attribute extends Property {
 	/**
 	 * Ermittelt den Wert des Attributs aus dem Storage. Defaultmäßig ist dies value, muss von Textattributen
 	 * überschrieben werden.
-	 * @param \Sunhill\ORM\Storage\storage_base $loader
+	 * @param \Sunhill\ORM\Storage\StorageBase $loader
 	 */
-	protected function extract_value(\Sunhill\ORM\Storage\storage_base $loader) {
+	protected function extractValue(StorageBase $loader) 
+	{
 	    return $this->value = $loader->entities['attributes'][$this->attribute_name]['value'];    
 	}
 
 // ============================ Einfügen ========================================	
-	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,$name) {
+	protected function doInsert(StorageBase $storage,$name) 
+	{
         $storage->entities['attributes'][$name] = [
             'name'=>$this->attribute_name,
             'attribute_id'=>$this->attribute_id,
@@ -84,10 +92,11 @@ class oo_property_attribute extends Property {
             'type'=>$this->attribute_type,
             'property'=>$this->property
         ];
-        $this->insert_value($storage);        
+        $this->insertValue($storage);        
 	}
 	
-	protected function insert_value(\Sunhill\ORM\Storage\storage_base $storage) {
+	protected function insertValue(StorageBase $storage) 
+	{
 	   $storage->entities['attributes'][$this->attribute_name]['value'] = $this->value;    
 	   $storage->entities['attributes'][$this->attribute_name]['textvalue'] = '';
 	}
@@ -101,10 +110,11 @@ class oo_property_attribute extends Property {
 	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
 	 * @return void[]|\Sunhill\ORM\Properties\Property[]
 	 */
-	public function get_diff_array(int $type=PD_VALUE) {
+	public function getDiffArray(int $type = PD_VALUE) 
+	{
         $result = [
             'attribute_id'=>$this->attribute_id,
-            'object_id'=>$this->owner->get_id(),
+            'object_id'=>$this->owner->getID(),
             'name'=>'general_attribute',
             'allowedobjects'=>"\\Sunhill\\Objects\\ORMObject",
             'type'=>'int',
@@ -120,8 +130,8 @@ class oo_property_attribute extends Property {
         return $result;
 	}
 	
-	public function do_update($storage, $name) {
-	    $diff = $this->get_diff_array(PD_ID);
+	public function doUpdate($storage, $name) {
+	    $diff = $this->getDiffArray(PD_ID);
 	    $storage->entities['attributes'][$this->attribute_name] = $diff;
 	}
 	

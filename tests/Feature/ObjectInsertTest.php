@@ -31,7 +31,7 @@ class ObjectInsertTest extends DBTestCase
         }
         $object->commit();
         
-        $read = Objects::load($object->get_id());
+        $read = Objects::load($object->getID());
         $this->assertEquals($expected,$this->get_field($read, $test));
     }
     

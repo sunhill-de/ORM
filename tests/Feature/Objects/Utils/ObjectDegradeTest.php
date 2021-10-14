@@ -68,7 +68,7 @@ class ObjectDegradeTest extends DBTestCase
         $tag = new Tag('TestTag',true);
         $test->tags->stick($tag);
         $test->commit();
-        $id = $test->get_id();
+        $id = $test->getID();
         $new = $test->degrade('testparent');
         $new->commit();
         Objects::flushCache();
@@ -83,7 +83,7 @@ class ObjectDegradeTest extends DBTestCase
      * @param unknown $test
      */
     public function testTablesDeleted($test) {
-        $result = DB::table('thirdlevelchildren')->where('id',$test->get_id())->first();
+        $result = DB::table('thirdlevelchildren')->where('id',$test->getID())->first();
         $this->assertTrue(empty($result));
         return $test;
     }
@@ -92,7 +92,7 @@ class ObjectDegradeTest extends DBTestCase
      * @param unknown $test
      */
     public function testTableChildDeleted($test) {
-        $result = DB::table('secondlevelchildren')->where('id',$test->get_id())->first();
+        $result = DB::table('secondlevelchildren')->where('id',$test->getID())->first();
         $this->assertTrue(empty($result));
         return $test;
     }
@@ -102,7 +102,7 @@ class ObjectDegradeTest extends DBTestCase
      * @param unknown $test
      */
     public function testObjectsDeleted($test) {
-        $result = DB::table('objectobjectassigns')->where('container_id',$test->get_id())->where('field','thirdlevelobject')->first();
+        $result = DB::table('objectobjectassigns')->where('container_id',$test->getID())->where('field','thirdlevelobject')->first();
         $this->assertTrue(empty($result));
         return $test;
     }

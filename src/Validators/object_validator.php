@@ -10,7 +10,7 @@ class object_validator extends validator_base {
     
     private $allowed_objects;
     
-    public function set_allowed_objects($object) {
+    public function setAllowedObjects($object) {
         if (!is_array($object)) {
             $this->allowed_objects = array($object);
         } else {

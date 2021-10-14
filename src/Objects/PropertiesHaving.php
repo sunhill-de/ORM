@@ -15,7 +15,7 @@
 namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Properties\PropertyException;
-use Sunhill\ORM\Search\query_builder;
+use Sunhill\ORM\Search\QueryBuilder;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Hookable;
 use Sunhill\ORM\Facades\Classes;
@@ -221,7 +221,7 @@ class PopertiesHaving extends Hookable
     /**
      * Does the loading (has to be overwritten)
      */
-	protected function do_load() 
+	protected function doLoad() 
     {
 	}
 	
@@ -358,7 +358,7 @@ class PopertiesHaving extends Hookable
 	public function cleanProperties() 
     {
 	    foreach ($this->properties as $property) {
-	        $property->set_dirty(false);
+	        $property->setDirty(false);
 	    }
 	}
 	
@@ -370,7 +370,7 @@ class PopertiesHaving extends Hookable
     {
 	    if (isset($this->properties[$name])) {
 	        $this->check_for_hook('GET',$name,null);
-	        return $this->properties[$name]->get_value();
+	        return $this->properties[$name]->getValue();
 	    } else {
 	        return parent::__get($name);
 	    }
@@ -384,20 +384,20 @@ class PopertiesHaving extends Hookable
 	public function __set(string $name, mixed $value) 
     {
 	    if (isset($this->properties[$name])) {
-	        if ($this->get_readonly()) {
+	        if ($this->getReadonly()) {
 	            throw new PropertiesHavingException(__("Property ':name' was changed in readonly state.",['name'=>$name]));
 	        } else {
-	            $this->properties[$name]->set_value($value);
+	            $this->properties[$name]->setValue($value);
 	            $this->check_for_hook('SET',$name,array(
-	                'from'=>$this->properties[$name]->get_old_value(),
+	                'from'=>$this->properties[$name]->getOldValue(),
 	                'to'=>$value));
 	            if (!$this->properties[$name]->is_simple()) {
-	                $this->check_for_hook('EXTERNAL',$name,array('to'=>$value,'from'=>$this->properties[$name]->get_old_value()));
+	                $this->check_for_hook('EXTERNAL',$name,array('to'=>$value,'from'=>$this->properties[$name]->getOldValue()));
 	            }
-	            if ($this->properties[$name]->get_dirty()) {
+	            if ($this->properties[$name]->getDirty()) {
 	                $this->check_for_hook('FIELDCHANGE',$name,array(
-	                    'from'=>$this->properties[$name]->get_old_value(),
-	                    'to'=>$this->properties[$name]->get_value()));
+	                    'from'=>$this->properties[$name]->getOldValue(),
+	                    'to'=>$this->properties[$name]->getValue()));
 	            }
 	        }
 	    } else if (!$this->handleUnknownProperty($name,$value)){
@@ -448,9 +448,9 @@ class PopertiesHaving extends Hookable
 	    foreach ($this->properties as $name => $property) {
 	        // Als erstes auswerten, ob $dirty berücksichtigt werden soll
 	        if (isset($dirty)) {
-	            if ($dirty && (!$property->get_dirty())) {
+	            if ($dirty && (!$property->getDirty())) {
 	                continue;
-	            } else if (!$dirty && ($property->get_dirty())) {
+	            } else if (!$dirty && ($property->getDirty())) {
 	                continue;
 	            }
 	        }
@@ -595,7 +595,7 @@ class PopertiesHaving extends Hookable
 	}
 	
 	public static function search() {
-	     $query = new query_builder();
+	     $query = new QueryBuilder();
 	     $query->set_calling_class(get_called_class());
 	     return $query;
 	}

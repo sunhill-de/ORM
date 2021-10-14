@@ -52,7 +52,7 @@ class ObjectPromoteTest extends DBTestCase
         $tag = new Tag('TestTag',true);
         $test->tags->stick($tag);
         $test->commit();
-        $id = $test->get_id();
+        $id = $test->getID();
         $new = $test->promote('Sunhill\\ORM\\Tests\\Objects\\ts_thirdlevelchild');
         $new->commit(); 
         Objects::flushCache();
@@ -81,7 +81,7 @@ class ObjectPromoteTest extends DBTestCase
         $tag = new Tag('TestTag',true);
         $test->tags->stick($tag);
         $test->commit();
-        $id = $test->get_id();
+        $id = $test->getID();
         $new = $test->promote('\\Sunhill\\ORM\\Tests\\Objects\\ts_thirdlevelchild');
         $new->commit();
        Objects::flushCache();
@@ -103,7 +103,7 @@ class ObjectPromoteTest extends DBTestCase
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
         $test->commit();
-        $id = $test->get_id();
+        $id = $test->getID();
         $new = $test->promote('ts_testchild');        
     }
     
@@ -119,7 +119,7 @@ class ObjectPromoteTest extends DBTestCase
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
         $test->commit();
-        $id = $test->get_id();
+        $id = $test->getID();
         $new = $test->promote('notexisting');
     }
     

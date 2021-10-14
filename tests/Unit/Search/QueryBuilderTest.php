@@ -3,8 +3,8 @@
 namespace Sunhill\ORM\Tests\Unit\Search;
 
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Search\query_builder;
-use Sunhill\ORM\Search\query_atom;
+use Sunhill\ORM\Search\QueryBuilder;
+use Sunhill\ORM\Search\QueryAtom;
 use Sunhill\ORM\Tests\Objects\ts_dummy;
 use Sunhill\ORM\Tests\Objects\ts_testparent;
 use Sunhill\ORM\Tests\Objects\ts_testchild;
@@ -21,21 +21,21 @@ class QueryBuilderTest extends TestCase
     }
     
     public function testSetCallingClass() {
-        $query = new query_builder();
+        $query = new QueryBuilder();
         $query->set_calling_class('callingclass');
         $this->assertEquals('callingclass',$query->get_calling_class());
     }
     
     public function testSetCallingViaConstructorClass() {
-        $query = new query_builder('callingclass');
+        $query = new QueryBuilder('callingclass');
         $this->assertEquals('callingclass',$query->get_calling_class());
     }
     
     public function testGetNextTable() {
-        $query = new query_builder();
-        $letter = $query->get_table('testtable');
-        $this->assertEquals($letter,$query->get_table('testtable'));
-        $this->assertNotEquals($letter, $query->get_table('anothertable'));
+        $query = new QueryBuilder();
+        $letter = $query->getTable('testtable');
+        $this->assertEquals($letter,$query->getTable('testtable'));
+        $this->assertNotEquals($letter, $query->getTable('anothertable'));
     }
     
     /**
@@ -46,7 +46,7 @@ class QueryBuilderTest extends TestCase
      * @param unknown $except
      */
     public function testQuery($class,$query_callback,$expect,$except) {
-        $query = new query_builder($class);
+        $query = new QueryBuilder($class);
         try {
             $result = $query_callback($query);
         } catch (\Exception $e) {

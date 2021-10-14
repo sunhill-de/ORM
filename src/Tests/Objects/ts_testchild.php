@@ -23,9 +23,9 @@ class ts_testchild extends ts_testparent {
 	    self::date('childdate');
 		self::time('childtime');
 		self::enum('childenum')->set_values(['testA','testB','testC']);
-		self::object('childobject')->set_allowed_objects(['dummy'])->set_default(null);;
+		self::object('childobject')->setAllowedObjects(['dummy'])->setDefault(null);;
 		self::arrayofstrings('childsarray');
-		self::arrayofobjects('childoarray')->set_allowed_objects(['dummy']);
+		self::arrayofobjects('childoarray')->setAllowedObjects(['dummy']);
 	}
 	
 }

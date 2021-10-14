@@ -94,10 +94,10 @@ class ArrayOfObjectsTest extends TestCase
      * @depends testArrayCount
      */
     public function testArrayDirty($test) {
-        $test->set_dirty(false);
+        $test->setDirty(false);
         $dummy = new ts_dummy(); $dummy->set_ID(992);
         $test[] = $dummy;
-        $this->assertTrue($test->get_dirty());
+        $this->assertTrue($test->getDirty());
         return $test;
     }
     

@@ -24,7 +24,7 @@ class TestClassOperator extends ClassOperatorBase {
         $this->flag = 'executed';    
     }
     
-    public function set_class(string $class) {
+    public function setClass(string $class) {
         $this->target_class = $class;
     }
 }
@@ -79,7 +79,7 @@ class ClassOperatorTest extends TestCase
     public function testTargetClassPass() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->set_class(ts_dummy::class);
+        $test->setClass(ts_dummy::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
@@ -91,7 +91,7 @@ class ClassOperatorTest extends TestCase
     public function testTargetClassFail() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->set_class(ts_dummy::class);
+        $test->setClass(ts_dummy::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
@@ -123,7 +123,7 @@ class ClassOperatorTest extends TestCase
     public function testTargetClassChildPass() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->set_class(ts_testparent::class);
+        $test->setClass(ts_testparent::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
@@ -135,7 +135,7 @@ class ClassOperatorTest extends TestCase
     public function testTargetClassChildFail() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->set_class(ts_testchild::class);
+        $test->setClass(ts_testchild::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
@@ -147,7 +147,7 @@ class ClassOperatorTest extends TestCase
     public function testExecution() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->set_class(ts_testparent::class);
+        $test->setClass(ts_testparent::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';

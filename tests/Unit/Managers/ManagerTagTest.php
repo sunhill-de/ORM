@@ -370,7 +370,7 @@ class ManagerTagTest extends DBTestCase
             ['TagA.Test','Test'],
             [['name'=>'Test'],'Test'],
             [function() { $Descriptor = new Descriptor(); $Descriptor->name = 'Test'; return $Descriptor; },'Test'],
-            [function() { $tag = new Tag(); $tag->set_name('Test'); return $tag; },'Test'],
+            [function() { $tag = new Tag(); $tag->setName('Test'); return $tag; },'Test'],
         ];
     }                                                                
                                                                 

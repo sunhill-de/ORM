@@ -23,9 +23,9 @@ class testhookable extends Hookable {
     public $params='';
     
     protected function setup_hooks() {
-        $this->add_hook('hook1','call_hook1');
-        $this->add_hook('hook2','call_hook2','test');
-        $this->add_hook('hook3','call_hook3','test');
+        $this->addHook('hook1','call_hook1');
+        $this->addHook('hook2','call_hook2','test');
+        $this->addHook('hook3','call_hook3','test');
     }
     
     public function hooked_method1() {
@@ -82,7 +82,7 @@ class HookableTest extends TestCase
         
         public function testDoubleHook() {
             $test = new testhookable();
-            $test->add_hook('hook3','call_flag','test',$this);
+            $test->addHook('hook3','call_flag','test',$this);
             $test->hooked_method3('test');
             $this->assertEquals('test',$test->flag);
             $this->assertEquals('flag',$this->flag);

@@ -41,19 +41,19 @@ class ts_dummy extends ORMObject {
 	
 	protected function setup_hooks() {
 	    parent::setup_hooks();
-	    $this->add_hook('UPDATED_PROPERTY','tag_changed','tags');
+	    $this->addHook('UPDATED_PROPERTY','tag_changed','tags');
 	}
 	public function tag_changed($change) {
 	    if (!empty($change['NEW'])) {
 	        $this->changestr .= 'ADD:';
 	        foreach ($change['NEW'] as $tag) {
-    	       $this->changestr .= $tag->get_fullpath();       
+    	       $this->changestr .= $tag->getFullPath();       
     	    }
 	    }
 	    if (!empty($change['REMOVED'])) {
 	        $this->changestr .= 'REMOVED:';
 	        foreach ($change['REMOVED'] as $tag) {
-	            $this->changestr .= $tag->get_fullpath();
+	            $this->changestr .= $tag->getFullPath();
 	        }
 	    }
 	}

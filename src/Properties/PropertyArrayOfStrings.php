@@ -4,18 +4,21 @@ namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 
-class PropertyArrayOfStrings extends PropertyArrayBase {
+class PropertyArrayOfStrings extends PropertyArrayBase 
+{
 	
 	protected $type = 'arrayOfStrings';
 	
 	protected $features = ['object','complex','array','strings'];
 	
-	public function set_type($type) {
+	public function setType($type) 
+	{
 	    $this->type = $type;
 	    return $this;
 	}
 	
-	public function get_type() {
+	public function getType() 
+	{
 	    return $this->type;
 	}
 		

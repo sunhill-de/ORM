@@ -15,7 +15,8 @@ namespace Sunhill\ORM\Properties;
 /**
  * A class for date properties
  */
-class PropertyDate extends PropertyField {
+class PropertyDate extends PropertyField 
+{
 	
     protected $type = 'date';
 	

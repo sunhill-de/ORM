@@ -17,8 +17,10 @@ namespace Sunhill\ORM\Properties;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Storage\StorageBase;
 
-class PropertyArrayOfObjects extends PropertyArrayBase {
+class PropertyArrayOfObjects extends PropertyArrayBase 
+{
 
 	protected $type = 'arrayOfObject';
 		
@@ -28,29 +30,34 @@ class PropertyArrayOfObjects extends PropertyArrayBase {
 	
 	protected $validator_name = 'object_validator';
 	
-	public function set_allowed_objects($object) {
-	    $this->validator->set_allowed_objects($object);
+	public function setAllowedObjects($object) 
+	{
+	    $this->validator->setAllowedObjects($object);
 	    return $this;
 	}
 
-	public function set_type($type) {
+	public function setType($type) 
+	{
 	    $this->type = $type;
 	    return $this;
 	}
 	
-	public function get_type() {
+	public function getType() 
+	{
 	    return $this->type;
 	}
 	
-	protected function NormalizeValue($value) {
+	protected function NormalizeValue($value) 
+	{
 	    if (is_int($value)) {
 	        return $value;
 	    } else if (is_a($value,ORMObject::class)) {
-	        return $value->get_id();
+	        return $value->getID();
 	    }
 	}
 	
-	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {
+	protected function doLoad(StorageBase $loader, $name) 
+	{
 	    $references = $loader->$name;
 	    if (empty($references)) {
 	        return;
@@ -60,26 +67,29 @@ class PropertyArrayOfObjects extends PropertyArrayBase {
 	    }
 	}
 	
-	protected function &do_get_indexed_value($index) {
+	protected function &doGetIndexedValue($index) 
+	{
 	    if (is_int($this->value[$index])) {
 	        $this->value[$index] = Objects::load($this->value[$index]);
 	    }
 	    return $this->value[$index];
 	}
 	
-	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
+	protected function doInsert(StorageBase $storage, string $name) 
+	{
 	    $result = [];
 	    foreach ($this->value as $index => $value) {
 	        if (is_int($value)) {
 	            $result[$index] = $value;
 	        } else {
-	            $result[$index] = $value->get_id();
+	            $result[$index] = $value->getID();
 	        }
 	    }
 	    $storage->set_entity($name,$result);
 	}
 	
-	public function inserting(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function inserting(StorageBase $storage) 
+	{
 	    if (!empty($this->value)) {
 	        foreach ($this->value as $index=>$element) {
 	            if (!is_int($element)) {
@@ -93,13 +103,14 @@ class PropertyArrayOfObjects extends PropertyArrayBase {
 	    }
 	}
 	
-	private function get_local_id($test) {
+	private function getLocalID($test) 
+	{
 	    if (is_null($test)) {
 	        return null;
 	    } else if (is_int($test)) {
 	        return $test;
 	    } else {
-	        return $test->get_id();
+	        return $test->getID();
 	    }
 	}
 	
@@ -111,8 +122,9 @@ class PropertyArrayOfObjects extends PropertyArrayBase {
 	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
 	 * @return void[]|\Sunhill\ORM\Properties\Property[]
 	 */
-	public function get_diff_array(int $type=PD_VALUE) {
-	    $diff = parent::get_diff_array($type);
+	public function getDiffArray(int $type = PD_VALUE) 
+	{
+	    $diff = parent::getDiffArray($type);
 	    if ($type == PD_ID) {
 	        $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[],'NEW'=>[],'REMOVED'=>[]];
 	        foreach ($diff as $name=>$item) {
@@ -120,7 +132,7 @@ class PropertyArrayOfObjects extends PropertyArrayBase {
 	                continue;
 	            }
 	            foreach ($item as $index=>$entry) {
-	                $result[$name][$index] = $this->get_local_id($entry);
+	                $result[$name][$index] = $this->getLocalID($entry);
 	            }
 	        }
 	        return $result;
@@ -129,13 +141,15 @@ class PropertyArrayOfObjects extends PropertyArrayBase {
 	    }
 	}
 	
-	public function updating(\Sunhill\ORM\Storage\storage_base $storage) {
+	public function updating(StorageBase $storage) 
+	{
 	    $this->inserting($storage);
 	}
 	
-	protected function value_added($value) {
+	protected function valueAdded($value) 
+	{
 	    foreach ($this->hooks as $hook) {
-	        $value->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
+	        $value->addHook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
 	    }	    
 	}
 	

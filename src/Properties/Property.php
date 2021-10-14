@@ -64,14 +64,14 @@ class Property extends Loggable
     
     /**
      * This field stores the owner of this property. It points to an descendand of PropertiesHaving 
-     * Property->get_owner() reads, Property->set_owner() writes
+     * Property->getOwner() reads, Property->setOwner() writes
      * @var \Sunhill\ORM\PropertiesHaving
      */
 	protected $owner;
 	
     /**
      * The name of this property
-     * Property->get_name() reads, Property->set_name() writes
+     * Property->getName() reads, Property->setName() writes
      * @var string
      */
 	protected $name;
@@ -84,7 +84,7 @@ class Property extends Loggable
 	
 	/**
 	 * The shadow value of this property. This is the value after the last Property->commit()
-     * It is used for rollback and creation of the diff array (Property->get_diff_array())
+     * It is used for rollback and creation of the diff array (Property->getDiffArray())
 	 * @var void
 	 */
 	protected $shadow;
@@ -116,8 +116,8 @@ class Property extends Loggable
 	
 	/**
 	 * Shows if this property is dirty. If false the value wasn't change since initialization or the last
-     * commit. If true than it was changed. An access should be performed via Property->get_dirty() and
-     * Property->set_dirty().
+     * commit. If true than it was changed. An access should be performed via Property->getDirty() and
+     * Property->setDirty().
 	 * @var bool
 	 */
 	protected $dirty=false;
@@ -230,7 +230,7 @@ class Property extends Loggable
      * @param $owner a class of PropertiesHaving
      * @return Property a reference to this to make setter chains possible
      */
-    public function set_owner(PropertiesHaving $owner): Property 
+    public function setOwner(PropertiesHaving $owner): Property 
     {
 	    $this->owner = $owner;
 	    return $this;	    
@@ -240,7 +240,7 @@ class Property extends Loggable
      * Returns the value of the owner field
      * @return PropertiesHaving
      */
-    public function get_owner(): PropertyHaving 
+    public function getOwner(): PropertyHaving 
     {
 	    return $this->owner;
     }
@@ -250,7 +250,7 @@ class Property extends Loggable
      * @param $name The name of the property
      * @return Property a reference to this to make setter chains possible
      */
-    public function set_name(string $name): Property 
+    public function setName(string $name): Property 
     {
 	    $this->name = $name;
 	    return $this;
@@ -259,7 +259,7 @@ class Property extends Loggable
     /**
      * Returns the name of this property
      */
-    public function get_name(): string 
+    public function getName(): string 
     {
 	    return $this->name;
     }
@@ -269,13 +269,13 @@ class Property extends Loggable
      * @param $type The type of the property
      * @return Property a reference to this to make setter chains possible
      */
-    public function set_type(string $type): Property
+    public function setType(string $type): Property
     {
 	    $this->type = $type;
 	    return $this;
     }
 	
-    public function get_type(): string
+    public function getType(): string
     {
 	    return $this->type;
     }
@@ -285,7 +285,7 @@ class Property extends Loggable
      * 
      * @return Property a reference to this to make setter chains possible
      */
-    public function set_default(mixed $default): Property 
+    public function setDefault(mixed $default): Property 
     {
 	    if (!isset($default)) {
 	        $this->defaults_null = true;
@@ -294,12 +294,12 @@ class Property extends Loggable
 	    return $this;
     }
 	
-    public function get_default(): mixed
+    public function getDefault(): mixed
     {
 	    return $this->default;
     }
 	
-    public function set_class(string $class): Property 
+    public function setClass(string $class): Property 
     {
 	    $this->class = $class;
 	    return $this;
@@ -310,13 +310,13 @@ class Property extends Loggable
 	    return $this->class;
     }
 	
-    public function set_readonly(bool $value) 
+    public function setReadonly(bool $value) 
     {
 	    $this->read_only = $value;
 	    return $this;
     }
 	
-    public function get_readonly(): bool
+    public function getReadonly(): bool
     {
 	    return $this->read_only;
     }
@@ -327,7 +327,7 @@ class Property extends Loggable
 	    return $this;
     }
 	
-    public function get_searchable(): bool 
+    public function getSearchable(): bool 
     {
 	    return $this->searchable;
     }
@@ -341,7 +341,7 @@ class Property extends Loggable
 	 * @throws PropertyException
 	 * @return \Sunhill\ORM\Properties\Property
 	 */
-	final public function set_value($value, $index = null): Property
+	final public function setValue($value, $index = null): Property
 	{
 		if ($this->read_only) {
 			throw new PropertyException(__("Write to a read only property."));
@@ -398,7 +398,7 @@ class Property extends Loggable
 	 */
 	protected function valueChanging($from, $to) 
 	{
-	    $this->checkOwnerHook('PROPERTY_CHANGING',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
+	    $this->checkOwnerHook('PROPERTY_CHANGING',$this->getName(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
 	/**
@@ -408,10 +408,10 @@ class Property extends Loggable
 	 */
 	protected function valueChanged($from, $to) 
 	{
-	    $this->checkOwnerHook('PROPERTY_CHANGED',$this->get_name(),array('FROM'=>$from,'TO'=>$to));
+	    $this->checkOwnerHook('PROPERTY_CHANGED',$this->getName(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
-	final public function &get_value() 
+	final public function &getValue() 
 	{
 		if (!$this->initialized) {
 			if (isset($this->default) || $this->defaults_null) {
@@ -427,7 +427,7 @@ class Property extends Loggable
 		if ($this->is_array()) {
 		        return $this;
 		} else {
-		        return $this->do_get_value();
+		        return $this->doGetValue();
 		}
 	}
 
@@ -440,12 +440,12 @@ class Property extends Loggable
 	    return false;
 	}
 	
-	protected function &do_get_value() 
+	protected function &doGetValue() 
 	{
 	    return $this->value;    
 	}
 	
-	protected function &do_get_indexed_value($index) 
+	protected function &doGetIndexedValue($index) 
 	{
 	    return $this->value[$index];
 	}
@@ -454,7 +454,7 @@ class Property extends Loggable
      * Returns the value of the shadow field 
      * @return void: The value of Property->shadow
      */
-	public function get_old_value() 
+	public function getOldValue() 
 	{
 		return $this->shadow;
 	}
@@ -468,10 +468,10 @@ class Property extends Loggable
 	 * @param int $type One of the PD_XXXX fields (see above)
 	 * @return void[]
 	 */
-	public function get_diff_array(int $type=PD_VALUE)
+	public function getDiffArray(int $type=PD_VALUE)
 	{
-	    return array('FROM'=>$this->get_diff_entry($this->shadow,$type),
-	                 'TO'=>$this->get_diff_entry($this->value,$type));
+	    return array('FROM'=>$this->getDiffEntry($this->shadow,$type),
+	                 'TO'=>$this->getDiffEntry($this->value,$type));
 	}
 	
 	/**
@@ -481,7 +481,7 @@ class Property extends Loggable
 	 * @param int $type
 	 * @return unknown
 	 */
-	protected function get_diff_entry($entry,int $type) 
+	protected function getDiffEntry($entry, int $type) 
 	{
 	    return $entry;
 	}
@@ -491,7 +491,7 @@ class Property extends Loggable
      * Tests, if the property is dirty
      * @return bool: True if it is dirty otherwise false 
      */
-    public function get_dirty()
+    public function getDirty()
     {
 		return $this->dirty;	
 	}
@@ -500,7 +500,7 @@ class Property extends Loggable
      * Sets the value of dirty to $value
      * @param bool $value The new value of dirty
      */
-    public function set_dirty(bool $value) 
+    public function setDirty(bool $value) 
     {
 		$this->dirty = $value;
 	}
@@ -589,8 +589,8 @@ class Property extends Loggable
 	 */
 	final public function load(StorageBase $loader) 
 	{
-	    $name = $this->get_name();
-            $this->do_load($loader,$name);
+	    $name = $this->getName();
+            $this->doLoad($loader,$name);
 	    $this->initialized = true; 
 	    $this->dirty = false;
 	}
@@ -600,14 +600,14 @@ class Property extends Loggable
 	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function do_load(StorageBase $loader, $name) 
+	protected function doLoad(StorageBase $loader, $name) 
 	{
 	    $this->value = $loader->$name;
 	}
 
 	/**
 	 * Wird aufgerufen, bevor das Property geladen wird
-	 * @param \Sunhill\ORM\Storage\storage_base $storage
+	 * @param \Sunhill\ORM\Storage\StorageBase $storage
 	 */
 	public function loading(StorageBase $storage) 
 	{
@@ -616,7 +616,7 @@ class Property extends Loggable
 	
 	/**
 	 * Wird aufgerufen, nachdem das Property geladen ist
-	 * @param \Sunhill\ORM\Storage\storage_base $storage
+	 * @param \Sunhill\ORM\Storage\StorageBase $storage
 	 */
 	public function loaded(StorageBase $storage) 
 	{
@@ -629,7 +629,7 @@ class Property extends Loggable
 	 */
 	public function insert(StorageBase $storage) 
 	{
-	    $this->do_insert($storage,$this->get_name());
+	    $this->doInsert($storage,$this->getName());
 	    $this->dirty = false;	    
 	}
 	
@@ -639,14 +639,14 @@ class Property extends Loggable
 	 * @param string $tablename
 	 * @param string $name
 	 */
-	protected function do_insert(StorageBase $storage, string $name) 
+	protected function doInsert(StorageBase $storage, string $name) 
 	{
 	    $storage->set_entity($name, $this->value);
 	}
 	
     /**
      * Wird vor dem Einfügen aufgerufen
-     * @param \Sunhill\ORM\Storage\storage_base $storage
+     * @param \Sunhill\ORM\Storage\StorageBase $storage
      */
 	public function inserting(StorageBase $storage) 
 	{
@@ -655,7 +655,7 @@ class Property extends Loggable
 	
 	/**
 	 * Wird nach dem Einfügen aufgerufen
-	 * @param \Sunhill\ORM\Storage\storage_base $storage
+	 * @param \Sunhill\ORM\Storage\StorageBase $storage
 	 */
 	public function inserted(StorageBase $storage) 
 	{
@@ -666,22 +666,22 @@ class Property extends Loggable
 	public function update(StorageBase $storage) 
 	{
 	    if ($this->dirty) {
-            $diff = $this->get_diff_array(PD_KEEP);
-	        $this->get_owner()->check_for_hook('UPDATING_PROPERTY',$this->get_name(),$diff);
-    	    $this->do_update($storage,$this->get_name());
-    	    $this->get_owner()->check_for_hook('UPDATED_PROPERTY',$this->get_name(),$diff);    	    
+            $diff = $this->getDiffArray(PD_KEEP);
+	        $this->getOwner()->check_for_hook('UPDATING_PROPERTY',$this->getName(),$diff);
+    	    $this->doUpdate($storage,$this->getName());
+    	    $this->getOwner()->check_for_hook('UPDATED_PROPERTY',$this->getName(),$diff);    	    
     	    $this->dirty = false;
 	    }
 	}
 	
-	protected function do_update(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
-        $diff = $this->get_diff_array(PD_ID);
+	protected function doUpdate(StorageBase $storage, string $name) {
+        $diff = $this->getDiffArray(PD_ID);
 	    $storage->set_entity($name,$diff);	    
 	}
 	
     /**
      * Is called before an update
-     * @param \Sunhill\ORM\Storage\storage_base $storage
+     * @param \Sunhill\ORM\Storage\StorageBase $storage
      */
 	public function updating(StorageBase $storage) 
 	{
@@ -690,7 +690,7 @@ class Property extends Loggable
 	
     /**
      * Is called after an update
-     * @param \Sunhill\ORM\Storage\storage_base $storage
+     * @param \Sunhill\ORM\Storage\StorageBase $storage
      */
 	public function updated(StorageBase $storage) 
 	{
@@ -700,7 +700,7 @@ class Property extends Loggable
     /**
      * Adds an hook for this property
      */
-	public function add_hook($action,$hook,$subaction,$target) 
+	public function addHook($action,$hook,$subaction,$target) 
 	{
 	   $this->hooks[] = ['action'=>$action,'hook'=>$hook,'subaction'=>$subaction,'target'=>$target];    
 	}
@@ -709,7 +709,7 @@ class Property extends Loggable
      * Returns a Descriptor array with all static (unchangable) values of this property.
      * @return \Sunhill\basic\Utils\Descriptor The collection of values
      */
-	public function get_static_attributes() 
+	public function getStaticAttributes() 
 	{
 	    $result = new Descriptor();
 	    $result->class = $this->class;
@@ -727,12 +727,12 @@ class Property extends Loggable
 	}
 	
     /**
-     * Completes the method Property->get_static_attributes() with values that a volatile.
+     * Completes the method Property->getStaticAttributes() with values that a volatile.
      * @return \Sunhill\basic\Utils\Descriptor The collection of values
      */
-	public function get_all_attributes() 
+	public function getAllAttributes() 
 	{
-	    $result = $this->get_static_attributes();
+	    $result = $this->getStaticAttributes();
 	    $result->value = $this->value;
 	    $result->shadow = $this->shadow;
 	    $result->dirty = $this->dirty;

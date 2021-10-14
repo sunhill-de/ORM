@@ -1,18 +1,35 @@
 <?php
 
+/**
+ * @file QueryWhereArrayOfStrings.php
+ * Provides the QueryWhereArrayOfStrings class
+ * Lang en
+ * Reviewstatus: 2020-08-06
+ * Localization: none
+ * Documentation: incomplete
+ * Tests:
+ * Coverage: unknown
+ * Dependencies: none
+ * PSR-State: completed
+ */
+
 namespace Sunhill\ORM\Search;
 
-class query_where_array_of_strings extends query_where_array {
+class QueryWhereArrayOfStrings extends QueryWhereArray 
+{
 
-    protected function get_assoc_table() {
+    protected function getAssocTable() 
+    {
         return 'stringobjectassigns';
     }
     
-    protected function get_assoc_field() {
+    protected function getAssocField() 
+    {
         return 'element_id';
     }
     
-    protected function get_element_id_list($value) {
+    protected function getElementIDList($value) 
+    {
         if (is_string($value)) {
             return ' = '.$this->escape($value)." and field = '".$this->field."'";
         } else if (is_array($value)) {
@@ -29,7 +46,8 @@ class query_where_array_of_strings extends query_where_array {
         }
     }
 
-    protected function get_element($element) {
+    protected function getElement($element) 
+    {
         return ' = '.$this->escape($element)." and field = '".$this->field."'";
     }
     

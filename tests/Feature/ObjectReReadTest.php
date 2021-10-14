@@ -46,7 +46,7 @@ class ObjectReReadTest extends DBTestCase
 	    Objects::flushCache();
 	    
 // Read
-	    $read_object = Objects::load($init_object->get_id());
+	    $read_object = Objects::load($init_object->getID());
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
 	            $this->assertEquals($value,$read_object->$key,"Wiederauslesen von Feld '$key' fehlgeschlagen.");
@@ -66,7 +66,7 @@ class ObjectReReadTest extends DBTestCase
 	    $read_object->commit();
 
 	    Objects::flushCache();
-	    $reread_object = Objects::load($init_object->get_id());
+	    $reread_object = Objects::load($init_object->getID());
 	    if (!is_null($expect)) {
 	        foreach ($expect as $key => $value) {
 	            $this->assertEquals($value,$reread_object->$key,"Wiederauslesen nach Modify von Feld '$key' fehlgeschlagen.");
@@ -265,7 +265,7 @@ class ObjectReReadTest extends DBTestCase
 	        }
 	    }
 	    $init_object->commit(); 
-	    $id = $init_object->get_id();
+	    $id = $init_object->getID();
 	    Objects::flushCache();
 	    // Read
 	    $read_object = Objects::load($id);
@@ -283,7 +283,7 @@ class ObjectReReadTest extends DBTestCase
 	    $read_object->commit();
 
 	    Objects::flushCache();
-	    $reread_object = Objects::load($init_object->get_id());
+	    $reread_object = Objects::load($init_object->getID());
 	    if (!is_null($expect_callback)) {
 	        if (!$expect_callback($reread_object)) {
 	            $this->fail("Expect_Callback fehlgeschlagen.");
@@ -610,7 +610,7 @@ class ObjectReReadTest extends DBTestCase
 	       $object->commit();
 	       $child->dummyint = 666;
 	       $child->commit();
-	       $read = Objects::load($object->get_id());
+	       $read = Objects::load($object->getID());
 	       $this->assertEquals(666,$read->testobject->dummyint);
 	       
 	}
@@ -630,7 +630,7 @@ class ObjectReReadTest extends DBTestCase
 	        $main[$i]->testint = $i+100;
 	        $main[$i]->commit();
 	        if ($i==50) {
-	            $id = $main[$i]->get_id();
+	            $id = $main[$i]->getID();
 	        }
 	    }
 	    $obj = Objects::load($id);

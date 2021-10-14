@@ -2,8 +2,8 @@
 
 /**
  *
- * @file objectlist
- * Implements the class objectlist
+ * @file ObjectList
+ * Implements the class ObjectList
  * lang=en
  * Reviewstatus: 2020-08-10
  * Localization: complete
@@ -28,7 +28,7 @@ class ObjectListException extends ORMException
  * @author Klaus
  *        
  */
-class objectlist implements \countable, \ArrayAccess, \Iterator
+class ObjectList implements \countable, \ArrayAccess, \Iterator
 {
 
     /**
@@ -68,7 +68,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
         return empty($this->items);
     }
 
-    public function get_id(int $index)
+    public function getID(int $index)
     {
         if (! $this->is_valid($index)) {
             throw new ObjectListException("Invalid index '$index'");
@@ -76,7 +76,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
         if (is_int($this->items[$index])) {
             return $this->items[$index];
         } else {
-            return $this->items[$index]->get_id();
+            return $this->items[$index]->getID();
         }
     }
 
@@ -156,7 +156,7 @@ class objectlist implements \countable, \ArrayAccess, \Iterator
     public function getClass(int $index)
     {
         if (! isset($this->class_cache[$index])) {
-            $this->class_cache[$index] = Classes::normalizeNamespace(Objects::getClassNamespaceOf($this->get_id($index)));
+            $this->class_cache[$index] = Classes::normalizeNamespace(Objects::getClassNamespaceOf($this->getID($index)));
         }
         return $this->class_cache[$index];
     }

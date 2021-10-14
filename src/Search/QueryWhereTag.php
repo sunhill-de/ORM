@@ -1,20 +1,37 @@
 <?php
 
+/**
+ * @file QueryWhereTag.php
+ * Provides the QueryWhereTag class
+ * Lang en
+ * Reviewstatus: 2020-08-06
+ * Localization: none
+ * Documentation: incomplete
+ * Tests:
+ * Coverage: unknown
+ * Dependencies: none
+ * PSR-State: completed
+ */
+
 namespace Sunhill\ORM\Search;
 
 use Sunhill\ORM\Properties\Property;
 
-class query_where_tag extends query_where_array {
+class QueryWhereTag extends QueryWhereArray 
+{
     
-    protected function get_assoc_table() {
+    protected function getAssocTable() 
+    {
         return 'tagobjectassigns';
     }
     
-    protected function get_assoc_field() {
+    protected function getAssocField() 
+    {
         return 'tag_id';
     }
     
-    protected function get_element_id_list($value) {
+    protected function getElementIDList($value) 
+    {
         if (is_int($value)) {
             return ' = '.$this->escape($value);
         } else if (is_string($value)) {
@@ -38,7 +55,8 @@ class query_where_tag extends query_where_array {
         }
     }
        
-    protected function get_element($element) {
+    protected function getElement($element) 
+    {
         if (is_int($element)) {
             return ' = '.$this->escape($element);
         } else if (is_string($element)) {

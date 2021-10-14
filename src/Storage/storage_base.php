@@ -1,6 +1,6 @@
 <?php
 /**
- * @file storage_base.php
+ * @file StorageBase.php
  * The basic class for storages (at the moment there is only storage_mysql)
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ use Sunhill\ORM\Objects\ORMObject;
  * @author lokal
  *
  */
-abstract class storage_base  {
+abstract class StorageBase  {
     
     /** 
      * Speichert das aufrufende Objekt
@@ -72,7 +72,7 @@ abstract class storage_base  {
     /**
      * Liefert den Entity-Eintrag für $name zurück oder null, wenn dieser nicht defniert ist
      */
-    public function get_entity(string $name) {
+    public function getEntity(string $name) {
         if (!isset($this->entities[$name])) {
             return null;
         } else {
@@ -86,7 +86,7 @@ abstract class storage_base  {
      * @return unknown
      */
     public function __get(string $name) {
-        return $this->get_entity($name);
+        return $this->getEntity($name);
     }
     
     /**

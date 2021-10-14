@@ -16,31 +16,31 @@ class TagTest extends DBTestCase
 	public function testLoadTag()
     {
         $tag = new Tag(1); 
-		$this->assertEquals('TagA',$tag->get_name());
+		$this->assertEquals('TagA',$tag->getName());
 	}
 	
 	public function testLoadFullpath()
 	{
 	    $tag = new Tag(1);
-		$this->assertEquals('TagA',$tag->get_fullpath());
+		$this->assertEquals('TagA',$tag->getFullPath());
 	}
 	
 	public function testLoadTagWithParent()
 	{
 	    $tag = new Tag(3);
-		$this->assertEquals('TagC',$tag->get_name());
+		$this->assertEquals('TagC',$tag->getName());
 	}
 	
 	public function testLoadTagWithParentFullpath()
 	{
 	    $tag = new Tag(3);
-		$this->assertEquals('TagB.TagC',$tag->get_fullpath());
+		$this->assertEquals('TagB.TagC',$tag->getFullPath());
 	}
 	
 	public function testStoreTag()
 	{
 	    $tag = new Tag();
-		$tag->set_name('TestTag');
+		$tag->setName('TestTag');
 		$tag->commit();
 		$read = DB::table('tags')->where('name','=','TestTag')->first();
 		$this->assertFalse(is_null($read));
@@ -49,43 +49,43 @@ class TagTest extends DBTestCase
 	public function testEditTag()
 	{
 	    $tag = new Tag(1);
-		$tag->set_name('TestTag');
+		$tag->setName('TestTag');
 		$tag->commit();
 		$read = new Tag(1);
-		$this->assertEquals('TestTag',$read->get_name());
+		$this->assertEquals('TestTag',$read->getName());
 	}
 	
 	public function testSearchTag() {
 	    $tag = new Tag('TagA');
-		$this->assertEquals(1,$tag->get_id());
+		$this->assertEquals(1,$tag->getID());
 	}
 	
 	public function testSearchTagWithParent() {
 	    $tag = new Tag('TagB.TagC');
-		$this->assertEquals(3,$tag->get_id());
+		$this->assertEquals(3,$tag->getID());
 	}
 	
 	public function testSearchTagWithParentUnique() {
 	    $tag = new Tag('TagC');
-		$this->assertEquals(3,$tag->get_id());
+		$this->assertEquals(3,$tag->getID());
 	}
 	
 	public function testAddTagWithAutocreateSimple() {
 	    $tag = new Tag('AutoTag',true);
-		$read = new Tag($tag->get_id());
+		$read = new Tag($tag->getID());
 		$this->assertEquals('AutoTag',$read->name);
 	}
 
 	public function testAddTagWithAutocreateWithParent() {
 	    $tag = new Tag('TagA.AutoTagA',true);
-		$read = new Tag($tag->get_id());
-		$this->assertEquals(1,$read->get_parent()->get_id());
+		$read = new Tag($tag->getID());
+		$this->assertEquals(1,$read->get_parent()->getID());
 	}
 	
 	public function testAddTagWithAutocreateRecursive() {
 	    $tag = new Tag('TagB.AutoTagB.AutoChildB',true);
-		$read = new Tag($tag->get_id());
-		$this->assertEquals(2,$read->get_parent()->get_parent()->get_id());
+		$read = new Tag($tag->getID());
+		$this->assertEquals(2,$read->get_parent()->get_parent()->getID());
 	}
 		
 	public function testNotFound() {
@@ -103,7 +103,7 @@ class TagTest extends DBTestCase
 	 */
 	public function testStaticSearchTagPass() {
 	    $tag = Tag::searchTag('TagA');
-	    $this->assertEquals(1,$tag->get_id());
+	    $this->assertEquals(1,$tag->getID());
 	}
 
 	/**
@@ -111,7 +111,7 @@ class TagTest extends DBTestCase
 	 */
 	public function testStaticSearchTagWithParent() {
 	    $tag = Tag::searchTag('TagB.TagC');
-	    $this->assertEquals(3,$tag->get_id());
+	    $this->assertEquals(3,$tag->getID());
 	}
 	
 	/**

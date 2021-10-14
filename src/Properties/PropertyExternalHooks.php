@@ -3,8 +3,9 @@
 namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
+use \Sunhill\ORM\Storage\StorageBase;
 
-class oo_property_externalhooks extends oo_property_field {
+class PropertyExternalHooks extends PropertyField {
 	
 	protected $features = ['hooks','complex'];
 	
@@ -14,33 +15,36 @@ class oo_property_externalhooks extends oo_property_field {
     /**
      * Läd Externe Hooks aus dem Storage
      * {@inheritDoc}
-     * @see \Sunhill\ORM\Properties\Property::do_load()
+     * @see \Sunhill\ORM\Properties\Property::doLoad()
      */
-	protected function do_load(\Sunhill\ORM\Storage\storage_base $loader,$name) {
-        $hooks = $loader->get_entity('externalhooks');
+	protected function doLoad(StorageBase $loader, $name) 
+	{
+        $hooks = $loader->getEntity('externalhooks');
         if (empty($hooks)) {
             return;
         }
 	    foreach ($hooks as $hook) {
-	        $this->owner->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target_id']);
+	        $this->owner->addHook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target_id']);
 	    }
-	    $this->shadow = $this->owner->get_external_hooks();
+	    $this->shadow = $this->owner->getExternalHooks();
 	}
 	
-	private function get_target_id($destination) {
+	private function get_targetID($destination) 
+	{
 	    if (is_int($destination)) {
 	        return $destination;
 	    } else {
-	        return $destination->get_id();
+	        return $destination->getID();
 	    }	    
 	}
 	
-	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,$name) {	    
-	    foreach ($this->owner->get_external_hooks() as $hook) {
+	protected function doInsert(StorageBase $storage, $name) 
+	{	    
+	    foreach ($this->owner->getExternalHooks() as $hook) {
 	        if (is_int($hook['destination'])) {
 	            $target_id = $hook['destination'];
 	        } else {    
-	            $target_id = $hook['destination']->get_id();
+	            $target_id = $hook['destination']->getID();
 	        }
 	        $line = [
 	            'action'=>$hook['action'],
@@ -52,7 +56,7 @@ class oo_property_externalhooks extends oo_property_field {
 	        ];
 	        $storage->entities['externalhooks'][] = $line;
 	    }
-	    $this->shadow = $this->owner->get_external_hooks();
+	    $this->shadow = $this->owner->getExternalHooks();
 	}
 	
 	/**
@@ -61,7 +65,8 @@ class oo_property_externalhooks extends oo_property_field {
 	 * @param array $array
 	 * @return boolean
 	 */
-	private function hook_in_array(array $hook,array $array) {
+	private function hookInArray(array $hook, array $array) 
+	{
 	    foreach ($array as $entry) {
 	        if (($entry['action'] == $hook['action']) &&
 	            ($entry['subaction'] == $hook['subaction']) &&
@@ -74,7 +79,8 @@ class oo_property_externalhooks extends oo_property_field {
 	    return false;
 	}
 	
-	private function hook_in_a_not_b($a,$b) {
+	private function hookInANotB($a, $b) 
+	{
 	    $result = [];
 	    if (empty($a)) {
 	        return [];
@@ -83,34 +89,36 @@ class oo_property_externalhooks extends oo_property_field {
 	        return $a;
 	    }
 	    foreach ($a as $hook) {
-	        if (!$this->hook_in_array($hook,$b)) {
+	        if (!$this->hookInArray($hook,$b)) {
 	            $result[] = $hook;
 	        }
 	    }
 	    return $result;
 	}
 	
-	private function fill_target_id($target) {
+	private function fillTargetID($target) 
+	{
 	    foreach($target as $entry) {
-	        $entry['target_id'] = $this->get_target_id($entry['destination']);
+	        $entry['target_id'] = $this->get_targetID($entry['destination']);
 	    }
 	    return $target;
 	}
 	
-	protected function do_update(\Sunhill\ORM\Storage\storage_base $storage,$name) {
-	    $add = $this->hook_in_a_not_b($this->owner->get_external_hooks(),$this->shadow);
-	    $delete = $this->hook_in_a_not_b($this->shadow,$this->owner->get_external_hooks());
-	    $add = $this->fill_target_id($add);
-	    $delete = $this->fill_target_id($delete);
+	protected function doUpdate(StorageBase $storage, $name) 
+	{
+	    $add = $this->hookInANotB($this->owner->getExternalHooks(),$this->shadow);
+	    $delete = $this->hookInANotB($this->shadow,$this->owner->getExternalHooks());
+	    $add = $this->fillTargetID($add);
+	    $delete = $this->fillTargetID($delete);
 	    $external_hooks = [
 	        'FROM'=>$this->shadow,
-	        'TO'=>$this->owner->get_external_hooks(),
+	        'TO'=>$this->owner->getExternalHooks(),
 	        'ADD'=>$add,
 	        'DELETE'=>$delete,
 	        'NEW'=>$add,
 	        'REMOVED'=>$delete
 	    ];
-	    $storage->set_entity('externalhooks', $external_hooks);
-	    $this->shadow = $this->owner->get_external_hooks();
+	    $storage->setEntity('externalhooks', $external_hooks);
+	    $this->shadow = $this->owner->getExternalHooks();
 	}
 }

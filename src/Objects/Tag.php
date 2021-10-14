@@ -118,12 +118,12 @@ class Tag extends Loggable
 		if (!is_null($this->parent)) {
 			$this->parent->commit();
 		}
-		if (!$this->get_id()) {
+		if (!$this->getID()) {
 			$this->create();
 		} else {
 			$this->update();
 		}
-		self::flush_tagcache($this->get_id(),$this->get_fullpath());
+		self::flush_tagcache($this->getID(),$this->getFullPath());
 	}
 	
 	/**
@@ -132,7 +132,7 @@ class Tag extends Loggable
 	private function create() 
     {
 		if (isset($this->parent)) {
-			$parent_id = $this->parent->get_id();
+			$parent_id = $this->parent->getID();
 		} else {
 			$parent_id = 0;
 		}
@@ -149,7 +149,7 @@ class Tag extends Loggable
 	private function update() 
     {
 	    if (isset($this->parent)) {
-	        $parent_id = $this->parent->get_id();
+	        $parent_id = $this->parent->getID();
 	    } else {
 	        $parent_id = 0;
 	    }
@@ -183,12 +183,12 @@ class Tag extends Loggable
 	 * Liefert den vollständigen Pfad des Tags zurück (also eine Verknüpfung mit den Elterntags)
 	 * @return string
 	 */
-	public function get_fullpath() 
+	public function getFullPath() 
     {
 		if (is_null($this->parent)) {
-			return $this->get_name();
+			return $this->getName();
 		} else {
-			return $this->parent->get_fullpath().".".$this->get_name();
+			return $this->parent->getFullPath().".".$this->getName();
 		}
 	}
 	
@@ -203,10 +203,10 @@ class Tag extends Loggable
 		if (is_null($results)) {
 		    if ($autocreate) {
 		        $tag_obj = self::addTag($tag);
-		        $this->name = $tag_obj->get_name();
+		        $this->name = $tag_obj->getName();
 		        $this->parent = $tag_obj->get_parent();
 		        $this->options = $tag_obj->get_options();
-		        $this->tag_id = $tag_obj->get_id();
+		        $this->tag_id = $tag_obj->getID();
 		    } else {
 		        // @todo Behandlung nicht gefundener Einträge ohne $autocreate
 		        throw new TagException("Das Tag '$tag' wurde nicht gefunden.");
@@ -237,7 +237,7 @@ class Tag extends Loggable
 	
 	private function deleteReferences(): null 
     {
-	    DB::table('tagcache')->where('tag_id',$this->get_id())->delete();	    
+	    DB::table('tagcache')->where('tag_id',$this->getID())->delete();	    
 	}
 	
 	private function deleteChildren(): null

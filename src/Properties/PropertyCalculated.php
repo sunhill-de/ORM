@@ -47,9 +47,9 @@ class PropertyCalculated extends PropertyField
 	    $method_name = 'calculate_'.$this->name;
 	    $newvalue = $this->owner->$method_name();
 	    if ($this->value !== $newvalue) { // Was there a change at all?
-	        if (!$this->get_dirty()) {
+	        if (!$this->getDirty()) {
 	            $this->shadow = $this->value;
-	            $this->set_dirty(true);
+	            $this->setDirty(true);
 	            $this->initialized = true;
 	        }
 	        $this->value = $newvalue;

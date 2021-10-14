@@ -26,7 +26,7 @@ class TagTest extends DBTestCase
 	    $object->commit();
 	    $tag = Tag::deleteTag('TagA');
 	    Objects::flushCache();
-	    $object = Objects::load($object->get_id());
+	    $object = Objects::load($object->getID());
 	    $this->assertEquals(0,count($object->tags));
 	}
 	

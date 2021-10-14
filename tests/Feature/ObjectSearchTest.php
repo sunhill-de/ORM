@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Utils\objectlist;
+use Sunhill\ORM\Utils\ObjectList;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
@@ -34,8 +34,8 @@ class searchtestA extends ORMObject {
         self::integer('Anosearch');
         self::varchar('Achar')->searchable();
         self::calculated('Acalc')->searchable();
-        self::object('Aobject')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
-        self::arrayofobjects('Aoarray')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::object('Aobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::arrayofobjects('Aoarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
         self::arrayofstrings('Asarray')->searchable();
     }
     
@@ -71,9 +71,9 @@ class searchtestB extends searchtestA {
         self::integer('Bint')->searchable();
         self::varchar('Bchar')->searchable();
         self::calculated('Bcalc')->searchable();
-        self::object('Bobject')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::object('Bobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
         self::arrayofstrings('Bsarray')->searchable();
-        self::arrayofobjects('Boarray')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::arrayofobjects('Boarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
     }
     
     public function calculate_Bcalc() {
@@ -102,7 +102,7 @@ class searchtestC extends searchtestB {
     ];
     protected static function setup_properties() {
         parent::setup_properties();
-        self::object('Cobject')->set_allowed_objects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::object('Cobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
     }
 
 }
@@ -127,10 +127,10 @@ class ObjectSearchTest extends DBTestCase
         $this->seed(SearchSeeder::class);
     }
     
-    protected function simplify_result(objectlist $result) {
+    protected function simplify_result(ObjectList $result) {
         $return = [];
         for($i=0;$i<count($result);$i++) {
-            $return[] = $result[$i]->get_id($i);
+            $return[] = $result[$i]->getID($i);
         }
         return $return;
     }
@@ -366,7 +366,7 @@ class ObjectSearchTest extends DBTestCase
         if ($expect == 0) {
             $this->assertNull($search);
         } else {
-            $this->assertEquals($search->get_ID(),$expect);
+            $this->assertEquals($search->getID(),$expect);
         }
     }
     

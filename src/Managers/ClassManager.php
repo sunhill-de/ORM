@@ -93,10 +93,10 @@ class ClassManager
         $result['properties'] = [];
         $properties = $this->getClassProperties($class);
         foreach ($properties as $property) {
-            $result['properties'][$property->get_name()] = [];
-            $features = $property->get_static_attributes();
+            $result['properties'][$property->getName()] = [];
+            $features = $property->getStaticAttributes();
             foreach ($features as $feat_key => $feat_value) {
-                $result['properties'][$property->get_name()][$feat_key] = $feat_value;
+                $result['properties'][$property->getName()][$feat_key] = $feat_value;
             }            
         }    
    }

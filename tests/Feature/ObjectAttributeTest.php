@@ -29,13 +29,13 @@ class ObjectAttributeTest extends DBTestCase
             $test->commit();
             
             Objects::flushCache();
-            $read = Objects::load($test->get_id());
+            $read = Objects::load($test->getID());
             $this->assertEquals($init,$read->$attributename);
             $read->$attributename = $change;
             $read->commit();
             
             Objects::flushCache();
-            $reread = Objects::load($test->get_id());
+            $reread = Objects::load($test->getID());
             $this->assertEquals($change,$reread->$attributename);
         } catch (\Exception $e) {
             if ($exception) {

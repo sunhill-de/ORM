@@ -53,13 +53,13 @@ trait LazyIDLoading {
      * @param unknown $test
      * @return NULL|unknown
      */
-    protected function get_local_id($test) {
+    protected function getLocalID($test) {
         if (is_null($test)) {
             return null;
         } else if (is_int($test)) {
             return $test;
         } else {
-            return $test->get_id();
+            return $test->getID();
         }
     }   
     

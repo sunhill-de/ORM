@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
  * @author lokal
  *
  */
-class storage_mysql extends storage_base  {
+class storage_mysql extends StorageBase  {
     
     protected $modules = ['mysql_simple','mysql_objects','mysql_strings','mysql_calculated',
                           'mysql_tags','mysql_externalhooks','mysql_attributes'];
@@ -22,7 +22,7 @@ class storage_mysql extends storage_base  {
             return;
         }
         foreach ($this->entities['needid_queries'] as $query) {
-            $query['fixed'][$query['id_field']] = $this->caller->get_id();
+            $query['fixed'][$query['id_field']] = $this->caller->getID();
             DB::table($query['table'])->insert($query['fixed']);
         }
     }

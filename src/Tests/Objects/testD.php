@@ -32,7 +32,7 @@ class testD extends ts_dummy {
         $method = self::$type;
         parent::setup_properties();
         if ($method == 'enum') {
-            self::enum('testfield')->set_enum_values(['A','B']);
+            self::enum('testfield')->setEnumValues(['A','B']);
         } else {
             self::$method('testfield');
         }

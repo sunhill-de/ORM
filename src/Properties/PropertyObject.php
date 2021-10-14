@@ -34,7 +34,7 @@ class PropertyObject extends PropertyField
 	
 	public function setAllowedObjects($object) 
 	{
-	    $this->validator->set_allowed_objects($object);
+	    $this->validator->setAllowedObjects($object);
 	    return $this;
 	}
 	
@@ -43,11 +43,11 @@ class PropertyObject extends PropertyField
 	 * {@inheritDoc}
 	 * @see \Sunhill\ORM\Properties\Property::load()
 	 */
-	protected function doLoad(storage_base $storage, $name) 
+	protected function doLoad(StorageBase $storage, $name) 
 	{
         $reference = $storage->$name;
 	    if (!empty($reference)) {
-	        $this->do_set_value($reference);
+	        $this->do_setValue($reference);
 	    }
 	}
 	
@@ -55,7 +55,7 @@ class PropertyObject extends PropertyField
 	 * Überschriebene Methode von Property. Prüft, ob die Objekt-ID bisher nur als Nummer gespeichert war. Wenn ja, wird das
 	 * Objekt lazy geladen.
 	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\Properties\Property::do_get_value()
+	 * @see \Sunhill\ORM\Properties\Property::doGetValue()
 	 */
 	protected function &doGetValue() 
 	{
@@ -118,7 +118,7 @@ class PropertyObject extends PropertyField
 	protected function valueChanged($from, $to) 
 	{
 	    foreach ($this->hooks as $hook) {
-	        $to->add_hook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
+	        $to->addHook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
 	    }
 	}
 	

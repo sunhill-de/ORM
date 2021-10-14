@@ -1,22 +1,39 @@
 <?php
 
+/**
+ * @file QueryWhereArrayOfObjects.php
+ * Provides the QueryWhereArrayOfObject class
+ * Lang en
+ * Reviewstatus: 2020-08-06
+ * Localization: none
+ * Documentation: incomplete
+ * Tests:
+ * Coverage: unknown
+ * Dependencies: none
+ * PSR-State: completed
+ */
+
 namespace Sunhill\ORM\Search;
 
-class query_where_array_of_objects extends query_where_array {
+class QueryWhereArrayOfObjects extends QueryWhereArray 
+{
 
-    protected function get_assoc_table() {
+    protected function getAssocTable() 
+    {
         return 'objectobjectassigns';
     }
     
-    protected function get_assoc_field() {
+    protected function getAssocField()
+    {
         return 'element_id';
     }
     
-    protected function get_element_id_list($value) {
+    protected function getElementIDList($value) 
+    {
         if (is_int($value)) {
             return ' = '.$this->escape($value)." and field = '".$this->field."'";
         } else if (is_object($value)) {
-            return ' = '.$this->escape($value->get_id())." and field = '".$this->field."'";
+            return ' = '.$this->escape($value->getID())." and field = '".$this->field."'";
         } else if (is_array($value)) {
             $result = ' in (';
             $first = true;
@@ -27,7 +44,7 @@ class query_where_array_of_objects extends query_where_array {
                 if (is_int($entry)) {
                     $result .= $this->escape($entry);                    
                 } else if (is_object($entry)) {
-                    $result .= $this->escape($entry->get_id());
+                    $result .= $this->escape($entry->getID());
                 }
                 $first = false;
             }
@@ -35,11 +52,12 @@ class query_where_array_of_objects extends query_where_array {
         }
     }
     
-    protected function get_element($element) {
+    protected function getElement($element) 
+    {
         if (is_int($element)) {
             return ' = '.$this->escape($element);
         } else if (is_object($element)) {
-            return ' = '.$this->escape($element->get_id());
+            return ' = '.$this->escape($element->getID());
         }
     }
     

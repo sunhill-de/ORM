@@ -4,12 +4,12 @@ namespace Sunhill\ORM\Tests\Unit\Properties;
 
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\Tag;
-use Sunhill\ORM\Properties\oo_property_tags;
+use Sunhill\ORM\Properties\PropertyTags;
 
 class TagsTest extends DBTestCase
 {
     public function testArrayEmpty() {
-        $test = new oo_property_tags();
+        $test = new PropertyTags();
         $this->assertTrue($test->empty());
         return $test;
     }
@@ -37,13 +37,13 @@ class TagsTest extends DBTestCase
     }
     
     /**
-     * @return \Sunhill\ORM\Tests\Unit\Properties\oo_property_tags
+     * @return \Sunhill\ORM\Tests\Unit\Properties\PropertyTags
      */
     public function testArrayCount() {
-        $test = new oo_property_tags();
-        $dummy1 = new Tag(); $dummy1->set_name('TagA');
-        $dummy2 = new Tag(); $dummy2->set_name('TagB');
-        $dummy3 = new Tag(); $dummy3->set_name('TagC');
+        $test = new PropertyTags();
+        $dummy1 = new Tag(); $dummy1->setName('TagA');
+        $dummy2 = new Tag(); $dummy2->setName('TagB');
+        $dummy3 = new Tag(); $dummy3->setName('TagC');
         $test[] = $dummy1;
         $test[] = $dummy2;
         $test[] = $dummy3;
@@ -65,7 +65,7 @@ class TagsTest extends DBTestCase
     public function testArrayForeach($test) {
         $result = '';
         foreach ($test as $char) {
-            $result .= $char->get_name();
+            $result .= $char->getName();
         }
         $this->assertEquals('TagATagBTagC',$result);
         return $test;
@@ -75,7 +75,7 @@ class TagsTest extends DBTestCase
      * @depends testArrayCount
      */
     public function testArrayHasValue_pass($test) {
-        $dummy = new Tag(); $dummy->set_name('TagA');
+        $dummy = new Tag(); $dummy->setName('TagA');
         $this->assertTrue($test->IsElementIn($dummy));
         return $test;
     }
@@ -84,7 +84,7 @@ class TagsTest extends DBTestCase
      * @depends testArrayCount
      */
     public function testArrayHasValue_fail($test) {
-        $dummy = new Tag(); $dummy->set_name('TagZ');
+        $dummy = new Tag(); $dummy->setName('TagZ');
         $this->assertFalse($test->IsElementIn($dummy));
         return $test;
     }
@@ -93,10 +93,10 @@ class TagsTest extends DBTestCase
      * @depends testArrayCount
      */
     public function testArrayDirty($test) {
-        $test->set_dirty(false);
-        $dummy = new Tag(); $dummy->set_name('TagD');
+        $test->setDirty(false);
+        $dummy = new Tag(); $dummy->setName('TagD');
         $test[] = $dummy;
-        $this->assertTrue($test->get_dirty());
+        $this->assertTrue($test->getDirty());
         return $test;
     }
     
@@ -113,9 +113,9 @@ class TagsTest extends DBTestCase
      */
     public function testNormalize_testIsTag($test) {
         $dummy1 = new Tag();
-        $dummy1->set_name('TagA');
+        $dummy1->setName('TagA');
         $dummy2 = new Tag();
-        $dummy2->set_name('TagZ');
+        $dummy2->setName('TagZ');
         $this->assertTrue($test->IsElementIn($dummy1));
         $this->assertFalse($test->IsElementIn($dummy2));
     }

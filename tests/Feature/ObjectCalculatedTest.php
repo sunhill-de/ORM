@@ -61,7 +61,7 @@ class ObjectCalculatedTest extends DBTestCase
         $test->dummyint = 1;
    //     $test->recalcualate();
         $test->commit();
-        $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->get_id())->where('fieldname','=','calcfield')->first();
+        $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->getID())->where('fieldname','=','calcfield')->first();
         $this->assertEquals('ABC',$hilf->value);
     }
     
@@ -72,10 +72,10 @@ class ObjectCalculatedTest extends DBTestCase
         $test->set_return('ABC');
         $test->commit();
         Objects::flushCache();
-        $read = Objects::load($test->get_id());
+        $read = Objects::load($test->getID());
         $read->set_return('DEF');
         $read->commit();
-        $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->get_id())->where('fieldname','=','calcfield')->first();
+        $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->getID())->where('fieldname','=','calcfield')->first();
         $this->assertEquals('DEF',$hilf->value);
     }
     
@@ -86,7 +86,7 @@ class ObjectCalculatedTest extends DBTestCase
         $test->set_return('ABC');
         $test->commit();
         Objects::flushCache();
-        $read = Objects::load($test->get_id());
+        $read = Objects::load($test->getID());
         $this->assertEquals('ABC',$read->calcfield);
         $read->set_return('DEF');
         $this->assertEquals('DEF',$read->calcfield);

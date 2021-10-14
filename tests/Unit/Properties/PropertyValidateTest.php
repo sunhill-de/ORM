@@ -5,10 +5,10 @@ namespace Sunhill\ORM\Tests\Unit\Properties;
 use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Properties\oo_property_object;
+use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyArrayOfObjects;
 use Sunhill\ORM\Properties\PropertyArrayOfStrings;
-use Sunhill\ORM\Properties\oo_property_enum;
+use Sunhill\ORM\Properties\PropertyEnum;
 use Sunhill\ORM\Validators\ValidatorException;
 use Sunhill\ORM\Tests\Objects\ts_testparent;
 use Sunhill\ORM\Tests\Objects\ts_testchild;
@@ -35,8 +35,8 @@ class PropertyValidateTest extends TestCase
     	$property_class = new $property_name(null);
     	$result = 0;
 		try {
-			$property_class->set_value($testvalue);
-			$newvalue = $property_class->get_value();
+			$property_class->setValue($testvalue);
+			$newvalue = $property_class->getValue();
 		} catch (\Exception $e) {
 			$result = 1;
 		}
@@ -89,78 +89,78 @@ class PropertyValidateTest extends TestCase
     }
     
     public function testObjectsPropertyPass() {
-    	$test = new oo_property_object(null);
-    	$test->set_allowed_objects(['testparent']);
+    	$test = new PropertyObject(null);
+    	$test->setAllowedObjects(['testparent']);
     	$object = new ts_testparent();
     	$object->parentint = 22;
-    	$test->set_value($object);
-    	$this->assertEquals(22,$test->get_value()->parentint);
+    	$test->setValue($object);
+    	$this->assertEquals(22,$test->getValue()->parentint);
     }
     
     public function testObjectsPropertyPassWithChild() {
-    	$test = new oo_property_object(null);
-    	$test->set_allowed_objects(['testparent']);
+    	$test = new PropertyObject(null);
+    	$test->setAllowedObjects(['testparent']);
     	$object = new ts_testchild();
-    	$test->set_value($object);
-    	$this->assertEquals($object,$test->get_value());
+    	$test->setValue($object);
+    	$this->assertEquals($object,$test->getValue());
     }
     
     public function testObjectsFail() {
         $this->expectException(ValidatorException::class);
-        $test = new oo_property_object(null);
-    	$test->set_allowed_objects(['testchild']);
+        $test = new PropertyObject(null);
+    	$test->setAllowedObjects(['testchild']);
     	$object = new ts_testparent();
-    	$test->set_value($object);
+    	$test->setValue($object);
     }
     
     public function testArrayOfObjectsPropertyPass() {
     	$test = new PropertyArrayOfObjects(null);
-    	$test->set_allowed_objects(['testparent']);
+    	$test->setAllowedObjects(['testparent']);
     	$object = new ts_testparent();
     	$object->parentint = 22;
-    	$test->get_value()[] = $object;
-    	$this->assertEquals(22,$test->get_value()[0]->parentint);
+    	$test->getValue()[] = $object;
+    	$this->assertEquals(22,$test->getValue()[0]->parentint);
     }
     
     public function testArrayOfObjectsPropertyPassWithChild() {
     	$test = new PropertyArrayOfObjects(null);
-    	$test->set_allowed_objects(['testparent']);
+    	$test->setAllowedObjects(['testparent']);
     	$object = new ts_testchild();
     	$object->parentint = 23;
-    	$test->get_value()[] = $object;
-    	$this->assertEquals(23,$test->get_value()[0]->parentint);
+    	$test->getValue()[] = $object;
+    	$this->assertEquals(23,$test->getValue()[0]->parentint);
     }
     /**
      * @group reindex
      */
     public function testArrayOfObjectReindex() {
         $test = new PropertyArrayOfObjects(null);
-        $test->set_allowed_objects(['testparent']);
+        $test->setAllowedObjects(['testparent']);
         $object1 = new ts_testchild();
         $object1->parentint = 23;
-        $test->get_value()[] = $object1;
+        $test->getValue()[] = $object1;
         $object2 = new ts_testchild();
         $object2->parentint = 34;
-        $test->get_value()[] = $object2;
-        unset($test->get_value()[0]);
-        $this->assertEquals(34,$test->get_value()[0]->parentint);
+        $test->getValue()[] = $object2;
+        unset($test->getValue()[0]);
+        $this->assertEquals(34,$test->getValue()[0]->parentint);
         
     }
     
     public function testArrayOfObjectsFail() {
     	$this->expectException(ValidatorException::class);
         $test = new PropertyArrayOfObjects(null);
-    	$test->set_allowed_objects(['testchild']);
+    	$test->setAllowedObjects(['testchild']);
     	$object = new ts_testparent();
-    	$test->get_value()[] = $object;
+    	$test->getValue()[] = $object;
     }
     
     public function testArrayOfString() {
     	$test = new PropertyArrayOfStrings(null);
-    	$test->get_value()[] = 'ABC';
-    	$test->get_value()[] = 'DEF';
-    	$hilf = $test->get_value();
-    	$this->assertEquals('DEF',$test->get_value()[1]);
+    	$test->getValue()[] = 'ABC';
+    	$test->getValue()[] = 'DEF';
+    	$hilf = $test->getValue();
+    	$this->assertEquals('DEF',$test->getValue()[1]);
     }
     
     /**
@@ -169,11 +169,11 @@ class PropertyValidateTest extends TestCase
      * @param unknown $raise_exception
      */
     public function testEnum($test_value,$exception) {
-    	$test = new oo_property_enum(null);
-    	$test->set_enum_values(['A','B']);
+    	$test = new PropertyEnum(null);
+    	$test->setEnumValues(['A','B']);
     	$result = 0;
     	try {
-    		$test->set_value($test_value);
+    		$test->setValue($test_value);
     	} catch (\Exception $e) {
     		$result = 1;
     	}

@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * @file QueryWhereString.php
+ * Provides the QueryWhereString class
+ * Lang en
+ * Reviewstatus: 2020-08-06
+ * Localization: none
+ * Documentation: incomplete
+ * Tests:
+ * Coverage: unknown
+ * Dependencies: none
+ * PSR-State: completed
+ */
+
 namespace Sunhill\ORM\Search;
 
 use Sunhill\ORM\Properties\Property;
@@ -11,7 +24,8 @@ use Sunhill\ORM\Search\QueryException;
  * @author klaus
  *
  */
-class query_where_string extends query_where {
+class QueryWhereString extends QueryWhere 
+{
     
     protected $allowed_relations = 
         [
@@ -29,8 +43,9 @@ class query_where_string extends query_where {
             'contains'=>'scalar',
         ];
     
-     public function get_this_where_part() {
-         $result = $this->get_query_prefix()." ";
+     public function getThisWherePart() 
+     {
+         $result = $this->getQueryPrefix()." ";
          switch ($this->relation) {
              case 'begins with':
                  $this->value .= '%';
@@ -46,7 +61,7 @@ class query_where_string extends query_where {
                  return $result.$this->field." like ".$this->escape($this->value);
                  break;
              default:
-                 return parent::get_this_where_part();
+                 return parent::getThisWherePart();
          }
         return $result;
     }

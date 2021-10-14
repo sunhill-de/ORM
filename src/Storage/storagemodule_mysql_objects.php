@@ -41,7 +41,7 @@ class storagemodule_mysql_objects extends storagemodule_base {
         $inserts = [];
         $properties = $this->storage->get_caller()->get_properties_with_feature('objectid');
         foreach ($properties as $property) {
-            $fieldname = $property->get_name();
+            $fieldname = $property->getName();
             if (is_null($property->value)) {
                 continue;
             }

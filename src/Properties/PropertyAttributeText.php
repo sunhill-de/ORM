@@ -2,15 +2,18 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyAttributeText extends oo_property_attribute {
+class PropertyAttributeText extends PropertyAttribute 
+{
 	
     protected $type = 'attribute_text';
 
-    protected function extract_value(\Sunhill\ORM\Storage\storage_base $loader) {
+    protected function extractValue(StorageBase $loader) 
+    {
         return $this->value = $loader->entities['attributes'][$this->attribute_name]['textvalue'];
     }
 
-    protected function insert_value(\Sunhill\ORM\Storage\storage_base $storage) {
+    protected function insertValue(StorageBase $storage) 
+    {
         $storage->entities['attributes'][$this->attribute_name]['value'] = '';
         $storage->entities['attributes'][$this->attribute_name]['textvalue'] = $this->value;
     }

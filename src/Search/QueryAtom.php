@@ -1,20 +1,22 @@
 <?php
+
 /**
- * @file query_atom.php
- * provides the query_atom class
- * @author Klaus Dimde
- * ---------------------------------------------------------------------------------------------------------
+ * @file QueryAtom.php
+ * Provides the varchar property
  * Lang en
- * Reviewstatus: 2021-08-20
+ * Reviewstatus: 2020-08-06
  * Localization: none
- * Documentation: complete
- * Tests: none
+ * Documentation: incomplete
+ * Tests: 
  * Coverage: unknown
+ * Dependencies: none
+ * PSR-State: incompleted
  */
 
 namespace Sunhill\ORM\Search;
 
-abstract class query_atom {
+abstract class QueryAtom 
+{
     
     protected $parent_query;
     
@@ -29,14 +31,16 @@ abstract class query_atom {
     protected $connection;
     
     /**
-     * Creates a new query_atom and passes the parent query over
-     * @param query_builder $parent_query
+     * Creates a new QueryAtom and passes the parent query over
+     * @param QueryBuilder $parent_query
      */
-    public function __construct(query_builder $parent_query) {
+    public function __construct(QueryBuilder $parent_query) 
+    {
         $this->parent_query = $parent_query;
     }
     
-    public function set_prev(query_atom $prev) {
+    public function setPrev(QueryAtom $prev) 
+    {
         $this->prev = $prev;
     }
     
@@ -45,13 +49,14 @@ abstract class query_atom {
      * @param $next the linked following atom
      * @param $connection the kind of connection between this two
      */
-    public function link(query_atom $next,string $connection='and') {
-        if ($this->is_singleton()) {
+    public function link(QueryAtom $next, string $connection = 'and') 
+    {
+        if ($this->isSingleton()) {
             throw new QueryException("A singleton query atom can't be linked.");
         }
         if (is_null($this->next)) {
             $this->next = $next;
-            $next->set_prev($this);
+            $next->setPrev($this);
             $this->connection = $connection;            
         } else {
             $this->next->link($next,$connection);
@@ -62,7 +67,8 @@ abstract class query_atom {
      * Returns if this atom is a singleton or linkable
      * @return unknown
      */
-    public function is_singleton() {
+    public function isSingleton() 
+    {
         return $this->is_singleton;
     }
     
@@ -70,12 +76,13 @@ abstract class query_atom {
      * Return the order of this query part
      * @return number
      */
-    protected function get_order() {
+    protected function getOrder() 
+    {
         return $this->order;
     }
     
     /**
      * Returns that part of query, that is needed for the complete query
      */
-    abstract public function get_query_part();
+    abstract public function getQueryPart();
 }

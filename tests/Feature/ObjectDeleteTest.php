@@ -40,7 +40,7 @@ class ObjectDeleteTest extends DBTestCase
         $test->childoarray[] = $add;
         $test->childsarray[] = 'TEST';
         $test->commit();
-        $id = $test->get_id();
+        $id = $test->getID();
         $read = Objects::load($id);
         $read->delete(); 
         $this->assertFalse(Objects::load($id));

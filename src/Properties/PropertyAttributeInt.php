@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyAttributeInt extends oo_property_attribute {
+class PropertyAttributeInt extends PropertyAttribute {
 	
 	protected $type = 'attribute_int';
 
