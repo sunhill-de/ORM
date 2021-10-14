@@ -35,6 +35,9 @@
   "Write to a read only property.":"Schreiben einer nur-lesen Property",
   "Read of a not initialized property: ':name'":"Lesen einer nicht initialiseren Property: ':name'",
   "Commit of a not initialized property: ':name'":"Commit einer nicht initialiseren Property: ':name'",
+
+  "***** src/Properties/PropertyCalculated":"src/Properties/PropertyCalculated ****",
+  "Tried to write to a calculate field":"Versuch ein calculated Feld zu schreiben",
   
   "***** src/Objects/ORMObject":"src/Objects/ORMObject ***",
   "The attribute ':attribute' is not allowed for this object.":"Das Attribut ':attribute' ist nicht für dieses Objekt erlaubt.",
