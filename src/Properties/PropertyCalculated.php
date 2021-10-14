@@ -1,11 +1,24 @@
 <?php
-
+/**
+ * @file PropertyCalculated.php
+ * Provides the property for calcualted fields
+ * Lang en (complete)
+ * Reviewstatus: 2021-04-07
+ * Localization: unknown
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ * Dependencies: Objects, ObjectException, base
+ * PSR-State: in progress
+ */
 namespace Sunhill\ORM\Properties;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\ObjectException;
+use Sunhill\ORM\Storage\StorageBase;
 
-class oo_property_calculated extends oo_property_field {
+class PropertyCalculated extends PropertyField 
+{
 	
 	protected $type = 'calculated';
 
@@ -15,7 +28,8 @@ class oo_property_calculated extends oo_property_field {
 	
 //	protected $initialized = true;
 	
-	protected function do_set_value($value) {
+	protected function doSetValue($value) 
+	{
 	    throw new ObjectException("Tried to write to a calculate field");
 	}
 	
@@ -25,7 +39,7 @@ class oo_property_calculated extends oo_property_field {
 	public function recalculate() {
 	    $method_name = 'calculate_'.$this->name;
 	    $newvalue = $this->owner->$method_name();
-	    if ($this->value !== $newvalue) { // Gab es überhaupt eine Änderung
+	    if ($this->value !== $newvalue) { // Was there a change at all?
 	        if (!$this->get_dirty()) {
 	            $this->shadow = $this->value;
 	            $this->set_dirty(true);
@@ -35,16 +49,16 @@ class oo_property_calculated extends oo_property_field {
 	    }
 	}
 	
-	protected function initialize_value() {
+	protected function initializeValue() {
 	    $this->recalculate();
 	    return true;
 	}
 	
-	protected function do_insert(\Sunhill\ORM\Storage\storage_base $storage,string $name) {
+	protected function do_insert(StorageBase $storage, string $name) {
 	    if (!$this->initialized) {
 	        $this->recalculate();
 	    }
-	    parent::do_insert($storage,$name);
+	    parent::doInsert($storage,$name);
 	}
 		
 }
