@@ -29,7 +29,13 @@
   "Invalided object called.":"Invalidiertes Objekt aufgerufen",
   "Unknown property ':name'":"Unbekannte Property ':name'",
   "Property ':name' was changed in readonly state.":"Property ':name' wurde im nur-lesen-Modus geändert",
-    
+  
+  "***** src/Properties/Property":"src/Properties/Property *****",
+  "Unknown validator ':validator' called.":"Unbekannter Validator ':validator' aufgerufen.",
+  "Write to a read only property.":"Schreiben einer nur-lesen Property",
+  "Read of a not initialized property: ':name'":"Lesen einer nicht initialiseren Property: ':name'",
+  "Commit of a not initialized property: ':name'":"Commit einer nicht initialiseren Property: ':name'",
+  
   "***** src/Objects/ORMObject":"src/Objects/ORMObject ***",
   "The attribute ':attribute' is not allowed for this object.":"Das Attribut ':attribute' ist nicht für dieses Objekt erlaubt.",
   "The property ':name' doesn't exists.":"Die Eigenschaft ':name' existiert nicht.",
