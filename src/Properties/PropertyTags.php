@@ -20,6 +20,7 @@ use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\TagException;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Facades\Tags;
+use Sunhill\Basic\Utils\Descriptor;
 
 /**
  * Diese Klasse repräsentiert die Property "Tags". Hier werden die Tags eines Objektes gespeichert.
@@ -107,10 +108,15 @@ class PropertyTags extends PropertyArrayBase
 	 * @param ORMObject $test
 	 * @return boolean
 	 */
-	protected function isDuplicate(Tag $test) 
+	protected function isDuplicate($test) 
 	{
+	    if (is_a($test,Tag::class)) {
+	        $search_id = $test->getID();
+	    } else if (is_a($test,Descriptor::class)) {
+	        $search_id = $test->id;
+	    }
 	    foreach ($this->value as $listed) {
-	        if ($listed->getID() == $test->getID()) {
+	        if ($listed->getID() == $search_id) {
 	            return $test;
 	        }
 	    }
@@ -146,12 +152,13 @@ class PropertyTags extends PropertyArrayBase
 	    if (is_a($tag,Tag::class)) {
 	        return $tag; // Trivial, ist bereits ein Objekt
 	    } else if (is_int($tag)) {
-	        return Tag::loadTag($tag); // Tag mit der ID laden
+	        return Tags::loadTag($tag); // Tag mit der ID laden
 	    } else if (is_string($tag)) {
 	        if ($this->add_missing) {
-	            return Tag::searchOrAddTag($tag);
+	            return Tags::loadTag(Tags::searchOrAddTag($tag)->id);
 	        } else {
-	            return Tag::searchTag($tag);
+	            $tag_desc = Tags::searchTag($tag);
+	            return Tags::loadTag($tag_desc->id);
 	        }
 	    }
 	    throw new TagException("Unbekannter Typ für ein Tag.");

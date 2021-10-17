@@ -20,7 +20,7 @@ class ObjectReadTest extends DBTestCase
      */
     public function testRead(int $id,string $variable,$expected_value) {
         $object = Objects::load($id);
-        $this->assertEquals($expected_value,$this->get_field($object,$variable));
+        $this->assertEquals($expected_value,$this->getField($object,$variable));
     }
     
     public function ReadProvider() {

@@ -124,7 +124,7 @@ class ObjectManager
 		 * @param int $id ID of the object we want to know the class name of
 		 * @return string The namespace of the class
 		 */
-		public function getClassNamespaceOf(int $id): string 
+		public function getClassNamespaceOf(int $id)
 		{
 		    $object = DB::table('objects')->where('id','=',$id)->first();
 		    if (empty($object)) {
@@ -138,7 +138,7 @@ class ObjectManager
 		 * @param int $id
 		 * @return unknown|boolean
 		 */
-		public function load(int $id): ORMObject 
+		public function load(int $id)
 		{
 		    if ($this->isCached($id)) {
 		        return $this->object_cache[$id];

@@ -174,7 +174,7 @@ class ManagerClassesTest extends TestCase
         $this->setupClasses();
         if ($expect == 'except') {
             try {
-                $this->get_field(Classes::getClass($class,$field),$subfield);
+                $this->getField(Classes::getClass($class,$field),$subfield);
             } catch (\Exception $e) {
                 $this->assertTrue(true);
                 return;

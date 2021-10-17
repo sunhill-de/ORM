@@ -144,7 +144,8 @@ class HookingObject extends ORMObject  {
     }
     
     public function get_hook_str() {
-        return $this->hookstate;
+        $hilf = $this->hookstate;
+        return $hilf;
     }
     
 }

@@ -32,7 +32,7 @@ class ObjectInsertTest extends DBTestCase
         $object->commit();
         
         $read = Objects::load($object->getID());
-        $this->assertEquals($expected,$this->get_field($read, $test));
+        $this->assertEquals($expected,$this->getField($read, $test));
     }
     
     public function InsertProvider() {
@@ -233,7 +233,7 @@ class ObjectInsertTest extends DBTestCase
                                     ];
     }
     
-    protected function get_field($loader,$fieldname) {
+    protected function getField($loader,$fieldname) {
         $match = '';
         if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]->(?P<subfield>\w+)/',$fieldname,$match)) {
             $name = $match['name'];

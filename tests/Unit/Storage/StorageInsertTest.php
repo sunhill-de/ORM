@@ -26,7 +26,7 @@ class StorageInsertTest extends StorageBase {
         $readobject = new $class();
         $loader = new \Sunhill\ORM\Storage\StorageMySQL($readobject);
         $loader->loadObject($id);
-        $this->assertEquals($expected,$this->get_field($loader,$fieldname));
+        $this->assertEquals($expected,$this->getField($loader,$fieldname));
         
     }
     
@@ -152,6 +152,6 @@ class StorageInsertTest extends StorageBase {
         $readobject = new Dummy();
         $loader = new \Sunhill\ORM\Storage\StorageMySQL($readobject);
         $loader->loadObject($id);
-        $this->assertEquals('dummyint',$this->get_field($loader,'externalhooks[0][subaction]'));
+        $this->assertEquals('dummyint',$this->getField($loader,'externalhooks[0][subaction]'));
     }
 }

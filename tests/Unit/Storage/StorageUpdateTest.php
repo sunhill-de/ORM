@@ -26,7 +26,7 @@ class StorageUpdateTest extends StorageBase
         $readobject = new $class();
         $loader = new \Sunhill\ORM\Storage\StorageMySQL($readobject);
         $loader->loadObject($id);
-        $this->assertEquals($expected,$this->get_field($loader,$fieldname));
+        $this->assertEquals($expected,$this->getField($loader,$fieldname));
     }
     
     public function UpdateProvider() {

@@ -36,7 +36,7 @@ class TagManager
    private function getQueryDescriptor($result): Descriptor 
    {
         $part = new Descriptor();
-        $part->set_id($result->id)->setName($result->name)->set_parent_id($result->parent_id)
+        $part->set_id($result->id)->set_name($result->name)->set_parent_id($result->parent_id)
                  ->set_parent_name($result->parent_name)->set_fullpath(static::getTagFullpath($result->id));
         return $part;
     }
@@ -501,7 +501,8 @@ class TagManager
          } else if (is_int($tag)) {
              $tag_id = $tag;
          }
-         $tag = new Tag($tag_id);
+         $tag = new Tag();
+         $tag->load($tag_id);
          return $tag;
      }
  }
