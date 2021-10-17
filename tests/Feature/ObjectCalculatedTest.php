@@ -9,6 +9,7 @@ use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Properties\PropertyException;
 
 class TestClass extends ORMObject {
 
@@ -50,7 +51,7 @@ class ObjectCalculatedTest extends DBTestCase
     }
     
     public function testFailWritingCalculated() {
-        $this->expectException(\Sunhill\ORM\Objects\ObjectException::class);
+        $this->expectException(PropertyException::class);
         $test = new TestClass;
         $test->calcfield = 'DEF';
     }
