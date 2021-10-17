@@ -201,13 +201,13 @@ class SearchScenarioBase extends ScenarioBase{
           'attributes'=>[
               ['name','type','allowedobjects','property'],
               [
-                'int_attribute'=>['int_attribute','int',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
-                'attribute1'=>['attribute1','int',"\\Sunhill\\ORM\\Test\\ts_testparent",''],
-	              'attribute2'=>['attribute2','int',"\\Sunhill\\ORM\\Test\\ts_testparent",''],
+                'int_attribute'=>['int_attribute','int',"\\Sunhill\\ORM\\Tests\\Objects\\Dummy",''],
+                'attribute1'=>['attribute1','int',"\\Sunhill\\ORM\\Test\\TestParent",''],
+	              'attribute2'=>['attribute2','int',"\\Sunhill\\ORM\\Test\\TestParent",''],
 	              ['general_attribute','int',"\\Sunhill\\ORM\\Objects\\ORMObject",''],
-	              ['char_attribute','char',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
-	              ['float_attribute','float',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
-	              ['text_attribute','text',"\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy",''],
+	              ['char_attribute','char',"\\Sunhill\\ORM\\Tests\\Objects\\Dummy",''],
+	              ['float_attribute','float',"\\Sunhill\\ORM\\Tests\\Objects\\Dummy",''],
+	              ['text_attribute','text',"\\Sunhill\\ORM\\Tests\\Objects\\Dummy",''],
               ]
           ],
           'attributevalues'=>[

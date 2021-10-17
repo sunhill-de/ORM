@@ -4,9 +4,9 @@ namespace Sunhill\ORM\Tests\Unit\Operators;
 use \Sunhill\ORM\Tests\TestCase;
 use \Sunhill\ORM\Operators\OperatorBase;
 use \Sunhill\Basic\Utils\Descriptor;
-use \Sunhill\ORM\Tests\Objects\ts_dummy;
-use \Sunhill\ORM\Tests\Objects\ts_testparent;
-use \Sunhill\ORM\Tests\Objects\ts_testchild;
+use \Sunhill\ORM\Tests\Objects\Dummy;
+use \Sunhill\ORM\Tests\Objects\TestParent;
+use \Sunhill\ORM\Tests\Objects\TestChild;
 
 class TestOperator extends OperatorBase {
 
@@ -64,11 +64,11 @@ class OperatorTest extends TestCase
     public function testExecution() {
         $test = new TestOperator();
         $test->condition = true;
-        $test->setClass(ts_testparent::class);
+        $test->setClass(TestParent::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_dummy();
+        $Descriptor->object = new Dummy();
         
         $test->execute($Descriptor);
         $this->assertEquals('executed',$test->flag);

@@ -12,9 +12,9 @@
 namespace Sunhill\ORM\Tests\Objects;
 
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 
-class testD extends ts_dummy {
+class testD extends Dummy {
     
     public static $object_infos = [
         'name'=>'testD',            // A repetition of static:$object_name @todo see above
@@ -28,9 +28,9 @@ class testD extends ts_dummy {
     
     public static $type='varchar';
     
-    protected static function setup_properties() {
+    protected static function setupProperties() {
         $method = self::$type;
-        parent::setup_properties();
+        parent::setupProperties();
         if ($method == 'enum') {
             self::enum('testfield')->setEnumValues(['A','B']);
         } else {

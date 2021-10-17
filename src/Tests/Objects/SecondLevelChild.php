@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Tests\Objects;
 
-class ts_secondlevelchild extends ts_passthru {
+class SecondLevelChild extends Passthru {
     public static $table_name = 'secondlevelchildren';
     
     public static $object_infos = [
@@ -14,8 +14,8 @@ class ts_secondlevelchild extends ts_passthru {
         'options'=>0,           // Reserved for later purposes
     ];
     protected static $property_definitions;
-    protected static function setup_properties() {
-		parent::setup_properties();
+    protected static function setupProperties() {
+		parent::setupProperties();
 		self::integer('childint');
 	}
 	

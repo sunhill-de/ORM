@@ -13,6 +13,7 @@
 namespace Sunhill\ORM\Objects;
 
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Objects\PropertiesHaving;
 use Sunhill\ORM\Objects\ObjectException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
@@ -66,8 +67,8 @@ class ORMObject extends PropertiesHaving
 	public function __construct() 
     {
 	    parent::__construct();
-	    $this->properties['tags'] = self::createProperty('tags','tags','object')->setOwner($this);
-	    $this->properties['externalhooks'] = self::createProperty('externalhooks','externalhooks','object')->setOwner($this);
+	    $this->properties['tags'] = self::createProperty('Tags','Tags','object')->setOwner($this);
+	    $this->properties['externalhooks'] = self::createProperty('ExternalHooks','ExternalHooks','object')->setOwner($this);
 	}
 	
 	// ========================================== NeedID-Queries ========================================
@@ -81,7 +82,7 @@ class ORMObject extends PropertiesHaving
 	 * @param array $fixed
 	 * @param string $id_field
 	 */
-	public function addNeedIDQuery(string $table, array $fixed, string $id_field): null 
+	public function addNeedIDQuery(string $table, array $fixed, string $id_field) 
     {
 	    $this->needid_queries[] = ['table'=>$table,'fixed'=>$fixed,'id_field'=>$id_field];
 	}
@@ -90,7 +91,7 @@ class ORMObject extends PropertiesHaving
 	 * Processes all entries in the need_id_query
 	 * @param StorageBase $storage
 	 */
-	protected function executeNeedIDQueries(StorageBase $storage): null 
+	protected function executeNeedIDQueries(StorageBase $storage) 
     {
 	    $storage->entities['needid_queries'] = $this->needid_queries;
 	    $storage->executeNeedIDQueries();
@@ -121,7 +122,7 @@ class ORMObject extends PropertiesHaving
 	 * @param integer $id The id to search for
 	 * @return bool|ORMObject false if not in cache otherwise the cache entry
 	 */ 	 
-	protected function checkCache(int $id): mixed 
+	protected function checkCache(int $id)
     {
 	    if (Objects::isCached($id)) {
 	        return Objects::load($id);
@@ -133,7 +134,7 @@ class ORMObject extends PropertiesHaving
 	 * Puts itself in the objects cache
 	 * @param Int $id
 	 */
-	protected function insertCache(int $id): null 
+	protected function insertCache(int $id) 
     {
 	    Objects::insertCache($id,$this);	    
 	}
@@ -143,9 +144,9 @@ class ORMObject extends PropertiesHaving
 	 * {@inheritDoc}
 	 * @see \Sunhill\ORM\PropertiesHaving::doLoad()
 	 */
-	protected function doLoad(): null 
+	protected function doLoad() 
     {
-	    if (!$this->is_loading()) {
+	    if (!$this->isLoading()) {
 	        $this->state = 'loading';
 	        $loader = $this->getStorage();
 	        $this->walkProperties('loading',$loader);
@@ -161,7 +162,7 @@ class ORMObject extends PropertiesHaving
 	/**
 	 * Read the attributes from the storage
 	 */
-	protected function loadAttributes(StorageBase $storage): null 
+	protected function loadAttributes(StorageBase $storage) 
     {
 	    if (empty($storage->getEntity('attributes'))) {
 	        return;
@@ -170,7 +171,7 @@ class ORMObject extends PropertiesHaving
 	        if (!empty($value['property'])) {
 	            $property_name = $value['property'];
 	        } else {
-	            $property_name = 'attribute_'.$value['type'];
+	            $property_name = 'Attribute'.ucfirst($value['type']);
 	        }
 	        $property = $this->dynamicAddProperty($name, $property_name);
 	        $property->load($storage);	        
@@ -180,7 +181,7 @@ class ORMObject extends PropertiesHaving
 	/**
 	 * Reads the external hook from the storage
 	 */
-	protected function loadExternalHooks(StorageBase $storage): null
+	protected function loadExternalHooks(StorageBase $storage)
     {
 	}
 	
@@ -190,7 +191,7 @@ class ORMObject extends PropertiesHaving
      * inserts an object into the storage
 	 * First for every property inserting is called, afterwards insert and finally inserted.
 	 */
-	protected function doInsert(): null
+	protected function doInsert()
     {
 	       $storage = $this->getStorage();
     	   $this->walkProperties('inserting', $storage);
@@ -202,7 +203,7 @@ class ORMObject extends PropertiesHaving
 	}
 
 // ========================== Update ===================================	
-	protected function doUpdate(): null 
+	protected function doUpdate() 
     {
 	    $storage = $this->getStorage();
 	    $storage->setEntity('id',$this->getID());
@@ -215,13 +216,13 @@ class ORMObject extends PropertiesHaving
 	/**
 	 * Creates a new empty storage
 	 */
-	public function createEmpty(): null 
+	public function createEmpty() 
     {
 		
 	}
 	
 	// ================================= Delete =============================================
-	protected function doDelete(): null 
+	protected function doDelete() 
     {
 	    $storage = $this->getStorage();
 	    $this->walkProperties('deleting',$storage);
@@ -234,7 +235,7 @@ class ORMObject extends PropertiesHaving
     /**
      * Removes the entry from the cache
      */
-	protected function clearCacheEntry(): null 
+	protected function clearCacheEntry() 
     {
 	    Objects::clearCache($this->getID());
 	}
@@ -246,7 +247,7 @@ class ORMObject extends PropertiesHaving
 	 * If $property is set, only this one is recalculated
 	 * @param unknown $property
 	 */
-	public function recalculate($property = null): null
+	public function recalculate($property = null)
     {
 	    if (!is_null($property)) {
 	        $property_obj = $this->getProperty($property);
@@ -264,7 +265,7 @@ class ORMObject extends PropertiesHaving
 	 * @param string $action The name of the method that has to get called
 	 * @param \Sunhill\ORM\Storage\StorageBase $storage the storage
 	 */
-	protected function walkProperties(string $action, StorageBase $storage): null
+	protected function walkProperties(string $action, StorageBase $storage)
     {
 	    $properties = $this->getPropertiesWithFeature();
 	    foreach ($properties as $property) {
@@ -287,7 +288,7 @@ class ORMObject extends PropertiesHaving
 	 * The old (lower) object is called before the promotion takes place.
 	 * @param string $newclass
 	 */
-	public function prePromotion(string $newclass): null 
+	public function prePromotion(string $newclass) 
     {
 	    // Does nothing
 	}
@@ -296,7 +297,7 @@ class ORMObject extends PropertiesHaving
 	 * The newly created (promoted) object is called after the promotion took place
 	 * @param ORMObject $from The old (lower) object
 	 */
-	public function postPromotion(ORMObject $from): null 
+	public function postPromotion(ORMObject $from) 
     {
 	    // Does nothing
 	}
@@ -307,12 +308,12 @@ class ORMObject extends PropertiesHaving
 	    return Objects::degradeObject($this,$newclass);
 	}
 	
-	public function preDegration(string $newclass): null
+	public function preDegration(string $newclass)
     {
 	    
 	}
 	
-	public function postDegration(ORMObject $from): null 
+	public function postDegration(ORMObject $from) 
     {
 	    
 	}
@@ -322,7 +323,7 @@ class ORMObject extends PropertiesHaving
 	 * This routine copies the properties to $newobject
 	 * @param ORMObject $newobject
 	 */
-	public function copyTo(ORMObject $newobject): null 
+	public function copyTo(ORMObject $newobject) 
     {
 	    $newobject->setID($this->getID());
 	    foreach ($this->properties as $property) {
@@ -432,7 +433,7 @@ class ORMObject extends PropertiesHaving
 	   if (!empty($attribute->property)) {
 	       $property_name = $attribute->property;
 	   } else {
-	       $property_name = 'attribute_'.$attribute->type;
+	       $property_name = 'Attribute'.ucfirst($attribute->type);
 	   }
 	   $property = $this->dynamicAddProperty($attribute->name, $property_name);
 	   $property->setAllowedObjects($attribute->allowedobjects)
@@ -474,12 +475,12 @@ class ORMObject extends PropertiesHaving
 	// ********************** Static methods  ***************************	
 	
 	/**
-	 * Initializes the properties of this object. Any child has to call its parents setup_properties() method
+	 * Initializes the properties of this object. Any child has to call its parents setupProperties() method
 	 */
 	protected static function setupProperties() 
     {
 	    parent::setupProperties(); 
-	    self::add_property('tags','tags')->searchable();
+	    self::addProperty('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
 	}

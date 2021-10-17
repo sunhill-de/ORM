@@ -50,7 +50,7 @@ class OperatorManager
     /**
      * Clears the caches
      */
-    public function flush(): null 
+    public function flush() 
     {
         $this->operators = null;
         $this->operator_classes = [];

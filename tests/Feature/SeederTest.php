@@ -7,9 +7,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Tests\Objects\ts_testparent;
-use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Objects\TestParent;
+use Sunhill\ORM\Tests\Objects\TestChild;
 use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Seeder\Seeder;
@@ -17,7 +17,7 @@ use Sunhill\ORM\Seeder\Seeder;
 class TestSeeder extends Seeder {
 
     public function Seed() {
-        $this->SeedObject(ts_dummy::class,['dummyint'],[
+        $this->SeedObject(Dummy::class,['dummyint'],[
             [1],
             'Key'=>[2],
             [3]
@@ -28,12 +28,12 @@ class TestSeeder extends Seeder {
 class TestSeeder2 extends Seeder {
 
     public function Seed() {
-        $this->SeedObject(ts_dummy::class,['dummyint'],[
+        $this->SeedObject(Dummy::class,['dummyint'],[
             'Dummy1'=>[1],
             'Dummy2'=>[2],
             'Dummy3'=>[3]
         ]);
-        $this->SeedObject(ts_testparent::class,
+        $this->SeedObject(TestParent::class,
             ['parentint','parentchar','parentfloat','parenttext','parentdatetime','parentdate','parenttime',
              'parentenum','parentobject','parentsarray','parentoarray'],
             [
@@ -47,19 +47,19 @@ class TestSeeder2 extends Seeder {
 class TestSeeder3 extends Seeder {
     
     public function Seed() {
-        $this->SeedObject(ts_dummy::class,['dummyint'],[
+        $this->SeedObject(Dummy::class,['dummyint'],[
             'Dummy1'=>[1],
             'Dummy2'=>[2],
             'Dummy3'=>[3]
         ]);
-        $this->SeedObject(ts_testparent::class,
+        $this->SeedObject(TestParent::class,
             ['parentint','parentchar','parentfloat','parenttext','parentdatetime','parentdate','parenttime',
                 'parentenum','parentobject','parentsarray','parentoarray'],
             [
                 'parent1'=>[1,'A',1.1,'AA','2020-02-02 10:00:00','2020-02-03','10:01:00','testA',null,null,null],
                 'parent2'=>[2,'B',2.2,'BB','2021-02-02 10:00:00','2021-02-03','11:01:00','testB','->Dummy1',['AAA','BBB','CCC'],['->Dummy1','->Dummy2']],
             ]);
-        $this->SeedObject(ts_testchild::class,
+        $this->SeedObject(TestChild::class,
             ['parentint','parentchar','parentfloat','parenttext','parentdatetime','parentdate','parenttime',
                 'parentenum','parentobject','parentsarray','parentoarray',
                 'childint','childchar','childfloat','childtext','childdatetime','childdate','childtime',
@@ -78,7 +78,7 @@ class TestSeeder3 extends Seeder {
 class TestSeeder4 extends Seeder {
     
     public function Seed() {
-        $this->SeedObject(ts_dummy::class,['dummyint','tags'],[
+        $this->SeedObject(Dummy::class,['dummyint','tags'],[
             'Dummy1'=>[1,null],
             'Dummy2'=>[2,['TagA','TagB.TagC']],
             'Dummy3'=>[3,null]

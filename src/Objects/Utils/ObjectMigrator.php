@@ -32,7 +32,7 @@ class object_migrator
      * to this class.
      * @param $class_name string: The (internal) name of this class
      */
-    public function migrate(string $class_name): null
+    public function migrate(string $class_name)
     {
         if ($class_name == 'object') {
             return; // Dont migrate object because its done with migrate:fresh
@@ -97,7 +97,7 @@ class object_migrator
     /**
      * creates a new table with the current properties
      */
-    private function create_table(): null
+    private function create_table()
     {
         $statement = 'create table '.$this->class_tablename.' (id int primary key';
         $simple = $this->getCurrentProperties();

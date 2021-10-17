@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @file validator_base.php
+ * @file ValidatorBase.php
  * Provides the base class for the validators
  * Lang en
  * Reviewstatus: 2020-08-10
@@ -13,26 +13,20 @@
 
 namespace Sunhill\ORM\Validators;
 
-/**
- * Exception that is raised by validators
- * @author klaus
- *
- */
-class ValidatorException extends \Exception {};
 
 /**
  * Baseclass for all kinds of validators
  * @author klaus
  *
  */
-class validator_base {
+class ValidatorBase {
     
     /**
      * Checks if the given @param $test is a valid value
      * @param unknown $test
      * @return boolean, true, if it's valid otherwise false
      */
-    protected function is_valid($test) {
+    protected function isValid($test) {
         return true;    
     }
     
@@ -52,7 +46,7 @@ class validator_base {
      * @return \Sunhill\ORM\Validators\unknown
      */
     public function validate($test) {
-        if (!$this->is_valid($test)) {
+        if (!$this->isValid($test)) {
             if (is_object($test)) {
                 $value = getClass($test);                
             } else if (is_array($test)) {
@@ -70,8 +64,8 @@ class validator_base {
      * @param unknown $test
      * @return \Sunhill\ORM\Validators\boolean,
      */
-    public function check_validity($test) {
-        return $this->is_valid($test);
+    public function checkValidity($test) {
+        return $this->isValid($test);
     }
     
 }

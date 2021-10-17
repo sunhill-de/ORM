@@ -8,7 +8,7 @@ use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 
 class HookingObject extends ORMObject  {
 
@@ -24,13 +24,13 @@ class HookingObject extends ORMObject  {
         'description'=>'For hooking tests only',
         'options'=>0,               // Reserved for later purposes
     ];
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('hooking_int')->setDefault(0);
         self::varchar('hookstate')->setDefault('');
-        self::object('ofield')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
+        self::object('ofield')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
         self::arrayofstrings('strarray');
-        self::arrayofobjects('objarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
+        self::arrayofobjects('objarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
     }
     
     protected function setup_hooks() {
@@ -46,7 +46,7 @@ class HookingObject extends ORMObject  {
                 $params['TO'] = Objects::load($params['TO']);
             }
         }
-        if (is_a($params['FROM'],'\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy') ) {
+        if (is_a($params['FROM'],'\\Sunhill\\ORM\\Tests\\Objects\\Dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Tests\\Objects\\Dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
             $this->hookstate = '(ofield:'.$from.'=>'.$to.')';
@@ -64,7 +64,7 @@ class HookingObject extends ORMObject  {
                 $params['TO'] = Objects::load($params['TO']);
             }
         }
-        if (is_a($params['FROM'],'\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy') ) {
+        if (is_a($params['FROM'],'\\Sunhill\\ORM\\Tests\\Objects\\Dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Tests\\Objects\\Dummy') ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
             self::$hook_str = '(ofield:'.$from.'=>'.$to.')';
@@ -163,10 +163,10 @@ class HookingChild extends HookingObject {
     
     public static $table_name = 'childhookings';
     
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('childhooking_int')->setDefault(0);
-        self::arrayofobjects('childhooking_oarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy']);
+        self::arrayofobjects('childhooking_oarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
     }
     
     protected function setup_hooks() {
@@ -299,14 +299,14 @@ class ObjectHookTest extends DBTestCase
             },
             function($change,$postfix='ING') {
                 $change->addHook('UPDATING_PROPERTY','field_changing','ofield');
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 123;
                 $change->ofield = $dummy;
             },'(ofield:NULL=>123)'],
             
             [function() { // Test bei Objekt-Felder
                 $result = new HookingObject();
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 123;
                 $result->ofield = $dummy;
                 return $result;
@@ -318,21 +318,21 @@ class ObjectHookTest extends DBTestCase
 
             [function() {// Test bei Objekt-Array, Eintrag hinzugefügt
                 $result = new HookingObject();
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 123;
                 $result->objarray[] = $dummy;
                 return $result;
             },
             function($change,$postfix='ING') {
                 $change->addHook('UPDATING_PROPERTY','oarray_changing','objarray');
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 345;
                 $change->objarray[] = $dummy;
             },'(oarray:NEW:345 REMOVED:)'],
             
             [function() { // Test bei String-Array, Eintrag entfernt
                 $result = new HookingObject();
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 345;
                 $result->objarray[] = $dummy;
                 return $result;
@@ -344,9 +344,9 @@ class ObjectHookTest extends DBTestCase
             
             [function() { // Test bei Object-Array, Eintrag entfernt
                 $result = new HookingObject();
-                $dummy1 = new ts_dummy();
+                $dummy1 = new Dummy();
                 $dummy1->dummyint = 345;
-                $dummy2 = new ts_dummy();
+                $dummy2 = new Dummy();
                 $dummy2->dummyint = 456;
                 $result->objarray[] = $dummy1;
                 $result->objarray[] = $dummy2;
@@ -398,14 +398,14 @@ class ObjectHookTest extends DBTestCase
             },
             function($change,$postfix='ED') {
                 $change->addHook('UPDAT'.$postfix.'_PROPERTY','field_changed','ofield');
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 123;
                 $change->ofield = $dummy;
             },'(ofield:NULL=>123)'],
             
             [function() { // Test bei Objekt-Felder
                 $result = new HookingObject();
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 123;
                 $result->ofield = $dummy;
                 return $result;
@@ -417,21 +417,21 @@ class ObjectHookTest extends DBTestCase
             
             [function() {// Test bei Objekt-Array, Eintrag hinzugefügt
                 $result = new HookingObject();
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 123;
                 $result->objarray[] = $dummy;
                 return $result;
             },
             function($change,$postfix='ED') {
                 $change->addHook('UPDAT'.$postfix.'_PROPERTY','oarray_changed','objarray');
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 345;
                 $change->objarray[] = $dummy;
             },'(oarray:NEW:345 REMOVED:)'],
             
             [function() { // Test bei String-Array, Eintrag entfernt
                 $result = new HookingObject();
-                $dummy = new ts_dummy();
+                $dummy = new Dummy();
                 $dummy->dummyint = 345;
                 $result->objarray[] = $dummy;
                 return $result;
@@ -443,9 +443,9 @@ class ObjectHookTest extends DBTestCase
             
             [function() { // Test bei Object-Array, Eintrag entfernt
                 $result = new HookingObject();
-                $dummy1 = new ts_dummy();
+                $dummy1 = new Dummy();
                 $dummy1->dummyint = 345;
-                $dummy2 = new ts_dummy();
+                $dummy2 = new Dummy();
                 $dummy2->dummyint = 456;
                 $result->objarray[] = $dummy1;
                 $result->objarray[] = $dummy2;
@@ -481,9 +481,9 @@ class ObjectHookTest extends DBTestCase
         $this->setupHookTables();
         $test = new HookingChild();
         $test::$child_hookstr = '';
-        $dummy1 = new ts_dummy();
+        $dummy1 = new Dummy();
         $dummy1->dummyint = 345;
-        $dummy2 = new ts_dummy();
+        $dummy2 = new Dummy();
         $dummy2->dummyint = 456;
         $test->objarray[] = $dummy1;
         $test->objarray[] = $dummy2;
@@ -500,9 +500,9 @@ class ObjectHookTest extends DBTestCase
         $this->setupHookTables();
         $test = new HookingChild();
         $test::$child_hookstr = '';
-        $dummy1 = new ts_dummy();
+        $dummy1 = new Dummy();
         $dummy1->dummyint = 345;
-        $dummy2 = new ts_dummy();
+        $dummy2 = new Dummy();
         $dummy2->dummyint = 456;
         $test->childhooking_oarray[] = $dummy1;
         $test->childhooking_oarray[] = $dummy2;
@@ -514,7 +514,7 @@ class ObjectHookTest extends DBTestCase
     
     private function prepare_object_test() {
         $this->setupHookTables();
-        $dummy = new ts_dummy();
+        $dummy = new Dummy();
         $dummy->dummyint = 123;
         $dummy->commit();
         $test = new HookingObject();
@@ -566,9 +566,9 @@ class ObjectHookTest extends DBTestCase
     
     private function prepare_array_test() {
         $this->setupHookTables();
-        $dummy1 = new ts_dummy();
+        $dummy1 = new Dummy();
         $dummy1->dummyint = 123;
-        $dummy2 = new ts_dummy();
+        $dummy2 = new Dummy();
         $dummy2->dummyint = 666;
         $test = new HookingObject();
         $test->addHook('UPDATED_PROPERTY', 'arraychild_changed', 'objarray.dummyint');

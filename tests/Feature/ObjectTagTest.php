@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Objects\Tag;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 
@@ -16,7 +16,7 @@ class ObjectTagTest extends DBTestCase
      * @dataProvider TagProvider
      */
     public function testTagObject($set,$expect,$create) {
-         $test = new ts_dummy();
+         $test = new Dummy();
         
         for ($i=0;$i<count($set);$i++) {
             if ($expect[$i]=='except') {
@@ -37,7 +37,7 @@ class ObjectTagTest extends DBTestCase
         for ($i=0;$i<count($expect);$i++) {
             $this->assertEquals($expect[$i],$test->tags[$i]);
         }
-        $reread =  new ts_dummy();
+        $reread =  new Dummy();
         Objects::flushCache();
         $reread = Objects::load($test->getID());
         for ($i=0;$i<count($expect);$i++) {
@@ -59,7 +59,7 @@ class ObjectTagTest extends DBTestCase
      * @group change
      */
     public function testChangeTags($init,$add,$delete,$expect,$changestr) {
-        $test = new ts_dummy();        
+        $test = new Dummy();        
         for ($i=0;$i<count($init);$i++) {
             $tag = new Tag($init[$i],true);
             $test->tags->stick($tag);
@@ -68,7 +68,7 @@ class ObjectTagTest extends DBTestCase
         $test->commit();
         
         Objects::flushCache();
-        $read =  new ts_dummy();
+        $read =  new Dummy();
         $read = Objects::load($test->getID());
         for ($i=0;$i<count($add);$i++) {
             $tag = new Tag($add[$i],true);
@@ -97,7 +97,7 @@ class ObjectTagTest extends DBTestCase
      * @group Trigger
      */
     public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
-        $test = new ts_dummy();
+        $test = new Dummy();
         for ($i=0;$i<count($init);$i++) {
             $tag = new Tag($init[$i],true);
             $test->tags->stick($tag);

@@ -140,7 +140,7 @@ class ObjectManager
 		 */
 		public function load(int $id): ORMObject 
 		{
-		    if ($this->is_cached($id)) {
+		    if ($this->isCached($id)) {
 		        return $this->object_cache[$id];
 		    } else {
 		        if (($classname = $this->getClassNamespaceOf($id)) === false) {
@@ -155,7 +155,7 @@ class ObjectManager
 		/**
 		 * Clears the object cache
 		 */
-		public function flushCache(): null 
+		public function flushCache() 
 		{
 		    $this->object_cache = [];
 		}
@@ -175,7 +175,7 @@ class ObjectManager
 		 * @param int $id
 		 * @param oo_objct $object
 		 */
-		public function insertCache(int $id, ORMObject $object): null 
+		public function insertCache(int $id, ORMObject $object) 
 		{
 		    $this->object_cache[$id] = $object;
 		}
@@ -184,7 +184,7 @@ class ObjectManager
 		 * Removes the entry of $id from the cache
 		 * @param int $id
 		 */		
-		public function clearCache(int $id): null 
+		public function clearCache(int $id) 
 		{
 		    unset($this->object_cache[$id]);
 		}
@@ -195,7 +195,7 @@ class ObjectManager
 		 * @throws ObjectManagerException
 		 * @return unknown
 		 */
-		public function getObject(ORMObject|int $object): ORMObject 
+		public function getObject($object): ORMObject 
 		{
 		    if (is_a($object,ORMObject::class)) {
 		        return $object;
@@ -211,7 +211,7 @@ class ObjectManager
 		 * @param ORMObject|int $object
 		 * @param string $newclass
 		 */
-		public function promoteObject(int|ORMObject $object,string $newclass): ORMObject 
+		public function promoteObject($object,string $newclass): ORMObject 
 		{
 		    $promotor = new ObjectPromotor();
 		    return $promotor->promote($this->getObject($object),$newclass);
@@ -231,7 +231,7 @@ class ObjectManager
         /**
          * Deletes alls objects of the given class from the database
          */
-        public function clearObjects($class): null 
+        public function clearObjects($class) 
         {
             $inheritance = Classes::getInheritanceOfClass($class,false);
             $master = Classes::getTableOfClass($class);

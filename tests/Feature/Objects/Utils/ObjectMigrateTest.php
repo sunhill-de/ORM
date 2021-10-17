@@ -12,7 +12,7 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\Objects\testA;
 use Sunhill\ORM\Tests\Objects\testD;
 use Sunhill\ORM\Tests\Objects\testE;
@@ -26,7 +26,7 @@ class ObjectMigrateTest extends DBTestCase
         Classes::registerClass(testA::class);
         Classes::registerClass(testD::class);
         Classes::registerClass(testE::class);
-        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(Dummy::class);
     }
     
     public function testSanity() {
@@ -154,7 +154,7 @@ class ObjectMigrateTest extends DBTestCase
         DB::statement("create table testE (id int primary key)");
         testE::migrate();
         $test = new testE();
-        $dummy = new ts_dummy;
+        $dummy = new Dummy;
         $dummy->dummyint = 2;
         $test->testfield[] = $dummy;
         $test->commit();

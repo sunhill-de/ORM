@@ -2,9 +2,9 @@
 
 namespace Sunhill\ORM\Validators;
 
-class float_validator extends validator_base {
+class FloatValidator extends ValidatorBase {
     
-    protected function is_valid($test) {
+    protected function isValid($test) {
         if (!is_numeric($test)) {
             return false;
         }

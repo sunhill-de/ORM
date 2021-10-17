@@ -8,7 +8,7 @@ use Sunhill\ORM\Tests\Scenario\ScenarioWithTags;
 use Tests\CreatesApplication;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\Objects\SimpleParent;
 use Sunhill\ORM\Tests\Objects\SimpleChild;
 
@@ -47,7 +47,7 @@ class ScenarioWithTagsTest extends SunhillScenarioTestCase
     public function setUp() : void {
         parent::setUp();
         Classes::flushClasses();
-        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(Dummy::class);
         Classes::registerClass(SimpleParent::class);
         Classes::registerClass(SimpleChild::class);
     }
@@ -65,7 +65,7 @@ class ScenarioWithTagsTest extends SunhillScenarioTestCase
     }
     
     public function testDestructiveInit_dummy() {
-        $object = ts_dummy::search()->where('dummyint',11)->load();
+        $object = Dummy::search()->where('dummyint',11)->load();
         $this->assertEquals(11,$object->dummyint);
     }
 

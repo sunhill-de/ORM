@@ -101,7 +101,7 @@ trait ScenarioWithObjects
      * @param $description array The Descriptor of this class (an two element array)
      */
     protected function handleClass(string $name, array $Descriptor) 
-    
+    {
         if (count($Descriptor) !== 2) {
             throw new SunhillException("Invalid object Descriptor: Elementcount is not 2");
             return;

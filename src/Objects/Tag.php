@@ -228,19 +228,19 @@ class Tag extends Loggable
     /**
      * Deletes the tag and all references to it
      */
-	public function delete(): null 
+	public function delete() 
     {
 	    $this->deleteReferences();
 	    $this->deleteChildren();
 	    $this->deleteThis();
 	}
 	
-	private function deleteReferences(): null 
+	private function deleteReferences() 
     {
 	    DB::table('tagcache')->where('tag_id',$this->getID())->delete();	    
 	}
 	
-	private function deleteChildren(): null
+	private function deleteChildren()
     {
 	    $entries = DB::table('tagobjectassigns')->where('tag_id',$this->getID())->get();
 	    foreach ($entries as $entry) {
@@ -248,15 +248,21 @@ class Tag extends Loggable
 	    }
 	}
 	
-	private function deleteChild(int $object_id): null
+	private function deleteChild(int $object_id)
     {
 	    $object = Objects::load($object_id);
 	    $object->tags->remove($this);
 	    $object->commit();
 	}
 	
-	private function deleteThis(): null
+	private function deleteThis()
     {
 	    DB::table('tags')->where('id',$this->getID())->delete();	    
 	}
+	
+	public static function loadTag(int $id) {
+	    $result = new Tag($id);
+	    return $result;
+	}
+	
 }

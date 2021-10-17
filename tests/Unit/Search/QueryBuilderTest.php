@@ -5,9 +5,9 @@ namespace Sunhill\ORM\Tests\Unit\Search;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Search\QueryBuilder;
 use Sunhill\ORM\Search\QueryAtom;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Tests\Objects\ts_testparent;
-use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Objects\TestParent;
+use Sunhill\ORM\Tests\Objects\TestChild;
 use Sunhill\ORM\Facades\Classes;
 
 class QueryBuilderTest extends TestCase
@@ -15,9 +15,9 @@ class QueryBuilderTest extends TestCase
     public function setUp() : void {
         parent::setUp();
         Classes::flushClasses();
-        Classes::registerClass(ts_dummy::class);
-        Classes::registerClass(ts_testparent::class);
-        Classes::registerClass(ts_testchild::class);
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
     }
     
     public function testSetCallingClass() {
@@ -80,37 +80,37 @@ class QueryBuilderTest extends TestCase
                     return $query->first(true);
                 },'select a.id from objects as a limit 0,1',false
             ],
-            ['\Sunhill\ORM\Tests\Objects\ts_dummy', // test simple where
+            ['\Sunhill\ORM\Tests\Objects\Dummy', // test simple where
                 function($query) {
                     return $query->where('dummyint','=',1)->get(true);
                 },"select a.id from dummies as a where a.dummyint = '1'",false
             ],
-            ['\Sunhill\ORM\Tests\Objects\ts_dummy', // test simple where
+            ['\Sunhill\ORM\Tests\Objects\Dummy', // test simple where
                 function($query) {
                     return $query->where('dummyint','in',[1,2,3])->get(true);
                 },"select a.id from dummies as a where a.dummyint in ('1','2','3')",false
             ],
-            ['\Sunhill\ORM\Tests\Objects\ts_dummy', // test simple where with default relation =
+            ['\Sunhill\ORM\Tests\Objects\Dummy', // test simple where with default relation =
                 function($query) {
                     return $query->where('dummyint',1)->get(true);
                 },"select a.id from dummies as a where a.dummyint = '1'",false
             ],
-            ['\Sunhill\ORM\Tests\Objects\ts_testparent', // test and-combined where
+            ['\Sunhill\ORM\Tests\Objects\TestParent', // test and-combined where
                 function($query) {
                     return $query->where('parentint','=',1)->where('parentchar','=','ABC')->get(true);
                 },"select a.id from testparents as a where a.parentint = '1' and a.parentchar = 'ABC'",false
             ],
-            ['\Sunhill\ORM\Tests\Objects\ts_testchild', // test and-combined where in child
+            ['\Sunhill\ORM\Tests\Objects\TestChild', // test and-combined where in child
                 function($query) {
                     return $query->where('childint','=',1)->where('childchar','=','ABC')->get(true);
                 },"select a.id from testchildren as a where a.childint = '1' and a.childchar = 'ABC'",false
             ],
-            ['\Sunhill\ORM\Tests\Objects\ts_testchild', // test and-combined where of children with parent properties
+            ['\Sunhill\ORM\Tests\Objects\TestChild', // test and-combined where of children with parent properties
                 function($query) {
                     return $query->where('parentint','=',1)->where('parentchar','=','ABC')->get(true);
                 },"select b.id from testparents as a inner join testchildren as b on b.id = a.id where a.parentint = '1' and a.parentchar = 'ABC'",false
             ],
-            ['\Sunhill\ORM\Tests\Objects\ts_testchild', // test and-combined where of children with mixed properties
+            ['\Sunhill\ORM\Tests\Objects\TestChild', // test and-combined where of children with mixed properties
                 function($query) {
                     return $query->where('parentint','=',1)->where('childchar','=','ABC')->get(true);
                 },"select b.id from testparents as a inner join testchildren as b on b.id = a.id where a.parentint = '1' and b.childchar = 'ABC'",false

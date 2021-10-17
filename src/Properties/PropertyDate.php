@@ -22,5 +22,5 @@ class PropertyDate extends PropertyField
 	
     protected $features = ['object','simple'];
 	
-    protected $validator_name = 'date_validator';	
+    protected $validator_name = 'DateValidator';	
 }

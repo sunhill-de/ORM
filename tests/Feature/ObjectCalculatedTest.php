@@ -24,8 +24,8 @@ class TestClass extends ORMObject {
     
     public $return = 'ABC';
     
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('dummyint');
         self::calculated('calcfield');
     }

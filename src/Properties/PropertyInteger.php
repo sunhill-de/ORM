@@ -8,6 +8,6 @@ class PropertyInteger extends PropertyField {
 
 	protected $features = ['object','simple'];
 	
-	protected $validator_name = 'int_validator';
+	protected $validator_name = 'IntValidator';
 
 }

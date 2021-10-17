@@ -28,7 +28,7 @@ class PropertyArrayOfObjects extends PropertyArrayBase
 	
 	protected $initialized = true;
 	
-	protected $validator_name = 'object_validator';
+	protected $validator_name = 'ObjectValidator';
 	
 	public function setAllowedObjects($object) 
 	{
@@ -36,13 +36,13 @@ class PropertyArrayOfObjects extends PropertyArrayBase
 	    return $this;
 	}
 
-	public function setType($type) 
+	public function setType(string $type): Property 
 	{
 	    $this->type = $type;
 	    return $this;
 	}
 	
-	public function getType() 
+	public function getType(): string 
 	{
 	    return $this->type;
 	}

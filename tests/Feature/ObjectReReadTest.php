@@ -8,8 +8,8 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\ORMObject;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Tests\Objects\ts_referenceonly;
+use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Objects\ReferenceOnly;
 
 class ObjectReReadTest extends DBTestCase
 {
@@ -77,7 +77,7 @@ class ObjectReReadTest extends DBTestCase
 	public function SimpleFieldProvider() {
 	    return [ 
             [ //Einfacher Test für einfache Felder
-                'ts_testparent',
+                'TestParent',
                 [   'parentchar'=>'ABC',
                     'parentint'=>123,
                     'parentfloat'=>1.23,
@@ -107,7 +107,7 @@ class ObjectReReadTest extends DBTestCase
                 ],
             ],
 	        [ //Einfacher Test für geerbte Felder beide modifiziert
-	            'ts_testchild',
+	            'TestChild',
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -161,7 +161,7 @@ class ObjectReReadTest extends DBTestCase
 	            ],
 	        ],
 	        [ //Einfacher Test für geerbte Felder nur Kinder modifiziert
-	            'ts_testchild',
+	            'TestChild',
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -207,7 +207,7 @@ class ObjectReReadTest extends DBTestCase
 	            ],
 	        ],
 	        [ // Passthrutest
-	            'ts_secondlevelchild',
+	            'SecondLevelChild',
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -295,7 +295,7 @@ class ObjectReReadTest extends DBTestCase
 	public function ComplexFieldProvider() {
 	    return [ 
 	        [ // Einfacher Test mit Komplexen-Felder
-	            'ts_testparent',
+	            'TestParent',
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -306,9 +306,9 @@ class ObjectReReadTest extends DBTestCase
 	                'parentenum'=>'testA'
 	            ],
 	            function($object) {
-	                $add1 = new ts_dummy();
-	                $add2 = new ts_dummy();
-	                $add3 = new ts_dummy();
+	                $add1 = new Dummy();
+	                $add2 = new Dummy();
+	                $add3 = new Dummy();
 	                $add1->dummyint = 1234;
 	                $add2->dummyint = 2345;
 	                $add3->dummyint = 3456;
@@ -331,8 +331,8 @@ class ObjectReReadTest extends DBTestCase
 	                ($object->parentsarray[count($object->parentsarray)-1] == 'DCB');
 	            },
 	            function($object) {
-	                $add1 = new ts_dummy();
-	                $add2 = new ts_dummy();
+	                $add1 = new Dummy();
+	                $add2 = new Dummy();
 	                $add1->dummyint = 4321;
 	                $add2->dummyint = 5432;
 	                $object->parentobject = $add1;
@@ -358,7 +358,7 @@ class ObjectReReadTest extends DBTestCase
 	            },
 	            ],
 	            [ //Einfacher Test für geerbte Felder beide modifiziert
-	                'ts_testchild',
+	                'TestChild',
 	                [   'parentchar'=>'ABC',
 	                    'parentint'=>123,
 	                    'parentfloat'=>1.23,
@@ -377,12 +377,12 @@ class ObjectReReadTest extends DBTestCase
 	                    'childenum'=>'testB'
 	                ],
 	                function($object) {
-	                    $add1 = new ts_dummy();
-	                    $add2 = new ts_dummy();
-	                    $add3 = new ts_dummy();
-	                    $add4 = new ts_dummy();
-	                    $add5 = new ts_dummy();
-	                    $add6 = new ts_dummy();
+	                    $add1 = new Dummy();
+	                    $add2 = new Dummy();
+	                    $add3 = new Dummy();
+	                    $add4 = new Dummy();
+	                    $add5 = new Dummy();
+	                    $add6 = new Dummy();
 	                    $add1->dummyint = 1234;
 	                    $add2->dummyint = 2345;
 	                    $add3->dummyint = 3456;
@@ -423,10 +423,10 @@ class ObjectReReadTest extends DBTestCase
 	                    ($object->childsarray[count($object->childsarray)-1] == 'FED');
 	                },
 	                function($object) {
-	                    $add1 = new ts_dummy();
-	                    $add2 = new ts_dummy();
-	                    $add3 = new ts_dummy();
-	                    $add4 = new ts_dummy();
+	                    $add1 = new Dummy();
+	                    $add2 = new Dummy();
+	                    $add3 = new Dummy();
+	                    $add4 = new Dummy();
 	                    $add1->dummyint = 4321;
 	                    $add2->dummyint = 5432;
 	                    $add3->dummyint = 6543;
@@ -471,10 +471,10 @@ class ObjectReReadTest extends DBTestCase
 	                },
 	                ],
 	                [ // Änderung nur der untergebenen Objekte, hier mit doppelter Referenz
-	                    'ts_referenceonly',
+	                    'ReferenceOnly',
 	                    ['testint'=>1234],
 	                    function($object) {
-	                        $add1 = new ts_dummy();
+	                        $add1 = new Dummy();
 	                        $add1->dummyint = 4321;
 	                        $object->testobject = $add1;
 	                        $object->testoarray[] = $add1;
@@ -504,10 +504,10 @@ class ObjectReReadTest extends DBTestCase
 	                    
 	                ],
 	                [ // Zirkuläre Referenzen
-	                    'ts_referenceonly',
+	                    'ReferenceOnly',
 	                    ['testint'=>1234],
 	                    function($object) {
-	                        $add1 = new ts_referenceonly();
+	                        $add1 = new ReferenceOnly();
 	                        $add1->testint = 4321;
 	                        $add1->testobject = $object;
 	                        $object->testobject = $add1;
@@ -529,10 +529,10 @@ class ObjectReReadTest extends DBTestCase
 	                    ],
 	                    
 	                    [ // Austausch eines Objektes
-	                        'ts_referenceonly',
+	                        'ReferenceOnly',
 	                        ['testint'=>1234],
 	                        function($object) {
-	                            $add1 = new ts_dummy();
+	                            $add1 = new Dummy();
 	                            $add1->dummyint = 4321;
 	                            $object->testobject = $add1;
 	                            return true;
@@ -541,7 +541,7 @@ class ObjectReReadTest extends DBTestCase
 	                            return ($object->testint == 1234) && ($object->testobject->dummyint == 4321);
 	                        },
 	                        function($object) { // Modify Callback
-	                            $add1 = new ts_dummy();
+	                            $add1 = new Dummy();
 	                            $add1->dummyint = 1111;
 	                            $object->testobject = $add1;
 	                            return true;
@@ -553,10 +553,10 @@ class ObjectReReadTest extends DBTestCase
 	                        ],
 	                        
 	                        [ // Löschen einer Referenz
-	                        'ts_referenceonly',
+	                        'ReferenceOnly',
 	                        ['testint'=>1234],
 	                        function($object) {
-	                            $add1 = new ts_dummy();
+	                            $add1 = new Dummy();
 	                            $add1->dummyint = 4321;
 	                            $object->testobject = $add1;
 	                            return true;
@@ -574,10 +574,10 @@ class ObjectReReadTest extends DBTestCase
 	                        
 	                        ],
 	                        [ // Einfaches Ändern eines untergeordneten Objektes
-	                            'ts_referenceonly',
+	                            'ReferenceOnly',
 	                            ['testint'=>1234],
 	                            function($object) {
-	                                $add1 = new ts_dummy();
+	                                $add1 = new Dummy();
 	                                $add1->dummyint = 4321;
 	                                $object->testobject = $add1;
 	                                return true;
@@ -602,8 +602,8 @@ class ObjectReReadTest extends DBTestCase
 	
 	public function testChildChange() {
 	       Objects::flushCache();
-	       $object = new ts_referenceonly();
-	       $child  = new ts_dummy();
+	       $object = new ReferenceOnly();
+	       $child  = new Dummy();
 	       $object->testint = 123;
 	       $child->dummyint = 234;
 	       $object->testobject = $child;
@@ -623,9 +623,9 @@ class ObjectReReadTest extends DBTestCase
 	    $sub = array();
 	    $main = array();
 	    for ($i=0;$i<100;$i++) {
-	        $sub[$i] = new ts_dummy();
+	        $sub[$i] = new Dummy();
 	        $sub[$i]->dummyint = $i;
-	        $main[$i] = new ts_referenceonly();
+	        $main[$i] = new ReferenceOnly();
 	        $main[$i]->testobject = $sub[$i];
 	        $main[$i]->testint = $i+100;
 	        $main[$i]->commit();

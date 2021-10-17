@@ -5,9 +5,9 @@ namespace Sunhill\ORM\Tests\Unit\Traits;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Traits\TestObject;
 use Sunhill\ORM\ORMException;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Tests\Objects\ts_testparent;
-use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Objects\TestParent;
+use Sunhill\ORM\Tests\Objects\TestChild;
 use Sunhill\ORM\Facades\Classes;
 
 class test_trait_class {
@@ -15,7 +15,7 @@ class test_trait_class {
     use TestObject;
     
     public function test($test,$allowed) {
-        return $this->is_valid_object($test,$allowed);
+        return $this->isValidObject($test,$allowed);
     }
 }
 
@@ -25,9 +25,9 @@ class TraitTestObjectTest extends TestCase
     public function setUp() : void {
         parent::setUp();
         Classes::flushClasses();
-        Classes::registerClass(ts_dummy::class);
-        Classes::registerClass(ts_testparent::class);
-        Classes::registerClass(ts_testchild::class);
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
     }
     
     /**
@@ -47,12 +47,12 @@ class TraitTestObjectTest extends TestCase
     
     public function IsValidProvider() {
         return [
-            [function() { return new ts_dummy(); },'dummy',true],
-            [function() { return new ts_dummy(); },'Sunhill\ORM\Tests\Objects\ts_dummy',true],
-            [function() { return new ts_dummy(); },'testparent',false],
-            [function() { return new ts_testchild(); },'testparent',true],
-            [function() { return new ts_testchild(); },['testparent'],true],
-            [function() { return new ts_testchild(); },['dummy','testparent'],true],
+            [function() { return new Dummy(); },'dummy',true],
+            [function() { return new Dummy(); },'Sunhill\ORM\Tests\Objects\Dummy',true],
+            [function() { return new Dummy(); },'testparent',false],
+            [function() { return new TestChild(); },'testparent',true],
+            [function() { return new TestChild(); },['testparent'],true],
+            [function() { return new TestChild(); },['dummy','testparent'],true],
             ];
     }
 }

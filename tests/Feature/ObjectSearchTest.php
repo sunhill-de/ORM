@@ -13,7 +13,7 @@ use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
 use Database\Seeds\SearchSeeder;
 
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 
 class searchtestA extends ORMObject {
    
@@ -28,14 +28,14 @@ class searchtestA extends ORMObject {
         'options'=>0,               // Reserved for later purposes
     ];
     
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('Aint')->searchable();
         self::integer('Anosearch');
         self::varchar('Achar')->searchable();
         self::calculated('Acalc')->searchable();
-        self::object('Aobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
-        self::arrayofobjects('Aoarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::object('Aobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
+        self::arrayofobjects('Aoarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
         self::arrayofstrings('Asarray')->searchable();
     }
     
@@ -66,14 +66,14 @@ class searchtestB extends searchtestA {
         'description'=>'For search tests only',
         'options'=>0,               // Reserved for later purposes
     ];
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('Bint')->searchable();
         self::varchar('Bchar')->searchable();
         self::calculated('Bcalc')->searchable();
-        self::object('Bobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::object('Bobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
         self::arrayofstrings('Bsarray')->searchable();
-        self::arrayofobjects('Boarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+        self::arrayofobjects('Boarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
     }
     
     public function calculate_Bcalc() {
@@ -100,9 +100,9 @@ class searchtestC extends searchtestB {
         'description'=>'For search tests only',
         'options'=>0,               // Reserved for later purposes
     ];
-    protected static function setup_properties() {
-        parent::setup_properties();
-        self::object('Cobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\ts_dummy"])->searchable();
+    protected static function setupProperties() {
+        parent::setupProperties();
+        self::object('Cobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
     }
 
 }
@@ -111,7 +111,7 @@ class ObjectSearchTest extends DBTestCase
 {
     public function setUp() : void {
         parent::setUp();
-        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(Dummy::class);
         Classes::registerClass(searchtestA::class);
         Classes::registerClass(searchtestB::class);
         Classes::registerClass(searchtestC::class);
@@ -384,6 +384,6 @@ class ObjectSearchTest extends DBTestCase
     
     public function testSearchkeyfieldException() {
         $this->expectException(ORMException::class);
-        ts_dummy::SearchKeyfield('Keyfield');
+        Dummy::SearchKeyfield('Keyfield');
     }
 }

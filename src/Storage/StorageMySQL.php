@@ -26,8 +26,8 @@ use Illuminate\Support\Facades\DB;
 class StorageMySQL extends StorageBase  
 {
     
-    protected $modules = ['mysql_simple','mysql_objects','mysql_strings','mysql_calculated',
-                          'mysql_tags','mysql_externalhooks','mysql_attributes'];
+    protected $modules = ['MySQLSimple','MySQLObjects','MySQLStrings','MySQLCalculated',
+                          'MySQLTags','MySQLExternalHooks','MySQLAttributes'];
     
 
     public function executeNeedIDQueries()

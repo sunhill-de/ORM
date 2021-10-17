@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Properties\AttributeException;
 
@@ -22,7 +22,7 @@ class ObjectAttributeTest extends DBTestCase
      */
     public function testSimpleAttribute($attributename,$init,$change,$exception) {
         try {
-            $test = new ts_dummy();
+            $test = new Dummy();
             $test->$attributename = $init;
             $this->assertEquals($init,$test->$attributename);
             $test->dummyint = 123;
@@ -57,7 +57,7 @@ class ObjectAttributeTest extends DBTestCase
     
     public function testInvalidAttribute() {
         $this->expectException(AttributeException::class);
-        $test = new ts_dummy();
+        $test = new Dummy();
         $test->attribute1 = 2;
     }
     

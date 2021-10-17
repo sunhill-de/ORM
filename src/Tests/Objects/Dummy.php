@@ -1,7 +1,7 @@
 <?php
 /**
- * @file ts_dummy.php
- * Provides the test object ts_dummy that only has an integer as property
+ * @file Dummy.php
+ * Provides the test object Dummy that only has an integer as property
  * Lang en
  * Reviewstatus: 2020-09-11
  * Localization: not needed
@@ -17,7 +17,7 @@ use Sunhill\ORM\Objects\ORMObject;
  * Only for testing purposes
  * @author klaus
  */
-class ts_dummy extends ORMObject {
+class Dummy extends ORMObject {
 	
     public static $table_name = 'dummies';
     
@@ -34,8 +34,8 @@ class ts_dummy extends ORMObject {
     
     protected static $property_definitions;
     
-    protected static function setup_properties() {
-		parent::setup_properties();
+    protected static function setupProperties() {
+		parent::setupProperties();
 		self::integer('dummyint')->searchable();
 	}
 	

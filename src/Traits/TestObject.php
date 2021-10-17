@@ -32,7 +32,7 @@ trait TestObject {
      * @throws ORMException
      * @return boolean|unknown
      */
-    protected function is_valid_object(ORMObject $test,$allowed_objects) {
+    protected function isValidObject(ORMObject $test,$allowed_objects) {
         if (is_array($allowed_objects)) {
             foreach ($allowed_objects as $object) {
                 if (Classes::isA($test,$object)) {

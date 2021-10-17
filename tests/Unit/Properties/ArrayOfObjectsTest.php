@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Unit\Properties;
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Properties\PropertyArrayBase;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Properties\PropertyArrayOfObjects;
 
 class ArrayOfObjectsTest extends TestCase
@@ -20,9 +20,9 @@ class ArrayOfObjectsTest extends TestCase
      * @param unknown $test
      */
     public function testArrayNotEmpty($test) {        
-        $test[] = new ts_dummy();
-        $test[] = new ts_dummy();
-        $test[] = new ts_dummy();
+        $test[] = new Dummy();
+        $test[] = new Dummy();
+        $test[] = new Dummy();
         $this->assertFalse($test->empty());
         return $test;
     }
@@ -42,9 +42,9 @@ class ArrayOfObjectsTest extends TestCase
      */
     public function testArrayCount() {
         $test = new PropertyArrayOfObjects();
-        $dummy1 = new ts_dummy(); $dummy1->dummyint = 11; $dummy1->set_ID(1);
-        $dummy2 = new ts_dummy(); $dummy2->dummyint = 22; $dummy2->set_ID(2);
-        $dummy3 = new ts_dummy(); $dummy3->dummyint = 33; $dummy3->set_ID(3);
+        $dummy1 = new Dummy(); $dummy1->dummyint = 11; $dummy1->set_ID(1);
+        $dummy2 = new Dummy(); $dummy2->dummyint = 22; $dummy2->set_ID(2);
+        $dummy3 = new Dummy(); $dummy3->dummyint = 33; $dummy3->set_ID(3);
         $test[] = $dummy1;
         $test[] = $dummy2;
         $test[] = $dummy3;
@@ -76,7 +76,7 @@ class ArrayOfObjectsTest extends TestCase
      * @depends testArrayCount
      */
     public function testArrayHasValue_pass($test) {
-        $dummy = new ts_dummy(); $dummy->set_ID(2);
+        $dummy = new Dummy(); $dummy->set_ID(2);
         $this->assertTrue($test->IsElementIn($dummy));
         return $test;
     }
@@ -85,7 +85,7 @@ class ArrayOfObjectsTest extends TestCase
      * @depends testArrayCount
      */
     public function testArrayHasValue_fail($test) {
-        $dummy = new ts_dummy(); $dummy->set_ID(992);
+        $dummy = new Dummy(); $dummy->set_ID(992);
         $this->assertFalse($test->IsElementIn($dummy));
         return $test;
     }
@@ -95,7 +95,7 @@ class ArrayOfObjectsTest extends TestCase
      */
     public function testArrayDirty($test) {
         $test->setDirty(false);
-        $dummy = new ts_dummy(); $dummy->set_ID(992);
+        $dummy = new Dummy(); $dummy->set_ID(992);
         $test[] = $dummy;
         $this->assertTrue($test->getDirty());
         return $test;
@@ -105,7 +105,7 @@ class ArrayOfObjectsTest extends TestCase
         $test = new PropertyArrayOfObjects();
         $test[] = 1;
         $test[] = 2;
-        $dummy = new ts_dummy(); $dummy->set_ID(3);        
+        $dummy = new Dummy(); $dummy->set_ID(3);        
         $test[] = $dummy;
         $this->assertTrue($test->IsElementIn(1));
         $this->assertFalse($test->IsElementIn(999));
@@ -115,7 +115,7 @@ class ArrayOfObjectsTest extends TestCase
         $test = new PropertyArrayOfObjects();
         $test[] = 1;
         $test[] = 2;
-        $dummy = new ts_dummy(); $dummy->set_ID(3);
+        $dummy = new Dummy(); $dummy->set_ID(3);
         $test[] = $dummy;
         $this->assertTrue($test->IsElementIn(3));
     }
@@ -124,7 +124,7 @@ class ArrayOfObjectsTest extends TestCase
         $test = new PropertyArrayOfObjects();
         $test[] = 1;
         $test[] = 2;
-        $dummy = new ts_dummy(); $dummy->set_ID(3);
+        $dummy = new Dummy(); $dummy->set_ID(3);
         $test[] = $dummy;
         $this->assertTrue($test->IsElementIn($dummy));
     }

@@ -400,7 +400,7 @@
              "type"=>"timestamp",
              ],
           "dummyint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_dummy",
+             "class"=>"Sunhill\ORM\Test\Dummy",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"dummyint",
@@ -504,7 +504,7 @@
         ],
     ],
     "dummy"=>[
-        "class"=>"Sunhill\\ORM\\Test\\ts_dummy",
+        "class"=>"Sunhill\\ORM\\Test\\Dummy",
         "name"=>"dummy",
         "table"=>"dummies",
         "name_s"=>"dummy object",
@@ -532,7 +532,7 @@
              "type"=>"timestamp",
              ],
           "dummyint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_dummy",
+             "class"=>"Sunhill\ORM\Test\Dummy",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"dummyint",
@@ -850,7 +850,7 @@
              "type"=>"timestamp",
              ],
           "dummyint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_dummy",
+             "class"=>"Sunhill\ORM\Test\Dummy",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"dummyint",
@@ -1047,7 +1047,7 @@
         ],
     ],
     "thirdlevelchild"=>[
-        "class"=>"Sunhill\\ORM\\Test\\ts_thirdlevelchild",
+        "class"=>"Sunhill\\ORM\\Test\\ThirdLevelChild",
         "name"=>"thirdlevelchild",
         "table"=>"thirdlevelchildren",
         "name_s"=>"third level child",
@@ -1075,7 +1075,7 @@
              "type"=>"timestamp",
              ],
           "parentint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentint",
@@ -1084,7 +1084,7 @@
              "type"=>"integer",
              ],
           "parentchar"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentchar",
@@ -1093,7 +1093,7 @@
              "type"=>"varchar",
              ],
           "parentfloat"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentfloat",
@@ -1102,7 +1102,7 @@
              "type"=>"float",
              ],
           "parenttext"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttext",
@@ -1111,7 +1111,7 @@
              "type"=>"text",
              ],
           "parentdatetime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdatetime",
@@ -1120,7 +1120,7 @@
              "type"=>"datetime",
              ],
           "parentdate"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdate",
@@ -1129,7 +1129,7 @@
              "type"=>"date",
              ],
           "parenttime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttime",
@@ -1138,7 +1138,7 @@
              "type"=>"time",
              ],
           "parentenum"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentenum",
@@ -1147,7 +1147,7 @@
              "type"=>"enum",
              ],
           "parentobject"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>true,
              "features"=>["object","complex","objectid",],
              "name"=>"parentobject",
@@ -1156,7 +1156,7 @@
              "type"=>"object",
              ],
           "parentsarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","strings",],
              "name"=>"parentsarray",
@@ -1165,7 +1165,7 @@
              "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","objectid",],
              "name"=>"parentoarray",
@@ -1174,7 +1174,7 @@
              "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["complex","calculated",],
              "name"=>"parentcalc",
@@ -1183,7 +1183,7 @@
              "type"=>"calculated",
              ],
           "childint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_secondlevelchild",
+             "class"=>"Sunhill\ORM\Test\SecondLevelChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childint",
@@ -1192,7 +1192,7 @@
              "type"=>"integer",
              ],
           "childchildint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_thirdlevelchild",
+             "class"=>"Sunhill\ORM\Test\ThirdLevelChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childchildint",
@@ -1201,7 +1201,7 @@
              "type"=>"integer",
              ],
           "thirdlevelobject"=>[
-             "class"=>"Sunhill\ORM\Test\ts_thirdlevelchild",
+             "class"=>"Sunhill\ORM\Test\ThirdLevelChild",
              "defaults_null"=>false,
              "features"=>["object","complex","objectid",],
              "name"=>"thirdlevelobject",
@@ -1210,7 +1210,7 @@
              "type"=>"object",
              ],
           "thirdlevelsarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_thirdlevelchild",
+             "class"=>"Sunhill\ORM\Test\ThirdLevelChild",
              "defaults_null"=>false,
              "features"=>["object","complex","array","strings",],
              "name"=>"thirdlevelsarray",
@@ -1221,7 +1221,7 @@
         ],
     ],
     "secondlevelchild"=>[
-        "class"=>"Sunhill\\ORM\\Test\\ts_secondlevelchild",
+        "class"=>"Sunhill\\ORM\\Test\\SecondLevelChild",
         "name"=>"secondlevelchild",
         "table"=>"secondlevelchildren",
         "name_s"=>"second level child",
@@ -1249,7 +1249,7 @@
              "type"=>"timestamp",
              ],
           "parentint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentint",
@@ -1258,7 +1258,7 @@
              "type"=>"integer",
              ],
           "parentchar"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentchar",
@@ -1267,7 +1267,7 @@
              "type"=>"varchar",
              ],
           "parentfloat"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentfloat",
@@ -1276,7 +1276,7 @@
              "type"=>"float",
              ],
           "parenttext"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttext",
@@ -1285,7 +1285,7 @@
              "type"=>"text",
              ],
           "parentdatetime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdatetime",
@@ -1294,7 +1294,7 @@
              "type"=>"datetime",
              ],
           "parentdate"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdate",
@@ -1303,7 +1303,7 @@
              "type"=>"date",
              ],
           "parenttime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttime",
@@ -1312,7 +1312,7 @@
              "type"=>"time",
              ],
           "parentenum"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentenum",
@@ -1321,7 +1321,7 @@
              "type"=>"enum",
              ],
           "parentobject"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>true,
              "features"=>["object","complex","objectid",],
              "name"=>"parentobject",
@@ -1330,7 +1330,7 @@
              "type"=>"object",
              ],
           "parentsarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","strings",],
              "name"=>"parentsarray",
@@ -1339,7 +1339,7 @@
              "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","objectid",],
              "name"=>"parentoarray",
@@ -1348,7 +1348,7 @@
              "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["complex","calculated",],
              "name"=>"parentcalc",
@@ -1357,7 +1357,7 @@
              "type"=>"calculated",
              ],
           "childint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_secondlevelchild",
+             "class"=>"Sunhill\ORM\Test\SecondLevelChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childint",
@@ -1368,7 +1368,7 @@
         ],
     ],
     "passthru"=>[
-        "class"=>"Sunhill\\ORM\\Test\\ts_passthru",
+        "class"=>"Sunhill\\ORM\\Test\\Passthru",
         "name"=>"passthru",
         "table"=>"passthrus",
         "name_s"=>"passthru",
@@ -1396,7 +1396,7 @@
              "type"=>"timestamp",
              ],
           "parentint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentint",
@@ -1405,7 +1405,7 @@
              "type"=>"integer",
              ],
           "parentchar"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentchar",
@@ -1414,7 +1414,7 @@
              "type"=>"varchar",
              ],
           "parentfloat"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentfloat",
@@ -1423,7 +1423,7 @@
              "type"=>"float",
              ],
           "parenttext"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttext",
@@ -1432,7 +1432,7 @@
              "type"=>"text",
              ],
           "parentdatetime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdatetime",
@@ -1441,7 +1441,7 @@
              "type"=>"datetime",
              ],
           "parentdate"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdate",
@@ -1450,7 +1450,7 @@
              "type"=>"date",
              ],
           "parenttime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttime",
@@ -1459,7 +1459,7 @@
              "type"=>"time",
              ],
           "parentenum"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentenum",
@@ -1468,7 +1468,7 @@
              "type"=>"enum",
              ],
           "parentobject"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>true,
              "features"=>["object","complex","objectid",],
              "name"=>"parentobject",
@@ -1477,7 +1477,7 @@
              "type"=>"object",
              ],
           "parentsarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","strings",],
              "name"=>"parentsarray",
@@ -1486,7 +1486,7 @@
              "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","objectid",],
              "name"=>"parentoarray",
@@ -1495,7 +1495,7 @@
              "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["complex","calculated",],
              "name"=>"parentcalc",
@@ -1506,7 +1506,7 @@
         ],
     ],
     "testparent"=>[
-        "class"=>"Sunhill\\ORM\\Test\\ts_testparent",
+        "class"=>"Sunhill\\ORM\\Test\\TestParent",
         "name"=>"testparent",
         "table"=>"testparentes",
         "name_s"=>"test parent",
@@ -1534,7 +1534,7 @@
              "type"=>"timestamp",
              ],
           "parentint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentint",
@@ -1543,7 +1543,7 @@
              "type"=>"integer",
              ],
           "parentchar"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentchar",
@@ -1552,7 +1552,7 @@
              "type"=>"varchar",
              ],
           "parentfloat"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentfloat",
@@ -1561,7 +1561,7 @@
              "type"=>"float",
              ],
           "parenttext"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttext",
@@ -1570,7 +1570,7 @@
              "type"=>"text",
              ],
           "parentdatetime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdatetime",
@@ -1579,7 +1579,7 @@
              "type"=>"datetime",
              ],
           "parentdate"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdate",
@@ -1588,7 +1588,7 @@
              "type"=>"date",
              ],
           "parenttime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttime",
@@ -1597,7 +1597,7 @@
              "type"=>"time",
              ],
           "parentenum"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentenum",
@@ -1606,7 +1606,7 @@
              "type"=>"enum",
              ],
           "parentobject"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>true,
              "features"=>["object","complex","objectid",],
              "name"=>"parentobject",
@@ -1615,7 +1615,7 @@
              "type"=>"object",
              ],
           "parentsarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","strings",],
              "name"=>"parentsarray",
@@ -1624,7 +1624,7 @@
              "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","objectid",],
              "name"=>"parentoarray",
@@ -1633,7 +1633,7 @@
              "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["complex","calculated",],
              "name"=>"parentcalc",
@@ -1644,7 +1644,7 @@
         ],
     ],
     "testchild"=>[
-        "class"=>"Sunhill\\ORM\\Test\\ts_testchild",
+        "class"=>"Sunhill\\ORM\\Test\\TestChild",
         "name"=>"testchild",
         "table"=>"testchildren",
         "name_s"=>"test child",
@@ -1672,7 +1672,7 @@
              "type"=>"timestamp",
              ],
           "parentint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentint",
@@ -1681,7 +1681,7 @@
              "type"=>"integer",
              ],
           "parentchar"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentchar",
@@ -1690,7 +1690,7 @@
              "type"=>"varchar",
              ],
           "parentfloat"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentfloat",
@@ -1699,7 +1699,7 @@
              "type"=>"float",
              ],
           "parenttext"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttext",
@@ -1708,7 +1708,7 @@
              "type"=>"text",
              ],
           "parentdatetime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdatetime",
@@ -1717,7 +1717,7 @@
              "type"=>"datetime",
              ],
           "parentdate"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentdate",
@@ -1726,7 +1726,7 @@
              "type"=>"date",
              ],
           "parenttime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parenttime",
@@ -1735,7 +1735,7 @@
              "type"=>"time",
              ],
           "parentenum"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"parentenum",
@@ -1744,7 +1744,7 @@
              "type"=>"enum",
              ],
           "parentobject"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>true,
              "features"=>["object","complex","objectid",],
              "name"=>"parentobject",
@@ -1753,7 +1753,7 @@
              "type"=>"object",
              ],
           "parentsarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","strings",],
              "name"=>"parentsarray",
@@ -1762,7 +1762,7 @@
              "type"=>"arrayOfStrings",
              ],
           "parentoarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["object","complex","array","objectid",],
              "name"=>"parentoarray",
@@ -1771,7 +1771,7 @@
              "type"=>"arrayOfObject",
              ],
           "parentcalc"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testparent",
+             "class"=>"Sunhill\ORM\Test\TestParent",
              "defaults_null"=>false,
              "features"=>["complex","calculated",],
              "name"=>"parentcalc",
@@ -1780,7 +1780,7 @@
              "type"=>"calculated",
              ],
           "childint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childint",
@@ -1789,7 +1789,7 @@
              "type"=>"integer",
              ],
           "childchar"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childchar",
@@ -1798,7 +1798,7 @@
              "type"=>"varchar",
              ],
           "childfloat"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childfloat",
@@ -1807,7 +1807,7 @@
              "type"=>"float",
              ],
           "childtext"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childtext",
@@ -1816,7 +1816,7 @@
              "type"=>"text",
              ],
           "childdatetime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childdatetime",
@@ -1825,7 +1825,7 @@
              "type"=>"datetime",
              ],
           "childdate"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childdate",
@@ -1834,7 +1834,7 @@
              "type"=>"date",
              ],
           "childtime"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childtime",
@@ -1843,7 +1843,7 @@
              "type"=>"time",
              ],
           "childenum"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"childenum",
@@ -1852,7 +1852,7 @@
              "type"=>"enum",
              ],
           "childobject"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>true,
              "features"=>["object","complex","objectid",],
              "name"=>"childobject",
@@ -1861,7 +1861,7 @@
              "type"=>"object",
              ],
           "childsarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","complex","array","strings",],
              "name"=>"childsarray",
@@ -1870,7 +1870,7 @@
              "type"=>"arrayOfStrings",
              ],
           "childoarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_testchild",
+             "class"=>"Sunhill\ORM\Test\TestChild",
              "defaults_null"=>false,
              "features"=>["object","complex","array","objectid",],
              "name"=>"childoarray",
@@ -1881,7 +1881,7 @@
         ],
     ],
     "referenceonly"=>[
-        "class"=>"Sunhill\\ORM\\Test\\ts_referenceonly",
+        "class"=>"Sunhill\\ORM\\Test\\ReferenceOnly",
         "name"=>"referenceonly",
         "table"=>"referenceonlies",
         "name_s"=>"reference only",
@@ -1909,7 +1909,7 @@
              "type"=>"timestamp",
              ],
           "testint"=>[
-             "class"=>"Sunhill\ORM\Test\ts_referenceonly",
+             "class"=>"Sunhill\ORM\Test\ReferenceOnly",
              "defaults_null"=>false,
              "features"=>["object","simple",],
              "name"=>"testint",
@@ -1918,7 +1918,7 @@
              "type"=>"integer",
              ],
           "testobject"=>[
-             "class"=>"Sunhill\ORM\Test\ts_referenceonly",
+             "class"=>"Sunhill\ORM\Test\ReferenceOnly",
              "defaults_null"=>true,
              "features"=>["object","complex","objectid",],
              "name"=>"testobject",
@@ -1927,7 +1927,7 @@
              "type"=>"object",
              ],
           "testoarray"=>[
-             "class"=>"Sunhill\ORM\Test\ts_referenceonly",
+             "class"=>"Sunhill\ORM\Test\ReferenceOnly",
              "defaults_null"=>false,
              "features"=>["object","complex","array","objectid",],
              "name"=>"testoarray",
@@ -1938,7 +1938,7 @@
         ],
     ],
     "objectunit"=>[
-        "class"=>"Sunhill\\ORM\\Test\\ts_objectunit",
+        "class"=>"Sunhill\\ORM\\Test\\ObjectUnit",
         "name"=>"objectunit",
         "table"=>"objectunits",
         "name_s"=>"object unit",

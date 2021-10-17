@@ -6,14 +6,14 @@ use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Managers\ClassManager;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Tests\Objects\ts_testchild;
-use Sunhill\ORM\Tests\Objects\ts_testparent;
-use Sunhill\ORM\Tests\Objects\ts_passthru;
-use Sunhill\ORM\Tests\Objects\ts_secondlevelchild;
-use Sunhill\ORM\Tests\Objects\ts_thirdlevelchild;
-use Sunhill\ORM\Tests\Objects\ts_referenceonly;
-use Sunhill\ORM\Tests\Objects\ts_objectunit;
+use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Objects\TestChild;
+use Sunhill\ORM\Tests\Objects\TestParent;
+use Sunhill\ORM\Tests\Objects\Passthru;
+use Sunhill\ORM\Tests\Objects\SecondLevelChild;
+use Sunhill\ORM\Tests\Objects\ThirdLevelChild;
+use Sunhill\ORM\Tests\Objects\ReferenceOnly;
+use Sunhill\ORM\Tests\Objects\ObjectUnit;
 
 define('CLASS_COUNT',8);
 
@@ -22,14 +22,14 @@ class ManagerClassesTest extends TestCase
  
     protected function setupClasses() : void {
         Classes::flushClasses();
-        Classes::registerClass(ts_dummy::class);
-        Classes::registerClass(ts_testparent::class);
-        Classes::registerClass(ts_testchild::class);
-        Classes::registerClass(ts_referenceonly::class);
-        Classes::registerClass(ts_passthru::class);
-        Classes::registerClass(ts_secondlevelchild::class);
-        Classes::registerClass(ts_thirdlevelchild::class);
-        Classes::registerClass(ts_objectunit::class);
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
+        Classes::registerClass(ReferenceOnly::class);
+        Classes::registerClass(Passthru::class);
+        Classes::registerClass(SecondLevelChild::class);
+        Classes::registerClass(ThirdLevelChild::class);
+        Classes::registerClass(ObjectUnit::class);
     }
     
     public function testFlushClasses() {
@@ -46,16 +46,16 @@ class ManagerClassesTest extends TestCase
         $test = new ClassManager();
         
         $result = [];
-        $this->callProtectedMethod($test,'getClassEntry',[&$result,ts_dummy::class]);
+        $this->callProtectedMethod($test,'getClassEntry',[&$result,Dummy::class]);
         
-        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\ts_dummy',$result['class']);
+        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\Dummy',$result['class']);
     }
     
     public function testGetClassInformationEntries() {
         $test = new ClassManager();
     
         $result = [];
-        $this->callProtectedMethod($test,'getClassInformationEntries',[&$result,ts_dummy::class]);
+        $this->callProtectedMethod($test,'getClassInformationEntries',[&$result,Dummy::class]);
         
         $this->assertEquals('dummy',$result['name']);
     }
@@ -64,7 +64,7 @@ class ManagerClassesTest extends TestCase
         $test = new ClassManager();
         
         $result = [];
-        $this->callProtectedMethod($test,'getClassParentEntry',[&$result,ts_dummy::class]);
+        $this->callProtectedMethod($test,'getClassParentEntry',[&$result,Dummy::class]);
         
         $this->assertEquals('object',$result['parent']);
     }
@@ -73,7 +73,7 @@ class ManagerClassesTest extends TestCase
         $test = new ClassManager();
         
         $result = [];
-        $this->callProtectedMethod($test,'getClassPropertyEntries',[&$result,ts_dummy::class]);
+        $this->callProtectedMethod($test,'getClassPropertyEntries',[&$result,Dummy::class]);
         
         $this->assertEquals('integer',$result['properties']['dummyint']['type']);
     }
@@ -81,9 +81,9 @@ class ManagerClassesTest extends TestCase
     public function testBuildClassInformation() {
         $test = new ClassManager();
     
-        $result = $this->callProtectedMethod($test,'buildClassInformation',[ts_dummy::class]);
+        $result = $this->callProtectedMethod($test,'buildClassInformation',[Dummy::class]);
         
-        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\ts_dummy',$result['class']);
+        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\Dummy',$result['class']);
         $this->assertEquals('dummy',$result['name']);
         $this->assertEquals('object',$result['parent']);
         $this->assertEquals('integer',$result['properties']['dummyint']['type']);
@@ -92,11 +92,11 @@ class ManagerClassesTest extends TestCase
     public function testRegisterClass() {
         $test = new ClassManager();
         
-        $this->callProtectedMethod($test,'registerClass',[ts_dummy::class]);
+        $this->callProtectedMethod($test,'registerClass',[Dummy::class]);
         
         $result = $this->getProtectedProperty($test,'classes');
         
-        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\ts_dummy',$result['dummy']['class']);
+        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\Dummy',$result['dummy']['class']);
         $this->assertEquals('dummy',$result['dummy']['name']);
         $this->assertEquals('object',$result['dummy']['parent']);
         $this->assertEquals('integer',$result['dummy']['properties']['dummyint']['type']);
@@ -105,27 +105,27 @@ class ManagerClassesTest extends TestCase
     
     public function testNumberOfClasses() {
         $test = new ClassManager();
-        $test->registerClass(ts_dummy::class);
+        $test->registerClass(Dummy::class);
         $this->assertEquals(2,$test->getClassCount());
     }
     
     public function testNumberOfClassesViaApp() {
         $manager = app('\Sunhill\ORM\Managers\ClassManager');
         $manager->flushClasses();
-        $manager->registerClass(ts_dummy::class);
+        $manager->registerClass(Dummy::class);
         $this->assertEquals(2,$manager->getClassCount());
     }
     
      public function testNumberOfClassesViaAlias() {
         $manager = app('classes');
         $manager->flushClasses();
-        $manager->registerClass(ts_dummy::class);
+        $manager->registerClass(Dummy::class);
         $this->assertEquals(2,$manager->getClassCount());
     }
     
     public function testNumberOfClassesViaFacade() {
         Classes::flushClasses();
-        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(Dummy::class);
         $this->assertEquals(2,Classes::getClassCount());
     }
     
@@ -155,10 +155,10 @@ class ManagerClassesTest extends TestCase
     public function GetClassnameProvider() {
         return [
             ['dummy','dummy'],
-            ['Sunhill\ORM\Tests\Objects\ts_dummy','dummy'],
+            ['Sunhill\ORM\Tests\Objects\Dummy','dummy'],
             [-1,'except'],
             [1000,'except'],
-            [function() { return new ts_dummy(); },'dummy'],
+            [function() { return new Dummy(); },'dummy'],
             [function() { return new \stdClass(); },'except'],
         ];
     }
@@ -203,7 +203,7 @@ class ManagerClassesTest extends TestCase
     
     public function testGetClassWithObject() {
         $this->setupClasses();
-        $test = new ts_dummy();
+        $test = new Dummy();
         $this->assertEquals('dummy',Classes::getClass($test,'name'));
     }
     
@@ -238,8 +238,8 @@ class ManagerClassesTest extends TestCase
     public function SearchClassProvider() {
         return [
             ['dummy','dummy'],
-            ['dummy','\\Sunhill\\ORM\\Tests\\Objects\\ts_dummy'],
-            ['dummy','Sunhill\\ORM\\Tests\\Objects\\ts_dummy'],
+            ['dummy','\\Sunhill\\ORM\\Tests\\Objects\\Dummy'],
+            ['dummy','Sunhill\\ORM\\Tests\\Objects\\Dummy'],
             [null,'notexisting'],
             [null,'\\Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
             [null,'Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
@@ -374,13 +374,13 @@ class ManagerClassesTest extends TestCase
     public function testCreateObjectViaName() {
         $this->setupClasses();
         $test = Classes::createObject('testparent');
-        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Objects\ts_testparent'));
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Objects\TestParent'));
     }
     
     public function testCreateObjectViaNamespace() {
         $this->setupClasses();
-        $test = Classes::createObject('Sunhill\ORM\Tests\Objects\ts_testparent');
-        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Objects\ts_testparent'));
+        $test = Classes::createObject('Sunhill\ORM\Tests\Objects\TestParent');
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Objects\TestParent'));
     }
     
     /**
@@ -395,14 +395,14 @@ class ManagerClassesTest extends TestCase
         
     public function IsAProvider() {
         return [
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','testparent',true],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testparent',true],
-            ['Sunhill\ORM\Tests\Objects\ts_testchild','testparent',true],
-            ['Sunhill\ORM\Tests\Objects\ts_testchild','Sunhill\ORM\Tests\Objects\ts_testparent',true],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','testchild',false],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testchild',false],
-            ['Sunhill\ORM\Tests\Objects\ts_dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\ts_dummy','Sunhill\ORM\Tests\Objects\ts_testparent',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','testparent',true],
+            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestParent',true],
+            ['Sunhill\ORM\Tests\Objects\TestChild','testparent',true],
+            ['Sunhill\ORM\Tests\Objects\TestChild','Sunhill\ORM\Tests\Objects\TestParent',true],
+            ['Sunhill\ORM\Tests\Objects\TestParent','testchild',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestChild',false],
+            ['Sunhill\ORM\Tests\Objects\Dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\Dummy','Sunhill\ORM\Tests\Objects\TestParent',false],
         ];
     }
     
@@ -418,14 +418,14 @@ class ManagerClassesTest extends TestCase
     
     public function IsAClassProvider() {
         return [
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','testparent',true],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testparent',true],
-            ['Sunhill\ORM\Tests\Objects\ts_testchild','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\ts_testchild','Sunhill\ORM\Tests\Objects\ts_testparent',false],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','testchild',false],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testchild',false],
-            ['Sunhill\ORM\Tests\Objects\ts_dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\ts_dummy','Sunhill\ORM\Tests\Objects\ts_testparent',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','testparent',true],
+            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestParent',true],
+            ['Sunhill\ORM\Tests\Objects\TestChild','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\TestChild','Sunhill\ORM\Tests\Objects\TestParent',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','testchild',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestChild',false],
+            ['Sunhill\ORM\Tests\Objects\Dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\Dummy','Sunhill\ORM\Tests\Objects\TestParent',false],
         ];
     }
     
@@ -441,14 +441,14 @@ class ManagerClassesTest extends TestCase
         
     public function IsSubclassOfProvider() {
         return [
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testparent',false],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','testchild',false],
-            ['Sunhill\ORM\Tests\Objects\ts_testparent','Sunhill\ORM\Tests\Objects\ts_testchild',false],
-            ['Sunhill\ORM\Tests\Objects\ts_testchild','testparent',true],
-            ['Sunhill\ORM\Tests\Objects\ts_testchild','Sunhill\ORM\Tests\Objects\ts_testparent',true],
-            ['Sunhill\ORM\Tests\Objects\ts_dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\ts_dummy','Sunhill\ORM\Tests\Objects\ts_testparent',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestParent',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','testchild',false],
+            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestChild',false],
+            ['Sunhill\ORM\Tests\Objects\TestChild','testparent',true],
+            ['Sunhill\ORM\Tests\Objects\TestChild','Sunhill\ORM\Tests\Objects\TestParent',true],
+            ['Sunhill\ORM\Tests\Objects\Dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Objects\Dummy','Sunhill\ORM\Tests\Objects\TestParent',false],
         ];
     }
     

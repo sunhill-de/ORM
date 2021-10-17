@@ -9,7 +9,7 @@ class PropertyEnum extends PropertyField
 	
 	protected $features = ['object','simple'];
 	
-	protected $validator_name = 'enum_validator';
+	protected $validator_name = 'EnumValidator';
 	
 	
 	public function setEnumValues($values) 
@@ -23,7 +23,7 @@ class PropertyEnum extends PropertyField
 	    return $this->validator->getEnumValues();
 	}
 	
-	public function set_values($values) 
+	public function setValues($values) 
 	{
 		$this->setEnumValues($values);
 		return $this;

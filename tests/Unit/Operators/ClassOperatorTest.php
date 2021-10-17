@@ -4,9 +4,9 @@ namespace Sunhill\ORM\Tests\Unit\Operators;
 use \Sunhill\ORM\Tests\TestCase;
 use \Sunhill\ORM\Operators\ClassOperatorBase;
 use \Sunhill\Basic\Utils\Descriptor;
-use \Sunhill\ORM\Tests\Objects\ts_dummy;
-use \Sunhill\ORM\Tests\Objects\ts_testparent;
-use \Sunhill\ORM\Tests\Objects\ts_testchild;
+use \Sunhill\ORM\Tests\Objects\Dummy;
+use \Sunhill\ORM\Tests\Objects\TestParent;
+use \Sunhill\ORM\Tests\Objects\TestChild;
 
 class TestClassOperator extends ClassOperatorBase {
 
@@ -33,7 +33,7 @@ class TestClassOperator2 extends ClassOperatorBase {
     
     protected $commands = ['TestA','TestB'];
     
-    protected $target_class = ts_dummy::class;
+    protected $target_class = Dummy::class;
 
     protected function doExecute(Descriptor $Descriptor) {
     }
@@ -49,7 +49,7 @@ class ClassOperatorTest extends TestCase
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_dummy();
+        $Descriptor->object = new Dummy();
         
         $this->assertTrue($test->check($Descriptor));
     }
@@ -60,7 +60,7 @@ class ClassOperatorTest extends TestCase
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestC';
-        $Descriptor->object = new ts_dummy();
+        $Descriptor->object = new Dummy();
         
         $this->assertFalse($test->check($Descriptor));
     }
@@ -71,7 +71,7 @@ class ClassOperatorTest extends TestCase
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_dummy();
+        $Descriptor->object = new Dummy();
         
         $this->assertFalse($test->check($Descriptor));
     }
@@ -79,11 +79,11 @@ class ClassOperatorTest extends TestCase
     public function testTargetClassPass() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->setClass(ts_dummy::class);
+        $test->setClass(Dummy::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_dummy();
+        $Descriptor->object = new Dummy();
         
         $this->assertTrue($test->check($Descriptor));        
     }
@@ -91,11 +91,11 @@ class ClassOperatorTest extends TestCase
     public function testTargetClassFail() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->setClass(ts_dummy::class);
+        $test->setClass(Dummy::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_testparent();
+        $Descriptor->object = new TestParent();
         
         $this->assertFalse($test->check($Descriptor));
     }
@@ -105,7 +105,7 @@ class ClassOperatorTest extends TestCase
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_dummy();
+        $Descriptor->object = new Dummy();
         
         $this->assertTrue($test->check($Descriptor));
     }
@@ -115,7 +115,7 @@ class ClassOperatorTest extends TestCase
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_testparent();
+        $Descriptor->object = new TestParent();
         
         $this->assertFalse($test->check($Descriptor));
     }
@@ -123,11 +123,11 @@ class ClassOperatorTest extends TestCase
     public function testTargetClassChildPass() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->setClass(ts_testparent::class);
+        $test->setClass(TestParent::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_testchild();
+        $Descriptor->object = new TestChild();
         
         $this->assertTrue($test->check($Descriptor));
     }
@@ -135,11 +135,11 @@ class ClassOperatorTest extends TestCase
     public function testTargetClassChildFail() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->setClass(ts_testchild::class);
+        $test->setClass(TestChild::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_testparent();
+        $Descriptor->object = new TestParent();
         
         $this->assertFalse($test->check($Descriptor));
     }
@@ -147,11 +147,11 @@ class ClassOperatorTest extends TestCase
     public function testExecution() {
         $test = new TestClassOperator();
         $test->condition = true;
-        $test->setClass(ts_testparent::class);
+        $test->setClass(TestParent::class);
         
         $Descriptor = new Descriptor();
         $Descriptor->command = 'TestA';
-        $Descriptor->object = new ts_dummy();
+        $Descriptor->object = new Dummy();
         
         $test->execute($Descriptor);
         $this->assertEquals('executed',$test->flag);

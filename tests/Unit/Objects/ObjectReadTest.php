@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests\Unit\Objects;
 use Sunhill\ORM\Tests\DBTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Tests\Objects\ts_objectunit;
+use Sunhill\ORM\Tests\Objects\ObjectUnit;
 use Sunhill\ORM\Objects\ORMObject;
 
 class ObjectReadTest extends DBTestCase
@@ -13,10 +13,10 @@ class ObjectReadTest extends DBTestCase
 
     /**
      * @group load
-     * @return \Sunhill\ORM\Test\ts_objectunit
+     * @return \Sunhill\ORM\Test\ObjectUnit
      */
     public function testStorageCreation() {
-        $object = new ts_objectunit();
+        $object = new ObjectUnit();
         $object->storage_values = [
             'id'=>1,
             'created_at'=>'2019-10-06 12:05:00',

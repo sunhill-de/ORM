@@ -8,7 +8,7 @@ use Sunhill\ORM\Tests\Scenario\ScenarioWithObjects;
 use Tests\CreatesApplication;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\Objects\SimpleParent;
 use Sunhill\ORM\Tests\Objects\SimpleChild;
 
@@ -51,7 +51,7 @@ class ScenarioWithObjectsFeatureTestScenario extends ScenarioBase{
     
     public function SetupBeforeTestsObjects() {
         Classes::flushClasses();
-        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(Dummy::class);
         Classes::registerClass(SimpleParent::class);
         Classes::registerClass(SimpleChild::class);
         DB::statement('drop table if exists dummies');
@@ -83,7 +83,7 @@ class ScenarioWithObjectsTest extends SunhillScenarioTestCase
     }
     
     public function testDestructiveInit_dummy() {
-        $object = ts_dummy::search()->where('dummyint',11)->load();
+        $object = Dummy::search()->where('dummyint',11)->load();
         $this->assertEquals(11,$object->dummyint);
     }
 

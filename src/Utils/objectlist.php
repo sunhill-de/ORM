@@ -70,7 +70,7 @@ class ObjectList implements \countable, \ArrayAccess, \Iterator
 
     public function getID(int $index)
     {
-        if (! $this->is_valid($index)) {
+        if (! $this->isValid($index)) {
             throw new ObjectListException("Invalid index '$index'");
         }
         if (is_int($this->items[$index])) {
@@ -86,7 +86,7 @@ class ObjectList implements \countable, \ArrayAccess, \Iterator
      */
     public function get(int $index)
     {
-        if (! $this->is_valid($index)) {
+        if (! $this->isValid($index)) {
             throw new ObjectListException("Invalid index '$index'");
         }
         if (is_int($this->items[$index])) {
@@ -145,10 +145,10 @@ class ObjectList implements \countable, \ArrayAccess, \Iterator
 
     public function valid(): bool
     {
-        return $this->is_valid($this->pointer);
+        return $this->isValid($this->pointer);
     }
 
-    protected function is_valid(int $index)
+    protected function isValid(int $index)
     {
         return (($index >= 0) && ($index < count($this->items)));
     }

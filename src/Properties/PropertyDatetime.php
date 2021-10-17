@@ -20,6 +20,6 @@ class PropertyDatetime extends PropertyField
 	
     protected $features = ['object','simple'];
 	
-    protected $validator_name = 'datetime_validator';
+    protected $validator_name = 'DatetimeValidator';
     
 }

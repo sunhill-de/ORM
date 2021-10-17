@@ -6,28 +6,28 @@ use Sunhill\ORM\Checks\orm_checks;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
 
-use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Tests\Objects\ts_testchild;
-use Sunhill\ORM\Tests\Objects\ts_testparent;
-use Sunhill\ORM\Tests\Objects\ts_passthru;
-use Sunhill\ORM\Tests\Objects\ts_secondlevelchild;
-use Sunhill\ORM\Tests\Objects\ts_thirdlevelchild;
-use Sunhill\ORM\Tests\Objects\ts_referenceonly;
-use Sunhill\ORM\Tests\Objects\ts_objectunit;
+use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Objects\TestChild;
+use Sunhill\ORM\Tests\Objects\TestParent;
+use Sunhill\ORM\Tests\Objects\Passthru;
+use Sunhill\ORM\Tests\Objects\SecondLevelChild;
+use Sunhill\ORM\Tests\Objects\ThirdLevelChild;
+use Sunhill\ORM\Tests\Objects\ReferenceOnly;
+use Sunhill\ORM\Tests\Objects\ObjectUnit;
 
 class ORMChecksTest extends TestCase
 {
     public function setUp() : void {
         parent::setUp();
         Classes::flushClasses();
-        Classes::registerClass(ts_dummy::class);
-        Classes::registerClass(ts_testparent::class);
-        Classes::registerClass(ts_testchild::class);
-        Classes::registerClass(ts_referenceonly::class);
-        Classes::registerClass(ts_passthru::class);
-        Classes::registerClass(ts_secondlevelchild::class);
-        Classes::registerClass(ts_thirdlevelchild::class);
-        Classes::registerClass(ts_objectunit::class);
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
+        Classes::registerClass(ReferenceOnly::class);
+        Classes::registerClass(Passthru::class);
+        Classes::registerClass(SecondLevelChild::class);
+        Classes::registerClass(ThirdLevelChild::class);
+        Classes::registerClass(ObjectUnit::class);
     }
     
     public function testTagswithnotexistingparents_pass() {

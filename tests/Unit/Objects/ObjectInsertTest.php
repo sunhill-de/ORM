@@ -12,14 +12,14 @@ namespace Sunhill\ORM\Tests\Unit\Objects;
 use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\Objects\ts_objectunit;
+use Sunhill\ORM\Tests\Objects\ObjectUnit;
 use Sunhill\ORM\Facades\Objects;
 
 class ObjectInsertTest extends DBTestCase
 {
    
     public function testStorageCreation() {
-        $object = new ts_objectunit();
+        $object = new ObjectUnit();
         $object->intvalue = 666;
         $object->sarray[] = 'AAA';
         $object->sarray[] = 'BBB';
@@ -96,7 +96,7 @@ class ObjectInsertTest extends DBTestCase
     }
     
     public function testSimpleOnly() {
-        $object = new ts_objectunit();
+        $object = new ObjectUnit();
         $object->intvalue = 666;
         $object->commit();
         $this->assertEquals(666,$object->storage_values['intvalue']);

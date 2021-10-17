@@ -2,11 +2,11 @@
 
 namespace Sunhill\ORM\Validators;
 
-class enum_validator extends validator_base {
+class EnumValidator extends ValidatorBase {
     
     private $allowed;
     
-    protected function is_valid($test) {
+    protected function isValid($test) {
         if (!in_array($test, $this->allowed)) {
             return false;
         }

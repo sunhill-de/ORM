@@ -30,7 +30,7 @@ class PropertyObject extends PropertyField
 	
 	protected $initialized = true;
 	
-	protected $validator_name = 'object_validator';
+	protected $validator_name = 'ObjectValidator';
 	
 	public function setAllowedObjects($object) 
 	{

@@ -8,5 +8,5 @@ class PropertyFloat extends PropertyField {
 	
 	protected $features = ['object','simple'];
 
-	protected $validator_name = 'float_validator';
+	protected $validator_name = 'FloatValidator';
 }

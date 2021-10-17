@@ -11,15 +11,4 @@ class PropertyArrayOfStrings extends PropertyArrayBase
 	
 	protected $features = ['object','complex','array','strings'];
 	
-	public function setType($type) 
-	{
-	    $this->type = $type;
-	    return $this;
-	}
-	
-	public function getType() 
-	{
-	    return $this->type;
-	}
-		
 }

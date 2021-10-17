@@ -43,7 +43,7 @@ use Sunhill\ORM\Facades\Classes;
  *  
  * @author lokal
  */
-class PopertiesHaving extends Hookable 
+class PropertiesHaving extends Hookable 
 {
 	
     protected $id;
@@ -81,7 +81,7 @@ class PopertiesHaving extends Hookable
 	 * Returns the current id of this object (or null, when this object wasn't stored yet) 
 	 * @return int|null
 	 */
-	public function getID(): int 
+	public function getID()
     {
 	    return $this->id;
 	}
@@ -90,7 +90,7 @@ class PopertiesHaving extends Hookable
 	 * Sets the ID for the current object
 	 * @param Integer $id
 	 */
-	public function setID(int $id): null
+	public function setID(int $id)
     {
 	    $this->id = $id;
 	}
@@ -166,7 +166,7 @@ class PopertiesHaving extends Hookable
 	/**
      * Raises an exception if the object is invalid
      */
-    protected function checkValidity(): null 
+    protected function checkValidity() 
     {
 	    if ($this->isInvalid()) {
 	        throw new PropertiesHavingException(__('Invalided object called.'));
@@ -214,7 +214,7 @@ class PopertiesHaving extends Hookable
 	 * Add itself to the cache
 	 * @param Int $id
 	 */
-	protected function insert_cache(int $id): null 
+	protected function insert_cache(int $id) 
     {
 	}
 	
@@ -369,7 +369,7 @@ class PopertiesHaving extends Hookable
 	public function &__get($name) 
     {
 	    if (isset($this->properties[$name])) {
-	        $this->check_for_hook('GET',$name,null);
+	        $this->checkForHook('GET',$name,null);
 	        return $this->properties[$name]->getValue();
 	    } else {
 	        return parent::__get($name);
@@ -381,21 +381,21 @@ class PopertiesHaving extends Hookable
      * @param $name string The name of the unknown member variable
      * @param $value void The valie for this member variable
      */
-	public function __set(string $name, mixed $value) 
+	public function __set(string $name, $value) 
     {
 	    if (isset($this->properties[$name])) {
 	        if ($this->getReadonly()) {
 	            throw new PropertiesHavingException(__("Property ':name' was changed in readonly state.",['name'=>$name]));
 	        } else {
 	            $this->properties[$name]->setValue($value);
-	            $this->check_for_hook('SET',$name,array(
+	            $this->checkForHook('SET',$name,array(
 	                'from'=>$this->properties[$name]->getOldValue(),
 	                'to'=>$value));
 	            if (!$this->properties[$name]->is_simple()) {
-	                $this->check_for_hook('EXTERNAL',$name,array('to'=>$value,'from'=>$this->properties[$name]->getOldValue()));
+	                $this->checkForHook('EXTERNAL',$name,array('to'=>$value,'from'=>$this->properties[$name]->getOldValue()));
 	            }
 	            if ($this->properties[$name]->getDirty()) {
-	                $this->check_for_hook('FIELDCHANGE',$name,array(
+	                $this->checkForHook('FIELDCHANGE',$name,array(
 	                    'from'=>$this->properties[$name]->getOldValue(),
 	                    'to'=>$this->properties[$name]->getValue()));
 	            }
@@ -494,13 +494,13 @@ class PopertiesHaving extends Hookable
 	
 	protected static $property_definitions;
 	
-	public static function initializeProperties(): null 
+	public static function initializeProperties() 
     {
  	       static::$property_definitions = array();
-	       static::setup_properties();
+	       static::setupProperties();
 	}
 	
-	protected static function setupProperties(): null 
+	protected static function setupProperties() 
     {
 	    
 	}
@@ -511,9 +511,10 @@ class PopertiesHaving extends Hookable
 	    return $caller[4]['class'];
 	}
 	
-	protected static function createProperty(string $name, string $type, PropertiesHaving|null $class = null) 
+	protected static function createProperty(string $name, string $type, $class = null) 
     {
-	    $property_name = '\Sunhill\ORM\Properties\oo_property_'.$type;
+	    $type = ucfirst($type);
+        $property_name = '\Sunhill\ORM\Properties\Property'.$type;
 	    $property = new $property_name();
 	    $property->setName($name);
 	    $property->setType($type);
@@ -666,7 +667,7 @@ class PopertiesHaving extends Hookable
 	
 	protected static function arrayOfObjects($name) 
     {
-	    $property = self::addProperty($name, 'arrayOfObject');
+	    $property = self::addProperty($name, 'arrayOfObjects');
 	    return $property;
 	}
 	

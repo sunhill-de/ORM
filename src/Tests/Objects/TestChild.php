@@ -1,7 +1,7 @@
 <?php
 namespace Sunhill\ORM\Tests\Objects;
 
-class ts_testchild extends ts_testparent {
+class TestChild extends TestParent {
     public static $table_name = 'testchildren';
     
     public static $object_infos = [
@@ -13,8 +13,8 @@ class ts_testchild extends ts_testparent {
         'options'=>0,           // Reserved for later purposes
     ];
     protected static $property_definitions;
-    protected static function setup_properties() {
-	    parent::setup_properties();
+    protected static function setupProperties() {
+	    parent::setupProperties();
 	    self::integer('childint')->searchable();
 	    self::varchar('childchar')->searchable();
 	    self::float('childfloat')->searchable();
@@ -22,7 +22,7 @@ class ts_testchild extends ts_testparent {
 	    self::datetime('childdatetime');
 	    self::date('childdate');
 		self::time('childtime');
-		self::enum('childenum')->set_values(['testA','testB','testC']);
+		self::enum('childenum')->setValues(['testA','testB','testC']);
 		self::object('childobject')->setAllowedObjects(['dummy'])->setDefault(null);;
 		self::arrayofstrings('childsarray');
 		self::arrayofobjects('childoarray')->setAllowedObjects(['dummy']);

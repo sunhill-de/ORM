@@ -30,7 +30,7 @@ class FakeStorage extends \Sunhill\ORM\Storage\StorageBase {
     
 }
 
-class ts_objectunit extends \Sunhill\ORM\Objects\ORMObject {
+class ObjectUnit extends \Sunhill\ORM\Objects\ORMObject {
 	
     public static $table_name = 'objectunits';
 
@@ -48,8 +48,8 @@ class ts_objectunit extends \Sunhill\ORM\Objects\ORMObject {
         return new FakeStorage($this);
     }
     
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('intvalue');
         self::object('objectvalue')->setAllowedObjects(['dummy'])->setDefault(null);
         self::arrayofstrings('sarray');

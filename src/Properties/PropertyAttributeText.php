@@ -2,6 +2,8 @@
 
 namespace Sunhill\ORM\Properties;
 
+use Sunhill\ORM\Storage\StorageBase;
+
 class PropertyAttributeText extends PropertyAttribute 
 {
 	

@@ -118,7 +118,7 @@ abstract class StorageBase
         $method_name = 'prepare_'.$chainname;
         $module_list = [];
         foreach ($this->modules as $module_name) {
-            $full_name = "\\Sunhill\\ORM\\Storage\\storagemodule_".$module_name;
+            $full_name = "\\Sunhill\\ORM\\Storage\\StorageModule".$module_name;
             $module = new $full_name($this);
             if (isset($payload)) {
                 $module->$method_name($id,$payload);

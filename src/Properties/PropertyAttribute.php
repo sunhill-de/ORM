@@ -21,6 +21,8 @@ class PropertyAttribute extends Property {
 
     protected $attribute_type;
     
+    protected $attribute_property;
+    
 	public function initialize() 
 	{
 		$this->initialized = true;

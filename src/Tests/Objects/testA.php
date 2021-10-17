@@ -25,8 +25,8 @@ class testA extends ORMObject {
     ];
     public static $table_name = 'testA';
     
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('testint');
         self::varchar('testchar');
     }

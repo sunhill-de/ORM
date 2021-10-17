@@ -78,7 +78,7 @@ class ClassManager
     
     private function getClassProperties(string $class) 
     {
-        $properties = $class::static_get_properties_with_feature();
+        $properties = $class::staticGetPropertiesWithFeature();
         $result = [];
         foreach ($properties as $name => $Descriptor) {
             if ($name !== 'tags') {

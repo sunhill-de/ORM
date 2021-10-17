@@ -40,7 +40,7 @@ class Hookable extends Loggable
     {
 		parent::__construct();
 		$this->setup_hooks();
-		$this->check_for_hook('CONSTRUCTED');		
+		$this->checkForHook('CONSTRUCTED');		
 	}
 		
     /**

@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Objects;
 
 use Sunhill\ORM\Objects\ORMObject;
 
-class ts_testparent extends ORMObject {
+class TestParent extends ORMObject {
     
     public static $table_name = 'testparents';
     public static $object_infos = [
@@ -21,8 +21,8 @@ class ts_testparent extends ORMObject {
     public $trigger_exception = false;
     
     protected static $property_definitions;
-    protected static function setup_properties() {
-		parent::setup_properties();
+    protected static function setupProperties() {
+		parent::setupProperties();
 		self::integer('parentint')->searchable();
 		self::varchar('parentchar')->searchable();
 		self::float('parentfloat')->searchable();
@@ -30,7 +30,7 @@ class ts_testparent extends ORMObject {
 		self::datetime('parentdatetime');
 		self::date('parentdate');
 		self::time('parenttime');
-		self::enum('parentenum')->set_values(['testA','testB','testC']);
+		self::enum('parentenum')->setValues(['testA','testB','testC']);
 		self::object('parentobject')->setAllowedObjects(['dummy'])->setDefault(null);
 		self::arrayofstrings('parentsarray');
 		self::arrayofobjects('parentoarray')->setAllowedObjects(['dummy']);

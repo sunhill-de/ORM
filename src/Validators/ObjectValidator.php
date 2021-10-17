@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Validators;
 
 use Sunhill\ORM\Traits\TestObject;
 
-class object_validator extends validator_base {
+class ObjectValidator extends ValidatorBase {
     
     use TestObject;
     
@@ -19,15 +19,15 @@ class object_validator extends validator_base {
         return $this;
     }
     
-    protected function is_allowed_object($test) {
+    protected function isAllowedObject($test) {
         if (!isset($this->allowed_objects)) {
             return true;
         }
-        return $this->is_valid_object($test,$this->allowed_objects);
+        return $this->isValidObject($test,$this->allowed_objects);
     }
     
-    protected function is_valid($value) {
-        if (!$this->is_allowed_object($value)) {
+    protected function isValid($value) {
+        if (!$this->isAllowedObject($value)) {
             return false;
         } else {
             return true;

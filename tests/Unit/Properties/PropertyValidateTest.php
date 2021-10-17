@@ -10,8 +10,8 @@ use Sunhill\ORM\Properties\PropertyArrayOfObjects;
 use Sunhill\ORM\Properties\PropertyArrayOfStrings;
 use Sunhill\ORM\Properties\PropertyEnum;
 use Sunhill\ORM\Validators\ValidatorException;
-use Sunhill\ORM\Tests\Objects\ts_testparent;
-use Sunhill\ORM\Tests\Objects\ts_testchild;
+use Sunhill\ORM\Tests\Objects\TestParent;
+use Sunhill\ORM\Tests\Objects\TestChild;
 use Sunhill\ORM\Facades\Classes;
 
 class PropertyValidateTest extends TestCase
@@ -20,8 +20,8 @@ class PropertyValidateTest extends TestCase
     public function setUp() : void {
         parent::setUp();
         Classes::flushClasses();
-        Classes::registerClass(ts_testchild::class);
-        Classes::registerClass(ts_testparent::class);
+        Classes::registerClass(TestChild::class);
+        Classes::registerClass(TestParent::class);
     }
     
     /**
@@ -91,7 +91,7 @@ class PropertyValidateTest extends TestCase
     public function testObjectsPropertyPass() {
     	$test = new PropertyObject(null);
     	$test->setAllowedObjects(['testparent']);
-    	$object = new ts_testparent();
+    	$object = new TestParent();
     	$object->parentint = 22;
     	$test->setValue($object);
     	$this->assertEquals(22,$test->getValue()->parentint);
@@ -100,7 +100,7 @@ class PropertyValidateTest extends TestCase
     public function testObjectsPropertyPassWithChild() {
     	$test = new PropertyObject(null);
     	$test->setAllowedObjects(['testparent']);
-    	$object = new ts_testchild();
+    	$object = new TestChild();
     	$test->setValue($object);
     	$this->assertEquals($object,$test->getValue());
     }
@@ -109,14 +109,14 @@ class PropertyValidateTest extends TestCase
         $this->expectException(ValidatorException::class);
         $test = new PropertyObject(null);
     	$test->setAllowedObjects(['testchild']);
-    	$object = new ts_testparent();
+    	$object = new TestParent();
     	$test->setValue($object);
     }
     
     public function testArrayOfObjectsPropertyPass() {
     	$test = new PropertyArrayOfObjects(null);
     	$test->setAllowedObjects(['testparent']);
-    	$object = new ts_testparent();
+    	$object = new TestParent();
     	$object->parentint = 22;
     	$test->getValue()[] = $object;
     	$this->assertEquals(22,$test->getValue()[0]->parentint);
@@ -125,7 +125,7 @@ class PropertyValidateTest extends TestCase
     public function testArrayOfObjectsPropertyPassWithChild() {
     	$test = new PropertyArrayOfObjects(null);
     	$test->setAllowedObjects(['testparent']);
-    	$object = new ts_testchild();
+    	$object = new TestChild();
     	$object->parentint = 23;
     	$test->getValue()[] = $object;
     	$this->assertEquals(23,$test->getValue()[0]->parentint);
@@ -136,10 +136,10 @@ class PropertyValidateTest extends TestCase
     public function testArrayOfObjectReindex() {
         $test = new PropertyArrayOfObjects(null);
         $test->setAllowedObjects(['testparent']);
-        $object1 = new ts_testchild();
+        $object1 = new TestChild();
         $object1->parentint = 23;
         $test->getValue()[] = $object1;
-        $object2 = new ts_testchild();
+        $object2 = new TestChild();
         $object2->parentint = 34;
         $test->getValue()[] = $object2;
         unset($test->getValue()[0]);
@@ -151,7 +151,7 @@ class PropertyValidateTest extends TestCase
     	$this->expectException(ValidatorException::class);
         $test = new PropertyArrayOfObjects(null);
     	$test->setAllowedObjects(['testchild']);
-    	$object = new ts_testparent();
+    	$object = new TestParent();
     	$test->getValue()[] = $object;
     }
     

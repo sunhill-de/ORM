@@ -140,11 +140,11 @@ class Property extends Loggable
 	 * The name of the associated validator. By default it's a validator that accepts any value
 	 * @var string
 	 */
-	protected $validator_name = 'validator_base';
+	protected $validator_name = 'ValidatorBase';
 	
 	/**
      * Stores the validator object
-     * @var \Sunhill\ORM\Validators\validator_base
+     * @var \Sunhill\ORM\Validators\ValidatorBase
 	 */
 	protected $validator;
 	
@@ -178,7 +178,7 @@ class Property extends Loggable
 			$this->value = array();
 		}
 		$this->initialize();
-		$this->init_Vlidator();
+		$this->initValidator();
 	}
 	
 	/**
@@ -230,7 +230,7 @@ class Property extends Loggable
      * @param $owner a class of PropertiesHaving
      * @return Property a reference to this to make setter chains possible
      */
-    public function setOwner(PropertiesHaving $owner): Property 
+    public function setOwner($owner)
     {
 	    $this->owner = $owner;
 	    return $this;	    
@@ -240,7 +240,7 @@ class Property extends Loggable
      * Returns the value of the owner field
      * @return PropertiesHaving
      */
-    public function getOwner(): PropertyHaving 
+    public function getOwner()
     {
 	    return $this->owner;
     }
@@ -250,7 +250,7 @@ class Property extends Loggable
      * @param $name The name of the property
      * @return Property a reference to this to make setter chains possible
      */
-    public function setName(string $name): Property 
+    public function setName(string $name)
     {
 	    $this->name = $name;
 	    return $this;
@@ -269,7 +269,7 @@ class Property extends Loggable
      * @param $type The type of the property
      * @return Property a reference to this to make setter chains possible
      */
-    public function setType(string $type): Property
+    public function setType(string $type)
     {
 	    $this->type = $type;
 	    return $this;
@@ -285,7 +285,7 @@ class Property extends Loggable
      * 
      * @return Property a reference to this to make setter chains possible
      */
-    public function setDefault(mixed $default): Property 
+    public function setDefault($default) 
     {
 	    if (!isset($default)) {
 	        $this->defaults_null = true;
@@ -294,12 +294,12 @@ class Property extends Loggable
 	    return $this;
     }
 	
-    public function getDefault(): mixed
+    public function getDefault()
     {
 	    return $this->default;
     }
 	
-    public function setClass(string $class): Property 
+    public function setClass(string $class) 
     {
 	    $this->class = $class;
 	    return $this;
@@ -321,13 +321,13 @@ class Property extends Loggable
 	    return $this->read_only;
     }
 	
-    public function searchable(): Property 
+    public function searchable()
     {
 	    $this->searchable = true;
 	    return $this;
     }
 	
-    public function getSearchable(): bool 
+    public function getSearchable() 
     {
 	    return $this->searchable;
     }
@@ -341,7 +341,7 @@ class Property extends Loggable
 	 * @throws PropertyException
 	 * @return \Sunhill\ORM\Properties\Property
 	 */
-	final public function setValue($value, $index = null): Property
+	final public function setValue($value, $index = null)
 	{
 		if ($this->read_only) {
 			throw new PropertyException(__("Write to a read only property."));
@@ -373,7 +373,7 @@ class Property extends Loggable
 	 * Writes the new value 
 	 * @param mixed $value
 	 */
-	protected function doSetValue(mixed $value) 
+	protected function doSetValue($value) 
 	{
 	    $this->value = $value;
 	}
@@ -667,9 +667,9 @@ class Property extends Loggable
 	{
 	    if ($this->dirty) {
             $diff = $this->getDiffArray(PD_KEEP);
-	        $this->getOwner()->check_for_hook('UPDATING_PROPERTY',$this->getName(),$diff);
+	        $this->getOwner()->checkForHook('UPDATING_PROPERTY',$this->getName(),$diff);
     	    $this->doUpdate($storage,$this->getName());
-    	    $this->getOwner()->check_for_hook('UPDATED_PROPERTY',$this->getName(),$diff);    	    
+    	    $this->getOwner()->checkForHook('UPDATED_PROPERTY',$this->getName(),$diff);    	    
     	    $this->dirty = false;
 	    }
 	}

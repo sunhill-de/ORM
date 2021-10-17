@@ -2,9 +2,9 @@
 
 namespace Sunhill\ORM\Validators;
 
-class int_validator extends validator_base {
+class IntValidator extends ValidatorBase {
     
-    protected function is_valid($test) {
+    protected function isValid($test) {
         if (!ctype_digit($test) && !is_int($test)) {
             return false;
         }

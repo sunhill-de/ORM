@@ -29,15 +29,15 @@ class testhookable extends Hookable {
     }
     
     public function hooked_method1() {
-        $this->check_for_hook('hook1');
+        $this->checkForHook('hook1');
     }
     
     public function hooked_method2(string $param) {
-        $this->check_for_hook('hook2',$param,array($param));        
+        $this->checkForHook('hook2',$param,array($param));        
     }
     
     public function hooked_method3(string $param) {
-        $this->check_for_hook('hook3',$param,array($param));
+        $this->checkForHook('hook3',$param,array($param));
     }
     
     protected function call_hook1() {

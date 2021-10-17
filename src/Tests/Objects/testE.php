@@ -25,8 +25,8 @@ class testE extends ORMObject {
     ];
     public static $table_name = 'testE';
     
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::arrayofobjects('testfield')->setAllowedObjects(["dummy"]);
     }
     

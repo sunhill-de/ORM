@@ -61,7 +61,7 @@ class ObjectDegrader {
      * @param $hight string: The name of the higher (more away from the root object) class
      * @param $low string: The name of the lower (nearer to the root object) class
      */
-    protected function cleanSimpleTables(int $id, string $high, string $low): null
+    protected function cleanSimpleTables(int $id, string $high, string $low)
     {
         // Lost tables stores all tables that have no entries due this degration
         $lost_tables = array_diff($this->getUsedTablesOfClass($high),$this->getUsedTablesOfClass($low));
@@ -99,7 +99,7 @@ class ObjectDegrader {
      * @param $high string: The name of the higher class
      * @param $low string: The name of the lower class
      */
-    protected function cleanComplexTables(int $id, string $high, string $low): null
+    protected function cleanComplexTables(int $id, string $high, string $low)
     {
         $high_props = Classes::getPropertiesOfClass($high);
         $low_props = Classes::getPropertiesOfClass($low);

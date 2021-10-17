@@ -7,7 +7,7 @@ use Sunhill\Basic\Tests\Scenario\ScenarioBase;
 use Sunhill\ORM\Tests\Scenario\ScenarioWithRegistration;
 use Tests\CreatesApplication;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\Basic\SunhillException;
 
 class ScenarioWithRegistrationFeatureTestScenario extends ScenarioBase{
@@ -22,7 +22,7 @@ class ScenarioWithRegistrationFeatureTestScenario extends ScenarioBase{
     
     public function GetRegistration() {
         return [
-            ts_dummy::class
+            Dummy::class
         ];
     }
     
@@ -46,6 +46,6 @@ class ScenarioWithRegistrationTest extends SunhillScenarioTestCase
     }
     
     public function testRegisteredAfter() {
-        $this->assertEquals(ts_dummy::class,Classes::getNamespaceOfClass('dummy'));
+        $this->assertEquals(Dummy::class,Classes::getNamespaceOfClass('dummy'));
     }
 }

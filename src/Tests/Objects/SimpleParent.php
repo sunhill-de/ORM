@@ -25,8 +25,8 @@ class SimpleParent extends ORMObject {
     ];
     public static $table_name = 'simpleparents';
     
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('parentint');
         self::varchar('parentchar')->searchable();
         self::object('parentobject');

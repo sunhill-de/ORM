@@ -2,9 +2,9 @@
 
 namespace Sunhill\ORM\Validators;
 
-class datetime_validator extends validator_base {
+class DatetimeValidator extends ValidatorBase {
     
-    private static function guess_date_parts($parts) {
+    private static function guessDateParts($parts) {
         switch (count($parts)) {
             case 0:
                 return null;
@@ -41,7 +41,7 @@ class datetime_validator extends validator_base {
         
     }
     
-    public function is_valid_date($test,bool $fill=false) {
+    public function isValidDate($test,bool $fill=false) {
         if (is_float($test)) {
             return null;
         }
@@ -59,7 +59,7 @@ class datetime_validator extends validator_base {
         if (!$fill && (count($parts) !== 3)) {
             return null;
         }
-        if (($parts = self::guess_date_parts($parts)) === null) {
+        if (($parts = self::guessDateParts($parts)) === null) {
             return null;
         }
         list($year,$month,$day) = $parts;
@@ -75,7 +75,7 @@ class datetime_validator extends validator_base {
         return "$year-$month-$day";
     }
     
-    public function is_valid_time($test) {
+    public function isValidTime($test) {
         $parts = explode(':',$test);
         switch (count($parts)) {
             case 2:
@@ -100,7 +100,7 @@ class datetime_validator extends validator_base {
         return "$hour:$minute:$second";
     }
 
-    public function is_valid_datetime($test) {
+    public function isValidDatetime($test) {
         if (is_numeric($test)) {
             $date = new \DateTime('@'.$test);
             return $date->format('Y-m-d H:i:s');
@@ -109,17 +109,17 @@ class datetime_validator extends validator_base {
         if (count($parts) != 2) {
         }
         list($date,$time) = $parts;
-        if (!($date = self::is_valid_date($date))) {
+        if (!($date = self::isValidDate($date))) {
             return null;
         }
-        if (!($time = self::is_valid_time($time))) {
+        if (!($time = self::isValidTime($time))) {
             return null;
         }
         return "$date $time";
     }
     
-    protected function is_valid($value) {
-        $result = self::is_valid_datetime($value);
+    protected function isValid($value) {
+        $result = self::isValidDatetime($value);
         if (is_null($result)) {
             return false;
         }
@@ -128,7 +128,7 @@ class datetime_validator extends validator_base {
     
     
     protected function prepare(&$test) {
-        return $this->is_valid_datetime($test);
+        return $this->isValidDatetime($test);
     }
     
 }

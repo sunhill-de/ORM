@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Tests\Objects;
 
-class ts_passthru extends ts_testparent {
+class Passthru extends TestParent {
 
     protected static $property_definitions;
     

@@ -55,7 +55,7 @@ class StorageModuleMySQLObjects extends StorageModuleBase
     public function insert(int $id) 
     {
         $inserts = [];
-        $properties = $this->storage->getCaller()->get_properties_with_feature('objectid');
+        $properties = $this->storage->getCaller()->getPropertiesWithFeature('objectid');
         foreach ($properties as $property) {
             $fieldname = $property->getName();
             if (is_null($property->value)) {

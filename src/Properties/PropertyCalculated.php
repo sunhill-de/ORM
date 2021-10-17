@@ -34,7 +34,7 @@ class PropertyCalculated extends PropertyField
 	/**
 	 * Raises an exception when called (property fields mustn't be written to)
 	 */
-	protected function doSetValue(mixed $value) 
+	protected function doSetValue($value) 
 	{
 	    throw new PropertyException(__("Tried to write to a calculate field"));
 	}

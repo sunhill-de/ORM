@@ -6,13 +6,13 @@ use Sunhill\ORM\Managers\OperatorManager;
 use Sunhill\ORM\Operators\OperatorBase;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Facades\Operators;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 
 class ManagerOperator1 extends OperatorBase {
     
     protected $commands = ['test1'];
     
-    protected $target_class = ts_dummy::class;
+    protected $target_class = Dummy::class;
     
     protected $prio = 3;
     
@@ -26,7 +26,7 @@ class ManagerOperator2 extends OperatorBase {
     
     protected $commands = ['test2'];
 
-    protected $target_class = ts_dummy::class;
+    protected $target_class = Dummy::class;
     
     protected $prio = 2;
     
@@ -39,7 +39,7 @@ class ManagerOperator3 extends OperatorBase {
     
     protected $commands = ['test1','test2'];
 
-    protected $target_class = ts_dummy::class;
+    protected $target_class = Dummy::class;
     
     protected $prio = 1;
     
@@ -74,7 +74,7 @@ class OperatorManagerTest extends TestCase
         ->addOperator(ManagerOperator2::class)
         ->addOperator(ManagerOperator3::class);
         
-        $test = new ts_dummy();
+        $test = new Dummy();
         $test->dummyint = 1;
         
         Operators::ExecuteOperators('test1',$test);
@@ -88,7 +88,7 @@ class OperatorManagerTest extends TestCase
         ->addOperator(ManagerOperator2::class)
         ->addOperator(ManagerOperator3::class);
         
-        $test = new ts_dummy();
+        $test = new Dummy();
         $test->dummyint = 1;
         
         $Descriptor = new Descriptor();

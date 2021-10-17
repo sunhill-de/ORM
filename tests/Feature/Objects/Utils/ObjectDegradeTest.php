@@ -10,15 +10,15 @@ use Sunhill\ORM\Objects\Tag;
 
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
-use Sunhill\ORM\Tests\Objects\ts_thirdlevelchild;
+use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Objects\ThirdLevelChild;
 
 
 class ObjectDegradeTest extends DBTestCase
 {
     
     public function testOneStepDegration() {
-        $test = new ts_thirdlevelchild;
+        $test = new ThirdLevelChild;
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -27,7 +27,7 @@ class ObjectDegradeTest extends DBTestCase
         $test->parentdate='2011-01-01';
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
-        $add = new ts_dummy();
+        $add = new Dummy();
         $add->dummyint = 123;
         $test->parentobject = $add;
         $test->parentoarray[] = $add;
@@ -47,7 +47,7 @@ class ObjectDegradeTest extends DBTestCase
     }
     
     public function testTwoStepDegration() {
-        $test = new ts_thirdlevelchild;
+        $test = new ThirdLevelChild;
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -56,7 +56,7 @@ class ObjectDegradeTest extends DBTestCase
         $test->parentdate='2011-01-01';
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
-        $add = new ts_dummy();
+        $add = new Dummy();
         $add->dummyint = 123;
         $test->parentobject = $add;
         $test->parentoarray[] = $add;

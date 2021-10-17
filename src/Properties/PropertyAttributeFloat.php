@@ -6,6 +6,6 @@ class PropertyAttributeFloat extends PropertyAttribute {
 	
 	protected $type = 'attribute_float';
 	
-	protected $validator_name = 'float_validator';
+	protected $validator_name = 'FloatValidator';
 	
 }

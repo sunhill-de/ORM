@@ -4,14 +4,14 @@ namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Tests\Objects\ts_dummy;
+use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\ORMObject;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 
-class SkipClass extends ts_dummy {
+class SkipClass extends Dummy {
     
     public static $object_infos = [
         'name'=>'SkipClass',            // A repetition of static:$object_name @todo see above
@@ -34,7 +34,7 @@ class ObjectSkipclassTest extends DBTestCase
         DB::statement("create table skipclasses (id int primary key)");
         Classes::flushClasses();
         Classes::registerClass(SkipClass::class);
-        Classes::registerClass(ts_dummy::class);
+        Classes::registerClass(Dummy::class);
     }
     
     

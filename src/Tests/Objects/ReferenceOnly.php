@@ -1,7 +1,7 @@
 <?php
 namespace Sunhill\ORM\Tests\Objects;
 
-class ts_referenceonly extends \Sunhill\ORM\Objects\ORMObject {
+class ReferenceOnly extends \Sunhill\ORM\Objects\ORMObject {
     public static $table_name = 'referenceonlies';
     
     public static $object_infos = [
@@ -14,8 +14,8 @@ class ts_referenceonly extends \Sunhill\ORM\Objects\ORMObject {
     ];
     
     protected static $property_definitions;
-    protected static function setup_properties() {
-		parent::setup_properties();
+    protected static function setupProperties() {
+		parent::setupProperties();
 		self::integer('testint');
 		self::object('testobject')->setAllowedObjects(['dummy','referenceonly'])->setDefault(null);;
 		self::arrayofobjects('testoarray')->setAllowedObjects(['dummy','referenceonly']);

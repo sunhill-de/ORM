@@ -29,31 +29,31 @@ class StorageDeleteTest extends StorageBase
     
     public function DeleteProvider() {
         return [
-            [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','dummies','id'],                     // Wird ein einfaches Feld gelesen?
-            [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','objects','id'],                     // Wird ein einfaches Feld gelesen?
-            [2,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','dummies','id'],                     // Wird ein einfaches Feld mit höherem Index gelesen?
-            [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','tagobjectassigns','container_id'],  // Werden die Tags vernünftig ausgelesen?
-            [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','attributevalues','object_id'],      // Werden Attribute richtig ausgelesen
-            [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','externalhooks','container_id'],     // Werden Referenzen auf externe Hooks gelöscht (von $id)
-            [1,'Sunhill\\ORM\\Tests\\Objects\\ts_dummy','externalhooks','target_id'],        // Werden Referenzen auf externe Hooks gelöscht (auf $id)
+            [1,'Sunhill\\ORM\\Tests\\Objects\\Dummy','dummies','id'],                     // Wird ein einfaches Feld gelesen?
+            [1,'Sunhill\\ORM\\Tests\\Objects\\Dummy','objects','id'],                     // Wird ein einfaches Feld gelesen?
+            [2,'Sunhill\\ORM\\Tests\\Objects\\Dummy','dummies','id'],                     // Wird ein einfaches Feld mit höherem Index gelesen?
+            [1,'Sunhill\\ORM\\Tests\\Objects\\Dummy','tagobjectassigns','container_id'],  // Werden die Tags vernünftig ausgelesen?
+            [1,'Sunhill\\ORM\\Tests\\Objects\\Dummy','attributevalues','object_id'],      // Werden Attribute richtig ausgelesen
+            [1,'Sunhill\\ORM\\Tests\\Objects\\Dummy','externalhooks','container_id'],     // Werden Referenzen auf externe Hooks gelöscht (von $id)
+            [1,'Sunhill\\ORM\\Tests\\Objects\\Dummy','externalhooks','target_id'],        // Werden Referenzen auf externe Hooks gelöscht (auf $id)
             
-            [5,'Sunhill\\ORM\\Tests\\Objects\\ts_testparent','testparents','id'],              // Werden Varcharfelder gelesen
-            [5,'Sunhill\\ORM\\Tests\\Objects\\ts_testparent','caching','object_id'],             // Werden calculierte Felder gelesen
-            [5,'Sunhill\\ORM\\Tests\\Objects\\ts_testparent','objectobjectassigns','container_id'],                // Werden Objektfelder gelesen
-            [5,'Sunhill\\ORM\\Tests\\Objects\\ts_testparent','stringobjectassigns','container_id'],                // Werden Objektfelder gelesen
-            [5,'Sunhill\\ORM\\Tests\\Objects\\ts_testparent','objects','id'],            // Werden Objektarrays gelesen
-            [5,'Sunhill\\ORM\\Tests\\Objects\\ts_testparent','attributevalues','object_id'],    // Werden Attribute gelesen
+            [5,'Sunhill\\ORM\\Tests\\Objects\\TestParent','testparents','id'],              // Werden Varcharfelder gelesen
+            [5,'Sunhill\\ORM\\Tests\\Objects\\TestParent','caching','object_id'],             // Werden calculierte Felder gelesen
+            [5,'Sunhill\\ORM\\Tests\\Objects\\TestParent','objectobjectassigns','container_id'],                // Werden Objektfelder gelesen
+            [5,'Sunhill\\ORM\\Tests\\Objects\\TestParent','stringobjectassigns','container_id'],                // Werden Objektfelder gelesen
+            [5,'Sunhill\\ORM\\Tests\\Objects\\TestParent','objects','id'],            // Werden Objektarrays gelesen
+            [5,'Sunhill\\ORM\\Tests\\Objects\\TestParent','attributevalues','object_id'],    // Werden Attribute gelesen
             
             
-            [6,'Sunhill\\ORM\\Tests\\Objects\\ts_testchild','testchildren','id'],              // Werden Varcharfelder gelesen
-            [6,'Sunhill\\ORM\\Tests\\Objects\\ts_testchild','testparents','id'],              // Werden Varcharfelder gelesen
-            [6,'Sunhill\\ORM\\Tests\\Objects\\ts_testchild','objects','id'],              // Werden Varcharfelder gelesen
-            [6,'Sunhill\\ORM\\Tests\\Objects\\ts_testchild','objectobjectassigns','container_id'],                // Werden Objektfelder gelesen
-            [6,'Sunhill\\ORM\\Tests\\Objects\\ts_testchild','stringobjectassigns','container_id'],                // Werden Objektfelder gelesen
-            [6,'Sunhill\\ORM\\Tests\\Objects\\ts_testchild','objects','id'],            // Werden Objektarrays gelesen
-            [6,'Sunhill\\ORM\\Tests\\Objects\\ts_testchild','attributevalues','object_id'],    // Werden Attribute gelesen
+            [6,'Sunhill\\ORM\\Tests\\Objects\\TestChild','testchildren','id'],              // Werden Varcharfelder gelesen
+            [6,'Sunhill\\ORM\\Tests\\Objects\\TestChild','testparents','id'],              // Werden Varcharfelder gelesen
+            [6,'Sunhill\\ORM\\Tests\\Objects\\TestChild','objects','id'],              // Werden Varcharfelder gelesen
+            [6,'Sunhill\\ORM\\Tests\\Objects\\TestChild','objectobjectassigns','container_id'],                // Werden Objektfelder gelesen
+            [6,'Sunhill\\ORM\\Tests\\Objects\\TestChild','stringobjectassigns','container_id'],                // Werden Objektfelder gelesen
+            [6,'Sunhill\\ORM\\Tests\\Objects\\TestChild','objects','id'],            // Werden Objektarrays gelesen
+            [6,'Sunhill\\ORM\\Tests\\Objects\\TestChild','attributevalues','object_id'],    // Werden Attribute gelesen
                         
-            [7,'Sunhill\\ORM\\Tests\\Objects\\ts_passthru','passthrus','id']                         // Werden Objekte ohne Simple-Fields geladen
+            [7,'Sunhill\\ORM\\Tests\\Objects\\Passthru','passthrus','id']                         // Werden Objekte ohne Simple-Fields geladen
         ];        
     }
 }

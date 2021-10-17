@@ -25,8 +25,8 @@ class SimpleChild extends SimpleParent {
     ];
     public static $table_name = 'simpleparents';
     
-    protected static function setup_properties() {
-        parent::setup_properties();
+    protected static function setupProperties() {
+        parent::setupProperties();
         self::integer('childint');
         self::varchar('childchar')->searchable();
     }
