@@ -37,7 +37,7 @@ class QueryBuilder
     public function __construct(string $classname = '') 
     {
         if (!empty($classname)) {
-            $this->set_calling_class($classname);
+            $this->setCallingClass($classname);
         }
     }
     
@@ -46,7 +46,7 @@ class QueryBuilder
      * @param unknown $calling_class
      * @return \Sunhill\ORM\Search\QueryBuilder
      */
-    public function set_calling_class($calling_class) 
+    public function setCallingClass($calling_class) 
     {
         $this->calling_class = $calling_class;
         return $this;
@@ -105,9 +105,9 @@ class QueryBuilder
         return $this->used_tables[$table_name];
     }
     
-    protected function get_where_part($field, $relation, $value) 
+    protected function getWherePart($field, $relation, $value) 
     {
-        $property = ($this->calling_class)::get_property_object($field);
+        $property = ($this->calling_class)::getPropertyObject($field);
         if (is_null($property)) {
             throw new QueryException("The field '$field' is not found.");
         }
@@ -115,28 +115,28 @@ class QueryBuilder
             throw new QueryException("The field '$field' is not searchable.");
         }
         switch ($property->type) {
-            case 'tags':
+            case 'Tags':
                 $part = new QueryWhereTag($this,$property,$relation,$value);
                 break;
-            case 'attribute_char':
-            case 'attribute_float':
-            case 'attribute_int':
-            case 'attribute_float':
+            case 'Attribute_char':
+            case 'Attribute_float':
+            case 'Attribute_int':
+            case 'Attribute_float':
                 $part = new QueryWhere_attribute($this,$property,$relation,$value);
                 break;
-            case 'arrayOfObject':
+            case 'ArrayOfObjects':
                 $part = new QueryWhereArrayOfObjects($this,$property,$relation,$value);
                 break;
-            case 'arrayOfStrings':
+            case 'ArrayOfStrings':
                 $part = new QueryWhereArrayOfStrings($this,$property,$relation,$value);
                 break;
-            case 'varchar':
+            case 'Varchar':
                 $part = new QueryWhereString($this,$property,$relation,$value);
                 break;
-            case 'object':
+            case 'Object':
                 $part = new QueryWhereObject($this,$property,$relation,$value);
                 break;
-            case 'calculated':
+            case 'Calculated':
                 $part = new QueryWhereCalculated($this,$property,$relation,$value);
                 break;
             default:
@@ -148,19 +148,19 @@ class QueryBuilder
     
     public function where($field, $relation, $value = null) 
     {
-        $part = $this->get_where_part($field,$relation,$value);
+        $part = $this->getWherePart($field,$relation,$value);
         $this->setQueryPart('where',$part,'and');
         return $this;
     }
     
     public function orWhere($field, $relation, $value = null) 
     {
-        $part = $this->get_where_part($field,$relation,$value);
+        $part = $this->getWherePart($field,$relation,$value);
         $this->setQueryPart('where',$part,'or');
         return $this;
     }
     
-    public function order_by($field, $asc = true) 
+    public function orderBy($field, $asc = true) 
     {    
         $this->setQueryPart('order', new QueryOrder($this,$field,$asc));
         return $this;

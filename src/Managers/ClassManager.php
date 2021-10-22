@@ -18,7 +18,7 @@ use Sunhill\ORM\ORMException;
 use Illuminate\Support\Facades\Lang;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Objects\Utils\object_migrator;
+use Sunhill\ORM\Objects\Utils\ObjectMigrator;
 
  /**
   * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
@@ -214,7 +214,7 @@ class ClassManager
         
         if (is_object($needle)) {        
             
-            $needle = getClass($needle);
+            $needle = get_class($needle);
         }
         if (strpos($needle,'\\') !== false) {
             $needle = $this->normalizeNamespace($needle);
@@ -252,7 +252,7 @@ class ClassManager
             if (is_a($test,ORMObject::class)) {
                 return $test::$object_infos['name'];
             } else {
-                throw new ORMException("Invalid object passed to get_class: ".getClass($test));
+                throw new ORMException("Invalid object passed to get_class: ".get_class($test));
             }
         } else {
             throw new ORMException("Unknown type for getClassName()");
@@ -465,7 +465,7 @@ class ClassManager
      */
     public function migrateClass(string $class_name) : void {
         $class_name = $this->checkClass($this->searchClass($class_name));
-        $migrator = new object_migrator();
+        $migrator = new ObjectMigrator();
         $migrator->migrate($class_name);
     }
 }

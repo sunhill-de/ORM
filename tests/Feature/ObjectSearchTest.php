@@ -149,7 +149,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithNoConditionOrder() {
-        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->order_by('Bchar')->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->orderBy('Bchar')->get());
         $this->assertEquals([10,14,11,12,13,15],$result);
     }
     
@@ -157,7 +157,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithConditionOrder() {
-        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->where('Bint','<',602)->order_by('Bchar','desc')->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->where('Bint','<',602)->orderBy('Bchar','desc')->get());
         $this->assertEquals([11,10],$result);
     }
     
@@ -165,7 +165,7 @@ class ObjectSearchTest extends DBTestCase
      * @group order
      */
     public function testSearchWithCombinedConditionOrder() {
-        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->where('Bint','<',603)->where('Aint','<',502)->order_by('Bchar',false)->get());
+        $result = $this->simplify_result(\Sunhill\ORM\Tests\Feature\searchtestB::search()->where('Bint','<',603)->where('Aint','<',502)->orderBy('Bchar',false)->get());
         $this->assertEquals([11,10],$result);
     }
     

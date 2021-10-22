@@ -591,13 +591,13 @@ class PropertiesHaving extends Hookable
 	
 	public static function getPropertyInfo(string $name) 
     {
-	    static::initialize_properties();
+	    static::initializeProperties();
 	    return static::$property_definitions[$name];
 	}
 	
 	public static function search() {
 	     $query = new QueryBuilder();
-	     $query->set_calling_class(get_called_class());
+	     $query->setCallingClass(get_called_class());
 	     return $query;
 	}
 	

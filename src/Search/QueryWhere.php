@@ -64,12 +64,12 @@ abstract class QueryWhere extends QueryAtom {
         $this->parent_query = $parent_query;
         $this->relation = $relation;
         $this->value = $value;
-        $this->get_table($field);
+        $this->getTable($field);
     }
     
-    protected function get_table(Property $field) 
+    protected function getTable(Property $field) 
     {
-        $this->alias = $this->parent_query->get_table($this->getTableName($field));
+        $this->alias = $this->parent_query->getTable($this->getTableName($field));
         $this->field = $field->getName();        
     }
     

@@ -15,7 +15,7 @@
 
 namespace Sunhill\ORM\Search;
 
-class QueryTargetID extends query_target 
+class QueryTargetID extends QueryTarget 
 {
     
     public function getQueryPart() 

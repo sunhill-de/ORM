@@ -54,13 +54,13 @@ class child_object extends parent_object
 class HirarchicArrayTest extends TestCase
 {
 
-    // ======================== Tests for get_hirarchic_array =========================================
+    // ======================== Tests for getHirarchicArray =========================================
     public function testGetHirarchicArray_Parent()
     {
         $this->assertEquals([
             'A' => '1',
             'B' => '2'
-        ], parent_object::get_hirarchic_array('test_array'));
+        ], parent_object::getHirarchicArray('test_array'));
     }
 
     public function testGetHirarchicArray_Child()
@@ -70,13 +70,13 @@ class HirarchicArrayTest extends TestCase
             'B' => '2',
             'C' => '3',
             'D' => '4'
-        ], child_object::get_hirarchic_array('test_array'));
+        ], child_object::getHirarchicArray('test_array'));
     }
 
     public function testNotExistingArray()
     {
         $this->expectException(\Sunhill\ORM\ORMException::class);
-        $hilf = child_object::get_hirarchic_array('non_existing');
+        $hilf = child_object::getHirarchicArray('non_existing');
     }
 
     public function testParentOnlyHirarchic()
@@ -84,6 +84,6 @@ class HirarchicArrayTest extends TestCase
         $this->assertEquals([
             'R' => '1',
             'S' => '2'
-        ], child_object::get_hirarchic_array('parentonly_array'));
+        ], child_object::getHirarchicArray('parentonly_array'));
     }
 }

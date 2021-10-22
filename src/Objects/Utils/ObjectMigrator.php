@@ -17,7 +17,7 @@ namespace Sunhill\ORM\Objects\Utils;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
 
-class object_migrator 
+class ObjectMigrator 
 {
  
     private $class_name = '';

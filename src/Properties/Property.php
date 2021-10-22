@@ -259,7 +259,7 @@ class Property extends Loggable
     /**
      * Returns the name of this property
      */
-    public function getName(): string 
+    public function getName(): ?string 
     {
 	    return $this->name;
     }

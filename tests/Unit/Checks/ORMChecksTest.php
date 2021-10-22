@@ -2,7 +2,7 @@
 namespace Sunhill\ORM\Tests\Unit\Checks;
 
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Checks\orm_checks;
+use Sunhill\ORM\Checks\OrmChecks;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
 
@@ -37,8 +37,8 @@ class ORMChecksTest extends TestCase
             ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
             ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],            
         ]);
-        $test = new orm_checks();
-        $result = $test->check_tagswithnotexistingparents();
+        $test = new OrmChecks();
+        $result = $test->check_TagsWithNotExistingParents();
         $this->assertEquals('OK',$result->result);
     }
     
@@ -49,8 +49,8 @@ class ORMChecksTest extends TestCase
             ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],
             ['id'=>3,'name'=>'TagC','parent_id'=>100,'options'=>0],
         ]);
-        $test = new orm_checks();
-        $result = $test->check_tagswithnotexistingparents();
+        $test = new OrmChecks();
+        $result = $test->check_TagsWithNotExistingParents();
         $this->assertEquals('FAILED',$result->result);        
     }
 
@@ -69,8 +69,8 @@ class ORMChecksTest extends TestCase
             ['name'=>'TagC','tag_id'=>3],
             ['name'=>'TagA.TagC','tag_id'=>3],
         ]);
-        $test = new orm_checks();
-        $result = $test->check_tagcachewithnotexistingtags();
+        $test = new OrmChecks();
+        $result = $test->check_TagCacheWithNotExistingTags();
         $this->assertEquals('OK',$result->result);
     }
     
@@ -89,8 +89,8 @@ class ORMChecksTest extends TestCase
             ['name'=>'TagC','tag_id'=>100],
             ['name'=>'TagA.TagC','tag_id'=>100],
         ]);
-        $test = new orm_checks();
-        $result = $test->check_tagcachewithnotexistingtags();
+        $test = new OrmChecks();
+        $result = $test->check_TagCacheWithNotExistingTags();
         $this->assertEquals('FAILED',$result->result);
     }
 
@@ -109,8 +109,8 @@ class ORMChecksTest extends TestCase
             ['name'=>'TagC','tag_id'=>3],
             ['name'=>'TagA.TagC','tag_id'=>3],
         ]);
-        $test = new orm_checks();
-        $result = $test->check_tagcacheconsistency();
+        $test = new OrmChecks();
+        $result = $test->check_TagCacheConsistency();
         $this->assertEquals('OK',$result->result);        
     }
     
@@ -129,8 +129,8 @@ class ORMChecksTest extends TestCase
             ['name'=>'TagC','tag_id'=>3],
             ['name'=>'TagE.TagC','tag_id'=>3],
         ]);
-        $test = new orm_checks();
-        $result = $test->check_tagcacheconsistency();
+        $test = new OrmChecks();
+        $result = $test->check_TagCacheConsistency();
         $this->assertEquals('FAILED',$result->result);
     }
     
@@ -148,8 +148,8 @@ class ORMChecksTest extends TestCase
             ['name'=>'TagA.TagB','tag_id'=>2],
             ['name'=>'TagC','tag_id'=>3],
         ]);
-        $test = new orm_checks();
-        $result = $test->check_tagcacheconsistency();
+        $test = new OrmChecks();
+        $result = $test->check_TagCacheConsistency();
         $this->assertEquals('FAILED',$result->result);
     }
     
@@ -172,8 +172,8 @@ class ORMChecksTest extends TestCase
             ['container_id'=>1,'tag_id'=>1],
             ['container_id'=>2,'tag_id'=>2],
         ]);        
-        $test = new orm_checks();
-        $result = $test->check_tagobjectassignstagsexist();
+        $test = new OrmChecks();
+        $result = $test->check_TagObjectAssignsTagsExist();
         $this->assertEquals('OK',$result->result);
     }
     
@@ -196,8 +196,8 @@ class ORMChecksTest extends TestCase
             ['container_id'=>1,'tag_id'=>1],
             ['container_id'=>2,'tag_id'=>100],
         ]);
-        $test = new orm_checks();
-        $result = $test->check_tagobjectassignstagsexist();
+        $test = new OrmChecks();
+        $result = $test->check_TagObjectAssignsTagsExist();
         $this->assertEquals('FAILED',$result->result);
     }
     
@@ -220,7 +220,7 @@ class ORMChecksTest extends TestCase
             ['container_id'=>1,'tag_id'=>1],
             ['container_id'=>2,'tag_id'=>2],
         ]);
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_tagobjectassignsobjectsexist();
         $this->assertEquals('OK',$result->result);
     }
@@ -245,7 +245,7 @@ class ORMChecksTest extends TestCase
             ['container_id'=>100,'tag_id'=>2],
         ]);
         
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_tagobjectassignsobjectsexist();
         $this->assertEquals('FAILED',$result->result);
     }
@@ -263,7 +263,7 @@ class ORMChecksTest extends TestCase
             ['container_id'=>1,'element_id'=>1,'field'=>'test','index'=>0],
             ['container_id'=>2,'element_id'=>2,'field'=>'test','index'=>0],
         ]);
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_objectobjectassignscontainerexist();
         $this->assertEquals('OK',$result->result);
     }
@@ -281,7 +281,7 @@ class ORMChecksTest extends TestCase
             ['container_id'=>1,'element_id'=>1,'field'=>'test','index'=>0],
             ['container_id'=>100,'element_id'=>2,'field'=>'test','index'=>0],
         ]);
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_objectobjectassignscontainerexist();
         $this->assertEquals('FAILED',$result->result);
     }
@@ -299,7 +299,7 @@ class ORMChecksTest extends TestCase
             ['container_id'=>1,'element_id'=>1,'field'=>'test','index'=>0],
             ['container_id'=>2,'element_id'=>2,'field'=>'test','index'=>0],
         ]);
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_objectobjectassignselementexist();
         $this->assertEquals('OK',$result->result);
     }
@@ -317,7 +317,7 @@ class ORMChecksTest extends TestCase
             ['container_id'=>1,'element_id'=>1,'field'=>'test','index'=>0],
             ['container_id'=>2,'element_id'=>100,'field'=>'test','index'=>0],
         ]);
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_objectobjectassignselementexist();
         $this->assertEquals('FAILED',$result->result);
     }
@@ -336,7 +336,7 @@ class ORMChecksTest extends TestCase
             ['container_id'=>2,'element_id'=>'test2','field'=>'test','index'=>0],
         ]);
         
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_stringobjectassignscontainerexist();
         $this->assertEquals('OK',$result->result);
     }
@@ -355,7 +355,7 @@ class ORMChecksTest extends TestCase
             ['container_id'=>100,'element_id'=>'test2','field'=>'test','index'=>0],
         ]);
         
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_stringobjectassignscontainerexist();
         $this->assertEquals('FAILED',$result->result);
     }
@@ -370,7 +370,7 @@ class ORMChecksTest extends TestCase
             ['id'=>3,'classname'=>'testchild'],
         ]);
         
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_objectexistance();
         $this->assertEquals('OK',$result->result);
     }
@@ -385,7 +385,7 @@ class ORMChecksTest extends TestCase
             ['id'=>3,'classname'=>'notexisting'],
         ]);
         
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_objectexistance();
         $this->assertEquals('FAILED',$result->result);
     }
@@ -419,7 +419,7 @@ class ORMChecksTest extends TestCase
         DB::table('passthrus')->insert([['id'=>4]]);
         DB::table('secondlevelchildren')->insert([['id'=>4,'childint'=>1]]);
 
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_classtablegaps();
         $this->assertEquals('OK',$result->result);
         
@@ -453,7 +453,7 @@ class ORMChecksTest extends TestCase
         ]);
         DB::table('secondlevelchildren')->insert([['id'=>4,'childint'=>1]]);
         
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_classtablegaps();
         $this->assertEquals('FAILED',$result->result);        
     }
@@ -486,7 +486,7 @@ class ORMChecksTest extends TestCase
         DB::table('passthrus')->insert([['id'=>4]]);
         DB::table('secondlevelchildren')->insert([['id'=>4,'childint'=>1]]);
         
-        $test = new orm_checks();
+        $test = new OrmChecks();
         $result = $test->check_classtablegaps();
         $this->assertEquals('FAILED',$result->result);
     }

@@ -425,7 +425,7 @@ class TagManager
       */
      protected function addTagByObject(Tag $tag) 
      {
-        $this->executeAddTag($tag->getName(),$tag->get_parent());
+        $this->executeAddTag($tag->getName(),$tag->getParent());
      }
     
      /**

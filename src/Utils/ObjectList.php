@@ -13,14 +13,9 @@
  */
 namespace Sunhill\ORM\Utils;
 
-use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Objects\ORMObject;
-
-class ObjectListException extends ORMException
-{
-}
 
 /**
  * A class that handles list of objects and provides some additional features

@@ -22,7 +22,7 @@ class QueryBuilderTest extends TestCase
     
     public function testSetCallingClass() {
         $query = new QueryBuilder();
-        $query->set_calling_class('callingclass');
+        $query->setCallingClass('callingclass');
         $this->assertEquals('callingclass',$query->get_calling_class());
     }
     

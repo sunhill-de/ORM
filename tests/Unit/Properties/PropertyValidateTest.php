@@ -31,7 +31,7 @@ class PropertyValidateTest extends TestCase
      */
     public function testValidate($property,$testvalue,$exception,$expected)
     {
-		$property_name = '\Sunhill\ORM\Properties\oo_property_'.$property;
+		$property_name = '\Sunhill\ORM\Properties\Property'.ucfirst($property);
     	$property_class = new $property_name(null);
     	$result = 0;
 		try {

@@ -15,6 +15,7 @@ namespace Sunhill\ORM\Objects;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Loggable;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Tags;
 
 define('TO_LEAFABLE',0x0001);
 
@@ -123,7 +124,7 @@ class Tag extends Loggable
 		} else {
 			$this->update();
 		}
-		self::flush_tagcache($this->getID(),$this->getFullPath());
+		Tags::flushTagCache($this->getID(),$this->getFullPath());
 	}
 	
 	/**
@@ -204,7 +205,7 @@ class Tag extends Loggable
 		    if ($autocreate) {
 		        $tag_obj = self::addTag($tag);
 		        $this->name = $tag_obj->getName();
-		        $this->parent = $tag_obj->get_parent();
+		        $this->parent = $tag_obj->getParent();
 		        $this->options = $tag_obj->get_options();
 		        $this->tag_id = $tag_obj->getID();
 		    } else {

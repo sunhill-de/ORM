@@ -351,7 +351,7 @@ class ORMObject extends PropertiesHaving
 	 */
 	public function copyFrom(ORMObject $source) 
     {
-	    $this->set_id($source->getID());
+	    $this->setID($source->getID());
 	    foreach ($this->properties as $property) {
 	        $name = $property->getName();
 	        switch ($property->getType()) {
