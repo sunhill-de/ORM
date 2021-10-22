@@ -21,7 +21,8 @@ use Sunhill\Basic\Utils\Descriptor;
  * @author lokal
  *
  */
-trait TraversableArray {
+trait TraversableArray 
+{
     
     protected $fields = [];
     
@@ -31,29 +32,33 @@ trait TraversableArray {
      * Returns the current element of the foreach loop
      * @return mixed
      */
-    public function current (  ) {
-        return $this->get_fields()[array_keys($this->get_fields())[$this->pointer]];
+    public function current (  ) 
+    {
+        return $this->getFields()[array_keys($this->getFields())[$this->pointer]];
     }
     
     /**
      * Returns the current key of the foreach loop
      * @return unknown
      */
-    public function key (  ) {
-        return array_keys($this->get_fields())[$this->pointer];
+    public function key (  ) 
+    {
+        return array_keys($this->getFields())[$this->pointer];
     }
     
     /**
      * Sets the pointer to the next element
      */
-    public function next (  ) {
+    public function next (  ) 
+    {
         $this->pointer++;
     }
     
     /**
      * Rewinds the pointer
      */
-    public function rewind (  ) {
+    public function rewind (  ) 
+    {
         $this->pointer = 0;
     }
     
@@ -61,19 +66,23 @@ trait TraversableArray {
      * Checks if the pointer points to a valid element
      * @return boolean
      */
-    public function valid (  ) {
-        return (($this->pointer >= 0) && ($this->pointer < count($this->get_fields())));
+    public function valid (  ) 
+    {
+        return (($this->pointer >= 0) && ($this->pointer < count($this->getFields())));
     }
     
-    public function offsetExists($offset) {
-        return isset($this->get_fields()[$offset]);
+    public function offsetExists($offset) 
+    {
+        return isset($this->getFields()[$offset]);
     }
     
-    public function offsetGet($offset) {
-        return $this->get_fields()[$offset];
+    public function offsetGet($offset) 
+    {
+        return $this->getFields()[$offset];
     }
     
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value) 
+    {
         // Do we change a previously set elemnt?
         if (isset($offset) && $this->offsetExists($offset)) {
             // Yes, is the a change at all?
@@ -84,7 +93,7 @@ trait TraversableArray {
                     $oldvalue = $this->offsetGet($offset);
                     $this->element_changing($oldvalue,$value,$offset);
                 }
-                $this->element_change($offset,$value);
+                $this->elementChange($offset,$value);
                 if (method_exists($this,'element_changed')) {
                     // Do we need to fire a changed trigger?
                     $this->element_changed($oldvalue,$value,$offset);
@@ -95,7 +104,7 @@ trait TraversableArray {
             if (method_exists($this,'element_changing')) {
                 $this->element_changing(null,$value,$offset);
             }            
-            $this->element_append($value);
+            $this->elementAppend($value);
             if (method_exists($this,'element_changed')) {
                 // Do we need to fire a changed trigger?
                 $this->element_changed(null,$value,$offset);
@@ -107,7 +116,8 @@ trait TraversableArray {
      * Deletes the given element from the array
      * @param unknown $offset
      */
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset) 
+    {
         if ($this->offsetExists($offset)) {
             $oldvalue = $this->offsetGet($offset);
             if (method_exists($this,'element_changing')) {
@@ -124,8 +134,9 @@ trait TraversableArray {
      * Returns the count of elements
      * @return unknown
      */
-    public function count() {
-        return count($this->get_fields());
+    public function count() 
+    {
+        return count($this->getFields());
     }
     
     /**
@@ -137,7 +148,8 @@ trait TraversableArray {
      * could be overwritten by anything else
      * @return array
      */
-     protected function get_fields() {
+     protected function getFields() 
+     {
          return $this->fields;
      }
      
@@ -147,7 +159,8 @@ trait TraversableArray {
      * @param unknown $offset
      * @param unknown $value
      */
-    protected function element_change($offset,$value) {
+    protected function elementChange($offset,$value) 
+    {
         $this->fields[$offset] = $value;
     }
     
@@ -156,7 +169,8 @@ trait TraversableArray {
      * This method should be overwritten by classes that uses this trait and use a different array
      * @param unknown $value
      */
-    protected function element_append($value) {
+    protected function elementAppend($value) 
+    {
         $this->fields[] = $value;
     }
     
@@ -165,7 +179,8 @@ trait TraversableArray {
      * This method should be overwritten by classes that uses this trait and use a different array
      * @param unknown $offset
      */
-    protected function element_unset($offset) {
+    protected function element_unset($offset) 
+    {
         unset($this->fields[$offset]);
     }
     

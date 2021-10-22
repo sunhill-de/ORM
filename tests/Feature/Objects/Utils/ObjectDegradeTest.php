@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Objects\Tag;
+use Sunhill\ORM\Facades\Tags;
 
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
@@ -33,8 +33,9 @@ class ObjectDegradeTest extends DBTestCase
         $test->parentoarray[] = $add;
         $test->childint = 1;
         $test->childchildint = 2;
-        $tag = new Tag('TestTag',true);
-        $test->tags->stick($tag);
+        Tags::addTag('TestTag');
+        $test->tags->stick('TestTag');
+        
         $test->commit();
         $id = $test->getID();
         $new = $test->degrade('secondlevelchild');
@@ -65,8 +66,8 @@ class ObjectDegradeTest extends DBTestCase
         $test->thirdlevelobject = $add;
         $test->thirdlevelsarray[] = 'AAA';
         $test->thirdlevelsarray[] = 'BBB';
-        $tag = new Tag('TestTag',true);
-        $test->tags->stick($tag);
+        //Tags::addTag('TestTag');
+        $test->tags->stick('TestTag');
         $test->commit();
         $id = $test->getID();
         $new = $test->degrade('testparent');

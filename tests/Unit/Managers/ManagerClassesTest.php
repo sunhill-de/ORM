@@ -75,7 +75,7 @@ class ManagerClassesTest extends TestCase
         $result = [];
         $this->callProtectedMethod($test,'getClassPropertyEntries',[&$result,Dummy::class]);
         
-        $this->assertEquals('integer',$result['properties']['dummyint']['type']);
+        $this->assertEquals('Integer',$result['properties']['dummyint']['type']);
     }
     
     public function testBuildClassInformation() {
@@ -86,7 +86,7 @@ class ManagerClassesTest extends TestCase
         $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\Dummy',$result['class']);
         $this->assertEquals('dummy',$result['name']);
         $this->assertEquals('object',$result['parent']);
-        $this->assertEquals('integer',$result['properties']['dummyint']['type']);
+        $this->assertEquals('Integer',$result['properties']['dummyint']['type']);
     }
     
     public function testRegisterClass() {
@@ -99,7 +99,7 @@ class ManagerClassesTest extends TestCase
         $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\Dummy',$result['dummy']['class']);
         $this->assertEquals('dummy',$result['dummy']['name']);
         $this->assertEquals('object',$result['dummy']['parent']);
-        $this->assertEquals('integer',$result['dummy']['properties']['dummyint']['type']);
+        $this->assertEquals('Integer',$result['dummy']['properties']['dummyint']['type']);
         
     }
     

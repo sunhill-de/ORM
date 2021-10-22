@@ -67,8 +67,8 @@ class ORMObject extends PropertiesHaving
 	public function __construct() 
     {
 	    parent::__construct();
-	    $this->properties['tags'] = self::createProperty('Tags','Tags','object')->setOwner($this);
-	    $this->properties['externalhooks'] = self::createProperty('ExternalHooks','ExternalHooks','object')->setOwner($this);
+	    $this->properties['tags'] = self::createProperty('tags','tags','object')->setOwner($this);
+	    $this->properties['externalhooks'] = self::createProperty('externalhooks','externalHooks','object')->setOwner($this);
 	}
 	
 	// ========================================== NeedID-Queries ========================================
@@ -111,7 +111,7 @@ class ORMObject extends PropertiesHaving
 	 * Creates a storage. By default this is a mysql storage. This method could be overwritten for debug purposes
 	 * @return StorageMySQL
 	 */
-	protected function createStorage(): StorageMySQL
+	protected function createStorage(): StorageBase
     {
 	    return new StorageMySQL($this);
 	}
@@ -329,15 +329,15 @@ class ORMObject extends PropertiesHaving
 	    foreach ($this->properties as $property) {
 	        $name = $property->getName();
 	        switch ($property->getType()) {
-	            case 'arrayOfObject':
-	            case 'arrayOfStrings':
-	            case 'external_references':
-	            case 'tags':
+	            case 'ArrayOfObjects':
+	            case 'ArrayOfStrings':
+	            case 'External_references':
+	            case 'Tags':
 	                for ($i=0;$i<count($this->$name);$i++) {
 	                    $newobject->$name[] = $this->$name[$i];
 	                }
 	                break;
-	            case 'calculated':
+	            case 'Calculated':
 	                break;
 	            default:
 	                $newobject->$name = $this->$name;
@@ -355,15 +355,15 @@ class ORMObject extends PropertiesHaving
 	    foreach ($this->properties as $property) {
 	        $name = $property->getName();
 	        switch ($property->getType()) {
-	            case 'arrayOfObject':
-	            case 'arrayOfStrings':
-	            case 'external_references':
-	            case 'tags':
+	            case 'ArrayOfObjects':
+	            case 'ArrayOfStrings':
+	            case 'External_references':
+	            case 'Tags':
 	                for ($i=0;$i<count($source->$name);$i++) {
 	                    $this->$name[] = $source->$name[$i];
 	                }
 	                break;
-	            case 'calculated':
+	            case 'Calculated':
 	                break;
 	            default:
 	                $this->$name = $source->$name;

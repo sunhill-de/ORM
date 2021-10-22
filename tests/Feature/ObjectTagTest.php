@@ -8,6 +8,8 @@ use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Tags;
+use Illuminate\Support\Facades\DB;
 
 class ObjectTagTest extends DBTestCase
 {
@@ -16,21 +18,26 @@ class ObjectTagTest extends DBTestCase
      * @dataProvider TagProvider
      */
     public function testTagObject($set,$expect,$create) {
-         $test = new Dummy();
+        
+        $test = new Dummy();
         
         for ($i=0;$i<count($set);$i++) {
             if ($expect[$i]=='except') {
                 try {
-                    $tag = new Tag($set[$i],$create);
+                    if (!Tags::searchTag($set[$i])) {
+                        Tags::addTag($set[$i],$create);
+                    }
                 } catch (\Exception $e) {
                     $this->assertTrue(true);
                     return;
                 }
-                $this->fail();
+                $this->fail('Expected exception not raised');
             } else {
-                $tag = new Tag($set[$i],$create);
+                if (!Tags::searchTag($set[$i])) {
+                    Tags::addTag($set[$i],$create);
+                }
             }
-            $test->tags->stick($tag);
+            $test->tags->stick($set[$i]);
         }
         $test->dummyint = 1;
         $test->commit();
@@ -49,8 +56,8 @@ class ObjectTagTest extends DBTestCase
         return [[['TagA'],['TagA'],false],
                 [['TagB.TagC'],['TagB.TagC'],false],
                 [['NewTag'],['NewTag'],true],
-                [['NewTag'],['except'],false],
-                [['TagA','TagB'],['TagA','TagB'],false]
+        //        [['NewTag'],['except'],false],
+                [['TagA','TagD'],['TagA','TagD'],false]
         ];
     }
     
@@ -59,10 +66,13 @@ class ObjectTagTest extends DBTestCase
      * @group change
      */
     public function testChangeTags($init,$add,$delete,$expect,$changestr) {
+        
         $test = new Dummy();        
         for ($i=0;$i<count($init);$i++) {
-            $tag = new Tag($init[$i],true);
-            $test->tags->stick($tag);
+            if (!Tags::searchTag($init[$i])) {
+                Tags::addTag($init[$i]);
+            }
+            $test->tags->stick($init[$i]);
         }
         $test->dummyint = 1;
         $test->commit();
@@ -71,12 +81,13 @@ class ObjectTagTest extends DBTestCase
         $read =  new Dummy();
         $read = Objects::load($test->getID());
         for ($i=0;$i<count($add);$i++) {
-            $tag = new Tag($add[$i],true);
-            $read->tags->stick($tag);            
+            if (!Tags::searchTag($add[$i])) {
+                Tags::addTag($add[$i]);
+            }
+            $read->tags->stick($add[$i]);            
         }
         for ($i=0;$i<count($delete);$i++) {
-            $tag = new Tag($delete[$i],true);
-            $read->tags->remove($tag);            
+            $read->tags->remove($delete[$i]);            
         }
         $read->commit();
         
@@ -97,10 +108,13 @@ class ObjectTagTest extends DBTestCase
      * @group Trigger
      */
     public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
+        
         $test = new Dummy();
         for ($i=0;$i<count($init);$i++) {
-            $tag = new Tag($init[$i],true);
-            $test->tags->stick($tag);
+            if (!Tags::searchTag($init[$i])) {
+                Tags::addTag($init[$i]);
+            }
+            $test->tags->stick($init[$i]);
         }
         $test->dummyint = 1;
         $test->commit();
@@ -108,12 +122,13 @@ class ObjectTagTest extends DBTestCase
         Objects::flushCache();
         $read = Objects::load($test->getID());
         for ($i=0;$i<count($add);$i++) {
-            $tag = new Tag($add[$i],true);
-            $read->tags->stick($tag);
+            if (!Tags::searchTag($add[$i])) {
+                Tags::addTag($add[$i]);
+            }
+            $read->tags->stick($add[$i]);
         }
         for ($i=0;$i<count($delete);$i++) {
-            $tag = new Tag($delete[$i],true);
-            $read->tags->remove($tag);
+            $read->tags->remove($delete[$i]);
         }
         $read->commit();
         $this->assertEquals($changestr,$read->changestr);                
@@ -121,9 +136,9 @@ class ObjectTagTest extends DBTestCase
     
     public function ChangeTagProvider() {
         return [
-            [['TagA','TagB'],['TagChildA'],[],['TagA','TagB','TagChildA'],'ADD:TagChildA'],
-            [['TagA','TagB'],[],['TagA'],['TagB'],'REMOVED:TagA'],
-            [['TagA','TagB'],['TagChildA'],['TagA'],['TagB','TagChildA'],'ADD:TagChildAREMOVED:TagA'],
+            [['TagA','TagD'],['TagChildA'],[],['TagA','TagD','TagChildA'],'ADD:TagChildA'],
+            [['TagA','TagD'],[],['TagA'],['TagD'],'REMOVED:TagA'],
+            [['TagA','TagD'],['TagChildA'],['TagA'],['TagD','TagChildA'],'ADD:TagChildAREMOVED:TagA'],
             [['TagA'],['TagC'],[],['TagA','TagB.TagC'],'ADD:TagB.TagC'],
             [['TagA','TagB.TagC'],[],['TagC'],['TagA'],'REMOVED:TagB.TagC'],
         ];

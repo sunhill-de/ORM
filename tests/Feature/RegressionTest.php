@@ -8,6 +8,8 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\Objects\ReferenceOnly;
+use Sunhill\ORM\Facades\Tags;
+use Illuminate\Support\Facades\DB;
 
 class RegressionTest extends DBTestCase
 {
@@ -46,19 +48,21 @@ class RegressionTest extends DBTestCase
 	}
 	
 	public function testRegression2() {
+	    DB::table('tags')->truncate();
+	    DB::table('tagcache')->truncate();
 	    $test = new Dummy();
 	    $test->dummyint = 1;
-	    $tag = new \Sunhill\ORM\Objects\Tag('TagA',true);
-	    $test->tags->stick($tag);
+	    $tag = Tags::addTag('TagA');
+	    $test->tags->stick('TagA');
 	    $test->commit();
 	    
-	   Objects::flushCache();
+	    Objects::flushCache();
 	    $read = Objects::load($test->getID());
-	    $tag = new \Sunhill\ORM\Objects\Tag('TagB',true);
-	    $read->tags->stick($tag);
+        Tags::addTag('TagB');
+	    $read->tags->stick('TagB');
 	    $read->commit();
 	    
-	   Objects::flushCache();
+	    Objects::flushCache();
 	    $reread = Objects::load($test->getID());
 	    $this->assertEquals('TagB',$reread->tags[1]);
 	}

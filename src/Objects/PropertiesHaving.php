@@ -73,7 +73,7 @@ class PropertiesHaving extends Hookable
 	}
 	
 	protected function setupHooks() {
-	    $this->addHook('COMMITTED','clear_dirty');
+	    $this->addHook('COMMITTED','clearDirty');
 	}
 	
 	// ================================= ID-Handling =======================================
@@ -372,7 +372,8 @@ class PropertiesHaving extends Hookable
 	        $this->checkForHook('GET',$name,null);
 	        return $this->properties[$name]->getValue();
 	    } else {
-	        return parent::__get($name);
+	        $help = parent::__get($name);
+	        return $help;
 	    }
 	}
 
@@ -411,7 +412,7 @@ class PropertiesHaving extends Hookable
 	 * @param unknown $value The value of the property
 	 * @return boolean
 	 */
-	protected function handleUnknownProperty(string $name, mixed $value) 
+	protected function handleUnknownProperty(string $name, $value) 
     {
 	   return false;    
 	}
@@ -550,7 +551,7 @@ class PropertiesHaving extends Hookable
     {
 	    $result = array();
 	    if (isset($group)) {
-	        $group = 'get_'.$group;
+	        $group = 'get'.ucfirst($group);
 	    }
 	    if (empty(static::$property_definitions)) {
 	        static::setupProperties();

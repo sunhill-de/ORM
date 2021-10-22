@@ -22,7 +22,7 @@ class testhookable extends Hookable {
     
     public $params='';
     
-    protected function setup_hooks() {
+    protected function setupHooks() {
         $this->addHook('hook1','call_hook1');
         $this->addHook('hook2','call_hook2','test');
         $this->addHook('hook3','call_hook3','test');

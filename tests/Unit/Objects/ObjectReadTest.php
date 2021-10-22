@@ -39,7 +39,7 @@ class ObjectReadTest extends DBTestCase
                 'property'=>''                
             ]]
         ];
-        $object->public_load(1);
+        $object->publicLoad(1);
         $this->assertEquals(1,$object->getID());
         return $object;
     }

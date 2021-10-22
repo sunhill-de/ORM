@@ -33,20 +33,20 @@ class Hookable extends Loggable
 	
 	/**
 	 * Derrived classes have to call this constructor so that the initialization of the hook
-	 * system will be performed. The initialization will take place via a call of ->setup_hooks(). 
+	 * system will be performed. The initialization will take place via a call of ->setupHooks(). 
 	 * Further the hook for CONSTRCUTED will be called if it exists
 	 */
 	public function __construct() 
     {
 		parent::__construct();
-		$this->setup_hooks();
+		$this->setupHooks();
 		$this->checkForHook('CONSTRUCTED');		
 	}
 		
     /**
      * This method will initialize the hooks for this class
      */
-	protected function setup_hooks() 
+	protected function setupHooks() 
     {
 	    // Does nothing in the basic class
 	}

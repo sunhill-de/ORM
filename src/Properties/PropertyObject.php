@@ -47,7 +47,7 @@ class PropertyObject extends PropertyField
 	{
         $reference = $storage->$name;
 	    if (!empty($reference)) {
-	        $this->do_setValue($reference);
+	        $this->doSetValue($reference);
 	    }
 	}
 	

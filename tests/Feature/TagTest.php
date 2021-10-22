@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Objects\Dummy;
-use Sunhill\ORM\Objects\Tag;
+use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\Facades\Objects;
 
 class TagTest extends DBTestCase
@@ -21,10 +21,10 @@ class TagTest extends DBTestCase
 	public function testStaticDeleteTagObjects() {
 	    $object = new Dummy(); 
 	    $object->dummyint = 1;
-	    $tag = Tag::searchTag('TagA');
-	    $object->tags->stick($tag);
+	    $tag = Tags::searchTag('TagA');
+	    $object->tags->stick('TagA');
 	    $object->commit();
-	    $tag = Tag::deleteTag('TagA');
+	    $tag = Tags::deleteTag(1);
 	    Objects::flushCache();
 	    $object = Objects::load($object->getID());
 	    $this->assertEquals(0,count($object->tags));

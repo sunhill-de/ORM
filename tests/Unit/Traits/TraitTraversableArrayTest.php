@@ -19,15 +19,15 @@ class example_traversablearray2 implements \ArrayAccess,\Countable,\Iterator {
     
     public $flag = '';
     
-     protected function get_fields() {
+     protected function getFields() {
          return $this->otherfields;
      }
      
-     protected function element_change($offset,$value) {
+     protected function elementChange($offset,$value) {
          $this->otherfields[$offset] = $value;
      }
      
-     protected function element_append($value) {
+     protected function elementAppend($value) {
          $this->otherfields[] = $value;
      }
      

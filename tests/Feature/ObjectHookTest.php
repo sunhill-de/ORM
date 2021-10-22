@@ -33,8 +33,8 @@ class HookingObject extends ORMObject  {
         self::arrayofobjects('objarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
     }
     
-    protected function setup_hooks() {
-        parent::setup_hooks();
+    protected function setupHooks() {
+        parent::setupHooks();
     }
     
     protected function field_changing($params) {
@@ -170,8 +170,8 @@ class HookingChild extends HookingObject {
         self::arrayofobjects('childhooking_oarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
     }
     
-    protected function setup_hooks() {
-        parent::setup_hooks();
+    protected function setupHooks() {
+        parent::setupHooks();
         $this->addHook('UPDATED_PROPERTY','childint_changed','childhooking_int');
         $this->addHook('UPDATED_PROPERTY','childoarray_changed','childhooking_oarray');
         

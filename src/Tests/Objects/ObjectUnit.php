@@ -2,11 +2,14 @@
 
 namespace Sunhill\ORM\Tests\Objects;
 
-use Sunhill\ORM\Objects;
+use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Storage\StorageBase;
 
-class FakeStorage extends \Sunhill\ORM\Storage\StorageBase {
+class FakeStorage extends StorageBase 
+{
     
-    protected function executeChain(string $chainname,int $id, $payload=null) {
+    protected function executeChain(string $chainname, int $id, $payload = null) 
+    {
         switch ($chainname) {
             case 'load':
                 $this->entities = $this->caller->storage_values;
@@ -24,13 +27,15 @@ class FakeStorage extends \Sunhill\ORM\Storage\StorageBase {
         return 1;
     }
     
-    public function executeNeedIDQueries() {
+    public function executeNeedIDQueries() 
+    {
         
     }
     
 }
 
-class ObjectUnit extends \Sunhill\ORM\Objects\ORMObject {
+class ObjectUnit extends ORMObject 
+{
 	
     public static $table_name = 'objectunits';
 
@@ -44,11 +49,13 @@ class ObjectUnit extends \Sunhill\ORM\Objects\ORMObject {
     ];
     public $storage_values;
     
-    protected function create_storage() {
+    protected function createStorage(): StorageBase 
+    {
         return new FakeStorage($this);
     }
     
-    protected static function setupProperties() {
+    protected static function setupProperties() 
+    {
         parent::setupProperties();
         self::integer('intvalue');
         self::object('objectvalue')->setAllowedObjects(['dummy'])->setDefault(null);
@@ -57,11 +64,13 @@ class ObjectUnit extends \Sunhill\ORM\Objects\ORMObject {
         self::calculated('calcvalue');
     }
 
-    public function calculate_calcvalue() {
+    public function calculate_calcvalue() 
+    {
         return $this->intvalue."A";
     }
 
-    public function public_load($id) {
+    public function publicLoad($id) 
+    {
         $this->load($id);
     }
 }

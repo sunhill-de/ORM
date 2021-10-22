@@ -26,7 +26,8 @@ class ValidatorBase {
      * @param unknown $test
      * @return boolean, true, if it's valid otherwise false
      */
-    protected function isValid($test) {
+    protected function isValid($test) 
+    {
         return true;    
     }
     
@@ -35,7 +36,8 @@ class ValidatorBase {
      * @param unknown $test
      * @return unknown
      */
-    protected function prepare(&$test) {
+    protected function prepare(&$test) 
+    {
         return $test;
     }
     

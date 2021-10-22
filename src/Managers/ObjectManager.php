@@ -91,7 +91,7 @@ class ObjectManager
 		/**
 		 * Returns a list of objects that match to the given condition
 		 */
-		public function getObjectList($condition = 'object', bool $nochildren = false): array 
+		public function getObjectList($condition = 'object', bool $nochildren = false) 
 		{
 		    if ($condition == 'object') {
 		        $class = 'Sunhill\ORM\Objects\ORMObject';

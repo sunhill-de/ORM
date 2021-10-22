@@ -176,7 +176,7 @@ class Tag extends Loggable
 		$this->name = $data->name;
 		$this->tag_id = $id;
 		if ($data->parent_id) {
-		    $this->parent = self::loadTag($data->parent_id);
+		    $this->parent = Tags::loadTag($data->parent_id);
 		}
 	}
 	
@@ -259,11 +259,6 @@ class Tag extends Loggable
 	private function deleteThis()
     {
 	    DB::table('tags')->where('id',$this->getID())->delete();	    
-	}
-	
-	public static function loadTag(int $id) {
-	    $result = new Tag($id);
-	    return $result;
 	}
 	
 }

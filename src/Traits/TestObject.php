@@ -23,7 +23,8 @@ use Sunhill\ORM\Objects\ORMObject;
  * @author klaus
  *
  */
-trait TestObject {
+trait TestObject 
+{
 
     /**
      * Returns true, is $test is a valid object defined by $allowed_objects
@@ -32,7 +33,8 @@ trait TestObject {
      * @throws ORMException
      * @return boolean|unknown
      */
-    protected function isValidObject(ORMObject $test,$allowed_objects) {
+    protected function isValidObject($test,$allowed_objects) 
+    {
         if (is_array($allowed_objects)) {
             foreach ($allowed_objects as $object) {
                 if (Classes::isA($test,$object)) {
@@ -43,7 +45,7 @@ trait TestObject {
         } else if (is_string($allowed_objects)) {
             return Classes::isA($test,$allowed_objects);
         } else {
-            throw new ORMException("is_valid_object: Inavlid type passed to allowed_objects.");
+            throw new ORMException(__("isValidObject: Inavlid type passed to allowed_objects."));
         }
     }
 }

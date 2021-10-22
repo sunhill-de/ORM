@@ -54,7 +54,7 @@ class ObjectMigrator
             $this->postMigration($added,$removed,$altered);
         } else {
             // If the table doesn't exists, create it
-            $this->create_table();
+            $this->createTable();
         }
     }
     
@@ -83,26 +83,26 @@ class ObjectMigrator
     private function mapType(array $info): string
     {
         switch ($info['type']) {
-            case 'integer':
+            case 'Integer':
                 return 'int(11)'; break;
-            case 'varchar':
-                return 'varchar('.$info['maxlen'].')'; break;
-            case 'enum':
+            case 'Varchar':
+                return 'varchar('.(isset($info['maxlen'])?$info['maxlen']:'255').')'; break;
+            case 'Enum':
                 return 'enum('.$info['enum'].')'; break;
             default:
-                return $info['type'];
+                return strtolower($info['type']);
         }
     }
     
     /**
      * creates a new table with the current properties
      */
-    private function create_table()
+    private function createTable()
     {
         $statement = 'create table '.$this->class_tablename.' (id int primary key';
         $simple = $this->getCurrentProperties();
         foreach ($simple as $field => $info) {
-            $statement .= ','.$field.' '.self::map_type($info);
+            $statement .= ','.$field.' '.$this->mapType($info);
         }
         $statement .= ')';
         DB::statement($statement);
@@ -124,10 +124,10 @@ class ObjectMigrator
         foreach ($properties[$this->class_name] as $property) {
             $result[$property->getName()] = ['type'=>$property->getType()];
             switch ($property->getType()) {
-                case 'varchar':
+                case 'Varchar':
                     $result[$property->getName()]['maxlen'] = $property->getMaxLen();
                     break;
-                case 'enum':
+                case 'Enum':
                     $first = true;
                     $resultstr = '';
                     foreach ($property->getEnumValues() as $value) {
@@ -188,7 +188,7 @@ class ObjectMigrator
         foreach ($current as $name => $info) {
             if (!array_key_exists($name,$database)) {
                 $statement = 'alter table '.$this->class_tablename." add column ".$name." ";
-                $statement .= $this->map_type($info);
+                $statement .= $this->mapType($info);
                 DB::statement($statement);
                 $result[] = $name;
             }
@@ -207,7 +207,7 @@ class ObjectMigrator
         $result = [];
         foreach ($current as $name => $info) {
             if (array_key_exists($name,$database)) {
-                $type = self::map_type($info);
+                $type = self::mapType($info);
                 if ($type !== $database[$name]['type']) {
                     $statement = 'alter table '.$this->class_tablename.' change column '.$name.' '.$name.' '.$type;
                     DB::statement($statement);

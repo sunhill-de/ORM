@@ -41,7 +41,7 @@ class ObjectUpdateTest extends DBTestCase
                 'property'=>''
             ]]
         ];
-        $object->public_load(1);
+        $object->publicLoad(1);
         $object->storage_values = [];
         $update_callback($object);
         $object->commit();
@@ -256,7 +256,7 @@ class ObjectUpdateTest extends DBTestCase
                 'property'=>''
             ]]
         ];
-        $object->public_load(1);
+        $object->publicLoad(1);
         $object->storage_values = [];
         $object->general_attribute = 1509;
         $object->commit();
@@ -289,7 +289,7 @@ class ObjectUpdateTest extends DBTestCase
                 'property'=>''
             ]]
         ];
-        $object->public_load(1);
+        $object->publicLoad(1);
         $object->storage_values = [];
         $object->general_attribute = null;
         $object->commit();

@@ -39,8 +39,8 @@ class Dummy extends ORMObject {
 		self::integer('dummyint')->searchable();
 	}
 	
-	protected function setup_hooks() {
-	    parent::setup_hooks();
+	protected function setupHooks() {
+	    parent::setupHooks();
 	    $this->addHook('UPDATED_PROPERTY','tag_changed','tags');
 	}
 	public function tag_changed($change) {
