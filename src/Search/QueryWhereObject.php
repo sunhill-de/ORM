@@ -4,7 +4,7 @@
  * @file QueryWhereObject.php
  * Provides the QueryWhereObject class
  * Lang en
- * Reviewstatus: 2020-08-06
+ * Reviewstatus: 2021-10-21
  * Localization: none
  * Documentation: incomplete
  * Tests:
@@ -15,7 +15,8 @@
 
 namespace Sunhill\ORM\Search;
 
-class QueryWhereObject extends QueryWhere {
+class QueryWhereObject extends QueryWhere 
+{
     
     protected $allowed_relations = 
         [
@@ -24,9 +25,9 @@ class QueryWhereObject extends QueryWhere {
             '<>'=>'object',
             'in'=>'array',            
         ];
-        
-    
-        protected function getValue() {
+            
+        protected function getValue() 
+        {
             if (is_int($this->value)) {
                 return $this->escape($this->value);
             } else {

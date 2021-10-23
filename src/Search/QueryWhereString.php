@@ -4,7 +4,7 @@
  * @file QueryWhereString.php
  * Provides the QueryWhereString class
  * Lang en
- * Reviewstatus: 2020-08-06
+ * Reviewstatus: 2021-10-21
  * Localization: none
  * Documentation: incomplete
  * Tests:
