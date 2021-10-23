@@ -25,7 +25,7 @@ abstract class ClassOperatorBase extends OperatorBase
 {
     protected $target_class;
     
-    protected function condClass(Descriptor $Descriptor) 
+    protected function cond_class(Descriptor $Descriptor) 
     {
         if (is_null($this->target_class)) {
             return true;

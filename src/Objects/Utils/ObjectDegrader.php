@@ -80,13 +80,13 @@ class ObjectDegrader {
     {
         $arr_1 = [];
         foreach ($desc1 as $entry) {
-            if (($entry['type'] == 'object') || ($entry['type'] == 'arrayOfStrings') || ($entry['type'] == 'arrayOfObject')) {
+            if (($entry['type'] == 'Object') || ($entry['type'] == 'ArrayOfStrings') || ($entry['type'] == 'arrayOfObject')) {
                 $arr_1[] = $entry['name'];
             }
         }
         $arr_2 = [];
         foreach ($desc2 as $entry) {
-            if (($entry['type'] == 'object') || ($entry['type'] == 'arrayOfStrings') || ($entry['type'] == 'arrayOfObject')) {
+            if (($entry['type'] == 'Object') || ($entry['type'] == 'ArrayOfStrings') || ($entry['type'] == 'arrayOfObject')) {
                 $arr_2[] = $entry['name'];
             }
         }
@@ -107,14 +107,14 @@ class ObjectDegrader {
         $lost_fields = $this->getDescriptorDiff($high_props,$low_props);
         foreach ($lost_fields as $field) {
             switch ($high_props[$field]['type']) {
-                case 'arrayOfStrings':
+                case 'ArrayOfStrings':
                     DB::table('stringobjectassigns')->where('field',$field)->where('container_id',$id)->delete();
                     break;
-                case 'arrayOfObject':
-                case 'object':
+                case 'ArrayOfObject':
+                case 'Object':
                     DB::table('objectobjectassigns')->where('field',$field)->where('container_id',$id)->delete();
                     break;
-                case 'calculated':
+                case 'Calculated':
                     DB::table('caching')->where('field',$field)->where('object_id',$id)->delete();
                     break;
             }

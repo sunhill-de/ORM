@@ -45,10 +45,12 @@ class StorageModuleMySQLSimple extends StorageModuleBase
     
     private function store_core() 
     {
-        return DB::table('objects')->insertGetId(['classname'=>Classes::getClassName($this->storage->getCaller()),
-                                                  'created_at'=>DB::raw('now()'),
-                                                  'updated_at'=>DB::raw('now()')
-        ]);
+        $fields = ['classname'=>Classes::getClassName($this->storage->getCaller()),
+            'created_at'=>DB::raw('now()'),
+            'updated_at'=>DB::raw('now()')
+        ];
+        DB::table('objects')->insert($fields);
+        return DB::getPdo()->lastInsertId();        
     }
     
     private function store_table($id, $table, $fields)

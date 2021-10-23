@@ -65,7 +65,7 @@ abstract class OperatorBase
      * @param Descriptor $Descriptor
      * @return boolean
      */
-    protected function condCommand(Descriptor $descriptor) 
+    protected function cond_command(Descriptor $descriptor) 
     {
         return (in_array($descriptor->command, $this->commands));
     }
