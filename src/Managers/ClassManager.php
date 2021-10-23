@@ -264,7 +264,8 @@ class ClassManager
      * @param int $index The number of the wanted class
      * @retval string
      */
-    private function getClassnameWithIndex(int $index) {
+    private function getClassnameWithIndex(int $index) 
+    {
         if ($index < 0) {
             throw new ORMException("Invalid Index '$index'");
         }
@@ -282,7 +283,8 @@ class ClassManager
      * Tests if this class is in the class cache
      * @param unknown $test The class to test
      */
-    private function checkClass($test) {
+    private function checkClass($test) 
+    {
         if (is_null($test)) {
             throw new ORMException("Null was passed to checkClass");
         }
@@ -294,7 +296,8 @@ class ClassManager
     }
     
 
-    private function translate(string $class,string $item) {
+    private function translate(string $class,string $item) 
+    {
         return Lang::get('ORM:testfiles.'.$class.'_'.$item);
     }
        
@@ -305,7 +308,8 @@ class ClassManager
      * @throws ORMException
      * @return unknown
      */
-    public function getClass($test,$field=null) {        
+    public function getClass($test,$field=null) 
+    {        
         $name = $this->getClassName($test);
         $this->checkClass($name);
         $class = $this->classes[$name];
@@ -327,7 +331,8 @@ class ClassManager
      * @param string $name
      * @return unknown
      */
-    public function getTableOfClass(string $name) {
+    public function getTableOfClass(string $name) 
+    {
         $name = $this->checkClass($this->searchClass($name));
         return $this->getClass($name,'table');
     }
@@ -337,7 +342,8 @@ class ClassManager
      * @param string $name
      * @return unknown
      */
-    public function getParentOfClass(string $name) {
+    public function getParentOfClass(string $name) 
+    {
         $name = $this->checkClass($this->searchClass($name));
         return $this->getClass($name,'parent');
     }
@@ -347,7 +353,8 @@ class ClassManager
      * @param string $name
      * @param bool $include_self
      */
-    public function getInheritanceOfClass(string $name,bool $include_self=false) {
+    public function getInheritanceOfClass(string $name,bool $include_self = false) 
+    {
         $name = $this->checkClass($this->searchClass($name));
         if ($include_self) {
             $result = [$name];
@@ -367,7 +374,8 @@ class ClassManager
      * @param string $name Name of the class to which all children should be searched. Default=object
      * @param int $level search children only to this depth. -1 means search all children. Default=-1
      */
-    public function getChildrenOfClass(string $name='object',int $level=-1) : array {
+    public function getChildrenOfClass(string $name='object',int $level=-1) : array 
+    {
         $name = $this->checkClass($this->searchClass($name));
         
         $result = [];
@@ -387,7 +395,8 @@ class ClassManager
      * @param string $class The class to search for properties
      * @return Descriptor of all properties
      */
-    public function getPropertiesOfClass(string $class) {
+    public function getPropertiesOfClass(string $class) 
+    {
         $name = $this->checkClass($this->searchClass($class));
         return $this->getClass($name,'properties');
     }
@@ -398,7 +407,8 @@ class ClassManager
      * @param string $property The property to search for
      * @return Descriptor of this property
      */
-    public function getPropertyOfClass(string $class,string $property) {
+    public function getPropertyOfClass(string $class,string $property) 
+    {
         $class = $this->checkClass($this->searchClass($class));
         return $this->getPropertiesOfClass($class)[$property];
     }
@@ -408,17 +418,36 @@ class ClassManager
      * @param string $name
      * @return unknown
      */
-    public function getNamespaceOfClass(string $name) {
+    public function getNamespaceOfClass(string $name) 
+    {
         $name = $this->checkClass($this->searchClass($name));
         return $this->getClass($name,'class');
     }
+    
+    /**
+     * Returns an array of all used tables of this class
+     * @param string $name
+     */
+    public function getUsedTablesOfClass(string $name)
+    {
+        $inheritance = $this->getInheritanceOfClass($name, true);
         
+        $result = [];
+        
+        foreach ($inheritance as $ancestor) {
+            $result[] = $this->getTableOfClass($ancestor);    
+        }
+        
+        return $result;
+    }
+    
     /**
      * Creates an instance of the passes class
      * @param string $class is either the namespace or the class name
      * @return ORMObject The created instance of $class
      */
-    public function createObject(string $class) {
+    public function createObject(string $class) 
+    {
         $class = $this->checkClass($this->searchClass($class));
         $namespace = $this->getNamespaceOfClass($this->searchClass($class));
         $result = new $namespace();
@@ -431,7 +460,8 @@ class ClassManager
      * @param unknown $class
      * @return boolean
      */
-    public function isA($test,$class) {
+    public function isA($test,$class) 
+    {
         $namespace = $this->getNamespaceOfClass($this->checkClass($this->searchClass($class)));
         return is_a($test,$namespace);
     }
@@ -442,7 +472,8 @@ class ClassManager
      * @param unknown $class
      * @return boolean
      */
-    public function isAClass($test,$class) {
+    public function isAClass($test,$class) 
+    {
         $namespace = $this->getNamespaceOfClass($this->checkClass($this->searchClass($class)));
         return is_a($test,$namespace) && !is_subclass_of($test,$namespace);
     }
@@ -454,7 +485,8 @@ class ClassManager
      * @param unknown $class
      * @return boolean
      */
-    public function isSubclassOf($test,$class) {
+    public function isSubclassOf($test,$class) 
+    {
         $namespace = $this->getNamespaceOfClass($this->checkClass($this->searchClass($class)));
         $test_space = $this->getNamespaceOfClass($this->checkClass($this->searchClass($test)));
         return is_subclass_of($test_space,$namespace);        
@@ -463,7 +495,8 @@ class ClassManager
     /**
      * Creates the necessary tables for this class and checks if the fields are up to date
      */
-    public function migrateClass(string $class_name) : void {
+    public function migrateClass(string $class_name) 
+    {
         $class_name = $this->checkClass($this->searchClass($class_name));
         $migrator = new ObjectMigrator();
         $migrator->migrate($class_name);

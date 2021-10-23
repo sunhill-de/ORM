@@ -470,6 +470,28 @@ class ManagerClassesTest extends TestCase
             ['testchild',true,['testchild','testparent','object']]
         ];
     }
+    
+    /**
+     * @dataProvider GetUsedTablesProvider
+     * @param unknown $test
+     * @param unknown $expect
+     */
+    public function testGetUsedTables($test,$expect) 
+    {
+        $this->setupClasses();
+        $list = Classes::getUsedTablesOfClass($test);
+        sort($list);
+        $this->assertEquals($expect,$list);
+    }
+    
+    public function GetUsedTablesProvider() 
+    {
+        return [
+          ['testparent',['objects','testparents']],
+          ['testchild',['objects','testchildren','testparents']]
+        ];
+    }
+    
 /**    
     public function testSearchClassWithTranslation() {
         $this->assertEquals('dummies',Classes::getClass('dummy','name_p'));
