@@ -79,8 +79,8 @@ class ObjectPromoteTest extends DBTestCase
         $add->dummyint = 123;
         $test->parentobject = $add;
         $test->parentoarray[] = $add;
-        Tags::addTag('TestTag');
-        $test->tags->stick('TestTag');
+        Tags::addTag('TestTagABC');
+        $test->tags->stick('TestTagABC');
         $test->commit();
         $id = $test->getID();
         $new = $test->promote('\\Sunhill\\ORM\\Tests\\Objects\\ThirdLevelChild');
