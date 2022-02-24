@@ -33,6 +33,7 @@ class SunhillServiceProvider extends ServiceProvider
         Checks::InstallChecker(OrmChecks::class);
         
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang','ORM');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         if ($this->app->runningInConsole()) {
             $this->commands([
                 MigrateObjects::class,
