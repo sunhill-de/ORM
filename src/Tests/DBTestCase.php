@@ -18,7 +18,7 @@ use Sunhill\ORM\Tests\Objects\ObjectUnit;
 abstract class DBTestCase extends TestCase
 {
 
-    use RefreshDatabase;
+ //  use RefreshDatabase;
     
     protected static $db_inited = false;
     

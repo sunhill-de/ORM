@@ -9,6 +9,7 @@ use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Objects\Tag;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\Descriptor;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 define('NUMBER_OF_TAGS', 8);
 define('NUMBER_OF_ORPHANED_TAGS', 6);
@@ -17,6 +18,14 @@ define('NUMBER_OF_ROOT_TAGS', 5);
 class ManagerTagTest extends DBTestCase
 {
 
+    use RefreshDatabase;
+    
+    public function testDummy()
+    {
+        DB::statement("start transaction");
+        $this->assertTrue(true);
+    }
+    
     // ========================== Test count with different accessibilities  ==================================
     // total number of tags
     public function testCount() {
@@ -320,7 +329,7 @@ class ManagerTagTest extends DBTestCase
      */
     public function testAddTag_withArray_parent() {
         $test = new TagManager();
-        $this->callProtectedMethod($test,'addTagByString',['name'=>'TagA.Test']);
+        $this->callProtectedMethod($test,'addTagByString',['TagA.Test']);
         $result = DB::table('tags')->where('name','Test')->first();
         $this->assertEquals(1,$result->parent_id);
     }
