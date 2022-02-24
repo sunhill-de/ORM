@@ -234,8 +234,13 @@ class OrmChecks extends Checker
     
     private function tableExists(string $table): bool 
     {
-        $query = array_map('reset',DB::select('show tables'));    
-        return in_array($table,$query);
+        $query = DB::select("show tables");
+        foreach ($query as $found_table) {
+            if ($table == $found_table->Tables_in_sunhill) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private function testTable(string $master,array $tables) 
