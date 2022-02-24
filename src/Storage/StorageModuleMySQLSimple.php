@@ -47,7 +47,8 @@ class StorageModuleMySQLSimple extends StorageModuleBase
     {
         $fields = ['classname'=>Classes::getClassName($this->storage->getCaller()),
             'created_at'=>DB::raw('now()'),
-            'updated_at'=>DB::raw('now()')
+            'updated_at'=>DB::raw('now()'),
+            'uuid'=>DB::raw('uuid()')
         ];
         DB::table('objects')->insert($fields);
         return DB::getPdo()->lastInsertId();        
