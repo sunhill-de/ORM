@@ -63,7 +63,9 @@ class DatetimeValidator extends ValidatorBase {
             return null;
         }
         list($year,$month,$day) = $parts;
-        
+        if (empty($year)) {
+            $year = 0;
+        }
         if (!($month == 0) && !($day == 0) && !($year == 0) && !checkdate($month,$day,$year)) {
             return false;
         }
