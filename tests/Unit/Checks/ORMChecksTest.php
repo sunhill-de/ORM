@@ -164,9 +164,9 @@ class ORMChecksTest extends TestCase
             ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
         ]);
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('tagobjectassigns')->insert([
             ['container_id'=>1,'tag_id'=>1],
@@ -188,9 +188,9 @@ class ORMChecksTest extends TestCase
             ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
         ]);
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('tagobjectassigns')->insert([
             ['container_id'=>1,'tag_id'=>1],
@@ -212,9 +212,9 @@ class ORMChecksTest extends TestCase
             ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
         ]);
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('tagobjectassigns')->insert([
             ['container_id'=>1,'tag_id'=>1],
@@ -236,9 +236,9 @@ class ORMChecksTest extends TestCase
             ['id'=>3,'name'=>'TagC','parent_id'=>1,'options'=>0],
         ]);
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('tagobjectassigns')->insert([
             ['container_id'=>1,'tag_id'=>1],
@@ -255,9 +255,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate objectobjectassigns');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('objectobjectassigns')->insert([
             ['container_id'=>1,'element_id'=>1,'field'=>'test','index'=>0],
@@ -273,9 +273,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate objectobjectassigns');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('objectobjectassigns')->insert([
             ['container_id'=>1,'element_id'=>1,'field'=>'test','index'=>0],
@@ -291,9 +291,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate objectobjectassigns');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('objectobjectassigns')->insert([
             ['container_id'=>1,'element_id'=>1,'field'=>'test','index'=>0],
@@ -309,9 +309,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate objectobjectassigns');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('objectobjectassigns')->insert([
             ['container_id'=>1,'element_id'=>1,'field'=>'test','index'=>0],
@@ -327,9 +327,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate stringobjectassigns');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('stringobjectassigns')->insert([
             ['container_id'=>1,'element_id'=>'test1','field'=>'test','index'=>0],
@@ -346,9 +346,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate stringobjectassigns');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'test'],
-            ['id'=>2,'classname'=>'test'],
-            ['id'=>3,'classname'=>'test'],
+            ['id'=>1,'classname'=>'test','uuid'=>'123'],
+            ['id'=>2,'classname'=>'test','uuid'=>'123'],
+            ['id'=>3,'classname'=>'test','uuid'=>'123'],
         ]);
         DB::table('stringobjectassigns')->insert([
             ['container_id'=>1,'element_id'=>'test1','field'=>'test','index'=>0],
@@ -365,9 +365,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate objects');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'dummy'],
-            ['id'=>2,'classname'=>'testparent'],
-            ['id'=>3,'classname'=>'testchild'],
+            ['id'=>1,'classname'=>'dummy','uuid'=>'123'],
+            ['id'=>2,'classname'=>'testparent','uuid'=>'123'],
+            ['id'=>3,'classname'=>'testchild','uuid'=>'123'],
         ]);
         
         $test = new OrmChecks();
@@ -380,9 +380,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate objects');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'dummy'],
-            ['id'=>2,'classname'=>'testparent'],
-            ['id'=>3,'classname'=>'notexisting'],
+            ['id'=>1,'classname'=>'dummy','uuid'=>'123'],
+            ['id'=>2,'classname'=>'testparent','uuid'=>'123'],
+            ['id'=>3,'classname'=>'notexisting','uuid'=>'123'],
         ]);
         
         $test = new OrmChecks();
@@ -399,10 +399,10 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate secondlevelchildren');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'dummy'],
-            ['id'=>2,'classname'=>'testparent'],
-            ['id'=>3,'classname'=>'testchild'],
-            ['id'=>4,'classname'=>'secondlevelchild'],
+            ['id'=>1,'classname'=>'dummy','uuid'=>'123'],
+            ['id'=>2,'classname'=>'testparent','uuid'=>'123'],
+            ['id'=>3,'classname'=>'testchild','uuid'=>'123'],
+            ['id'=>4,'classname'=>'secondlevelchild','uuid'=>'123'],
          ]);   
         DB::table('dummies')->insert([
             ['id'=>1,'dummyint'=>1],
@@ -434,10 +434,10 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate secondlevelchildren');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'dummy'],
-            ['id'=>2,'classname'=>'testparent'],
-            ['id'=>3,'classname'=>'testchild'],
-            ['id'=>4,'classname'=>'secondlevelchild'],
+            ['id'=>1,'classname'=>'dummy','uuid'=>'123'],
+            ['id'=>2,'classname'=>'testparent','uuid'=>'123'],
+            ['id'=>3,'classname'=>'testchild','uuid'=>'123'],
+            ['id'=>4,'classname'=>'secondlevelchild','uuid'=>'123'],
         ]);
         DB::table('dummies')->insert([
             ['id'=>1,'dummyint'=>1],
@@ -467,9 +467,9 @@ class ORMChecksTest extends TestCase
         DB::statement('truncate objects');
         
         DB::table('objects')->insert([
-            ['id'=>1,'classname'=>'dummy'],
-            ['id'=>2,'classname'=>'testparent'],
-            ['id'=>4,'classname'=>'secondlevelchild'],
+            ['id'=>1,'classname'=>'dummy','uuid'=>'123'],
+            ['id'=>2,'classname'=>'testparent','uuid'=>'123'],
+            ['id'=>4,'classname'=>'secondlevelchild','uuid'=>'123'],
         ]);
         DB::table('dummies')->insert([
             ['id'=>1,'dummyint'=>1],
