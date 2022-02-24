@@ -20,7 +20,7 @@ class ScenarioWithRegistrationFeatureTestScenario extends ScenarioBase{
         ],
     ];
     
-    public function GetRegistration() {
+    public function GetRegistration(): Array {
         return [
             Dummy::class
         ];
