@@ -11,3 +11,4 @@ composer.lock
 /doc/html
 /doc/coverage
 /.phpunit*
+/.project

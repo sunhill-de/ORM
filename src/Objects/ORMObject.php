@@ -483,6 +483,7 @@ class ORMObject extends PropertiesHaving
 	    self::addProperty('tags','tags')->searchable();
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
+	    self::varchar('uuid')->searchable()->set_maxlen(20);
 	}
 
 	// ****************** Migration **********************************
