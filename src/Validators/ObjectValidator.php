@@ -20,6 +20,11 @@ class ObjectValidator extends ValidatorBase {
         return $this;
     }
     
+    public function getAllowedObjects()
+    {
+        return $this->allowed_objects;
+    }
+    
     protected function isAllowedObject($test) 
     {
         if (!isset($this->allowed_objects)) {

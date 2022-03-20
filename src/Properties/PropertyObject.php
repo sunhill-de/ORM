@@ -38,6 +38,11 @@ class PropertyObject extends PropertyField
 	    return $this;
 	}
 	
+	public function getAllowedObjects()
+	{
+	    return $this->validator->getAllowedObjects();
+	}
+	
 	/**
 	 * Wird aufgerufen, nachdem das Elternobjekt geladen wurde
 	 * {@inheritDoc}
