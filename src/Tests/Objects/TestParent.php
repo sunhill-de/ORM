@@ -33,7 +33,7 @@ class TestParent extends ORMObject {
 		self::enum('parentenum')->setValues(['testA','testB','testC']);
 		self::object('parentobject')->setAllowedObjects(['dummy'])->setDefault(null);
 		self::arrayofstrings('parentsarray');
-		self::arrayofobjects('parentoarray')->setAllowedObjects(['dummy']);
+		self::arrayOfObjects('parentoarray')->setAllowedObjects(['dummy']);
 		self::calculated('parentcalc');
 	}
 	

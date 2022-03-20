@@ -60,7 +60,7 @@ class ObjectUnit extends ORMObject
         self::integer('intvalue');
         self::object('objectvalue')->setAllowedObjects(['dummy'])->setDefault(null);
         self::arrayofstrings('sarray');
-        self::arrayofobjects('oarray')->setAllowedObjects(['dummy']);
+        self::arrayOfObjects('oarray')->setAllowedObjects(['dummy']);
         self::calculated('calcvalue');
     }
 

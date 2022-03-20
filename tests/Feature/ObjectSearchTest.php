@@ -35,7 +35,7 @@ class searchtestA extends ORMObject {
         self::varchar('Achar')->searchable();
         self::calculated('Acalc')->searchable();
         self::object('Aobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
-        self::arrayofobjects('Aoarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
+        self::arrayOfObjects('Aoarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
         self::arrayofstrings('Asarray')->searchable();
     }
     
@@ -73,7 +73,7 @@ class searchtestB extends searchtestA {
         self::calculated('Bcalc')->searchable();
         self::object('Bobject')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
         self::arrayofstrings('Bsarray')->searchable();
-        self::arrayofobjects('Boarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
+        self::arrayOfObjects('Boarray')->setAllowedObjects(["\\Sunhill\\ORM\\Test\\Dummy"])->searchable();
     }
     
     public function calculate_Bcalc() {

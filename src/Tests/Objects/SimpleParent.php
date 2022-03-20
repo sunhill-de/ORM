@@ -30,7 +30,7 @@ class SimpleParent extends ORMObject {
         self::integer('parentint');
         self::varchar('parentchar')->searchable();
         self::object('parentobject');
-        self::arrayofobjects('parentoarray');
+        self::arrayOfObjects('parentoarray');
     }
     
 }

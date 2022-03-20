@@ -25,7 +25,7 @@ class TestChild extends TestParent {
 		self::enum('childenum')->setValues(['testA','testB','testC']);
 		self::object('childobject')->setAllowedObjects(['dummy'])->setDefault(null);;
 		self::arrayofstrings('childsarray');
-		self::arrayofobjects('childoarray')->setAllowedObjects(['dummy']);
+		self::arrayOfObjects('childoarray')->setAllowedObjects(['dummy']);
 	}
 	
 }

@@ -30,7 +30,7 @@ class HookingObject extends ORMObject  {
         self::varchar('hookstate')->setDefault('');
         self::object('ofield')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
         self::arrayofstrings('strarray');
-        self::arrayofobjects('objarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
+        self::arrayOfObjects('objarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
     }
     
     protected function setupHooks() {
@@ -167,7 +167,7 @@ class HookingChild extends HookingObject {
     protected static function setupProperties() {
         parent::setupProperties();
         self::integer('childhooking_int')->setDefault(0);
-        self::arrayofobjects('childhooking_oarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
+        self::arrayOfObjects('childhooking_oarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
     }
     
     protected function setupHooks() {

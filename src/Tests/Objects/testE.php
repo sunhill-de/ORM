@@ -27,7 +27,7 @@ class testE extends ORMObject {
     
     protected static function setupProperties() {
         parent::setupProperties();
-        self::arrayofobjects('testfield')->setAllowedObjects(["dummy"]);
+        self::arrayOfObjects('testfield')->setAllowedObjects(["dummy"]);
     }
     
 }

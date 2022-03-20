@@ -18,7 +18,7 @@ class ReferenceOnly extends \Sunhill\ORM\Objects\ORMObject {
 		parent::setupProperties();
 		self::integer('testint');
 		self::object('testobject')->setAllowedObjects(['dummy','referenceonly'])->setDefault(null);;
-		self::arrayofobjects('testoarray')->setAllowedObjects(['dummy','referenceonly']);
+		self::arrayOfObjects('testoarray')->setAllowedObjects(['dummy','referenceonly']);
 	}
 	
 }
