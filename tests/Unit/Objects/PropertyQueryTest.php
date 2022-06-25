@@ -14,6 +14,7 @@ use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\PropertyQuery\PropertyQuery;
 use Sunhill\ORM\Properties\Property;
+use Sunhill\ORM\Tests\Objects\SimpleChild;
 
 class PropertyQueryTest extends DBTestCase
 {
@@ -82,4 +83,10 @@ class PropertyQueryTest extends DBTestCase
       }  
   
   
+      public function testGetProperties()
+      {
+          $test = new SimpleChild();
+          $result = $test->getProperties()->where('Type','Integer')->get();
+          $this->assertEquals(2,count($result));          
+      }
 }

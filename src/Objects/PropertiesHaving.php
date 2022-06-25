@@ -19,6 +19,7 @@ use Sunhill\ORM\Search\QueryBuilder;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Hookable;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\PropertyQuery\PropertyQuery;
 
 /**
  * Basic class for all classes that have properties.
@@ -484,6 +485,15 @@ class PropertiesHaving extends Hookable
 	    return $result;
 	}
 
+	/**
+	 * Return a ProperyQuery class for further definition of the desired properties
+	 * @return \Sunhill\ORM\Objects\PropertyQuery
+	 */
+	public function getProperties()
+	{
+	   return new PropertyQuery($this->properties);    
+	}
+	
 	protected function dynamicAddProperty(string $name,string $type) 
     {
 	    $property = static::createProperty($name, $type);
