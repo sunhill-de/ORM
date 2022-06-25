@@ -55,12 +55,12 @@ class PropertyQueryTest extends DBTestCase
           $prop2 = new Property();
           $prop2->setName('prop2');
           $prop3 = new Property();
-          $prop3->setName('prop3')->setReadonly();
+          $prop3->setName('prop3')->setReadonly(true);
         
           $test = new PropertyQuery([$prop1,$prop2]);
           $result = $test->whereNot('name','prop2')->where('readonly',false)->get();
           $this->assertEquals(1,count($result));
-          $this->assertEquals('prop2',$result[0]->getName());
+          $this->assertEquals('prop1',$result[0]->getName());
       }  
   
       // Tests a combined filtered query
@@ -71,9 +71,9 @@ class PropertyQueryTest extends DBTestCase
           $prop2 = new Property();
           $prop2->setName('prop2');
           $prop3 = new Property();
-          $prop3->setName('prop3')->setReadonly();
+          $prop3->setName('prop3')->setReadonly(true);
         
-          $test = new PropertyQuery([$prop1,$prop2]);
+          $test = new PropertyQuery([$prop1,$prop2,$prop3]);
           $result = $test->groupBy('readonly')->get();
           $this->assertEquals(2,count($result));
           $this->assertEquals('prop1',$result[false][0]->getName());

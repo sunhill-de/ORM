@@ -23,7 +23,7 @@ class PropertyQuery
      * further processings on this copy
      * @param $properties array of Property: The list of properties of that object
      */
-    public function __constructor($properties)
+    public function __construct($properties)
     {
         $this->current = $properties;
     }  
@@ -46,19 +46,7 @@ class PropertyQuery
      */
     public function where($field,$relation,$condition=null)
     {
-        if (is_null($condition)) {
-           $condition = $relation;
-           $relation = '=';
-        }
-        $result = [];
-        foreach ($this->current as $property)
-        {
-            if ($this->matches($property,$field,$relation,$condition)) {
-              $result[] = $property;
-            }  
-        }  
-        $this->current = $result;
-        return $this;
+        return $this->executeFilters($field,$relation,$condition,true);
     }  
   
     /**
@@ -70,25 +58,61 @@ class PropertyQuery
      */
     public function whereNot($field,$relation,$condition=null)
     {
-        if (is_null($condition)) {
-           $condition = $relation;
-           $relation = '=';
-        }
+        return $this->executeFilters($field,$relation,$condition,false);
+    }    
+  
+    public function groupBy(string $condition)
+    {
         $result = [];
         foreach ($this->current as $property)
         {
-            if (!$this->matches($property,$field,$relation,$condition)) {
-              $result[] = $property;
-            }  
+           $method = $this->getGetter($condition);
+           $group = $property->$method();
+           if (isset($result[$group])) {
+               $result[$group][] = $property;
+           } else {
+               $result[$group] = [$property];
+           }
         }
         $this->current = $result;
         return $this;
     }
-  
+    
+    /**
+     * A common executor for where and whereNot
+     * @param unknown $field
+     * @param unknown $relation
+     * @param unknown $condition
+     * @param unknown $negate
+     * @return \Sunhill\ORM\PropertyQuery\PropertyQuery
+     */
+    protected function executeFilters($field,$relation,$condition,$negate)
+    {
+        if (is_null($condition)) {
+            $condition = $relation;
+            $relation = '=';
+        }
+        $result = [];
+        foreach ($this->current as $property)
+        {
+            $match = $this->matches($property,$field,$relation,$condition);
+            if ($match == $negate) {
+                $result[] = $property;
+            }
+        }
+        $this->current = $result;
+        return $this;        
+    }
+    
+    protected function getGetter($field)
+    {
+        return 'get'.ucfirst(strtolower($field));
+    }
+    
     protected function matches($property,$field,$relation,$condition)
     {
-        $method = 'get'.$field;
-        $result = $property->method();
+        $method = $this->getGetter($field);
+        $result = $property->$method();
         switch ($relation)
         {
           case '=':
