@@ -55,6 +55,8 @@ class PropertiesHaving extends Hookable
     
     protected $properties;
     
+    protected static $infos;
+		
     public static $object_infos = [
         'name'=>'PropertiesHaving',       // A repetition of static:$object_name @todo see above
         'table'=>'',     // A repitition of static:$table_name
@@ -63,13 +65,15 @@ class PropertiesHaving extends Hookable
         'description'=>'Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly',
         'options'=>0,           // Reserved for later purposes
     ];
-    /**
-     * Constructor calles setupProperties()
-     */
+       
+	/**
+        * Constructor calls setupProperties()
+        */
 	public function __construct() 
-    {
+        {
 		parent::__construct();
 		self::initializeProperties();
+		self::initializeInfos();
 		$this->copyProperties();
 	}
 	
@@ -508,10 +512,10 @@ class PropertiesHaving extends Hookable
 	
 	/**
 	 * Return a ProperyQuery class for further definition of the desired properties
-	 * Static variant of getProoperties
+	 * Static variant of getProperties
 	 * @return \Sunhill\ORM\Objects\PropertyQuery
 	 */
-	public function staticGetProperties()
+	public static function staticGetProperties()
 	{
 	   if (empty(static::$property_definitions)) {
 	   	static::initializeProperties();
@@ -519,17 +523,77 @@ class PropertiesHaving extends Hookable
            return new PropertyQuery(static::$property_definitions);    
 	}
 	
+	/**
+	 * Creates an empty array for properties and calls setupProperties()
+	 */
 	public static function initializeProperties() 
-    {
+        {
  	       static::$property_definitions = array();
 	       static::setupProperties();
 	}
-	
+
+	/**
+	 * This is the core static method that derrived classes have to call to define their
+	 * properties.
+	 */
 	protected static function setupProperties() 
-    {
+        {
 	    
 	}
 
+	/**
+	 * Creates an empty array for infos and calls setupInfos()
+	 * Infos are class wide additional informations that are stored to a class. Useful for information
+	 * like name, table-name, editable, etc.	 
+	 */
+	public static function initializeInfos()
+	{
+		static::$infos = array();
+		static::setupInfos();
+	}
+	
+	/**
+	 * This method must be overwritten by the derrived class to define its infos
+	 */
+	protected static function setupInfos()
+	{
+		static::addInfo('name','PropertiesHaving');
+		static::addInfo('table','');
+        	static::addInfo('name_s','properties having',true);
+        	static::addInfo('name_p','properties having',true);
+        	static::addInfo('description','Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly');
+        	static::addInfo('options',0);
+		static::addInfo('editable',false);
+		static::addInfo('objectable',false);
+	}
+	
+	protected static function addInfo(string $key, $value, bool $translatable = false)
+	{
+		$info = new \StdClass();
+		$info->key = $key;
+		$info->value = $value;
+		$info->translatable = $translatable;
+		static::$infos[$key] = $info;
+	}
+	
+	protected static function getInfo(string $key)
+	{
+		if (!isset(static::$infos[$key])) {
+			throw new \Exception(__("The key ':key' is not defined.",['key'=>$key]));
+		}	
+		$info = static::$infos[$key];
+		if ($info->translatable) {
+			return static::translate($info->key);
+		} else {
+			return $info->value;
+		}	
+	}
+	
+	protected static function translate($info)
+	{
+		return __($info);
+	}
+	
 	private static function getCallingClass(): string 
     {
 	    $caller = debug_backtrace();
