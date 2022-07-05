@@ -564,7 +564,7 @@ class PropertiesHaving extends Hookable
         	static::addInfo('description','Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly');
         	static::addInfo('options',0);
 		static::addInfo('editable',false);
-		static::addInfo('objectable',false);
+		static::addInfo('instantiable',false);
 	}
 	
 	protected static function addInfo(string $key, $value, bool $translatable = false)
