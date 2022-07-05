@@ -435,10 +435,11 @@ class PropertiesHaving extends Hookable
 	}
 	
 	/**
-	 * Liefert alle Properties zurück, die ein bestimmtes Feature haben
-	 * @param string $feature, wenn ungleich null, werden nur die Properties zurückgegeben, die ein bestimmtes Feature haben
-     * @param bool $dirty, wenn true, dann nur dirty-Properties, wenn false dann nur undirty, wenn null dann alle
-     * @param string $group, wenn nicht null, dann werden die Properties nach dem Ergebnis von get_$group gruppiert
+	 * @deprecated Use getProperties() query instead
+	 * Return all properties that have a certain feature
+	 * @param string $feature, if not null then only properties with this feature are returned
+         * @param bool $dirty, if true only dirty properties are returned
+         * @param string $group, if not null the result is grouped by this feature
 	 * @return unknown[]
 	 */
 	public function getPropertiesWithFeature(string $feature = '', $dirty = null, $group = null) 
@@ -448,7 +449,7 @@ class PropertiesHaving extends Hookable
 	        $group = 'get_'.$group;
 	    }
 	    foreach ($this->properties as $name => $property) {
-	        // Als erstes auswerten, ob $dirty berücksichtigt werden soll
+	        // Should dirty be considered?
 	        if (isset($dirty)) {
 	            if ($dirty && (!$property->getDirty())) {
 	                continue;
@@ -456,8 +457,8 @@ class PropertiesHaving extends Hookable
 	                continue;
 	            }
 	        }
-	        if (empty($feature)) { // Gibt es Features zu berücksichgigen
-	            if (isset($group)) { // Soll gruppiert werden
+	        if (empty($feature)) { // Are there features to consider ?
+	            if (isset($group)) { // Should we group ?
 	                $group_value = $property->$group();
 	                if (isset($result[$group_value])) {
 	                    $result[$group_value][$name] = $property;
@@ -469,7 +470,7 @@ class PropertiesHaving extends Hookable
 	            }
 	        } else {
 	           if ($property->hasFeature($feature)) {
-	               if (isset($group)) { // Soll gruppiert werden
+	               if (isset($group)) { // Should be grouped ?
 	                   $group_value = $property->$group();
 	                   if (isset($result[$group_value])) {
 	                       $result[$group_value][$name] = $property;
@@ -504,6 +505,19 @@ class PropertiesHaving extends Hookable
 	// ========================== Static methods ================================
 	
 	protected static $property_definitions;
+	
+	/**
+	 * Return a ProperyQuery class for further definition of the desired properties
+	 * Static variant of getProoperties
+	 * @return \Sunhill\ORM\Objects\PropertyQuery
+	 */
+	public function staticGetProperties()
+	{
+	   if (empty(static::$property_definitions)) {
+	   	static::initializeProperties();
+	   }	   
+           return new PropertyQuery(static::$property_definitions);    
+	}
 	
 	public static function initializeProperties() 
     {
