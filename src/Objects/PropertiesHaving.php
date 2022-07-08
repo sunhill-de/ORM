@@ -55,6 +55,8 @@ class PropertiesHaving extends Hookable
     
     protected $properties;
     
+    protected static $infos;
+		
     public static $object_infos = [
         'name'=>'PropertiesHaving',       // A repetition of static:$object_name @todo see above
         'table'=>'',     // A repitition of static:$table_name
@@ -63,13 +65,15 @@ class PropertiesHaving extends Hookable
         'description'=>'Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly',
         'options'=>0,           // Reserved for later purposes
     ];
-    /**
-     * Constructor calles setupProperties()
-     */
+       
+	/**
+        * Constructor calls setupProperties()
+        */
 	public function __construct() 
-    {
+        {
 		parent::__construct();
 		self::initializeProperties();
+		self::initializeInfos();
 		$this->copyProperties();
 	}
 	
@@ -435,10 +439,11 @@ class PropertiesHaving extends Hookable
 	}
 	
 	/**
-	 * Liefert alle Properties zurück, die ein bestimmtes Feature haben
-	 * @param string $feature, wenn ungleich null, werden nur die Properties zurückgegeben, die ein bestimmtes Feature haben
-     * @param bool $dirty, wenn true, dann nur dirty-Properties, wenn false dann nur undirty, wenn null dann alle
-     * @param string $group, wenn nicht null, dann werden die Properties nach dem Ergebnis von get_$group gruppiert
+	 * @deprecated Use getProperties() query instead
+	 * Return all properties that have a certain feature
+	 * @param string $feature, if not null then only properties with this feature are returned
+         * @param bool $dirty, if true only dirty properties are returned
+         * @param string $group, if not null the result is grouped by this feature
 	 * @return unknown[]
 	 */
 	public function getPropertiesWithFeature(string $feature = '', $dirty = null, $group = null) 
@@ -448,7 +453,7 @@ class PropertiesHaving extends Hookable
 	        $group = 'get_'.$group;
 	    }
 	    foreach ($this->properties as $name => $property) {
-	        // Als erstes auswerten, ob $dirty berücksichtigt werden soll
+	        // Should dirty be considered?
 	        if (isset($dirty)) {
 	            if ($dirty && (!$property->getDirty())) {
 	                continue;
@@ -456,8 +461,8 @@ class PropertiesHaving extends Hookable
 	                continue;
 	            }
 	        }
-	        if (empty($feature)) { // Gibt es Features zu berücksichgigen
-	            if (isset($group)) { // Soll gruppiert werden
+	        if (empty($feature)) { // Are there features to consider ?
+	            if (isset($group)) { // Should we group ?
 	                $group_value = $property->$group();
 	                if (isset($result[$group_value])) {
 	                    $result[$group_value][$name] = $property;
@@ -469,7 +474,7 @@ class PropertiesHaving extends Hookable
 	            }
 	        } else {
 	           if ($property->hasFeature($feature)) {
-	               if (isset($group)) { // Soll gruppiert werden
+	               if (isset($group)) { // Should be grouped ?
 	                   $group_value = $property->$group();
 	                   if (isset($result[$group_value])) {
 	                       $result[$group_value][$name] = $property;
@@ -505,17 +510,90 @@ class PropertiesHaving extends Hookable
 	
 	protected static $property_definitions;
 	
+	/**
+	 * Return a ProperyQuery class for further definition of the desired properties
+	 * Static variant of getProperties
+	 * @return \Sunhill\ORM\Objects\PropertyQuery
+	 */
+	public static function staticGetProperties()
+	{
+	   if (empty(static::$property_definitions)) {
+	   	static::initializeProperties();
+	   }	   
+           return new PropertyQuery(static::$property_definitions);    
+	}
+	
+	/**
+	 * Creates an empty array for properties and calls setupProperties()
+	 */
 	public static function initializeProperties() 
-    {
+        {
  	       static::$property_definitions = array();
 	       static::setupProperties();
 	}
-	
+
+	/**
+	 * This is the core static method that derrived classes have to call to define their
+	 * properties.
+	 */
 	protected static function setupProperties() 
-    {
+        {
 	    
 	}
 
+	/**
+	 * Creates an empty array for infos and calls setupInfos()
+	 * Infos are class wide additional informations that are stored to a class. Useful for information
+	 * like name, table-name, editable, etc.	 
+	 */
+	public static function initializeInfos()
+	{
+		static::$infos = array();
+		static::setupInfos();
+	}
+	
+	/**
+	 * This method must be overwritten by the derrived class to define its infos
+	 */
+	protected static function setupInfos()
+	{
+		static::addInfo('name','PropertiesHaving');
+		static::addInfo('table','');
+        	static::addInfo('name_s','properties having',true);
+        	static::addInfo('name_p','properties having',true);
+        	static::addInfo('description','Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly');
+        	static::addInfo('options',0);
+		static::addInfo('editable',false);
+		static::addInfo('instantiable',false);
+	}
+	
+	protected static function addInfo(string $key, $value, bool $translatable = false)
+	{
+		$info = new \StdClass();
+		$info->key = $key;
+		$info->value = $value;
+		$info->translatable = $translatable;
+		static::$infos[$key] = $info;
+	}
+	
+	protected static function getInfo(string $key)
+	{
+		if (!isset(static::$infos[$key])) {
+			throw new \Exception(__("The key ':key' is not defined.",['key'=>$key]));
+		}	
+		$info = static::$infos[$key];
+		if ($info->translatable) {
+			return static::translate($info->key);
+		} else {
+			return $info->value;
+		}	
+	}
+	
+	protected static function translate($info)
+	{
+		return __($info);
+	}
+	
 	private static function getCallingClass(): string 
     {
 	    $caller = debug_backtrace();
