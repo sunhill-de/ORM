@@ -2,7 +2,7 @@
 
 namespace Sunhill\Basic\Tests\Unit;
 
-use Sunhill\Basic\Tests\SunhillTestCase;
+use Sunhill\ORM\Tests\DBTestCase_Empty;
 use Sunhill\Basic\Tests\Scenario\ScenarioBase;
 use Sunhill\ORM\Tests\Scenario\ScenarioWithSystem;
 use Tests\CreatesApplication;
@@ -17,7 +17,7 @@ class ScenarioWithSystemUnitTestScenario extends ScenarioBase{
              
 }
 
-class ScenarioWithSystemTest extends SunhillTestCase
+class ScenarioWithSystemTest extends DBTestCase_Empty
 {
    
     use CreatesApplication;

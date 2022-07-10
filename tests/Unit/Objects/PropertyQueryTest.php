@@ -89,4 +89,10 @@ class PropertyQueryTest extends DBTestCase
           $result = $test->getProperties()->where('Type','Integer')->get();
           $this->assertEquals(2,count($result));          
       }
+      
+      public function testStaticGetProperties()
+      {
+          $result = SimpleChild::staticGetProperties()->where('Type','Integer')->get();
+          $this->assertEquals(2,count($result));          
+      }
 }

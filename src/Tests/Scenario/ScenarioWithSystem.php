@@ -15,6 +15,8 @@ namespace Sunhill\ORM\Tests\Scenario;
 
 use Sunhill\ORM\Facades\Tags;
 use Sunhill\Basic\SunhillException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 trait ScenarioWithSystem {
 
@@ -22,7 +24,9 @@ trait ScenarioWithSystem {
    * This is called by the Test to setup set Tags
    */
   protected function SetupSystem() {
-      $this->GetTest()->artisan('migrate:fresh',['--path'=>'database/migrations/']);
+      $localdir = 'packages/orm/database/migrations/';
+      Artisan::call('migrate:fresh',['--path'=>'database/migrations/']);
+      Artisan::call('migrate',['--path'=>$localdir]);
   }
   
 }
