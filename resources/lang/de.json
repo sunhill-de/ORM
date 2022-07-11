@@ -49,6 +49,10 @@
   "':newclass' is not a subclass of ':oldclass'":"':newclass' ist keine Unterklasse von ':oldclass'",
   "':oldclass' is not a subclass of ':newclass'":"':oldclass' ist keine Unterklasse von ':newclass'",  
   
+  "***** src/Search/QueryBuilder":"src/Search/QueryBuilder ***",
+  "The field ':field' is not found.":"Das Feld ':field' wurde nicht gefunden.",
+  "The field ':field' is not searchable.":"Das Feld ':field' ist nicht durchsuchbar.",
+  
   "***** src/Managers/ObjectManager":"src/Managers/ObjectManager",
   "Class ':condition' not found.":"Klasse ':condition' nicht gefunden.",
   "Passed parameter is not resolvable to an object.":"Der übergebene Parameter lässt sich nicht zu einem Objekt auflösen.",

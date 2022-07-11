@@ -109,10 +109,10 @@ class QueryBuilder
     {
         $property = ($this->calling_class)::getPropertyObject($field);
         if (is_null($property)) {
-            throw new QueryException("The field '$field' is not found.");
+            throw new QueryException(__("The field ':field' is not found.",['field'=>$field]));
         }
         if (! $property->getSearchable()) {
-            throw new QueryException("The field '$field' is not searchable.");
+            throw new QueryException(__("The field ':field' is not searchable.",['field'=>$field]));
         }
         switch ($property->type) {
             case 'Tags':
@@ -162,7 +162,14 @@ class QueryBuilder
     
     public function orderBy($field, $asc = true) 
     {    
-        $this->setQueryPart('order', new QueryOrder($this,$field,$asc));
+        if ($field == 'id') {
+            return $this; // Do nothing
+        }
+        $property = ($this->calling_class)::getPropertyObject($field);
+        if (is_null($property)) {
+            throw new QueryException(__("The field ':field' is not found.",['field'=>$field]));
+        }
+        $this->setQueryPart('order', new QueryOrder($this,$property,$asc));
         return $this;
     }
     

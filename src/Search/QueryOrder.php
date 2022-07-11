@@ -15,6 +15,9 @@
 
 namespace Sunhill\ORM\Search;
 
+use Sunhill\ORM\Properties\Property;
+use Sunhill\ORM\Facades\Classes;
+
 class QueryOrder extends QueryAtom 
 {
     
@@ -22,7 +25,7 @@ class QueryOrder extends QueryAtom
     
     protected $direction;
     
-    public function __construct(QueryBuilder $parent_query, string $field, $direction = true) 
+    public function __construct(QueryBuilder $parent_query, Property $field, $direction = true) 
     {
         parent::__construct($parent_query);
         $this->field = $field;
@@ -34,6 +37,18 @@ class QueryOrder extends QueryAtom
             }
             $this->direction = $direction;
         }
+        $this->getTable($field);
+    }
+    
+    protected function getTable(Property $field)
+    {
+        $this->alias = $this->parent_query->getTable($this->getTableName($field));
+        $this->field = $field->getName();
+    }
+    
+    protected function getTableName(Property $field)
+    {
+        return Classes::getTableOfClass($field->getClass());
     }
     
     public function getQueryPart() 

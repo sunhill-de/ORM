@@ -11,7 +11,7 @@ use Sunhill\ORM\Utils\ObjectList;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
-use Database\Seeders\SearchSeeder;
+use Sunhill\ORM\Database\Seeders\SearchSeeder;
 
 use Sunhill\ORM\Tests\Objects\Dummy;
 

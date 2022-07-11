@@ -93,18 +93,31 @@ class ObjectManager
 		 */
 		public function getObjectList($condition = 'object', bool $nochildren = false) 
 		{
-		    if ($condition == 'object') {
-		        $class = 'Sunhill\ORM\Objects\ORMObject';
-		    } else {
-		      $class = $this->searchClassNamespace($condition);
-		    }
-		    $objects = $class::search()->get();
-			if ($nochildren) {
-				$objects->filter_class($class,false);
-			}
-			return $objects;
+		    return $this->getPartialObjectList($condition,'id',0,-1,$nochildren);
 		}
 
+		public function getPartialObjectList(string $class = 'object', string $order = 'id', int $delta = 0, int $limit = -1, bool $nochildren = false)
+		{
+		    if ($class == 'object') {
+		        $class = 'Sunhill\ORM\Objects\ORMObject';
+		    } else {
+		        $class = $this->searchClassNamespace($class);
+		    }
+		    
+		    $query = $class::search();
+		    $query = $query->orderBy($order);		    
+		    if ($limit != -1) {
+		      $query = $query->limit($delta,$limit);
+		    } else {
+		      $query = $query->limit($delta);
+		    }
+		    $objects = $query->get();
+		    if ($nochildren) {
+		        $objects->filter_class($class,false);
+		    }
+		    return $objects;		    
+		}
+		
 		/**
 		 * Returns the name of the class with the passed $id.
 		 * @param int $id ID of the object we want to know the class name of
