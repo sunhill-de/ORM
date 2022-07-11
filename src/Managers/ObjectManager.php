@@ -96,7 +96,7 @@ class ObjectManager
 		    return $this->getPartialObjectList($condition,'id',0,-1,$nochildren);
 		}
 
-		public function getPartialObjectList(string $class = 'object', string $order = 'id', int $delta = 0, int $limit = -1, bool $nochildren = false)
+		public function getPartialObjectList($class = 'object', string $order = 'id', int $delta = 0, int $limit = -1, bool $nochildren = false)
 		{
 		    if ($class == 'object') {
 		        $class = 'Sunhill\ORM\Objects\ORMObject';
@@ -106,12 +106,9 @@ class ObjectManager
 		    
 		    $query = $class::search();
 		    $query = $query->orderBy($order);		    
-		    if ($limit != -1) {
-		      $query = $query->limit($delta,$limit);
-		    } else {
-		      $query = $query->limit($delta);
-		    }
+	        $query = $query->limit($delta,$limit);
 		    $objects = $query->get();
+
 		    if ($nochildren) {
 		        $objects->filter_class($class,false);
 		    }

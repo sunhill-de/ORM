@@ -31,6 +31,10 @@ class QueryLimit extends QueryAtom
     
     public function getQueryPart() 
     {
-        return ' limit '.$this->delta.",".$this->limit;
+        if ($this->limit == -1) {
+            return ' limit '.$this->delta.",18446744073709551615";            
+        } else {
+            return ' limit '.$this->delta.",".$this->limit;
+        }
     }
 }
