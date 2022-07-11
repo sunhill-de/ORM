@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Crawler;
 use Sunhill\ORM\Test\sunhill_testcase_db;
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Database\Seeders\SimpleSeeder;
 
 class StorageBase extends DBTestCase
 {
@@ -18,10 +19,10 @@ class StorageBase extends DBTestCase
     public function setUp() : void {
         parent::setUp();
         if (!$this->setup) {
-            $this->seed('SimpleSeeder');
+            $this->seed(SimpleSeeder::class);
             $this->setup = true;
         }
-    }
+    } 
         
     static protected $is_prepared = false;
     

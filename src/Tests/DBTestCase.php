@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-use Database\Seeders\SimpleSeeder;
+use Sunhill\ORM\Database\Seeders\SimpleSeeder;
 use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\Objects\TestChild;
 use Sunhill\ORM\Tests\Objects\TestParent;

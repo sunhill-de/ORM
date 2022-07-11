@@ -21,7 +21,8 @@
 				"tests/lib",
 				"tests/Objects"
 			],
-			"Sunhill\\ORM\\" : "src"
+			"Sunhill\\ORM\\" : "src",
+			"Sunhill\\ORM\\Database\\" : "database"
 		}
 	},
 	"extra" : {
