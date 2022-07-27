@@ -517,10 +517,8 @@ class PropertiesHaving extends Hookable
 	 */
 	public static function staticGetProperties()
 	{
-	   if (empty(static::$property_definitions)) {
 	   	static::initializeProperties();
-	   }	   
-           return new PropertyQuery(static::$property_definitions);    
+	   	return new PropertyQuery(static::$property_definitions);    
 	}
 	
 	/**
