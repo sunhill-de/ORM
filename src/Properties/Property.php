@@ -201,7 +201,7 @@ class Property extends Loggable
 	        $this->additional_fields[$name] = $params[0];
 	        return $this;
 	    } else if (substr($method,0,3) == 'get') {
-	        $name = substr($method,3);
+	        $name = strtolower(substr($method,3));
 	        if (isset($this->additional_fields[$name])) {
 	            return $this->additional_fields[$name];
 	        } else {
