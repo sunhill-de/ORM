@@ -67,3 +67,9 @@ CREATE TABLE `searchtestB` (
 CREATE TABLE `searchtestC` (
   `id` int(10) UNSIGNED NOT NULL
 );
+
+CREATE TABLE `searchtestD` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `Dchar` varchar(20)
+);
+

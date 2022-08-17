@@ -17,6 +17,7 @@ use Sunhill\ORM\Tests\Objects\ObjectUnit;
 use Sunhill\ORM\Tests\Objects\SearchtestA;
 use Sunhill\ORM\Tests\Objects\SearchtestB;
 use Sunhill\ORM\Tests\Objects\SearchtestC;
+use Sunhill\ORM\Tests\Objects\SearchtestD;
 use Illuminate\Support\Facades\DB;
 
 abstract class DBTestCase_Empty extends TestCase
@@ -46,6 +47,7 @@ abstract class DBTestCase_Empty extends TestCase
         Classes::registerClass(SearchtestA::class);
         Classes::registerClass(SearchtestB::class);
         Classes::registerClass(SearchtestC::class);
+        Classes::registerClass(SearchtestD::class);
     }
     
     /**

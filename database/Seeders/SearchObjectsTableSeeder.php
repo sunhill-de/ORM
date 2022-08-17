@@ -24,6 +24,8 @@ class SearchObjectsTableSeeder extends Seeder {
 	        ['id'=>13,'classname'=>"searchtestB",'uuid'=>'123','created_at'=>'2019-05-15 10:00:00'],
 	        ['id'=>14,'classname'=>"searchtestB",'uuid'=>'123','created_at'=>'2019-05-15 10:00:00'],	        
 	        ['id'=>15,'classname'=>"searchtestC",'uuid'=>'123','created_at'=>'2019-05-15 10:00:00'],
+	        ['id'=>16,'classname'=>"searchtestD",'uuid'=>'123','created_at'=>'2019-05-15 10:00:00'],
+	        ['id'=>17,'classname'=>"searchtestD",'uuid'=>'123','created_at'=>'2019-05-15 10:00:00'],
 	    ]);
 	}
 }

@@ -17,6 +17,7 @@ class SearchSeeder extends Seeder
         $this->call(SearchtestATableSeeder::class);
         $this->call(SearchtestBTableSeeder::class);
         $this->call(SearchtestCTableSeeder::class);
+        $this->call(SearchtestDTableSeeder::class);
         $this->call(SearchCachingTableSeeder::class);
         $this->call(SearchTagsTableSeeder::class);
         $this->call(SearchTagCacheTableSeeder::class);
