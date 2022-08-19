@@ -30,6 +30,15 @@ class PropertyArrayOfObjects extends PropertyArrayBase
 	
 	protected $validator_name = 'ObjectValidator';
 	
+	/**
+	 * Returns the list of objects that are allowed for this field
+	 * @return unknown
+	 */
+	public function getAllowedObjects()
+	{
+	   return $this->validator->getAllowedObjects();    
+	}
+	
 	public function setAllowedObjects($object) 
 	{
 	    $this->validator->setAllowedObjects($object);
