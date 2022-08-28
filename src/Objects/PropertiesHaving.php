@@ -557,10 +557,10 @@ class PropertiesHaving extends Hookable
 	{
 		static::addInfo('name','PropertiesHaving');
 		static::addInfo('table','');
-        	static::addInfo('name_s','properties having',true);
-        	static::addInfo('name_p','properties having',true);
-        	static::addInfo('description','Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly');
-        	static::addInfo('options',0);
+        static::addInfo('name_s','properties having',true);
+        static::addInfo('name_p','properties having',true);
+        static::addInfo('description','Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly');
+        static::addInfo('options',0);
 		static::addInfo('editable',false);
 		static::addInfo('instantiable',false);
 	}
