@@ -22,6 +22,12 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	
 	protected $pointer = 0;
 
+	public function __construct()
+	{
+	    parent::__construct();
+	    $this->value = [];
+	}
+	
 	/**
 	 * Checks if the property exports the array feature
 	 * @throws \Exception
@@ -138,11 +144,16 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	 * {@inheritDoc}
 	 * @see Countable::count()
 	 */
-	public function count() 
+	public function count()
 	{
 	    $this->checkArray();
-	    return count($this->value);
+	    if (is_null($this->value)) {
+	        return 0;
+	    } else {
+	        return count($this->value);
+	    }
 	}
+	
 	
 	private function arraySearch($needle, $haystack) 
 	{
