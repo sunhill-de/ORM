@@ -574,7 +574,7 @@ class PropertiesHaving extends Hookable
 		static::$infos[$key] = $info;
 	}
 	
-	protected static function getInfo(string $key)
+	public static function getInfo(string $key)
 	{
 		if (!isset(static::$infos[$key])) {
 			throw new \Exception(__("The key ':key' is not defined.",['key'=>$key]));
