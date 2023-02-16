@@ -339,7 +339,7 @@ class QueryBuilder
 // ********************* Query-Management  ****************************
     protected function executeQuery(string $querystr) 
     {
-        return DB::select(DB::raw($querystr));
+        return DB::select($querystr);
     }
     
 }

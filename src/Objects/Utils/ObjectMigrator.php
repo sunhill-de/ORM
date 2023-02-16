@@ -64,7 +64,7 @@ class ObjectMigrator
      */
     private function tableExists(): bool
     {
-        $tables = DB::select(DB::raw("SHOW TABLES LIKE '".$this->class_tablename."'"));
+        $tables = DB::select("SHOW TABLES LIKE '".$this->class_tablename."'");
         foreach ($tables as $name => $table) {
             foreach ($table as $field) {
                 if ($field == $this->class_tablename) {
@@ -150,7 +150,7 @@ class ObjectMigrator
      */
     private function getDatabaseProperties() 
     {
-        $fields = DB::select(DB::raw("SHOW COLUMNS FROM ".$this->class_tablename));
+        $fields = DB::select("SHOW COLUMNS FROM ".$this->class_tablename);
         $result = array();
         foreach ($fields as $field) {
             $result[$field->Field] = ['type'=>$field->Type,'null'=>$field->Null];
