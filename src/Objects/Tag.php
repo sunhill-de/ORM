@@ -124,7 +124,7 @@ class Tag extends Loggable
 		} else {
 			$this->update();
 		}
-		Tags::flushTagCache($this->getID(),$this->getFullPath());
+	//	Tags::flushTagCache($this->getID(),$this->getFullPath());
 	}
 	
 	/**
