@@ -21,7 +21,9 @@ define('TO_LEAFABLE',0x0001);
 
 class Tag extends Loggable 
 {
-		
+	
+    const TO_LEAFABLE = 0x0001;
+    
 	protected $tag_id;
 	
 	protected $options = 0;
