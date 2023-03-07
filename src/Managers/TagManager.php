@@ -304,8 +304,23 @@ class TagManager
          static::deleteDB($id);
      }
      
+     private function deleteDependentTags(int $id)
+     {
+         $result = DB::table('tags')->where('parent_id',$id)->get();
+         foreach ($result as $tag) {
+             $this->deleteTag($tag->id);
+         }         
+     }
+     
+     private function deleteObjectAssigns(int $id)
+     {
+        DB::table('tagobjectassigns')->where('tag_id')->delete();
+     }
+     
      private function deleteDependencies(int $id) 
      {
+        $this->deleteDependentTags($id);
+        $this->deleteObjectAssigns($id);
      }
      
      private function deleteCache(int $id) 
