@@ -58,9 +58,9 @@ class AttributeManager
      * @param int $id
      * @return array
      */
-    public function getAttribute(int $id): array
+    public function getAttribute(int $id)
     {
-        return DB::table('attributes')->where('id',$id)->get();        
+        return DB::table('attributes')->where('id',$id)->first();        
     }
 
     /**
