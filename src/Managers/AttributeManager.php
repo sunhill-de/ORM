@@ -43,12 +43,33 @@ class AttributeManager
         return $query->get();
     }
  
+    /**
+     * Returns the total count of attributes
+     * @return int
+     */
     public function getCount(): int
     {
         $result = DB::table('attributes')->count();
         return $result;
     }
     
+    /**
+     * Returns the attribute with the given id
+     * @param int $id
+     * @return array
+     */
+    public function getAttribute(int $id): array
+    {
+        return DB::table('attributes')->where('id',$id)->get();        
+    }
+
+    /**
+     * Adds a new attribute
+     * @param string $name
+     * @param string $type
+     * @param string $allowed_objects
+     * @param string $property
+     */
     public function addAttribute(string $name, string $type, string $allowed_objects, string $property)
     {
         DB::table('attributes')->insert(
@@ -58,6 +79,33 @@ class AttributeManager
                 'allowedobjects'=>$allowed_objects,
                 'property'=>$property                
             ]);
+    }
+    
+    public function editAttribute(int $id, string $name, string $type, string $allowed_objects, string $property)
+    {
+        DB::table('attributes')->where('id',$id)->update(
+            [
+                'name'=>$name,
+                'type'=>$type,
+                'allowedobjects'=>$allowed_objects,
+                'property'=>$property
+            ]);
+    }
+    
+    protected function deleteDatabase(int $id)
+    {
+        DB::table('attributes')->where('id',$id)->delete();    
+    }
+    
+    protected function deleteReferences(int $id)
+    {
+        DB::table('attributevalues')->where('attribute_id',$id)->delete();
+    }
+    
+    public function deleteAttribute(int $id)
+    {
+        $this->deleteDatabase($id);
+        $this->deleteReferences($id);
     }
 }
  
