@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use \Sunhill\ORM\Managers\ClassManager;
 use \Sunhill\ORM\Managers\ObjectManager;
 use \Sunhill\ORM\Managers\TagManager;
+use \Sunhill\ORM\Managers\AttributeManager;
 use Sunhill\ORM\Console\MigrateObjects;
 use Sunhill\ORM\Console\FlushCaches;
 use Sunhill\Basic\Facades\Checks;
@@ -24,6 +25,8 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->alias(ObjectManager::class,'objects');
         $this->app->singleton(TagManager::class, function () { return new TagManager(); } );
         $this->app->alias(TagManager::class,'tags');
+        $this->app->singleton(AttributeManager::class, function () { return new AttributeManager(); } );
+        $this->app->alias(AttributeManager::class,'attributes');
         $this->app->singleton(OperatorManager::class, function () { return new OperatorManager(); } );
         $this->app->alias(OperatorManager::class,'operators');
     }
