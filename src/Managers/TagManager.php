@@ -521,5 +521,44 @@ class TagManager
          $tag->load($tag_id);
          return $tag;
      }
+     
+     /**
+      * Returns the count of tag that use the given tag as a parent
+      * @param unknown $tag
+      * @return int
+      */
+     public function getChildTagCount($tag): int
+     {
+         $tag = $this->findTag($tag);
+         return $this->prepareQuery()->where('a.parent_id',$tag->id)->count();
+     }
+     
+     public function getChildTagsOf($tag, $offset = 0, $limit = 0)
+     {
+         $result = [];
+         $tag = $this->findTag($tag);
+         $query_obj = $this->prepareQuery()->where('a.parent_id',$tag->id);
+         if ($offset) {
+             $query_obj = $query_obj->offset($offset);
+         }
+         if ($limit) {
+             $query_obj = $query_obj->limit($limit);
+         }
+         $query = $query_obj->get();
+         foreach ($query as $tag) {
+             $result[] = $this->getQueryDescriptor($tag);
+         }
+         return $result;
+     }
+     
+     public function getAssociatedObjectsCount($tag): int
+     {
+         return 0;
+     }
+     
+     public function getAssociatedObjects($tag, int $offset = 0, int $limit = 0)
+     {
+     }
+     
  }
  
