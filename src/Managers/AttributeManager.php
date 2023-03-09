@@ -81,7 +81,7 @@ class AttributeManager
             ]);
     }
     
-    public function editAttribute(int $id, string $name, string $type, string $allowed_objects, string $property)
+    public function updateAttribute(int $id, string $name, string $type, string $allowed_objects, string $property)
     {
         DB::table('attributes')->where('id',$id)->update(
             [
@@ -106,6 +106,23 @@ class AttributeManager
     {
         $this->deleteDatabase($id);
         $this->deleteReferences($id);
+    }
+    
+    public function getAssociatedObjectsCount(int $id): int
+    {
+        return DB::table('attribute_values')->where('attribute_id',$id)->count();    
+    }
+    
+    public function getAssociatedObjects(int $id, int $offset = 0, int $limit = 0)
+    {
+        $query = DB::table('attribute_values')->select('object_id as id')->where('attribute_id',$id);
+        if ($offset) {
+            $query = $query->offset($offset);
+        }
+        if ($limit) {
+            $query = $query->limit($limit);
+        }
+        return $query->get();
     }
 }
  
