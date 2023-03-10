@@ -161,7 +161,7 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	        return false;
 	    }
 	    foreach ($haystack as $entry) {
-	        if ($needle === $entry) {
+	        if ($needle == $entry) {
 	            return true;
 	        }
 	    }
