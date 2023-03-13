@@ -130,7 +130,7 @@ class AttributeManager
     {
         $allowed = explode(',',$allowed_classes);
         foreach ($allowed as $class) {
-            if (($class == 'Object') || Classes::isA($test,$class)) {
+            if (($class == 'object') || Classes::isA($test,$class)) {
                 return true;
             }
         }

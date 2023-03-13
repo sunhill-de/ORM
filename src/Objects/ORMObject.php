@@ -452,7 +452,7 @@ class ORMObject extends PropertiesHaving
 	    if (!empty($allowed_classes)) {
 	        $allowed = false;
 	        foreach ($allowed_classes as $class) {
-	            if (is_a($this,$class)) {
+	            if (Classes::isA($this,$class)) {
 	                $allowed = true;
 	            }
 	        }

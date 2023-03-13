@@ -510,9 +510,9 @@ class PropertiesHaving extends Hookable
 	public function getDynamicProperties()
 	{
 	   $result = [];
-	   $all_properties    = $this->getProperties();
-	   $static_properties = static::staticGetProperties();
-	   
+	   $all_properties    = $this->getProperties()->get();
+	   $static_properties = static::staticGetProperties()->get();
+       $static_properties['externalhooks'] = 'externalhooks';
 	   foreach ($all_properties as $key => $property) {
 	       if (!array_key_exists($key,$static_properties)) {
 	           $result[$key] = $property;

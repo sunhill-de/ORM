@@ -34,10 +34,20 @@ class PropertyAttribute extends Property {
 	    return $this;
 	}
 	
+	public function getAllowedObjects()
+	{
+	   return $this->allowed_objects;    
+	}
+	
 	public function setAttributeID(int $id) 
 	{
 	    $this->attribute_id = $id;
 	    return $this;
+	}
+
+	public function getAttributeID()
+	{
+	    return $this->attribute_id;
 	}
 	
 	public function setAttributeName(string $name) 
@@ -46,10 +56,20 @@ class PropertyAttribute extends Property {
 	    return $this;
 	}
 	
+	public function getAttributeName()
+	{
+	   return $this->attribute_name;    
+	}
+	
 	public function setAttributeType(string $type) 
 	{
 	    $this->attribute_type = $type;
 	    return $this;
+	}
+	
+	public function getAttributeType()
+	{
+	   return $this->attribute_type;    
 	}
 	
 	public function setAttributeProperty(string $property) 
