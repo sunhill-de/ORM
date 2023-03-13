@@ -17,6 +17,7 @@ namespace Sunhill\ORM\Managers;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\Descriptor;
+use Sunhill\ORM\Facades\Classes;
 
 /**
  * The AttributeManager is accessed via the Attributes facade. It's a singelton class
@@ -123,6 +124,37 @@ class AttributeManager
             $query = $query->limit($limit);
         }
         return $query->get();
+    }
+    
+    protected function isAllowedClass($test, $allowed_classes)
+    {
+        $allowed = explode(',',$allowed_classes);
+        foreach ($allowed as $class) {
+            if (($class == 'Object') || Classes::isA($test,$class)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public function getAvaiableAttributesForClass(string $class, array $without = [])
+    {
+        $result = [];
+        $query = DB::table('attributes')->get();
+        foreach ($query as $attribute) {
+            if (!in_array($attribute,$without) && $this->isAllowedClass($class, $attribute->allowedobjects)) {
+                $element = new \StdClass();
+                $element->name = $attribute->name;
+                $result[] = $attribute;                                    
+            }
+        }
+        return $result;
+    }
+    
+    public function getAttributeType(string $name): string
+    {
+        $query = DB::table('attributes')->select('type')->where('name',$name)->first();
+        return $query->type;        
     }
 }
  
