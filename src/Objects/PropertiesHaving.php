@@ -506,6 +506,21 @@ class PropertiesHaving extends Hookable
 	    $this->properties[$name] = $property;
 	    return $property;	    
 	}
+	
+	public function getDynamicProperties()
+	{
+	   $result = [];
+	   $all_properties    = $this->getProperties();
+	   $static_properties = static::staticGetProperties();
+	   
+	   foreach ($all_properties as $key => $property) {
+	       if (!array_key_exists($key,$static_properties)) {
+	           $result[$key] = $property;
+	       }
+	   }
+	   return $result;
+	}
+	
 	// ========================== Static methods ================================
 	
 	protected static $property_definitions;
