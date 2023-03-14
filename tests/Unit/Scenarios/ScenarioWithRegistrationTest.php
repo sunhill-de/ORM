@@ -9,7 +9,7 @@
  */
 namespace Sunhill\Basic\Tests\Unit;
 
-use Sunhill\Basic\Tests\SunhillTestCase;
+use Sunhill\Basic\Tests\SunhillOrchestraTestCase;
 use Sunhill\Basic\Tests\Scenario\ScenarioBase;
 use Sunhill\ORM\Tests\Scenario\ScenarioWithRegistration;
 use Tests\CreatesApplication;
@@ -26,7 +26,7 @@ class ScenarioWithRegistrationUnitTestScenario extends ScenarioBase{
     }
 }
 
-class ScenarioWithRegistrationTest extends SunhillTestCase
+class ScenarioWithRegistrationTest extends SunhillOrchestraTestCase
 {
    
     use CreatesApplication;

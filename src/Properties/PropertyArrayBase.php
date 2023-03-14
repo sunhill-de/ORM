@@ -154,6 +154,10 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	    }
 	}
 	
+	private function objectsEqual($obj1, $obj2)
+	{
+	    return ($obj1 === $obj2);
+	}
 	
 	private function arraySearch($needle, $haystack) 
 	{
@@ -161,7 +165,7 @@ class PropertyArrayBase extends Property implements \ArrayAccess,\Countable,\Ite
 	        return false;
 	    }
 	    foreach ($haystack as $entry) {
-	        if ($needle == $entry) {
+	        if ($this->objectsEqual($needle,$entry)) {
 	            return true;
 	        }
 	    }

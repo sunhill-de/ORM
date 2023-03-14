@@ -9,6 +9,12 @@
 		}
 	],
 	"minimum-stability" : "dev",
+	"require": {
+		"sunhill/basic":"*"
+	},
+	"require-dev": {
+		"phpunit/phpunit":"10.1.x-dev"
+	},
 	"autoload" : {
 		"psr-4" : {
 			"Sunhill\\ORM\\Test\\" : [

@@ -2,7 +2,7 @@
 
 namespace Sunhill\Basic\Tests\Unit;
 
-use Sunhill\Basic\Tests\SunhillTestCase;
+use Sunhill\Basic\Tests\SunhillOrchestraTestCase;
 use Sunhill\Basic\Tests\Scenario\ScenarioBase;
 use Sunhill\ORM\Tests\Scenario\ScenarioWithObjects;
 use Tests\CreatesApplication;
@@ -23,7 +23,7 @@ class ScenarioWithObjectsUnitTestScenario extends ScenarioBase{
     }
 }
 
-class ScenarioWithObjectsTest extends SunhillTestCase
+class ScenarioWithObjectsTest extends SunhillOrchestraTestCase
 {
    
     use CreatesApplication;

@@ -2,9 +2,9 @@
 
 namespace Sunhill\ORM\Tests;
 
-use Sunhill\Basic\Tests\SunhillTestCase;
+use Sunhill\Basic\Tests\SunhillOrchestraTestCase;
 
-class TestCase extends SunhillTestCase  
+class TestCase extends SunhillOrchestraTestCase  
 {
 
     use CreatesApplication;
