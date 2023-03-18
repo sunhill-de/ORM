@@ -62,7 +62,9 @@ class DatabaseTestCaseTest extends DatabaseTestCase
         return [
             ['dummies','dummyint',123],
             ['testparents','parentchar','ARG'],
-            ['testparents','parentchar',null]
+            ['testparents','parentchar',null],
+            ['objects','id',30],
+            ['referenceonlies','id',30]
         ];    
     }
     

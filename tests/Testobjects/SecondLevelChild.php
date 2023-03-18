@@ -1,8 +1,8 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Objects;
+namespace Sunhill\ORM\Tests\Testobjects;
 
-class SecondLevelChild extends Passthru {
+class SecondLevelChild extends ReferenceOnly {
     public static $table_name = 'secondlevelchildren';
     
     public static $object_infos = [

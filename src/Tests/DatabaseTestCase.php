@@ -12,6 +12,9 @@ use Sunhill\ORM\Tests\Testobjects\DummyChild;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
+use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Tests\Testobjects\SecondLevelChild;
+use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 
 class DatabaseTestCase extends TestCase
 {
@@ -40,6 +43,9 @@ class DatabaseTestCase extends TestCase
         Classes::registerClass(TestParent::class);
         Classes::registerClass(TestChild::class);
         Classes::registerClass(TestSimpleChild::class);
+        Classes::registerClass(ReferenceOnly::class);
+        Classes::registerClass(SecondLevelChild::class);
+        Classes::registerClass(ThirdLevelChild::class);
     }
         
 }

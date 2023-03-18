@@ -15,7 +15,6 @@ class CreateReferenceOnliesTable extends Migration
     {
         Schema::create('referenceonlies', function (Blueprint $table) {
             $table->integer('id');
-            $table->integer('testint');
         });
     }
 

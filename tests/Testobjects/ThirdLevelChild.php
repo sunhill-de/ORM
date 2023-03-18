@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Objects;
+namespace Sunhill\ORM\Tests\Testobjects;
 
 class ThirdLevelChild extends SecondLevelChild 
 {

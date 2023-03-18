@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TestParentsTableSeeder::class);
         $this->call(TestChildrenTableSeeder::class);
         $this->call(TestSimpleChildrenTableSeeder::class);
-        
+        $this->call(ReferenceOnliesTableSeeder::class);
+        $this->call(SecondLevelChildrenTableSeeder::class);
     }
 }
