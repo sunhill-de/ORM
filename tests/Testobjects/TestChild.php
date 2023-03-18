@@ -26,6 +26,11 @@ class TestChild extends TestParent {
 		self::object('childobject')->setAllowedObjects(['dummy'])->setDefault(null);;
 		self::arrayofstrings('childsarray');
 		self::arrayOfObjects('childoarray')->setAllowedObjects(['dummy']);
+		self::calculated('childcalc')->searchable();
+    }
+
+	public function calculate_childcalc() {
+	    return $this->childint."B";
 	}
 	
 }

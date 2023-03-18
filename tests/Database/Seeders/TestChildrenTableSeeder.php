@@ -43,7 +43,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childenum'=>'testC'
 	        ],
 	        [
-	            'id'=>19,
+	            'id'=>20,
 	            'childint'=>666,
 	            'childchar'=>'ZOO',
 	            'childfloat'=>6.66,
