@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Objects;
+namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\ORMObject;
 

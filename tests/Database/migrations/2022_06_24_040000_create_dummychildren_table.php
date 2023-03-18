@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDummiesTable extends Migration
+class CreateDummychildrenTable extends Migration
 {
 
     /**
@@ -13,9 +13,9 @@ class CreateDummiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('dummies', function (Blueprint $table) {
+        Schema::create('dummychildren', function (Blueprint $table) {
             $table->integer('id');
-            $table->integer('dummyint');
+            $table->integer('dummychildint');
         });
     }
 
@@ -26,6 +26,6 @@ class CreateDummiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dummies');
+        Schema::dropIfExists('dummychildren');
     }
 }
