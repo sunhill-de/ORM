@@ -29,8 +29,6 @@ class ScenarioWithRegistrationUnitTestScenario extends ScenarioBase{
 class ScenarioWithRegistrationTest extends SunhillOrchestraTestCase
 {
    
-    use CreatesApplication;
-
     public function testRegisterClass() {
         Classes::shouldReceive('registerClass')->once()->with(Dummy::class);
         $test = new ScenarioWithRegistrationUnitTestScenario();

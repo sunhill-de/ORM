@@ -11,7 +11,8 @@ use Sunhill\ORM\Console\MigrateObjects;
 use Sunhill\ORM\Console\FlushCaches;
 use Sunhill\Basic\Facades\Checks;
 
-use Sunhill\ORM\Checks\OrmChecks;
+use Sunhill\ORM\Checks\TagChecks;
+use Sunhill\ORM\Checks\ObjectChecks;
 
 use Sunhill\ORM\Managers\OperatorManager;
 
@@ -33,7 +34,8 @@ class SunhillServiceProvider extends ServiceProvider
     
     public function boot()
     {
-        Checks::InstallChecker(OrmChecks::class);
+        Checks::InstallChecker(TagChecks::class);
+        Checks::InstallChecker(ObjectChecks::class);
         
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang','ORM');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');

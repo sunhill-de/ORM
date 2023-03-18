@@ -33,7 +33,7 @@ class ScenarioWithRegistrationTest extends SunhillScenarioTestCase
    
     static protected $ScenarioClass = 'Sunhill\\ORM\\Tests\\Feature\\ScenarioWithRegistrationFeatureTestScenario';
     
-    use CreatesApplication;
+    
 
     protected function GetScenarioClass() {
         return ScenarioWithRegistrationFeatureTestScenario::class;    

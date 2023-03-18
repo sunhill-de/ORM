@@ -26,8 +26,6 @@ class ScenarioWithObjectsUnitTestScenario extends ScenarioBase{
 class ScenarioWithObjectsTest extends SunhillOrchestraTestCase
 {
    
-    use CreatesApplication;
-    
     public function setUp() : void {
         parent::setUp();
         Classes::flushClasses();

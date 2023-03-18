@@ -1,7 +1,7 @@
 <?php
 namespace Sunhill\ORM\Tests\Unit\Checks;
 
-use Sunhill\ORM\Tests\TestCase;
+use Sunhill\ORM\Tests\DBTestCase_Empty;
 use Sunhill\ORM\Checks\OrmChecks;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
@@ -15,7 +15,7 @@ use Sunhill\ORM\Tests\Objects\ThirdLevelChild;
 use Sunhill\ORM\Tests\Objects\ReferenceOnly;
 use Sunhill\ORM\Tests\Objects\ObjectUnit;
 
-class ORMChecksTest extends TestCase
+class ORMChecksTest extends DBTestCase_Empty
 {
     public function setUp() : void {
         parent::setUp();
@@ -31,7 +31,11 @@ class ORMChecksTest extends TestCase
     }
     
     public function testTagswithnotexistingparents_pass() {
-        DB::statement('truncate tags');
+        try {
+            DB::table('tags')->truncate();
+        } catch (\Exception $e) {
+            
+        }
         DB::table('tags')->insert([
             ['id'=>1,'name'=>'TagA','parent_id'=>0,'options'=>0],
             ['id'=>2,'name'=>'TagB','parent_id'=>1,'options'=>0],

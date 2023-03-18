@@ -26,8 +26,6 @@ class ScenarioWithTagsUnitTestScenario extends ScenarioBase{
 class ScenarioWithTagsTest extends DBTestCase_Empty
 {
    
-    use CreatesApplication;
-    
     public function testSetupTag() {
         DB::table('tags')->truncate();
         DB::table('tagcache')->truncate();

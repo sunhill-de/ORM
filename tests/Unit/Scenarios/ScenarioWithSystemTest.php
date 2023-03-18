@@ -20,8 +20,6 @@ class ScenarioWithSystemUnitTestScenario extends ScenarioBase{
 class ScenarioWithSystemTest extends DBTestCase_Empty
 {
    
-    use CreatesApplication;
-
     protected function ClearSystem() {
         $systemtables = ['attributes','attributevalues','caching','externalhooks','objectobjectassigns','objects','stringobjectassigns','tagobjectassigns'];
         foreach ($systemtables as $table) {

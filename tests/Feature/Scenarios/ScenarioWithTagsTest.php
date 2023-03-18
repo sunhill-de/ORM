@@ -42,7 +42,7 @@ class ScenarioWithTagsTest extends SunhillScenarioTestCase
    
     static protected $ScenarioClass = 'Sunhill\\ORM\\Tests\\Feature\\ScenarioWithTagsFeatureTestScenario';
     
-    use CreatesApplication;
+    
 
     public function setUp() : void {
         parent::setUp();

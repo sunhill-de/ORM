@@ -12,9 +12,10 @@
 	"require": {
 		"sunhill/basic":"*"
 	},
-	"require-dev": {
-		"phpunit/phpunit":"10.1.x-dev"
-	},
+        "require-dev" : {
+                "phpunit/phpunit" : "^9.5.10",
+                "orchestra/testbench" : "7.x-dev"
+        },
 	"autoload" : {
 		"psr-4" : {
 			"Sunhill\\ORM\\Test\\" : [
