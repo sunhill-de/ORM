@@ -16,7 +16,7 @@ class CreateTestChildrenTable extends Migration
         Schema::create('testchildren', function (Blueprint $table) {
             $table->integer('id');
             $table->integer('childint');
-            $table->char('childchar');
+            $table->char('childchar')->nullable();
             $table->float('childfloat');
             $table->text('childtext');
             $table->datetime('childdatetime');

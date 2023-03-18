@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
         $this->call(DummiesTableSeeder::class);
         $this->call(DummychildrenTableSeeder::class);
         $this->call(TestParentsTableSeeder::class);
+        $this->call(TestChildrenTableSeeder::class);
+        $this->call(TestSimpleChildrenTableSeeder::class);
         
     }
 }
