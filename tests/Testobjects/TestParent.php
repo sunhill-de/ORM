@@ -24,17 +24,18 @@ class TestParent extends ORMObject {
     protected static function setupProperties() {
 		parent::setupProperties();
 		self::integer('parentint')->searchable();
-		self::varchar('parentchar')->searchable();
+		self::varchar('parentchar')->searchable()->nullable();
 		self::float('parentfloat')->searchable();
-		self::text('parenttext');
-		self::datetime('parentdatetime');
-		self::date('parentdate');
-		self::time('parenttime');
-		self::enum('parentenum')->setValues(['testA','testB','testC']);
-		self::object('parentobject')->setAllowedObjects(['dummy'])->setDefault(null);
-		self::arrayofstrings('parentsarray');
-		self::arrayOfObjects('parentoarray')->setAllowedObjects(['dummy']);
-		self::calculated('parentcalc');
+		self::text('parenttext')->searchable();
+		self::datetime('parentdatetime')->searchable();
+		self::date('parentdate')->searchable();
+		self::time('parenttime')->searchable();
+		self::enum('parentenum')->setValues(['testA','testB','testC'])->searchable();
+		self::object('parentobject')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
+		self::arrayofstrings('parentsarray')->searchable();
+		self::arrayOfObjects('parentoarray')->setAllowedObjects(['dummy'])->searchable();
+		self::calculated('parentcalc')->searchable();
+		self::integer('nosearch')->setDefault(1);
 	}
 	
 	public function calculate_parentcalc() {

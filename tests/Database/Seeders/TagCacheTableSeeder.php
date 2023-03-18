@@ -1,5 +1,5 @@
 <?php
-namespace Sunhill\ORM\Database\Seeders;
+namespace Sunhill\ORM\Tests\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;

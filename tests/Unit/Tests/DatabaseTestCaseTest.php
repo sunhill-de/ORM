@@ -45,4 +45,25 @@ class DatabaseTestCaseTest extends DatabaseTestCase
             ['testsimplechildren']
         ];
     }
+    
+    /**
+     * @dataProvider ValueProvider
+     * @param string $table
+     * @param string $field
+     * @param unknown $expect
+     */
+    public function testValue(string $table, string $field, $expect)
+    {
+        $this->assertDatabaseHas($table,[$field=>$expect]);
+    }
+    
+    public function ValueProvider()
+    {
+        return [
+            ['dummies','dummyint',123],
+            ['testparents','parentchar','ARG'],
+            ['testparents','parentchar',null]
+        ];    
+    }
+    
 }

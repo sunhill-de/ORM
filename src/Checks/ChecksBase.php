@@ -35,7 +35,7 @@ class ChecksBase extends Checker
     protected function checkForDanglingPointers(string $master, string $master_field, string $slave, string $slave_field, bool $master_can_be_null=false) 
     {
         $query = DB::table($master.' AS a')->select('a.'.$master_field.' as id')->leftJoin($slave.' AS b','a.'.$master_field,'=','b.'.$slave_field)->whereNull('b.'.$slave_field);    
-        if ($master_can_be_null) {
+        if (!$master_can_be_null) {
             $query = $query->where('a.'.$master_field,'>',0);
         }
         $query_result = $query->get();
@@ -46,7 +46,7 @@ class ChecksBase extends Checker
             }
             return $result;
         } else {
-            return null;
+            return false;
         }
     }
     

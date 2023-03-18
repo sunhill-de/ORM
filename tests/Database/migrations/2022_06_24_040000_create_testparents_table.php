@@ -16,7 +16,7 @@ class CreateTestParentsTable extends Migration
         Schema::create('testparents', function (Blueprint $table) {
             $table->integer('id');
             $table->integer('parentint');
-            $table->char('parentchar');
+            $table->char('parentchar')->nullable();
             $table->float('parentfloat');
             $table->text('parenttext');
             $table->datetime('parentdatetime');

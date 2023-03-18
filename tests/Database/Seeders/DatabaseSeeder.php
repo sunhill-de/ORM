@@ -13,7 +13,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(ObjectsTableSeeder::class);
+        $this->call(TagsTableSeeder::class);
+        $this->call(TagCacheTableSeeder::class);
+        $this->call(AttributesTableSeeder::class);
+        $this->call(AttributeValuesTableSeeder::class);
+        
         $this->call(DummiesTableSeeder::class);
         $this->call(DummychildrenTableSeeder::class);
+        $this->call(TestParentsTableSeeder::class);
+        
     }
 }
