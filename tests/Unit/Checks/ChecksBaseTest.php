@@ -28,6 +28,21 @@ class ChecksBaseTest extends DatabaseTestCase
             )));
     }
     
+    /**
+     * Tests: repairDanglingPointers
+     */
+    public function testRepairDanglingPointers()
+    {
+        $test = new ChecksBase();
+        DB::table('tags')->where('id',2)->delete();
+        $this->callProtectedMethod($test,'repairDanglingPointers',
+            ['tags','parent_id','tags','id']
+            );
+        $this->assertTrue(empty($this->callProtectedMethod($test,'checkForDanglingPointers',
+            ['tags','parent_id','tags','id']
+            )));
+    }
+    
     public function testRunAllTests()
     {
         Checks::check(false);

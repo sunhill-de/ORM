@@ -37,15 +37,16 @@ class ChecksBase extends Checker
             $query = $query->where('a.'.$master_field,'>',0);
         }
         $query_result = $query->get();
-        if (count($query_result)) {
-            $result = '';
-            foreach ($query_result as $entry) {
-                $result .= (empty($result)?$entry->$slave_field:','.$entry->$slave_field);
-            }
-            return $result;
-        } else {
-            return false;
-        }
+        return count($query_result);
     }
-    
+
+    protected function repairDanglingPointers(string $master, string $master_field, string $slave, string $slave_field)
+    {
+        while ($count = DB::table($master.' AS a')->select('a.'.$master_field.' as id')->leftJoin($slave.' AS b','a.'.$master_field,'=','b.'.$slave_field)->whereNull('b.'.$slave_field)->where('a.'.$master_field,'>',0)->delete()) {
+            if (!isset($result)) {
+                $result = $count;
+            }            
+        }
+        return $result;
+    }
 }

@@ -29,14 +29,16 @@ class TagChecks extends ChecksBase
     /**
      * Checks if all tags have existing or no parents at all
      * @return unknown
+     * Test: testRepairableProblems
      */
     public function check_TagsWithNotExistingParents(bool $repair)
     {
         if ($entries = $this->checkForDanglingPointers('tags','parent_id','tags','id',false)) {
             if (!$repair) {
-                $this->fail(__("Parents of tags ':entries' dont exist.",['entries'=>$entries]));
+                $this->fail(__(":entries tags with no parents.",['entries'=>$entries]));
             } else {
-                
+                $entries = $this->repairDanglingPointers('tags','parent_id','tags','id');
+                $this->repair(__("Removed :entries tags with no parents.",['entries'=>$entries]));
             }
         } else {
             $this->pass();
@@ -46,88 +48,36 @@ class TagChecks extends ChecksBase
     /**
      * Checks if all entries in the tagcache have an existing tag
      * @return unknown
+     * Test: testRepairableProblems
      */
     public function check_TagCacheWithNotExistingTags(bool $repair)
     {
         if ($entries = $this->checkForDanglingPointers('tagcache','tag_id','tags','id')) {
             if (!$repair) {
-              $this->fail(__("Tags ':entries' dont exist.",['entries'=>$entries]));
+               $this->fail(__("There are :entries entries in the tagcache that doesn't have a tag.",['entries'=>$entries]));
             } else {
-                $this->unrepairable(__("Tags ':entries' dont exist.",['entries'=>$entries]));                
+               $entries = $this->repairDanglingPointers('tagcache', 'tag_id', 'tags', 'id');
+               $this->repair(__("Removed :entries entries from tagcache that doesn't have a tag.",['entries'=>$entries]));
             }
         } else {
             $this->pass();
-        }
-    }
-    
-    private function getTag($tags,int $id)
-    {
-        foreach ($tags as $tag) {
-            if ($tag->id == $id) {
-                return $tag;
-            }
-        }
-        return null;
-    }
-    
-    private function buildTagRow(&$result, $tags, $tag, $postfix='')
-    {
-        $result[] = $tag->name.$postfix;
-        if ($newtag = $this->getTag($tags,$tag->parent_id)) {
-            $this->buildTagRow($result,$tags,$newtag,'.'.$tag->name.$postfix);
-        }
-    }
-    
-    private function buildCache(&$result, $tags)
-    {
-        foreach ($tags as $tag) {
-            $this->buildTagRow($result,$tags,$tag);
-        }
-    }
-    
-    /**
-     * Checks if the number of entries in the tagcache is correct and if all entries in the tagcache are right
-     * @return unknown
-     */
-    public function check_TagCacheConsistency($repair)
-    {
-        $tags = DB::table('tags')->get();
-        $result = [];
-        $this->buildCache($result,$tags);
-        $count = DB::table('tagcache')->count();
-        if ($count !== count($result)) {
-            if ($repair) {
-                $this->unrepairable(__("Entry count :count doenst match expected :expect",['count'=>$count,'expect'=>count($result)]));
-            } else {
-                $this->fail(__("Entry count :count doenst match expected :expect",['count'=>$count,'expect'=>count($result)]));
-            }
-        }
-        $tagcache_entries = DB::table('tagcache')->get();
-        $entries = '';
-        foreach ($tagcache_entries as $entry) {
-            if (!in_array($entry->name,$result)) {
-                $entries .= (empty($entries)?$entry->name:','.$entry->name);
-            }
-        }
-        if (empty($entries)) {
-            $this->pass();
-        } else {
-            if ($repair) {
-                $this->unrepairable(__("Entries :entries don't match.",['entries'=>$entries]));
-            } else {
-                $this->fail(__("Entries :entries don't match.",['entries'=>$entries]));
-            }
         }
     }
     
     /**
      * Checks if all tags in the tagobjectassigns table exists
      * @return unknown
+     * Test: testRepairableProblems
      */
-    public function check_TagObjectAssignsTagsExist(bool $repar)
+    public function check_TagObjectAssignsTagsExist(bool $repair)
     {
         if ($entries = $this->checkForDanglingPointers('tagobjectassigns','tag_id','tags','id',true)) {
-            $this->fail(__("Tags ':entries' dont exist.",['entries'=>$entries]));
+            if ($repair) {
+                $entries = $this->repairDanglingPointers('tagobjectassigns','tag_id','tags','id');
+                $this->repair("Removed :entries entries in the tagobjectassigns table that have no corresponding tag.",['entries'=>$entries]);
+            } else {
+                $this->fail(":entries entries in the tagobjectassigns table have no corresponding tag.",['entries'=>$entries]);
+            }
         } else {
             $this->pass();
         }
@@ -136,14 +86,109 @@ class TagChecks extends ChecksBase
     /**
      * Checks if all objects in the tagobjectassigns table exists
      * @return unknown
+     * Test: testRepairableProblems
      */
     public function check_TagObjectAssignsObjectsExist(bool $repair)
     {
         if ($entries = $this->checkForDanglingPointers('tagobjectassigns','container_id','objects','id',true)) {
-            $this->fail(__("Objects ':entries' dont exist.",array('entries'=>$entries)));
+            if ($repair) {
+                $entries = $this->repairDanglingPointers('tagobjectassigns','container_id','objects','id');
+                $this->repair(__("Removed :entries entries in the tagobjectassigns table doesn't have a corresponding object.",array('entries'=>$entries)));
+            } else {
+                $this->fail(__(":entries entries in the tagobjectassigns table doesn't have a corresponding object.",array('entries'=>$entries)));                
+            }
         } else {
             $this->pass();
         }
+    }
+    
+    /**
+     * Loads all tags in an array
+     * @return \Illuminate\Support\Collection[]
+     * Test: testBuildTagMatrix
+     */
+    protected function buildTagMatrix()
+    {
+        $result = [];
+        $query = DB::table('tags')->get();
+        foreach ($query as $tag) {
+            $result[$tag->id] = $tag;
+        }
+        return $result;
+    }
+        
+    /**
+     * Builds the fullpath of the given tag
+     * @param int $id
+     * @param array $matrix
+     * @return unknown|string
+     * Test: testGetFullpath
+     */
+    protected function getFullpath(int $id, array $matrix)
+    {
+        if ($id) {
+            if (empty($parent = $this->getFullpath($matrix[$id]->parent_id, $matrix))) {
+                return $matrix[$id]->name;                
+            } else {
+                return $parent.".".$matrix[$id]->name;
+            }
+        } else {
+            return "";
+        }
+    }
+    
+    /**
+     * Adds to $result all possible permutations of the tag $id in the matrix $matrix (and adds the $postfix)
+     * @param unknown $result
+     * @param unknown $matrix
+     * @param unknown $id
+     * @param string $postfix
+     * Test: testAddPermutations
+     */
+    protected function addPermutations(&$result, $matrix, $id, $original_id, $postfix="")
+    {
+        if ($id) {
+            $newpostfix = $matrix[$id]->name.(empty($postfix)?"":".".$postfix);
+            $entry = new \StdClass();
+            $entry->id = $original_id;
+            $entry->name = $newpostfix;
+            $result[] = $entry;
+            $this->addPermutations($result, $matrix, $matrix[$id]->parent_id, $original_id, $newpostfix);
+        }
+    }
+    
+    protected function buildExpectedTagCache($matrix)
+    {
+        $result = [];
+        foreach ($matrix as $id => $entry) {
+            $this->addPermutations($result, $matrix, $id, $id);
+        }
+        return $result;
+    }
+    
+    public function check_ExpectedTagcacheEntries(bool $repair)
+    {
+        $missing = [];
+        $expected_list = $this->buildExpectedTagCache($this->buildTagMatrix());
+        foreach ($expected_list as $entry) {
+            $query = DB::table('tagcache')->where('name',$entry->name)->get();
+            if (!count($query)) {
+                $missing[] = $entry;
+            } 
+        }
+        if (count($missing)) {
+            if ($repair) {
+                foreach ($missing as $entry) {
+                    DB::table('tagcache')->insert(['name'=>$entry->name,'tag_id'=>$entry->id]);
+                    $this->repair(":entries entries missing in the tagcache where added.",["entries"=>count($missing)]);
+                }
+            } else {
+                $this->fail(__(":entries entries are missing in the tagcache.",["entries"=>count($missing)]));
+            }
+        } else {
+            $this->pass();
+        }
+       
     }
             
 }

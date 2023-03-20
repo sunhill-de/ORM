@@ -1,7 +1,14 @@
 {
-  "***** src/Checks/orm_checks":"src/Checks/orm_checks *******",
-  "OK":"OK",
-  "FAILED":"FEHLGESCHLAGEN",
+  "***** src/Checks/orm_checks":"src/Checks/TagChecks *******",
+  ":entries tags with no parents.":":entries tags ohne Elterntag.",
+  "Removed :entries tags with no parents.":":entries tags ohne Elterntag entfernt",
+  "Removed :entries entries in the tagobjectassigns table that have no corresponding tag.":":entries Einträge in der tagobjectassigns Tabelle gelöscht, die kein entsprechendes Tag haben.",
+  ":entries entries in the tagobjectassigns table have no corresponding tag.":":entries Einträge in der tagobjectassignstabelle haben kein entsprechendes Tag.",
+  "Removed :entries entries in the tagobjectassigns table doesn't have a corresponding object.":":entries Einträge aus der tagobjectassigns Tabelle gelöscht, die kein entsprechendes Objekt haben.",
+  ":entries entries in the tagobjectassigns table doesn't have a corresponding object.":":entries Einträge in der tagobjectassigns Tabelle haben kein entsprechendes Objekt.",
+  ":entries entries missing in the tagcache where added.":":entries fehlende Einträge im Tagcache wurden ergänzt",
+  ":entries entries are missing in the tagcache.":":entries Einträge fehlen im Tagcache",
+  
   "Check tags for not existing parents":"Überprüfe Tags auf nicht existente Eltern",
   "Parents of tags ':entries' dont exist.":"Eltern der Tags ':entries' existieren nicht.",
   "Check tagcache for not existing tags":"Überprüfe Tagcache auf nicht existente Tags",
