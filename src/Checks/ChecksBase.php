@@ -18,8 +18,6 @@ namespace Sunhill\ORM\Checks;
 
 use Sunhill\Basic\Checker\Checker;
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Facades\Classes;
-use Sunhill\Basic\Utils\Descriptor;
 
 /**
  * Provides checks for the checking subsystem of sunhill for the orm system

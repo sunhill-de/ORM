@@ -18,6 +18,7 @@ namespace Sunhill\ORM\Checks;
 
 use Sunhill\Basic\Checker\Checker;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\Basic\Utils\Descriptor;
 
@@ -108,9 +109,9 @@ class ObjectChecks extends ChecksBase
     
     private function tableExists(string $table): bool 
     {
-        $query = DB::select("show tables");
+        $query = Schema::getAllTables();
         foreach ($query as $found_table) {
-            if ($table == $found_table->Tables_in_sunhill) {
+            if ($table == $found_table->name) {
                 return true;
             }
         }

@@ -8,6 +8,7 @@ namespace Sunhill\ORM\Tests\Unit\Checks;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Checks\ChecksBase;
+use Sunhill\Basic\Facades\Checks;
 
 class ChecksBaseTest extends DatabaseTestCase
 {
@@ -25,5 +26,11 @@ class ChecksBaseTest extends DatabaseTestCase
         $this->assertFalse(empty($this->callProtectedMethod($test,'checkForDanglingPointers',
             ['tags','parent_id','tags','id']
             )));
+    }
+    
+    public function testRunAllTests()
+    {
+        Checks::check(false);
+        $this->assertEquals(0,Checks::getTestsFailed());
     }
 }

@@ -12,3 +12,5 @@ composer.lock
 /doc/coverage
 /.phpunit*
 /.project
+composer-dev.json
+composer-dev.lock

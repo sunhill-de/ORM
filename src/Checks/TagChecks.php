@@ -16,10 +16,7 @@
 
 namespace Sunhill\ORM\Checks;
 
-use Sunhill\Basic\Checker\Checker;
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Facades\Classes;
-use Sunhill\Basic\Utils\Descriptor;
 
 /**
  * Provides checks for the checking subsystem of sunhill for the orm system
@@ -35,7 +32,7 @@ class TagChecks extends ChecksBase
      */
     public function check_TagsWithNotExistingParents(bool $repair)
     {
-        if ($entries = $this->checkForDanglingPointers('tags','parent_id','tags','id',true)) {
+        if ($entries = $this->checkForDanglingPointers('tags','parent_id','tags','id',false)) {
             if (!$repair) {
                 $this->fail(__("Parents of tags ':entries' dont exist.",['entries'=>$entries]));
             } else {
