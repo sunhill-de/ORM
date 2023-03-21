@@ -191,4 +191,39 @@ class TagChecks extends ChecksBase
        
     }
             
+    protected function hasEntry(array $expect, int $id, string $name): bool
+    {
+        foreach ($expect as $entry) {
+            if (($entry->name == $name) && ($entry->id == $id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public function check_UnexpectedTagcacheEntries(bool $repair)
+    {
+        $missing = [];
+        $expected_list = $this->buildExpectedTagCache($this->buildTagMatrix());
+        $query = DB::table('tagcache')->get();
+        foreach ($query as $entry) {
+            if (!$this->hasEntry($expected_list, $entry->tag_id, $entry->name)) {
+                $missing[] = $entry;
+            }
+        }
+        if (count($missing)) {
+            if ($repair) {
+                foreach ($missing as $entry) {
+                    DB::table('tagcache')->where('id',$entry->id)->delete();
+                    $this->repair(":entries entries where too m in the tagcache where added.",["entries"=>count($missing)]);
+                }
+            } else {
+                $this->fail(__(":entries entries are missing in the tagcache.",["entries"=>count($missing)]));
+            }
+        } else {
+            $this->pass();
+        }
+        
+    }
+    
 }

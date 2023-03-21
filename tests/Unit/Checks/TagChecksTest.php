@@ -124,6 +124,7 @@ class TagChecksTest extends DatabaseTestCase
             ['check_TagObjectAssignsTagsExist',function() {DB::table('tags')->where('id',4)->delete();} ],
             ['check_TagObjectAssignsObjectsExist',function() {DB::table('objects')->where('id',10)->delete();} ],
             ['check_ExpectedTagcacheEntries',function() {DB::table('tagcache')->where('id',11)->delete();} ],
+            ['check_UnexpectedTagcacheEntries',function() {DB::table('tagcache')->insert(['name'=>'wrongtag','tag_id'=>4]);} ]
             ];
     }
     
