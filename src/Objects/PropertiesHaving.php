@@ -5,12 +5,13 @@
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2021-06-25
+ * Reviewstatus: 2023-03-21
  * Localization: none
  * Documentation: in progress
  * Tests: none
  * Coverage: unknown
  * PSR-State: some type hints missing
+ * Tests: PropertiesHaving_infoTest
  */
 namespace Sunhill\ORM\Objects;
 
@@ -57,18 +58,9 @@ class PropertiesHaving extends Hookable
     
     protected static $infos;
 		
-    public static $object_infos = [
-        'name'=>'PropertiesHaving',       // A repetition of static:$object_name @todo see above
-        'table'=>'',     // A repitition of static:$table_name
-        'name_s'=>'properties having',     // A human readable name in singular
-        'name_p'=>'properties having',    // A human readable name in plural
-        'description'=>'Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly',
-        'options'=>0,           // Reserved for later purposes
-    ];
-       
 	/**
-        * Constructor calls setupProperties()
-        */
+     * Constructor calls setupProperties()
+     */
 	public function __construct() 
         {
 		parent::__construct();
@@ -558,28 +550,30 @@ class PropertiesHaving extends Hookable
 	 * Creates an empty array for infos and calls setupInfos()
 	 * Infos are class wide additional informations that are stored to a class. Useful for information
 	 * like name, table-name, editable, etc.	 
+	 * Test: /Unit/Objects/PropertiesHaving_infoTest
 	 */
-	public static function initializeInfos()
+	protected static function initializeInfos()
 	{
-		static::$infos = array();
+		static::$infos = [];
 		static::setupInfos();
 	}
 	
 	/**
 	 * This method must be overwritten by the derrived class to define its infos
+	 * Test: /Unit/Objects/PropertiesHaving_infoTest
 	 */
 	protected static function setupInfos()
 	{
-		static::addInfo('name','PropertiesHaving');
-		static::addInfo('table','');
-        static::addInfo('name_s','properties having',true);
-        static::addInfo('name_p','properties having',true);
-        static::addInfo('description','Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly');
-        static::addInfo('options',0);
-		static::addInfo('editable',false);
-		static::addInfo('instantiable',false);
+        static::$infos = [];
 	}
-	
+
+	/**
+	 * Adds an entry to the class definition
+	 * @param string $key: The key for the piece of information
+	 * @param unknown $value: The value of this information
+	 * @param bool $translatable: A boolean that indicates, if the return should pass the __() function
+	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 */
 	protected static function addInfo(string $key, $value, bool $translatable = false)
 	{
 		$info = new \StdClass();
@@ -589,20 +583,60 @@ class PropertiesHaving extends Hookable
 		static::$infos[$key] = $info;
 	}
 	
-	public static function getInfo(string $key)
+	/**
+	 * returns the Information named $key
+	 * @param string $key
+	 * @throws PropertiesHavingException
+	 * @return string|array|NULL|unknown
+	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 */
+	public static function getInfo(string $key, $default = null)
 	{
-        static::setupInfos();
+        static::initializeInfos();
 	    if (!isset(static::$infos[$key])) {
-			throw new \Exception(__("The key ':key' is not defined.",['key'=>$key]));
+	        if (is_null($default)) {
+			    throw new PropertiesHavingException("The key '$key' is not defined.");
+	        } else {
+	            return $default;
+	        }
 		}	
 		$info = static::$infos[$key];
 		if ($info->translatable) {
-			return static::translate($info->key);
+			return static::translate($info->value);
 		} else {
 			return $info->value;
 		}	
 	}
 	
+	/**
+	 * Return all avaiable infos
+	 * @return unknown
+	 * Test: /unit/Ovhects/PropertiesHaving_infoTest
+	 */
+	public static function getAllInfos()
+	{
+	    static::initializeInfos();
+	    return static::$infos;    
+	}
+	
+	/**
+	 * Checks if the given info is defined
+	 * @param string $key
+	 * @return bool
+	 * Test: /unit/Ovhects/PropertiesHaving_infoTest
+	 */
+	public static function hasInfo(string $key): bool
+	{
+	    static::initializeInfos();
+	    return isset(static::$infos[$key]);
+	}
+	
+	/**
+	 * Wrapper for the __() function
+	 * @param unknown $info
+	 * @return string|array|NULL
+	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 */
 	protected static function translate($info)
 	{
 		return __($info);
