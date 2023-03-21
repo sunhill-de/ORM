@@ -3,7 +3,7 @@
  * @file Dummy.php
  * Provides the test object Dummy that only has an integer as property
  * Lang en
- * Reviewstatus: 2020-09-11
+ * Reviewstatus: 2023-03-21
  * Localization: not needed
  * Documentation: not needed
  * Tests: not needed
@@ -19,20 +19,20 @@ use Sunhill\ORM\Objects\ORMObject;
  */
 class Dummy extends ORMObject {
 	
-    public static $table_name = 'dummies';
-    
-    public static $object_infos = [
-        'name'=>'dummy',            // A repetition of static:$object_name @todo see above
-        'table'=>'dummies',         // A repitition of static:$table_name
-        'name_s'=>'dummy object',   // A human readable name in singular
-        'name_p'=>'dummy objects',  // A human readable name in plural
-        'description'=>'A dummy test object class that only provides an integer',
-        'options'=>0,               // Reserved for later purposes
-    ];
-        
-    protected static function setupProperties() {
+    protected static function setupProperties() 
+    {
 		parent::setupProperties();
 		self::integer('dummyint')->searchable();
+	}
+
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'dummy');
+	    static::addInfo('table', 'dummies');
+	    static::addInfo('name_s', 'dummy');
+	    static::addInfo('name_p', 'dummies');
+	    static::addInfo('description', 'A dummy test object class that only provides an integer');
+	    static::addInfo('options', 0);
 	}
 	
 }

@@ -1,27 +1,27 @@
 <?php
-
+/**
+ * @file TestParent.php
+ * Provides the test object TestParent that define all possible properties
+ * Lang en
+ * Reviewstatus: 2023-03-21
+ * Localization: not needed
+ * Documentation: not needed
+ * Tests: not needed
+ * Coverage: not needed
+ */
 namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\ORMObject;
 
-class TestParent extends ORMObject {
-    
-    public static $table_name = 'testparents';
-    public static $object_infos = [
-        'name'=>'testparent',       // A repetition of static:$object_name @todo see above
-        'table'=>'testparents',     // A repitition of static:$table_name
-        'name_s'=>'test parent',     // A human readable name in singular
-        'name_p'=>'test parents',    // A human readable name in plural
-        'description'=>'Another test class. A class with all avaiable properties',
-        'options'=>0,           // Reserved for later purposes
-    ];
-    
+class TestParent extends ORMObject 
+{
+        
     public static $flag = '';
     
     public $trigger_exception = false;
     
-    protected static $property_definitions;
-    protected static function setupProperties() {
+    protected static function setupProperties() 
+    {
 		parent::setupProperties();
 		self::integer('parentint')->searchable();
 		self::varchar('parentchar')->searchable()->nullable();
@@ -38,8 +38,18 @@ class TestParent extends ORMObject {
 		self::integer('nosearch')->setDefault(1);
 	}
 	
-	public function calculate_parentcalc() {
+	public function calculate_parentcalc() 
+	{
 	    return $this->parentint."A";
 	}
+	
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'testparent');
+	    static::addInfo('table', 'testparents');
+	    static::addInfo('name_s', 'test parent');
+	    static::addInfo('name_p', 'test parents');
+	    static::addInfo('description', 'Another test class. A class with all avaiable properties');
+	    static::addInfo('options', 0);
+	}
 }
-

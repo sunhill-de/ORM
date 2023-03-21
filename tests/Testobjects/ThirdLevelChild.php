@@ -1,22 +1,19 @@
 <?php
-
+/**
+ * @file ThirdLevelChild.php
+ * Provides the test object ThirdLevelChild is derrived from SecondLevelChild
+ * Lang en
+ * Reviewstatus: 2023-03-21
+ * Localization: not needed
+ * Documentation: not needed
+ * Tests: not needed
+ * Coverage: not needed
+ */
 namespace Sunhill\ORM\Tests\Testobjects;
 
 class ThirdLevelChild extends SecondLevelChild 
 {
-    public static $table_name = 'thirdlevelchildren';
 
-    public static $object_infos = [
-        'name'=>'thirdlevelchild',       // A repetition of static:$object_name @todo see above
-        'table'=>'thirdlevelchildren',     // A repitition of static:$table_name
-        'name_s'=>'third level child',     // A human readable name in singular
-        'name_p'=>'third level children',    // A human readable name in plural
-        'description'=>'Another test class. A derrived class with all some properties',
-        'options'=>0,           // Reserved for later purposes
-    ];
-    
-    protected static $property_definitions;
-    
     protected static function setupProperties() 
     {
 		parent::setupProperties();
@@ -36,5 +33,16 @@ class ThirdLevelChild extends SecondLevelChild
 	        throw new \Exception("OOPS");
 	    }
 	}
+	
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'thirdlevelchild');
+	    static::addInfo('table', 'thirdlevelchildren');
+	    static::addInfo('name_s', 'thirdlevelchild');
+	    static::addInfo('name_p', 'thirdlevelchild');
+	    static::addInfo('description', 'Another test class. A derrived class with all some properties');
+	    static::addInfo('options', 0);
+	}
+	
 }
 

@@ -1,19 +1,21 @@
 <?php
+/**
+ * @file TestChild.php
+ * Provides the test object TestChild that defines all possible prooperties
+ * Lang en
+ * Reviewstatus: 2023-03-21
+ * Localization: not needed
+ * Documentation: not needed
+ * Tests: not needed
+ * Coverage: not needed
+ */
 namespace Sunhill\ORM\Tests\Testobjects;
 
-class TestChild extends TestParent {
-    public static $table_name = 'testchildren';
-    
-    public static $object_infos = [
-        'name'=>'testchild',       // A repetition of static:$object_name @todo see above
-        'table'=>'testchildren',     // A repitition of static:$table_name
-        'name_s'=>'test child',     // A human readable name in singular
-        'name_p'=>'test children',    // A human readable name in plural
-        'description'=>'Another test class. A derrived class with all avaiable properties',
-        'options'=>0,           // Reserved for later purposes
-    ];
-    protected static $property_definitions;
-    protected static function setupProperties() {
+class TestChild extends TestParent 
+{
+   
+    protected static function setupProperties() 
+    {
 	    parent::setupProperties();
 	    self::integer('childint')->searchable();
 	    self::varchar('childchar')->searchable()->nullable();
@@ -29,9 +31,19 @@ class TestChild extends TestParent {
 		self::calculated('childcalc')->searchable();
     }
 
-	public function calculate_childcalc() {
+	public function calculate_childcalc() 
+	{
 	    return $this->childint."B";
+	}
+
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'testchild');
+	    static::addInfo('table', 'testchildren');
+	    static::addInfo('name_s', 'test child');
+	    static::addInfo('name_p', 'test child');
+	    static::addInfo('description', 'Another test class. A derrived class with all avaiable properties');
+	    static::addInfo('options', 0);
 	}
 	
 }
-

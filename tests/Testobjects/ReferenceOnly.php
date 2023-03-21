@@ -1,29 +1,37 @@
 <?php
+/**
+ * @file ReferenceOnly.php
+ * Provides the test object ReferenceOnly that has no simple fields
+ * Lang en
+ * Reviewstatus: 2023-03-21
+ * Localization: not needed
+ * Documentation: not needed
+ * Tests: not needed
+ * Coverage: not needed
+ */
 namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\ORMObject;
 
 class ReferenceOnly extends ORMObject 
 {
-    public static $table_name = 'referenceonlies';
     
-    public static $object_infos = [
-        'name'=>'referenceonly',       // A repetition of static:$object_name @todo see above
-        'table'=>'referenceonlies',     // A repitition of static:$table_name
-        'name_s'=>'reference only',     // A human readable name in singular
-        'name_p'=>'reference onlies',    // A human readable name in plural
-        'description'=>'Another test class. A class that only defines reference properties (no simple ones)',
-        'options'=>0,           // Reserved for later purposes
-    ];
-    
-    protected static $property_definitions;
-    
-    protected static function setupProperties() {
+    protected static function setupProperties() 
+    {
 		parent::setupProperties();
 		self::object('testobject')->setAllowedObjects(['dummy','referenceonly'])->setDefault(null);;
         self::arrayOfStrings('testsarray');
 		self::arrayOfObjects('testoarray')->setAllowedObjects(['dummy','referenceonly']);
 	}
+
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'referenceonly');
+	    static::addInfo('table', 'referenceonlies');
+	    static::addInfo('name_s', 'referenceonly');
+	    static::addInfo('name_p', 'referenceonlies');
+	    static::addInfo('description', 'Another test class. A class that only defines reference properties (no simple ones)');
+	    static::addInfo('options', 0);
+	}
 	
 }
-

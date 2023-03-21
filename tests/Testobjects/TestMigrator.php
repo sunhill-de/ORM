@@ -1,17 +1,17 @@
 <?php
+/**
+ * @file TestMigrator.php
+ * Provides the test object TestMigrator that is derrived from TestParent
+ * Lang en
+ * Reviewstatus: 2023-03-21
+ * Localization: not needed
+ * Documentation: not needed
+ * Tests: not needed
+ * Coverage: not needed
+ */
 namespace Sunhill\ORM\Tests\Testobjects;
 
 class TestMigrator extends TestParent {
-    public static $table_name = 'testchildren';
-    
-    public static $object_infos = [
-        'name'=>'testmigrator',       // A repetition of static:$object_name @todo see above
-        'table'=>'testmigrators',     // A repitition of static:$table_name
-        'name_s'=>'test migrator',     // A human readable name in singular
-        'name_p'=>'test migrators',    // A human readable name in plural
-        'description'=>'Another test class. A derrived class with all avaiable properties',
-        'options'=>0,           // Reserved for later purposes
-    ];
 
     protected static function setupProperties() 
     {
@@ -27,6 +27,16 @@ class TestMigrator extends TestParent {
 		self::object('migratorobject')->setAllowedObjects(['dummy'])->setDefault(null);;
 		self::arrayofstrings('migratorsarray');
 		self::arrayOfObjects('migratoroarray')->setAllowedObjects(['dummy']);
+	}
+
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'testmigrator');
+	    static::addInfo('table', 'testmigrators');
+	    static::addInfo('name_s', 'testmigrator');
+	    static::addInfo('name_p', 'testmigrator');
+	    static::addInfo('description', 'Another test class. A derrived class with all avaiable properties');
+	    static::addInfo('options', 0);
 	}
 	
 }

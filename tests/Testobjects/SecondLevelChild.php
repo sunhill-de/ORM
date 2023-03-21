@@ -1,23 +1,32 @@
 <?php
-
+/**
+ * @file SecondLevelChild.php
+ * Provides the test object SecondLevelChild that is derrived from ReferenceOnly
+ * Lang en
+ * Reviewstatus: 2023-03-21
+ * Localization: not needed
+ * Documentation: not needed
+ * Tests: not needed
+ * Coverage: not needed
+ */
 namespace Sunhill\ORM\Tests\Testobjects;
 
 class SecondLevelChild extends ReferenceOnly {
-    public static $table_name = 'secondlevelchildren';
     
-    public static $object_infos = [
-        'name'=>'secondlevelchild',       // A repetition of static:$object_name @todo see above
-        'table'=>'secondlevelchildren',     // A repitition of static:$table_name
-        'name_s'=>'second level child',     // A human readable name in singular
-        'name_p'=>'second level children',    // A human readable name in plural
-        'description'=>'Another test class. A derrived class',
-        'options'=>0,           // Reserved for later purposes
-    ];
-    protected static $property_definitions;
-    protected static function setupProperties() {
+    protected static function setupProperties() 
+    {
 		parent::setupProperties();
 		self::integer('childint');
 	}
+
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'secondlevelchild');
+	    static::addInfo('table', 'secondlevelchildren');
+	    static::addInfo('name_s', 'second level child');
+	    static::addInfo('name_p', 'second level children');
+	    static::addInfo('description', 'Another test class. A derrived class');
+	    static::addInfo('options', 0);
+	}
 	
 }
-

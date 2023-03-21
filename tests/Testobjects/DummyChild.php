@@ -1,9 +1,9 @@
 <?php
 /**
- * @file Dummy.php
- * Provides the test object Dummy that only has an integer as property
+ * @file DummyChild.php
+ * Provides the test object DummyChild that is derrived and only has an integer as property
  * Lang en
- * Reviewstatus: 2020-09-11
+ * Reviewstatus: 2023-03-21
  * Localization: not needed
  * Documentation: not needed
  * Tests: not needed
@@ -19,21 +19,20 @@ use Sunhill\ORM\Objects\ORMObject;
  */
 class DummyChild extends Dummy {
 	
-    public static $table_name = 'dummychildren';
-    
-    public static $object_infos = [
-        'name'=>'dummychild',            // A repetition of static:$object_name @todo see above
-        'table'=>'dummychildren',         // A repitition of static:$table_name
-        'name_s'=>'dummy child object',   // A human readable name in singular
-        'name_p'=>'dummy child objects',  // A human readable name in plural
-        'description'=>'A dummy child test object class that only provides an integer',
-        'options'=>0,               // Reserved for later purposes
-    ];
-        
-    protected static function setupProperties() {
+    protected static function setupProperties() 
+    {
 		parent::setupProperties();
 		self::integer('dummychildint')->searchable();
 	}
+
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'dummychild');
+	    static::addInfo('table', 'dummychildren');
+	    static::addInfo('name_s', 'dummychild');
+	    static::addInfo('name_p', 'dummychildren');
+	    static::addInfo('description', 'A dummy child test object class that only provides an integer');
+	    static::addInfo('options', 0);
+	}
 	
 }
-
