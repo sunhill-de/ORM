@@ -6,7 +6,7 @@ use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Managers\ClassManager;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
-use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Objects\TestChild;
 use Sunhill\ORM\Tests\Objects\TestParent;
 use Sunhill\ORM\Tests\Objects\Passthru;
@@ -14,8 +14,6 @@ use Sunhill\ORM\Tests\Objects\SecondLevelChild;
 use Sunhill\ORM\Tests\Objects\ThirdLevelChild;
 use Sunhill\ORM\Tests\Objects\ReferenceOnly;
 use Sunhill\ORM\Tests\Objects\ObjectUnit;
-
-define('CLASS_COUNT',8);
 
 class ManagerClassesTest extends TestCase
 {
@@ -32,6 +30,9 @@ class ManagerClassesTest extends TestCase
         Classes::registerClass(ObjectUnit::class);
     }
     
+    /**
+     * Tests: ClassManager::flushClasses
+     */
     public function testFlushClasses() {
         $test = new ClassManager();
         $this->setProtectedProperty($test,'classes',['test']);
@@ -42,15 +43,21 @@ class ManagerClassesTest extends TestCase
         $this->assertEquals(1,count($this->getProtectedProperty($test,'classes')));
     }
     
+    /**
+     * Tests: ClassManager::getClassEntry
+     */
     public function testGetClassEntry() {
         $test = new ClassManager();
         
         $result = [];
         $this->callProtectedMethod($test,'getClassEntry',[&$result,Dummy::class]);
         
-        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\Dummy',$result['class']);
+        $this->assertEquals('Sunhill\\ORM\\Tests\\Testobjects\\Dummy',$result['class']);
     }
     
+    /**
+     * Tests: Classmanager::getClassInformationEntries
+     */
     public function testGetClassInformationEntries() {
         $test = new ClassManager();
     
