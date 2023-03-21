@@ -31,26 +31,90 @@ class ObjectChecks extends ChecksBase
 {
     
     /**
+     * Checks for a single object table if the entries in the parent table exists
+     * @param array $classes
+     * @param string $object
+     * @param array $missing
+     */
+    protected function processTable(array $classes, string $object, array &$missing)
+    {
+        if ($object == 'object') {
+            return;
+        }
+        if ($result = $this->checkForDanglingPointers($classes[$object]['table'],'id',$classes[$classes[$object]['parent']]['table'],'id')) {
+            $missing[$object] = $result;
+        } 
+    }
+    
+    /**
+     * Checks if every entry in every object table has a according entry in the parent object table
+     * @param bool $repair
+     * Test: 
+     */
+    public function check_EveryObjectHasAParentEntry(bool $repair)
+    {
+        $missing = [];
+        $classes = Classes::getAllClasses();
+        foreach ($classes as $class => $info) {
+            $this->processTable($classes, $class, $missing);
+        }
+        if (empty($missing)) {
+            $this->pass();
+        } else {
+            if ($repair) {
+                $this->repair_EveryObjectHasAParentEntry($classes,$missing);
+                $this->repair(__(":count tables with a missing parent entry fixed",['count'=>count($missing)]));
+            } else {
+                $this->fail(__(":count tables have a missing parent entry",['count'=>count($missing)]));
+            }
+        }
+    }
+
+    protected function repair_tableWithMissingParent(array $classes, string $table)
+    {
+        $master = $classes[$table]['table'];
+        $slave  = $classes[$classes[$table]['parent']]['table'];
+        return DB::table($master.' AS a')->leftJoin($slave.' AS b','a.id','=','b.id')->whereNull('b.id')->delete();    
+    }
+    
+    protected function repair_EveryObjectHasAParentEntry(array $classes, array $missing)
+    {
+        foreach ($missing as $table => $count) {
+            $this->repair_tableWithMissingParent($classes, $table);
+        }
+    }
+    
+    /**
      * Checks if all container objects in the objectobjectassigns table exists
      * @return unknown
      */
     public function check_ObjectObjectAssignsContainerExist(bool $repair) 
     {
         if ($entries = $this->checkForDanglingPointers('objectobjectassigns','container_id','objects','id',true)) {
-            $this->fail(__("Objects ':entries' dont exist.",array('entries'=>$entries)));
+            if ($repair) {
+                $entries = $this->repairDanglingPointers('objectobjectassigns','container_id','objects','id');                
+                $this->repair(__(':entries container objects are missing in the objectobjectassigns table',['entries'=>$entries]));
+            } else {
+               $this->fail(__(':entries container objects are missing in the objectobjectassigns table',['entries'=>$entries]));   
+            }
         } else {
             $this->pass();
         }
     }
     
     /**
-     * Checks if all element objects in the objectobjectassigns table exists
+     * Checks if all container objects in the objectobjectassigns table exists
      * @return unknown
      */
-    public function check_ObjectObjectAssignsElementExist(bool $repair) 
+    public function check_ObjectObjectAssignsElementExist(bool $repair)
     {
         if ($entries = $this->checkForDanglingPointers('objectobjectassigns','element_id','objects','id',true)) {
-            $this->fail(__("Objects ':entries' dont exist.",array('entries'=>$entries)));
+            if ($repair) {
+                $entries = $this->repairDanglingPointers('objectobjectassigns','element_id','objects','id');
+                $this->repair(__(':entries element objects are missing in the objectobjectassigns table',['entries'=>$entries]));
+            } else {
+                $this->fail(__(':entries element objects are missing in the objectobjectassigns table',['entries'=>$entries]));
+            }
         } else {
             $this->pass();
         }

@@ -12,7 +12,7 @@ use Sunhill\Basic\Facades\Checks;
 use Sunhill\Basic\Checker\CheckException;
 use Sunhill\Basic\Checker\Checker;
 
-class TagChecksTest extends DatabaseTestCase
+class TagChecksTest extends CheckTestCase
 {
     
     /**
@@ -88,16 +88,6 @@ class TagChecksTest extends DatabaseTestCase
         $this->assertEquals(4,$result[6]->id);
     }
     
-    protected function runCheck(Checker $checker, string $method, bool $repair)
-    {
-        try {
-            $checker->$method($repair);
-        } catch (CheckException $e) {
-                
-        }
-        return $checker->getLastResult();
-    }
-
     /**
      * @dataProvider repairableProblemProvider
      * @param unknown $check

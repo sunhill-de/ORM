@@ -17,7 +17,7 @@ use Sunhill\ORM\Objects\ORMObject;
  * Only for testing purposes
  * @author klaus
  */
-class DummyChild extends ORMObject {
+class DummyChild extends Dummy {
 	
     public static $table_name = 'dummychildren';
     
