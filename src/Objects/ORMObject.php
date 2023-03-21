@@ -39,22 +39,6 @@ class ORMObject extends PropertiesHaving
 {
 
     /**
-     * Static variable that stores the name of the database table.
-     * @todo This should be moved to the storages in a later step
-     * @var string
-     */
-    public static $table_name = 'objects';
-    
-    public static $object_infos = [
-        'name'=>'object',       // A repetition of static:$object_name @todo see above
-        'table'=>'objects',     // A repitition of static:$table_name
-        'name_s'=>'object',     // A human readable name in singular
-        'name_p'=>'objects',    // A human readable name in plural
-        'description'=>'Baseclass of all other classes in the ORM system. An ORMObject should\'t be initiated directly',
-        'options'=>0,           // Reserved for later purposes
-    ];
-    
-    /**
      * Internal storage for queries that have to be executed later when this object has an id
      * @var array
      */
