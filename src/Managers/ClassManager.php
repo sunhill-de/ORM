@@ -30,7 +30,7 @@ use Sunhill\ORM\Objects\Utils\ObjectMigrator;
   * Definition of objectclass:
   * A descendand of Sunhill\ORM\Objects\ORMObject which represents a storable dataobject
   * @author lokal
-  *
+  * Test: Unit/Managers/ManagerClassesTest.php
   */
 class ClassManager 
 {
@@ -51,6 +51,7 @@ class ClassManager
     
     /**
      * Get the fully qualified class name and adds it to $result
+     * Test: testGetClassEntry
      */
     private function getClassEntry(array &$result,string $class): void 
     {
@@ -59,11 +60,11 @@ class ClassManager
     
     /**
      * Get the class informations and adds them to $result
-     * @
+     * Test: testGetClassInformationEntries
      */
     private function getClassInformationEntries(array &$result,string $class): void 
     {
-        foreach ($class::$object_infos as $key => $value) {
+        foreach ($class::getAllInfos() as $key => $value) {
             $result[$key] = $value;
         }
     }
@@ -72,7 +73,7 @@ class ClassManager
     {
         $parent = get_parent_class($class);
         if ($class !== 'object') { // Strange infinite loop bug
-            $result['parent'] = $parent::$object_infos['name'];
+            $result['parent'] = $parent::getInfo('name');
         }
     }
     
@@ -140,6 +141,7 @@ class ClassManager
     
     /**
      * Clears the class information array
+     * Test: testFlushClasses
      */
     public function flushClasses(): void 
     {
@@ -244,13 +246,13 @@ class ClassManager
         } else if (is_string($test)) {
             if (strpos($test,'\\') !== false) {
                 // We have a namespace
-                return $test::$object_infos['name'];
+                return $test::getInfo('name');
             } else {
                 return $test;
             }
         } else if (is_object($test)) {
             if (is_a($test,ORMObject::class)) {
-                return $test::$object_infos['name'];
+                return $test::getInfo('name');
             } else {
                 throw new ORMException("Invalid object passed to get_class: ".get_class($test));
             }
