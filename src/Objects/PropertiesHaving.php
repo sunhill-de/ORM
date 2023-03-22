@@ -829,7 +829,7 @@ class PropertiesHaving extends Hookable
 	    $result = array();
 	    return static::groupResult(
 	                   static::filterFeature(
-	                           static::getAllProperties(), $feature));
+	                           static::getAllProperties(), $feature), $group);
 	}
 	
 	public static function search() {
