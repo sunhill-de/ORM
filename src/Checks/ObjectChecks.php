@@ -41,7 +41,9 @@ class ObjectChecks extends ChecksBase
         if ($object == 'object') {
             return;
         }
-        if ($result = $this->checkForDanglingPointers($classes[$object]['table'],'id',$classes[$classes[$object]['parent']]['table'],'id')) {
+        $master = $classes[$object]['table']->value;
+        $slave  = $classes[$classes[$object]['parent']]['table']->value;
+        if ($result = $this->checkForDanglingPointers($master,'id',$slave,'id')) {
             $missing[$object] = $result;
         } 
     }
@@ -72,8 +74,8 @@ class ObjectChecks extends ChecksBase
 
     protected function repair_tableWithMissingParent(array $classes, string $table)
     {
-        $master = $classes[$table]['table'];
-        $slave  = $classes[$classes[$table]['parent']]['table'];
+        $master = $classes[$table]['table']->value;
+        $slave  = $classes[$classes[$table]['parent']]['table']->value;
         return DB::table($master.' AS a')->leftJoin($slave.' AS b','a.id','=','b.id')->whereNull('b.id')->delete();    
     }
     

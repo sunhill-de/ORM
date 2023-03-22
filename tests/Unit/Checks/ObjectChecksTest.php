@@ -23,8 +23,20 @@ class ObjectChecksTest extends CheckTestCase
         $checker = new ObjectChecks();
         $missing = [];
         $matrix = [
-            'dummy'=>['table'=>'dummies','parent'=>'object'],
-            'object'=>['table'=>'objects','parent'=>''],
+            'dummy'=>[
+                'table'=>$this->makeStdClass(
+                    [
+                        'key'=>'table',
+                        'value'=>'dummies'
+                    ]),
+                 'parent'=>'object'],
+            'object'=>[                
+                'table'=>$this->makeStdClass(
+                    [
+                        'key'=>'table',
+                        'value'=>'objects'
+                    ]),
+                'parent'=>'']    
         ];
         $this->callProtectedMethod($checker, 'processTable', [$matrix, 'dummy', &$missing]);
         $this->assertTrue(empty($missing));

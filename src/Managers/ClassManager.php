@@ -42,11 +42,18 @@ class ClassManager
      * @var array|null
      */
     private $classes=[];
+    
+    private $flushing = false;
+    
 // ********************************** Register class ******************************************
 
     public function __construct() 
     {
-        $this->flushClasses();    
+        if (!$this->flushing) {
+            $this->flushing = true;
+            $this->flushClasses();
+            $this->flushing = false;
+        }
     }
     
     /**
@@ -135,7 +142,7 @@ class ClassManager
             throw new ORMException("The class '$classname' is already registered.");
         }
         $information = $this->buildClassInformation($classname);
-        $this->classes[$information['name']] = $information;
+        $this->classes[$information['name']->value] = $information;
         return true;
     }
     
@@ -145,7 +152,9 @@ class ClassManager
      */
     public function flushClasses(): void 
     {
-        $this->classes = ['object'=>['table'=>'objects','class'=>ORMObject::class,'parent'=>null,'name'=>'object']];
+        if (!$this->flushing) {
+            $this->classes = ['object'=>$this->buildClassInformation(ORMObject::class)];
+        }
     }
     
 // *************************** General class informations ===============================    
