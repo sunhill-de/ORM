@@ -470,6 +470,20 @@ class ORMObject extends PropertiesHaving
 	    self::varchar('uuid')->searchable()->setMaxLen(20);
 	}
 
+	/**
+	 * This method must be overwritten by the derrived class to define its infos
+	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 */
+	protected static function setupInfos()
+	{
+	    static::addInfo('name', 'object');
+	    static::addInfo('table', 'objects');
+	    static::addInfo('name_s', 'base object');
+	    static::addInfo('name_p', 'base objects');
+	    static::addInfo('description', 'A base class that defines storable properties.');
+	    static::addInfo('options', 0);
+	}
+	
 	// ****************** Migration **********************************
 	/**
 	 * @deprecated The migration should be done via Classes facade. This method is to be removed

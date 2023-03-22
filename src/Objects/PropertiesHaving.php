@@ -65,7 +65,6 @@ class PropertiesHaving extends Hookable
         {
 		parent::__construct();
 		self::initializeProperties();
-		self::initializeInfos();
 		$this->copyProperties();
 	}
 	
@@ -564,7 +563,12 @@ class PropertiesHaving extends Hookable
 	 */
 	protected static function setupInfos()
 	{
-        static::$infos = [];
+	    static::addInfo('name', 'propertieshaving');
+	    static::addInfo('table', '');
+	    static::addInfo('name_s', 'properties having');
+	    static::addInfo('name_p', 'properties having');
+	    static::addInfo('description', 'A base class that defines properties.');
+	    static::addInfo('options', 0);
 	}
 
 	/**
