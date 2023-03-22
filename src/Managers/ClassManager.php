@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Lang;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Objects\Utils\ObjectMigrator;
+use Doctrine\Common\Lexer\Token;
+use Sunhill\ORM\Facades\Classes;
 
  /**
   * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
@@ -35,13 +37,11 @@ use Sunhill\ORM\Objects\Utils\ObjectMigrator;
 class ClassManager 
 {
  
-    private static $translatable = [/*'name_s','name_p','description'*/];
-        
     /**
      * Stores the information about the classes
      * @var array|null
      */
-    private $classes=[];
+    protected $classes=[];
     
     private $flushing = false;
     
@@ -49,15 +49,15 @@ class ClassManager
 
     public function __construct() 
     {
-        if (!$this->flushing) {
-            $this->flushing = true;
-            $this->flushClasses();
-            $this->flushing = false;
-        }
+         $this->flushClasses();
     }
     
     /**
      * Get the fully qualified class name and adds it to $result
+     * 
+     * @param $result The array to store the information to
+     * @param $class The full namespace of the class (not the class name!)
+     * 
      * Test: testGetClassEntry
      */
     private function getClassEntry(array &$result,string $class): void 
@@ -67,19 +67,25 @@ class ClassManager
     
     /**
      * Get the class informations and adds them to $result
+     * 
+     * @param $result The array to store the information to
+     * @param $class The full namespace of the class (not the class name!)
+     * 
      * Test: testGetClassInformationEntries
      */
     private function getClassInformationEntries(array &$result,string $class): void 
     {
         foreach ($class::getAllInfos() as $key => $value) {
-            $result[$key] = $value;
+            $result[$key] = $class::getInfo($key); 
         }
     }
     
     /**
      * Returns the parent entry of this class
-     * @param array $result
-     * @param string $class
+     * 
+     * @param array $result The array to store the information to
+     * @param string $class The full namespace of the class (not the class name!)
+     * 
      * Test: testGetClassParentEntry
      */
     private function getClassParentEntry(array &$result,string $class): void 
@@ -92,25 +98,31 @@ class ClassManager
     
     /**
      * Return all properties of the given class
-     * @param string $class
-     * @return unknown[]
+     * 
+     * @param string $class The full namespace of the class (not the class name!)
+     * @return array The properties of the given class
+     * 
+     * Test: testGetClassProperties
      */
-    private function getClassProperties(string $class) 
+    private function getClassProperties(string $class): array 
     {
         $properties = $class::staticGetPropertiesWithFeature();
         $result = [];
-        foreach ($properties as $name => $Descriptor) {
+        foreach ($properties as $name => $descriptor) {
             if ($name !== 'tags') {
-                $result[$name] = $Descriptor;
+                $result[$name] = $descriptor;
             }
         }
         return $result;
     }
     
     /**
+     * Inserts the class properties in the result array
      * 
-     * @param array $result
-     * @param string $class
+     * @param array $result The array to store the information to
+     * @param string $class The full namespace of the class (not the class name!)
+     * 
+     * Test: testGetClassPropertyEntries
      */
     private function getClassPropertyEntries(array &$result,string $class): void 
     {
@@ -127,8 +139,11 @@ class ClassManager
     
     /**
      * Collects all data about this class to store it in the classes array
+     * 
      * @param $classname string The name of the class to collect values from
      * @return array associative array with informations about this class
+     * 
+     * test: testBuildClassInformation
      */
     private function buildClassInformation(string $classname): array 
     {
@@ -144,9 +159,12 @@ class ClassManager
     
     /**
      * Every single class that should be accessible via the class manager should be added through this method. 
-     * In opposite to the above cache file (wich is deprecated then) this allowes testing to be easier. 
+     * In opposite to the above cache file (wich is deprecated then) this allowes testing to be easier.
+     *  
      * @param $classname string The fully qualified name of the class to register
      * @return bool true if successful false if not
+     * 
+     * Test: testRegisterClass*
      */
     public function registerClass(string $classname): bool 
     {
@@ -154,28 +172,70 @@ class ClassManager
             throw new ORMException("The class '$classname' is not accessible.");
             return false;
         } 
-        if (isset($this->classes[$classname])) {
+        $information = $this->buildClassInformation($classname);
+        if (isset($this->classes[$information['name']])) {
             throw new ORMException("The class '$classname' is already registered.");
         }
-        $information = $this->buildClassInformation($classname);
-        $this->classes[$information['name']->value] = $information;
+        $this->classes[$information['name']] = $information;
         return true;
     }
     
     /**
-     * Clears the class information array
+     * Clears the class information array and insert the ORMObject by hand
+     * @todo: buildClassInformation builds an infinite loop. So this is done by hand
      * Test: testFlushClasses
      */
     public function flushClasses(): void 
     {
-        if (!$this->flushing) {
-            $this->classes = ['object'=>$this->buildClassInformation(ORMObject::class)];
-        }
+        $this->classes = [
+            'object'=>[
+                'class'=>ORMObject::class,
+                'name'=>'object',
+                'table'=>'objects',
+                'name_s'=>'object',
+                'name_p'=>'objects',
+                'description'=>'The base class for any storable object',
+                'parent'=>'',
+                'properties'=>[
+                    'created_at'=>[
+                        'class'=>'object',
+                        'defaults_null'=>false,
+                        'features'=>['object','complex'],
+                        'name'=>'created_at',
+                        'read_only'=>false,
+                        'searchable'=>false,
+                        'type'=>'timestamp'                        
+                    ],
+                    'updated_at'=>[
+                        'class'=>'object',
+                        'defaults_null'=>false,
+                        'features'=>['object','complex'],
+                        'name'=>'updated_at',
+                        'read_only'=>false,
+                        'searchable'=>false,
+                        'type'=>'timestamp'
+                    ],
+                    'uuid'=>[
+                        'class'=>'object',
+                        'defaults_null'=>false,
+                        'features'=>['object','simple'],
+                        'name'=>'uuid',
+                        'read_only'=>false,
+                        'searchable'=>true,
+                        'type'=>'varchar'
+                    ],
+                ]                
+            ]
+        ];
     }
     
 // *************************** General class informations ===============================    
     /**
      * Returns the number of registered classes
+     * 
+     * @return int the number of registered Classes
+     * 
+     * Test: testNumberOfClasses
      */
     public function getClassCount(): int 
     {
@@ -185,7 +245,10 @@ class ClassManager
     
     /**
      * Returns a treversable associative array of all registered classes
-     * @return unknown
+     * 
+     * @return array the information of all registered classes
+     * 
+     * Test: testGetAllClasses
      */
     public function getAllClasses(): array 
     {
@@ -198,6 +261,8 @@ class ClassManager
      * class as key and its children as another array.
      * Example:
      * ['object'=>['parent_object'=>['child1'=>[],'child2'=[]],'another_parent'=>[]]
+     * 
+     * Test: testGetClassTree
      */
     public function getClassTree(string $class = 'object') 
     {
@@ -205,15 +270,6 @@ class ClassManager
     }
     
     // *************************** Informations about a specific class **************************    
-    private function notExists($test) 
-    {
-        if ($this->searchClass($test)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     /**
      * Normalizes the passed namespace (removes heading \ and double backslashes)
      * @param string $namespace
@@ -343,9 +399,7 @@ class ClassManager
         if (is_null($field)) {
             return $class;
         } else {
-            if (in_array($field,static::$translatable)) {
-                return $this->translate($name,$field);
-            } else if (array_key_exists($field,$class)) {
+            if (array_key_exists($field,$class)) {
                 return $class[$field];
             } else {
                 throw new ORMException("The class '$name' doesn't export '$field'.");

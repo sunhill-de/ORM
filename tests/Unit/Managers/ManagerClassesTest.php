@@ -7,27 +7,136 @@ use Sunhill\ORM\Managers\ClassManager;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
-use Sunhill\ORM\Tests\Objects\TestChild;
-use Sunhill\ORM\Tests\Objects\TestParent;
-use Sunhill\ORM\Tests\Objects\Passthru;
-use Sunhill\ORM\Tests\Objects\SecondLevelChild;
-use Sunhill\ORM\Tests\Objects\ThirdLevelChild;
-use Sunhill\ORM\Tests\Objects\ReferenceOnly;
-use Sunhill\ORM\Tests\Objects\ObjectUnit;
+use Sunhill\ORM\Tests\Testobjects\DummyChild;
+use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Tests\Testobjects\SecondLevelChild;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
+use Sunhill\ORM\Tests\Testobjects\TestParent;
+use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
+use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 
 class ManagerClassesTest extends TestCase
 {
  
-    protected function setupClasses() : void {
-        Classes::flushClasses();
-        Classes::registerClass(Dummy::class);
-        Classes::registerClass(TestParent::class);
-        Classes::registerClass(TestChild::class);
-        Classes::registerClass(ReferenceOnly::class);
-        Classes::registerClass(Passthru::class);
-        Classes::registerClass(SecondLevelChild::class);
-        Classes::registerClass(ThirdLevelChild::class);
-        Classes::registerClass(ObjectUnit::class);
+    /**
+     * Tests: ClassManager::getClassEntry
+     */
+    public function testGetClassEntry() 
+    {
+        $test = new ClassManager();
+        
+        $result = [];
+        $this->callProtectedMethod($test,'getClassEntry',[&$result,Dummy::class]);
+        
+        $this->assertEquals(Dummy::class,$result['class']);
+    }
+    
+    /**
+     * Tests: Classmanager::getClassInformationEntries
+     */
+    public function testGetClassInformationEntries() 
+    {
+        $test = new ClassManager();
+        
+        $result = [];
+        $this->callProtectedMethod($test,'getClassInformationEntries',[&$result,Dummy::class]);
+        
+        $this->assertEquals('dummy',$result['name']);
+    }
+    
+    /**
+     * Tests: Classmanager::getClassParentEntry
+     */
+    public function testGetClassParentEntry() 
+    {
+        $test = new ClassManager();
+        
+        $result = [];
+        $this->callProtectedMethod($test,'getClassParentEntry',[&$result,Dummy::class]);
+        
+        $this->assertEquals('object',$result['parent']);
+    }
+    
+    /**
+     * Tests: Classmanager::getClassProperties
+     */
+    public function testGetClassProperties()
+    {
+        $test = new ClassManager();
+        
+        $result = $this->callProtectedMethod($test,'getClassProperties',[Dummy::class]);
+        $this->assertArrayHasKey('dummyint', $result);
+    }
+    
+    /**
+     * Tests: Classmanager::getClassPropertyEntries
+     */
+    public function testGetClassPropertyEntries() 
+    {
+        $test = new ClassManager();
+        
+        $result = [];
+        $this->callProtectedMethod($test,'getClassPropertyEntries',[&$result,Dummy::class]);
+        
+        $this->assertEquals('integer',$result['properties']['dummyint']['type']);
+    }
+    
+    /**
+     * Tests: Classmanager::buildClassInformation
+     */
+    public function testBuildClassInformation() 
+    {
+        $test = new ClassManager();
+        
+        $result = $this->callProtectedMethod($test,'buildClassInformation',[Dummy::class]);
+        
+        $this->assertEquals(Dummy::class,$result['class']);
+        $this->assertEquals('dummy',$result['name']);
+        $this->assertEquals('object',$result['parent']);
+        $this->assertEquals('integer',$result['properties']['dummyint']['type']);
+    }
+    
+    /**
+     * Tests: Classmanager::registerClass
+     */
+    public function testRegisterClass() 
+    {
+        $test = new ClassManager();
+        
+        $this->callProtectedMethod($test,'registerClass',[Dummy::class]);
+        
+        $result = $this->getProtectedProperty($test,'classes');
+        
+        $this->assertEquals(Dummy::class,$result['dummy']['class']);
+        $this->assertEquals('dummy',$result['dummy']['name']);
+        $this->assertEquals('object',$result['dummy']['parent']);
+        $this->assertEquals('integer',$result['dummy']['properties']['dummyint']['type']);
+        
+    }
+    
+    /**
+     * Tests: Classmanager::registerClass
+     */
+    public function testRegisterClass_noclass() 
+    {
+        $this->expectException(ORMException::class);
+        
+        $test = new ClassManager();
+        
+        $this->callProtectedMethod($test,'registerClass',['notaclass']);        
+    }
+    
+    /**
+     * Tests: Classmanager::registerClass
+     */
+    public function testRegisterClass_duplicate()
+    {
+        $this->expectException(ORMException::class);
+        
+        $test = new ClassManager();
+
+        $this->callProtectedMethod($test,'registerClass',[Dummy::class]);
+        $this->callProtectedMethod($test,'registerClass',[Dummy::class]);        
     }
     
     /**
@@ -37,106 +146,94 @@ class ManagerClassesTest extends TestCase
         $test = new ClassManager();
         $this->setProtectedProperty($test,'classes',['test']);
         $this->assertFalse(empty($this->getProtectedProperty($test,'classes')));
-
-        $this->callProtectedMethod($test,'flushClasses',[]);
-
+        
+        $test->flushClasses();
+        
         $this->assertEquals(1,count($this->getProtectedProperty($test,'classes')));
     }
     
     /**
-     * Tests: ClassManager::getClassEntry
+     * Tests: ClassManager::getClassCount
      */
-    public function testGetClassEntry() {
-        $test = new ClassManager();
-        
-        $result = [];
-        $this->callProtectedMethod($test,'getClassEntry',[&$result,Dummy::class]);
-        
-        $this->assertEquals('Sunhill\\ORM\\Tests\\Testobjects\\Dummy',$result['class']);
-    }
-    
-    /**
-     * Tests: Classmanager::getClassInformationEntries
-     */
-    public function testGetClassInformationEntries() {
-        $test = new ClassManager();
-    
-        $result = [];
-        $this->callProtectedMethod($test,'getClassInformationEntries',[&$result,Dummy::class]);
-        
-        $this->assertEquals('dummy',$result['name']->value);
-    }
-    
-    /**
-     * Tests: Classmanager::getClassParentEntry
-     */
-    public function testGetClassParentEntry() {
-        $test = new ClassManager();
-        
-        $result = [];
-        $this->callProtectedMethod($test,'getClassParentEntry',[&$result,Dummy::class]);
-        
-        $this->assertEquals('object',$result['parent']);
-    }
-    
-    public function testGetClassPropertyEntries() {
-        $test = new ClassManager();
-        
-        $result = [];
-        $this->callProtectedMethod($test,'getClassPropertyEntries',[&$result,Dummy::class]);
-        
-        $this->assertEquals('Integer',$result['properties']['dummyint']['type']);
-    }
-    
-    public function testBuildClassInformation() {
-        $test = new ClassManager();
-    
-        $result = $this->callProtectedMethod($test,'buildClassInformation',[Dummy::class]);
-        
-        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\Dummy',$result['class']);
-        $this->assertEquals('dummy',$result['name']);
-        $this->assertEquals('object',$result['parent']);
-        $this->assertEquals('Integer',$result['properties']['dummyint']['type']);
-    }
-    
-    public function testRegisterClass() {
-        $test = new ClassManager();
-        
-        $this->callProtectedMethod($test,'registerClass',[Dummy::class]);
-        
-        $result = $this->getProtectedProperty($test,'classes');
-        
-        $this->assertEquals('Sunhill\\ORM\\Tests\\Objects\\Dummy',$result['dummy']['class']);
-        $this->assertEquals('dummy',$result['dummy']['name']);
-        $this->assertEquals('object',$result['dummy']['parent']);
-        $this->assertEquals('Integer',$result['dummy']['properties']['dummyint']['type']);
-        
-    }
-    
     public function testNumberOfClasses() {
         $test = new ClassManager();
+        
         $test->registerClass(Dummy::class);
+        
         $this->assertEquals(2,$test->getClassCount());
     }
     
-    public function testNumberOfClassesViaApp() {
-        $manager = app('\Sunhill\ORM\Managers\ClassManager');
-        $manager->flushClasses();
-        $manager->registerClass(Dummy::class);
-        $this->assertEquals(2,$manager->getClassCount());
-    }
-    
-     public function testNumberOfClassesViaAlias() {
-        $manager = app('classes');
-        $manager->flushClasses();
-        $manager->registerClass(Dummy::class);
-        $this->assertEquals(2,$manager->getClassCount());
-    }
-    
+    /**
+     * Tests: ClassManager::getClassCount
+     */
     public function testNumberOfClassesViaFacade() {
         Classes::flushClasses();
         Classes::registerClass(Dummy::class);
+        
         $this->assertEquals(2,Classes::getClassCount());
+    }
+    
+    /**
+     * Tests: ClassManager::getAllClasses
+     */
+    public function testGetAllClasses()
+    {
+        $test = new ClassManager();
+        
+        $test->registerClass(Dummy::class);
+        
+        $result = $test->getAllClasses();
+        
+        $this->assertEquals(2, count($result));
+        $this->assertEquals('dummy',$result['dummy']['name']);
+    }
+    
+    /**
+     * Tests: ClassManager::getClassTree
+     */
+    public function testGetClassTree_root()
+    {
+        $test = new ClassManager();
+        $test->registerClass(Dummy::class);
+        $test->registerClass(DummyChild::class);
+        $test->registerClass(TestParent::class);
+        
+        $result = $test->getClassTree();
+        $expect = [
+            'object'=>['dummy'=>['dummychild'=>[]],'testparent'=>[]]
+        ];
+        
+        $this->assertEquals($expect, $result);
+    }
+    
+    /**
+     * Tests: ClassManager::getClassTree
+     */
+    public function testGetClassTree_nonroot()
+    {
+        $test = new ClassManager();
+        $test->registerClass(Dummy::class);
+        $test->registerClass(DummyChild::class);
+        $test->registerClass(TestParent::class);
+        
+        $result = $test->getClassTree('dummy');
+        $expect = [
+            'dummy'=>['dummychild'=>[]]
+        ];
+        
+        $this->assertEquals($expect, $result);
+    }
+    
+    protected function setupClasses() : void {
+        Classes::flushClasses();
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(DummyChild::class);        
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
+        Classes::registerClass(ReferenceOnly::class);
+        Classes::registerClass(TestSimpleChild::class);
+        Classes::registerClass(SecondLevelChild::class);
+        Classes::registerClass(ThirdLevelChild::class);
     }
     
     /**
@@ -165,7 +262,7 @@ class ManagerClassesTest extends TestCase
     public function GetClassnameProvider() {
         return [
             ['dummy','dummy'],
-            ['Sunhill\ORM\Tests\Objects\Dummy','dummy'],
+            [Dummy::class,'dummy'],
             [-1,'except'],
             [1000,'except'],
             [function() { return new Dummy(); },'dummy'],
@@ -248,8 +345,8 @@ class ManagerClassesTest extends TestCase
     public function SearchClassProvider() {
         return [
             ['dummy','dummy'],
-            ['dummy','\\Sunhill\\ORM\\Tests\\Objects\\Dummy'],
-            ['dummy','Sunhill\\ORM\\Tests\\Objects\\Dummy'],
+            ['dummy',Dummy::class],
+            ['dummy',Dummy::class],
             [null,'notexisting'],
             [null,'\\Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
             [null,'Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
@@ -279,12 +376,14 @@ class ManagerClassesTest extends TestCase
      * @param unknown $test_class
      * @param unknown $expect
      */
-    public function testGetChildrenOfClass($test_class,$level,$expect) {
+    public function testGetChildrenOfClass($test_class,$level,$expect) 
+    {
         $this->setupClasses();
         $this->assertEquals($expect,Classes::getChildrenOfClass($test_class,$level));    
     }
     
-    public function GetChildrenOfClassProvider() {
+    public function GetChildrenOfClassProvider() 
+    {
         return [
                 ['referenceonly',-1,[]],
                 ['secondlevelchild',-1,['thirdlevelchild'=>[]]],
@@ -339,11 +438,6 @@ class ManagerClassesTest extends TestCase
         ];
     }
 
-    public function testGetClassProperties() {
-        $this->setupClasses();
-        $this->assertEquals('dummyint',Classes::getPropertiesOfClass('dummy')['dummyint']['name']);
-    }
-    
     public function testGetClassProperty() {
         $this->setupClasses();
         $this->assertEquals('dummyint',Classes::getPropertyOfClass('dummy','dummyint')['name']);
