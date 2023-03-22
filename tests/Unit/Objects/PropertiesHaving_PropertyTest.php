@@ -20,7 +20,32 @@ use Sunhill\ORM\Properties\PropertyArrayOfStrings;
 use Sunhill\ORM\Properties\PropertyArrayOfObjects;
 use Sunhill\ORM\Properties\PropertyCalculated;
 
-class PropertiesHaving_PropertyTests extends TestCase
+class FakeProperty 
+{
+    
+    public $name;
+    
+    protected $feature;
+    
+    public function __construct(string $name, bool $feature)
+    {
+        $this->name = $name;
+        $this->feature = $feature;
+    }
+    
+    public function hasFeature(string $test): bool
+    {
+        return $this->feature;
+    }
+    
+    public function getName(): string
+    {
+        return substr($this->name,-1);
+    }
+    
+}
+
+class PropertiesHaving_PropertyTest extends TestCase
 {
  
     /**
@@ -120,4 +145,25 @@ class PropertiesHaving_PropertyTests extends TestCase
         $this->assertTrue(empty(DummyPropertiesHaving::callStaticMethod('getAllProperties')));
         $this->assertFalse(empty(AnotherDummyPropertiesHaving::callStaticMethod('getAllProperties')));
     }
+    
+    /**
+     * tests: PropertiesHaving:filterFeature
+     */
+    public function testFilterFeature()
+    {
+        $test = ['TestA'=>new FakeProperty('TestA',true), 'TestB'=>new FakeProperty('TestB',false)];
+        $result = DummyPropertiesHaving::callStaticMethod('filterFeature', [$test,'somefeature'],false);
+        $this->assertEquals(1,count($result));
+        $this->assertEquals('TestA',$result['TestA']->name);
+    }
+    
+    public function testGroupResult()
+    {
+        $test = ['TestA'=>new FakeProperty('TestA',true), 'TestB'=>new FakeProperty('TestB',false)];
+        $result = DummyPropertiesHaving::callStaticMethod('groupResult', [$test,'name'],false);
+        $this->assertEquals(2,count($result));
+        $this->assertEquals('TestA',$result['A']['TestA']->name);
+        $this->assertEquals('TestB',$result['B']['TestB']->name);
+    }
+    
 }

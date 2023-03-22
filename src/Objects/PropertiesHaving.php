@@ -522,8 +522,9 @@ class PropertiesHaving extends Hookable
 	 * Return a ProperyQuery class for further definition of the desired properties
 	 * Static variant of getProperties
 	 * @return \Sunhill\ORM\Objects\PropertyQuery
+	 * Test: trivial, just returns a PropertyQuery
 	 */
-	public static function staticGetProperties()
+	public static function staticGetProperties(): PropertyQuery
 	{
 	   	static::initializeProperties();
 	   	return new PropertyQuery(static::$property_definitions);    
@@ -531,6 +532,7 @@ class PropertiesHaving extends Hookable
 	
 	/**
 	 * Creates an empty array for properties and calls setupProperties()
+	 * test: Trivial, nothing to test
 	 */
 	public static function initializeProperties() 
         {
@@ -541,9 +543,10 @@ class PropertiesHaving extends Hookable
 	/**
 	 * This is the core static method that derrived classes have to call to define their
 	 * properties.
+	 * Test: nothing to test        
 	 */
 	protected static function setupProperties() 
-        {
+    {
 	    
 	}
 
@@ -730,6 +733,17 @@ class PropertiesHaving extends Hookable
 	        return null;
 	    }
 	}
+
+	/**
+	 * Alias to getPropertyObject
+	 * @param string $name
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testPrepareGroup 
+	 */
+	public static function getPropertyInfo(string $name): ?Property
+	{
+	    return static::getPropertyObject($name);
+	}
 	
 	/**
 	 * Prepares the group parameter for a grouping method if not null
@@ -758,9 +772,11 @@ class PropertiesHaving extends Hookable
 
 	/**
 	 * Filters the given input array if a feature is set
+	 * 
 	 * @param array $input
 	 * @param string $feature
 	 * @return array
+	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testFilterFeature
 	 */
 	protected static function filterFeature(array $input, string $feature): array
 	{
@@ -776,11 +792,20 @@ class PropertiesHaving extends Hookable
 	    return $result;
 	}
 	
+	/**
+	 * Group the results of the properties by the given group
+	 * 
+	 * @param array $input
+	 * @param unknown $group
+	 * @return array
+	 * Test: /Unit/Objects/PropertiesHaving_PropertyTest::testGroupResult
+	 */
 	protected static function groupResult(array $input, $group): array
 	{
 	    if (empty($group)) {
 	        return $input;
 	    }
+	    $group = static::prepareGroup($group);
 	    $result = [];
 	    foreach ($input as $name => $property) {
 	        $group_value = $property->$group();
@@ -802,16 +827,9 @@ class PropertiesHaving extends Hookable
 	public static function staticGetPropertiesWithFeature(string $feature = '', $group = null): array 
     {
 	    $result = array();
-        $group = static::prepareGroup($group);
 	    return static::groupResult(
 	                   static::filterFeature(
 	                           static::getAllProperties(), $feature));
-	}
-	
-	public static function getPropertyInfo(string $name) 
-    {
-	    static::initializeProperties();
-	    return static::$property_definitions[$name];
 	}
 	
 	public static function search() {
