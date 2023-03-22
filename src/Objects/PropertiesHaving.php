@@ -21,6 +21,8 @@ use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Hookable;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\PropertyQuery\PropertyQuery;
+use Sunhill\ORM\Tests\Unit\Objects\PropertiesHaving_PropertyTests;
+use Sunhill\ORM\Properties\Property;
 
 /**
  * Basic class for all classes that have properties.
@@ -641,22 +643,56 @@ class PropertiesHaving extends Hookable
 	 * @return string|array|NULL
 	 * Test: /Unit/Objects/PropertiesHaving_infoTest
 	 */
-	protected static function translate($info)
+	protected static function translate(string $info): string
 	{
 		return __($info);
 	}
 	
-	private static function getCallingClass(): string 
+	/**
+	 * This method returns the class that called one of the Property methods
+	 * It is used only internally and uses a quite dirty hack (debug_backtrace()) so
+	 * this method is not well testable (But at the moment it works)
+	 * @return string
+	 * Test: /unit/Ovhects/PropertiesHaving_PropertyTests::testGetCallingClass
+	 */
+	protected static function getCallingClass(): string 
     {
 	    $caller = debug_backtrace();
 	    return $caller[4]['class'];
 	}
 	
+	/**
+	 * Returns the class name of the given property or raises an excpetion if none exists
+	 * @param unknown $type
+	 * @throws ORMException
+	 * @return string
+	 * Test: 
+	 * - /unit/Ovhects/PropertiesHaving_PropertyTests::testGetPropertyClass, 
+	 * - /unit/Ovhects/PropertiesHaving_PropertyTests::testGetPropertyclass_failure
+	 */
+	protected static function getPropertyClass($type): string
+	{
+	    $type = ucfirst($type);
+	    $property_name = '\Sunhill\ORM\Properties\Property'.$type;
+	    if (!class_exists($property_name)) {
+	        throw new ORMException("The property type '$property_name' does not exists");
+	    }
+	    return $property_name;
+	}
+
+	/**
+	 * Creates a new property object
+	 * @param string $name
+	 * @param string $type
+	 * @param unknown $class
+	 * @return unknown
+	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testCreateProperty
+	 * Note: setClass is not unit testable because of the use of getCallingClass (see above)
+	 */
 	protected static function createProperty(string $name, string $type, $class = null) 
     {
-	    $type = ucfirst($type);
-        $property_name = '\Sunhill\ORM\Properties\Property'.$type;
-	    $property = new $property_name();
+	    $property_name = static::getPropertyClass($type);
+        $property = new $property_name();
 	    $property->setName($name);
 	    $property->setType($type);
 	    $property->setClass(is_null($class)?Classes::getClassName(self::getCallingClass()):$class);
@@ -664,14 +700,28 @@ class PropertiesHaving extends Hookable
 	    return $property;
 	}
 	
-	protected static function addProperty(string $name, string $type) 
+	/**
+	 * Adds a property with the given name and the given type
+	 * @param string $name
+	 * @param string $type
+	 * @return \Sunhill\ORM\Objects\unknown
+	 * test: Untestable due the use of getCallingClass (see above)
+	 */
+	protected static function addProperty(string $name, string $type): Property 
     {
 	    $property = static::createProperty($name, $type);
 	    static::$property_definitions[$name] = $property;
 	    return $property;
 	}
 	
-	public static function getPropertyObject(string $name) 
+	/**
+	 * Returns the Propertyobject of the given property or null
+	 * @param string $name
+	 * @return unknown|NULL
+	 * Test: 
+	 * - /Unit/Objects/PropertiesHaving_PropertyTests::testGetPropertyObject
+	 */
+	public static function getPropertyObject(string $name): ?Property 
     {
 	    static::initializeProperties();
 	    if (isset(static::$property_definitions[$name])) {
@@ -679,6 +729,68 @@ class PropertiesHaving extends Hookable
 	    } else {
 	        return null;
 	    }
+	}
+	
+	/**
+	 * Prepares the group parameter for a grouping method if not null
+	 * 
+	 * @param unknown $group
+	 * @return string|NULL
+	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testPrepareGroup 
+	 */
+	protected static function prepareGroup($group): ?string
+	{
+	   return isset($group)?'get'.ucfirst($group):null;    
+	}
+	
+	/**
+	 * return all defined (static) properties
+	 *
+	 * @param unknown $group
+	 * @return string|NULL
+	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testGetAllProperties
+	 */
+	protected static function getAllProperties(): array
+	{
+	   static::setupProperties();
+	   return static::$property_definitions;
+	}
+
+	/**
+	 * Filters the given input array if a feature is set
+	 * @param array $input
+	 * @param string $feature
+	 * @return array
+	 */
+	protected static function filterFeature(array $input, string $feature): array
+	{
+	    if (empty($feature)) {
+	        return $input;
+	    }
+	    $result = [];
+	    foreach ($input as $name => $property) {
+	        if ($property->hasFeature($feature)) {
+	            $result[$name] = $property;
+	        }
+	    }
+	    return $result;
+	}
+	
+	protected static function groupResult(array $input, $group): array
+	{
+	    if (empty($group)) {
+	        return $input;
+	    }
+	    $result = [];
+	    foreach ($input as $name => $property) {
+	        $group_value = $property->$group();
+	        if (isset($result[$group_value])) {
+	            $result[$group_value][$name] = $property;
+	        } else {
+	            $result[$group_value] = [$name => $property];
+	        }
+	    }
+	    return $result;
 	}
 	
 	/**
@@ -690,44 +802,10 @@ class PropertiesHaving extends Hookable
 	public static function staticGetPropertiesWithFeature(string $feature = '', $group = null): array 
     {
 	    $result = array();
-	    if (isset($group)) {
-	        $group = 'get'.ucfirst($group);
-	    }
-	    if (empty(static::$property_definitions)) {
-	        static::setupProperties();
-	        if (empty(static::$property_definitions)) {
-	            return $result;
-	        }
-	    }
-	    foreach (static::$property_definitions as $name => $property) 
-        {
-	        if (empty($feature)) { // Are there features
-	            if (isset($group)) { // Should we group
-	                $group_value = $property->$group();
-	                if (isset($result[$group_value])) {
-	                    $result[$group_value][$name] = $property;
-	                } else {
-	                    $result[$group_value] = array($name=>$property);
-	                }
-	            } else {
-	                $result[$name] = $property;
-	            }
-	        } else {
-	            if ($property->hasFeature($feature)) {
-	                if (isset($group)) { // Should we group
-	                    $group_value = $property->$group();
-	                    if (isset($result[$group_value])) {
-	                        $result[$group_value][$name] = $property;
-	                    } else {
-	                        $result[$group_value] = array($name=>$property);
-	                    }
-	                } else {
-	                    $result[$name] = $property;
-	                }
-	            }
-	        }
-	    }
-	    return $result;
+        $group = static::prepareGroup($group);
+	    return static::groupResult(
+	                   static::filterFeature(
+	                           static::getAllProperties(), $feature));
 	}
 	
 	public static function getPropertyInfo(string $name) 
@@ -742,82 +820,168 @@ class PropertiesHaving extends Hookable
 	     return $query;
 	}
 	
+	/**
+	 * Creates a timestamp property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function timestamp($name) {
 	    $property = self::addProperty($name, 'timestamp');
 	    return $property;
 	}
 	
+	/**
+	 * Creates an integer property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function integer($name) 
     {
 	    $property = self::addProperty($name, 'integer');
 	    return $property;
 	}
 	
+	/**
+	 * Creates a character property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function varchar($name) 
     {
 	    $property = self::addProperty($name, 'varchar');
 	    return $property;
 	}
 	
+	/**
+	 * Creates an object property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function object($name) {
 	    $property = self::addProperty($name, 'object');
 	    return $property;
 	}
 	
+	/**
+	 * Creates a text property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function text($name) 
     {
 	    $property = self::addProperty($name, 'text');
 	    return $property;
 	}
 	
+	/**
+	 * Creates an enum property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function enum($name) 
     {
 	    $property = self::addProperty($name, 'enum');
 	    return $property;
 	}
 	
+	/**
+	 * Creates a date property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function datetime($name) 
     {
 	    $property = self::addProperty($name, 'datetime');
 	    return $property;
 	}
 	
+	/**
+	 * Creates a datetime property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function date($name) 
     {
 	    $property = self::addProperty($name, 'date');
 	    return $property;
 	}
 	
+	/**
+	 * Creates a time property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
 	protected static function time($name) 
     {
 	    $property = self::addProperty($name, 'time');
 	    return $property;
 	}
 	
-	protected static function float($name) 
+	/**
+	 * Creates a float property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
+	protected static function float(string $name): Property
     {
 	    $property = self::addProperty($name, 'float');
 	    return $property;
 	}
 	
-	protected static function arrayOfStrings($name) 
+	/**
+	 * Creates an array of strings property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
+	protected static function arrayOfStrings(string $name): Property
     {
 	    $property = self::addProperty($name, 'arrayOfStrings');
 	    return $property;
 	}
 	
-	protected static function arrayOfObjects($name) 
+	/**
+	 * Creates an array of objects property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
+	protected static function arrayOfObjects(string $name): Property
     {
 	    $property = self::addProperty($name, 'arrayOfObjects');
 	    return $property;
 	}
 	
-    /**
-     * Defines a calculated property with the name $name
-     * @param $name The name of this property
-     * @see Sunhill/ORM/Properties/
-     */     
-	protected static function calculated($name) 
+	/**
+	 * Creates an calculated property
+	 * 
+	 * @param string $name The name of this property
+	 * @return \Sunhill\ORM\Properties\Property
+	 * Test: testPropertyMethods
+	 */
+	protected static function calculated(string $name): Property 
     {
 	    $property = self::addProperty($name, 'calculated');
 	    return $property;

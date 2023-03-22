@@ -1,0 +1,4 @@
+#!/bin/bash
+
+doxygen doc/orm.dox
+./test tests --coverage-html=doc/coverage

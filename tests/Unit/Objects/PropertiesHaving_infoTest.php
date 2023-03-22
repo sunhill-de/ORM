@@ -1,33 +1,10 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit\Managers;
+namespace Sunhill\ORM\Tests\Unit\Objects;
 
 use Sunhill\ORM\Objects\PropertiesHaving;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Objects\PropertiesHavingException;
-
-class DummyPropertiesHaving extends PropertiesHaving
-{
-    
-    protected static function setupInfos()
-    {
-        static::addInfo('name','DummyPropertiesHaving');
-        static::addInfo('test', 'This is a test.', true);
-    }
-        
-}
-
-class AnotherDummyPropertiesHaving extends DummyPropertiesHaving
-{
-
-    protected static function setupInfos()
-    {
-        static::addInfo('name','AnotherDummyPropertiesHaving');
-        static::addInfo('test','This is another test', true);        
-        static::addInfo('something','else');
-    }
-    
-}
 
 class PropertiesHaving_infoTest extends TestCase
 {
@@ -38,6 +15,16 @@ class PropertiesHaving_infoTest extends TestCase
     public function testGetInfo()
     {
         $this->assertEquals('DummyPropertiesHaving',DummyPropertiesHaving::getInfo('name'));
+    }
+    
+    public function testGetInfoWithDefault()
+    {
+        $this->assertEquals('Default',DummyPropertiesHaving::getInfo('nonexisting','Default'));        
+    }
+    
+    public function testGetInfoWithTranslation()
+    {
+        $this->assertEquals('Trans:This is a test.',DummyPropertiesHaving::getInfo('test','Default'));
     }
     
     public function testGetInfoInherited()

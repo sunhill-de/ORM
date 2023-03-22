@@ -64,9 +64,12 @@ class ManagerClassesTest extends TestCase
         $result = [];
         $this->callProtectedMethod($test,'getClassInformationEntries',[&$result,Dummy::class]);
         
-        $this->assertEquals('dummy',$result['name']);
+        $this->assertEquals('dummy',$result['name']->value);
     }
     
+    /**
+     * Tests: Classmanager::getClassParentEntry
+     */
     public function testGetClassParentEntry() {
         $test = new ClassManager();
         

@@ -76,6 +76,12 @@ class ClassManager
         }
     }
     
+    /**
+     * Returns the parent entry of this class
+     * @param array $result
+     * @param string $class
+     * Test: testGetClassParentEntry
+     */
     private function getClassParentEntry(array &$result,string $class): void 
     {
         $parent = get_parent_class($class);
@@ -84,6 +90,11 @@ class ClassManager
         }
     }
     
+    /**
+     * Return all properties of the given class
+     * @param string $class
+     * @return unknown[]
+     */
     private function getClassProperties(string $class) 
     {
         $properties = $class::staticGetPropertiesWithFeature();
@@ -96,6 +107,11 @@ class ClassManager
         return $result;
     }
     
+    /**
+     * 
+     * @param array $result
+     * @param string $class
+     */
     private function getClassPropertyEntries(array &$result,string $class): void 
     {
         $result['properties'] = [];
