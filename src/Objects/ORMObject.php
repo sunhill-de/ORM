@@ -362,7 +362,7 @@ class ORMObject extends PropertiesHaving
 	 */
 	public function getInheritance(bool $full = false) 
     {
-	    return Classes::getInheritanceOfClass(static::$object_infos['name'], $full);
+	    return Classes::getInheritanceOfClass(static::getInfo('name'), $full);
 	}
 	
 	/**
@@ -490,7 +490,7 @@ class ORMObject extends PropertiesHaving
 	 */
 	public static function migrate() 
     {
-        Classes::migrateClass(static::$object_infos['name']);
+        Classes::migrateClass(static::getInfo('name'));
 	}
 	
 	/**
