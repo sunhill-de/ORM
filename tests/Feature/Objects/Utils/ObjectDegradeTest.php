@@ -9,12 +9,13 @@ use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Tags;
 
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Tests\Objects\Dummy;
 use Sunhill\ORM\Tests\Objects\ThirdLevelChild;
 
 
-class ObjectDegradeTest extends DBTestCase
+class ObjectDegradeTest extends DatabaseTestCase
 {
     
     public function testOneStepDegration() {
