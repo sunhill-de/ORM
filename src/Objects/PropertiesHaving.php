@@ -684,6 +684,25 @@ class PropertiesHaving extends Hookable
 	}
 
 	/**
+	 * This routine was necessary because of a kind of circular dependency. 
+	 * @param unknown $class
+	 * @return unknown|string
+	 * Test: no test at the momement, would be great to get rid of it!
+	 */
+	protected static function getCallingClassname($class)
+	{
+	    if (!is_null($class)) {
+	        return $class;
+	    }
+	    $class = Classes::searchClass(self::getCallingClass());
+	    if (is_null($class)) {
+	        return '';
+	    } else {
+	        return $class;
+	    }
+	}
+	
+	/**
 	 * Creates a new property object
 	 * @param string $name
 	 * @param string $type
@@ -698,7 +717,7 @@ class PropertiesHaving extends Hookable
         $property = new $property_name();
 	    $property->setName($name);
 	    $property->setType($type);
-	    $property->setClass(is_null($class)?Classes::getClassName(self::getCallingClass()):$class);
+	    $property->setClass(static::getCallingClassname($class));
 	    $property->initialize();
 	    return $property;
 	}
