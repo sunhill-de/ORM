@@ -435,6 +435,7 @@ class ManagerClassesTest extends TestCase
             $search = new Dummy();
         }
         $this->setupClasses();
+        
         try {
             $this->assertEquals($expect,Classes::getClassName($search));
         } catch (ORMException $e) {
@@ -458,73 +459,113 @@ class ManagerClassesTest extends TestCase
     }
     
     /**
-     * @dataProvider GetClassProvider
-     * @param unknown $class
-     * @param unknown $subfield
-     * @param unknown $field
-     * @param unknown $expect
+     * @dataProvider CheckClassProvider
+     * 
+     * Tests: ClassManager::checkClass
      */
-    public function testGetClass($class,$subfield,$field,$expect) {
-        $this->setupClasses();
-        if ($expect == 'except') {
-            try {
-                $this->getField(Classes::getClass($class,$field),$subfield);
-            } catch (\Exception $e) {
+    public function testCheckClass($expect, $search)
+    {
+        if ($search == 'takeclass') {
+            $search = new Dummy();
+        }
+        $test = new ClassManager();
+        $test->registerClass(Dummy::class);
+        $test->registerClass(DummyChild::class);
+        $test->registerClass(TestParent::class);
+        
+        try {
+            $this->assertEquals($expect,$this->callProtectedMethod($test, 'checkClass', [$search]));
+        } catch (ORMException $e) {
+            if (is_null($expect)) {
                 $this->assertTrue(true);
-                return;
-            }
-            $this->fail("Expected exception not raised");
-        } else {
-            $class = Classes::getClass($class,$field);
-            if (is_null($subfield)) {
-                $this->assertEquals($expect,$class);                
             } else {
-                $this->assertEquals($expect,$class[$subfield]);
+                throw $e;
             }
+        }
+    }
+    
+    public function CheckClassProvider()
+    {
+        return [
+            ['dummy','dummy'],
+            ['dummy',Dummy::class],
+            ['dummy','takeclass'],
+            [null,'notexisting'],
+            [null,'\\Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
+            [null,new \StdClass()],
+            [null,null]
+        ];
+    }
+    /**
+     * @dataProvider GetClassProvider
+     * 
+     * Tests: ClassManager::getClass()
+     */
+    public function testGetClass($class, $field, $expect) {
+        $this->setupClasses();
+        if ($class = 'makeobject') {
+            $class = new Dummy();
+        }
+        try {
+            $result = Classes::getClass($class, $field);
+            if ($expect == 'array') {
+                $this->assertEquals('dummies', $result['table']);
+            } else {
+                $this->assertEquals($expect, $result);
+            }
+        } catch (\Exception $e) {
+            if ($expect == 'except') {
+                $this->assertTrue(true);
+            } else {
+                throw $e;
+            }            
         }
     }
     
     public function GetClassProvider() {
         return [
-            ['dummy','table',null,'dummies'],       // Get Field indirect
-            ['dummy',null,'table','dummies'],       // Get Field direct
-            ['notexisting',null,null,'except'],     // Class not existing
-            ['dummy',null,'notexisting','except'],  // Field not exported
-            [-1,null,'table','except'],             // Invalid Index
-            [1000,null,'table','except'],           // Invalid Index
+            ['dummy', null, 'array'],
+            [Dummy::class, null, 'array'],
+            [1, null, 'array'],
+            ['makeobject', null, 'array'],
+            
+            ['nonexisting', null, 'except'],
+            [-1, null, 'except'],
+            [1000, null, 'except'],
+            [new \StdClass(), null, 'except'],
+            
+            ['dummy', 'table', 'dummies'],
+            [Dummy::class, 'table', 'dummies'],
+            [1, 'table', 'dummies'],
+            ['makeobject', 'table', 'dummies'],
+            ['dummy', 'name_p', 'dummies'],
+            ['dummy', 'parent', 'object']
         ];    
     }
     
-    public function testGetClassWithObject() {
+    /**
+     * @dataProvider ClassTableProvider
+     *
+     * Tests: ClassManager::getTableOfClass
+     */
+    public function testClassTable($test_class,$expect) {
         $this->setupClasses();
-        $test = new Dummy();
-        $this->assertEquals('dummy',Classes::getClass($test,'name'));
+        $this->assertEquals($expect,Classes::getTableOfClass($test_class));
     }
     
-    public function testGetClassWithObjectFail() {
-        $this->setupClasses();
-        $this->expectException(ORMException::class);
-        $test = new \stdClass();
-        Classes::getClass($test,'name');
-    }
-    
-    public function testDummyTable() {
-        $this->setupClasses();
-        $classes = Classes::getAllClasses();
-        $i=0;
-        foreach ($classes as $class=>$info) {
-            if ($class === 'dummy') {
-                $dummyid = $i;
-            }
-            $i++;
-        }
-        $this->assertEquals('dummies',Classes::getClass($dummyid,'table'));        
+    public function ClassTableProvider() {
+        return [
+            ['dummy','dummies'],
+            ['testparent','testparents'],
+            ['testchild','testchildren'],
+            [Dummy::class,'dummies']
+        ];
     }
     
     /**
      * @dataProvider ClassParentProvider
-     * @param unknown $test_class
-     * @param unknown $expect
+     * 
+     * Tests: ClassManager::getParentOfClass
      */
     public function testClassParent($test_class,$expect) {
         $this->setupClasses();
@@ -535,14 +576,34 @@ class ManagerClassesTest extends TestCase
         return [
             ['dummy','object'],
             ['testparent','object'],
-            ['testchild','testparent']
+            ['testchild','testparent'],
+            [Dummy::class,'object']
+        ];
+    }
+    
+    /**
+     * @dataProvider GetInheritanceProvider
+     * 
+     * Tests: ClassManager::getInheritanceOfClass
+     */
+    public function testGetInheritance($test,$include_self,$expect) {
+        $this->setupClasses();
+        $this->assertEquals($expect,Classes::getInheritanceOfClass($test,$include_self));
+    }
+    
+    public function GetInheritanceProvider() {
+        return [
+            ['testparent',false,['object']],
+            ['testparent',true,['testparent','object']],
+            ['testchild',true,['testchild','testparent','object']],
+            [Dummy::class,false,['object']]
         ];
     }
     
     /**
      * @dataProvider GetChildrenOfClassProvider
-     * @param unknown $test_class
-     * @param unknown $expect
+     * 
+     * Tests: getChildrenOfClass
      */
     public function testGetChildrenOfClass($test_class,$level,$expect) 
     {
@@ -553,15 +614,203 @@ class ManagerClassesTest extends TestCase
     public function GetChildrenOfClassProvider() 
     {
         return [
-                ['referenceonly',-1,[]],
+                ['referenceonly',-1,['secondlevelchild'=>['thirdlevelchild'=>[]]]],
                 ['secondlevelchild',-1,['thirdlevelchild'=>[]]],
-                ['testparent',-1,['passthru'=>['secondlevelchild'=>['thirdlevelchild'=>[]]],'testchild'=>[]]],
-                ['testparent',1,['passthru'=>[],'testchild'=>[]]],
+                ['testparent',-1,['testchild'=>[],'testsimplechild'=>[]]],
+                ['referenceonly',1,['secondlevelchild'=>[]]],
+                [Dummy::class,-1,['dummychild'=>[]]]
        ];
     }
     
     /**
+     * @dataProvider GetPropertiesOfClassProvider
+     * 
+     * Tests: getPropertiesOfClass
+     */
+    public function testGetPropertiesOfClass($test_class, $expect_property)
+    {
+        $this->setupClasses();
+        $result = Classes::getPropertiesOfClass($test_class);
+        $this->assertTrue(isset($result[$expect_property]));
+    }
+    
+    public function GetPropertiesOfClassProvider()
+    {
+        return [
+            ['dummy','dummyint'],
+            ['testparent', 'parentint'],
+            ['testchild', 'childint'],
+            ['testchild', 'parentint'],
+            [DummyChild::class, 'dummyint']
+        ];
+    }
+    
+    /**
+     * @dataProvider GetPropertyOfClassProvider
+     *
+     * Tests: getPropertyOfClass
+     */
+    public function testGetPropertyOfClass($test_class, $expect_property)
+    {
+        $this->setupClasses();
+        $result = Classes::getPropertyOfClass($test_class, $expect_property);
+        $this->assertEquals($result['name'],$expect_property);
+    }
+    
+    public function GetPropertyOfClassProvider()
+    {
+        return [
+            ['dummy','dummyint'],
+            ['testparent', 'parentint'],
+            ['testchild', 'childint'],
+            ['testchild', 'parentint'],
+            [DummyChild::class, 'dummyint']
+        ];
+    }
+    
+    /**
+     * @dataProvider GetNamespaceOfClassProvider
+     *
+     * Tests: getPropertyOfClass
+     */
+    public function testGetNamespaceOfClass($test_class, $expect)
+    {
+        $this->setupClasses();
+        $this->assertEquals($expect, Classes::getNamespaceOfClass($test_class));
+    }
+    
+    public function GetNamespaceOfClassProvider()
+    {
+        return [
+            ['dummy',Dummy::class],
+            ['testparent', TestParent::class],
+            [DummyChild::class, DummyChild::class]
+        ];
+    }
+    
+    /**
+     * @dataProvider GetUsedTablesProvider
+     * 
+     * Tests: getUsedTablesOfClass
+     */
+    public function testGetUsedTables($test,$expect)
+    {
+        $this->setupClasses();
+        $list = Classes::getUsedTablesOfClass($test);
+        sort($list);
+        $this->assertEquals($expect,$list);
+    }
+    
+    public function GetUsedTablesProvider()
+    {
+        return [
+            ['testparent',['objects','testparents']],
+            ['testchild',['objects','testchildren','testparents']]
+        ];
+    }
+    
+    /**
+     * Tests: createObject
+     */
+    public function testCreateObjectViaName() {
+        $this->setupClasses();
+        
+        $test = Classes::createObject('testparent');
+        
+        $this->assertTrue(is_a($test,TestParent::class));
+    }
+    
+    /**
+     * Tests: createObject
+     */
+    public function testCreateObjectViaNamespace() {
+        $this->setupClasses();
+        
+        $test = Classes::createObject(TestParent::class);
+        
+        $this->assertTrue(is_a($test,TestParent::class));
+    }
+    
+    /**
+     * @dataProvider IsAProvider
+     * @group IsA
+     * 
+     * Tests: isA
+     */
+    public function testIsA($test,$param,$expect) {
+        $this->setupClasses();
+        $test = new $test();
+        $this->assertEquals($expect,Classes::isA($test,$param));
+    }
+    
+    public function IsAProvider() {
+        return [
+            [TestParent::class, 'testparent', true],
+            [TestParent::class, TestParent::class, true],
+            [TestChild::class, 'testparent', true],
+            [TestChild::class, TestParent::class, true],
+            [TestParent::class, 'testchild',false],
+            [TestParent::class, TestChild::class,false],
+            [Dummy::class, 'testparent',false],
+            [Dummy::class, TestParent::class,false],
+        ];
+    }
+    
+    /**
+     * @dataProvider IsAClassProvider
+     * @group IsA
+     * 
+     * Test: isAClass
+     */
+    public function testIsAClass($test,$param,$expect) {
+        $this->setupClasses();
+        $test = new $test();
+        $this->assertEquals($expect,Classes::isAClass($test,$param));
+    }
+    
+    public function IsAClassProvider() {
+        return [
+            [TestParent::class,'testparent',true],
+            [TestParent::class,TestParent::class,true],
+            [TestChild::class,'testparent',false],
+            [TestChild::class,TestParent::class,false],
+            [TestParent::class,'testchild',false],
+            [TestParent::class,TestChild::class,false],
+            [Dummy::class,'testparent',false],
+            [Dummy::class,TestParent::class,false],
+        ];
+    }
+    
+    /**
+     * @dataProvider IsSubclassOfProvider
+     * @group IsA
+     * 
+     * Tests: isSubclassOf
+     */
+    public function testIsSubclassOf($test,$param,$expect) {
+        $this->setupClasses();
+        $test = new $test();
+        $this->assertEquals($expect,Classes::isSubclassOf($test,$param));
+    }
+    
+    public function IsSubclassOfProvider() {
+        return [
+            [TestParent::class,'testparent',false],
+            [TestParent::class,TestParent::class,false],
+            [TestParent::class,'testchild',false],
+            [TestParent::class,TestChild::class,false],
+            [TestChild::class,'testparent',true],
+            [TestChild::class,TestParent::class,true],
+            [Dummy::class,'testparent',false],
+            [Dummy::class,TestParent::class,false],
+        ];
+    }
+    
+    /**
      * @dataProvider GetClassTreeProvider
+     * @group tree
+     * 
+     * Tests: getClassTree
      */
     public function testGetClassTree($test_class,$expect) {
         $this->setupClasses();
@@ -577,196 +826,19 @@ class ManagerClassesTest extends TestCase
             [null,
                 ['object'=>
                     [
-                        'dummy'=>[],
-                        'objectunit'=>[],
-                        'referenceonly'=>[],
+                        'dummy'=>['dummychild'=>[]],
+                        'referenceonly'=>['secondlevelchild'=>['thirdlevelchild'=>[]]],
                         'testparent'=>[
-                            'passthru'=>[
-                                'secondlevelchild'=>[
-                                    'thirdlevelchild'=>[]
-                                ]
-                            ],
+                            'testsimplechild'=>[],
                             'testchild'=>[]
                         ]
                     ]    
                 ]                
             ],
-            ['testparent',
-                        ['testparent'=>[
-                            'passthru'=>[
-                                'secondlevelchild'=>[
-                                    'thirdlevelchild'=>[]
-                                ]
-                            ],
-                            'testchild'=>[]
-                        ]]
-            ],
-            ['dummy',['dummy'=>[]]],
+            ['testparent',['testparent'=>['testsimplechild'=>[],'testchild'=>[]]]],
+            ['dummy',['dummy'=>['dummychild'=>[]]]],
             
         ];
     }
 
-    public function testGetClassProperty() {
-        $this->setupClasses();
-        $this->assertEquals('dummyint',Classes::getPropertyOfClass('dummy','dummyint')['name']);
-    }
-
-    public function testGetClassTreeRoot() {
-        $this->setupClasses();
-        $this->assertArrayContains(
-            ['object'=>[
-                'dummy'=>[],
-                'objectunit'=>[],
-                'referenceonly'=>[],
-                'testparent'=>[
-                    'testchild'=>[],
-                    'passthru'=>[
-                        'secondlevelchild'=>[
-                            'thirdlevelchild'=>[]
-                        ]
-                    ]
-                ]
-            ]],Classes::getClassTree());    
-    }
-    
-    public function testGetClassTreeClass() {
-        $this->setupClasses();
-        $this->assertEquals([
-            'testparent'=>[
-                'testchild'=>[],
-                'passthru'=>[
-                    'secondlevelchild'=>[
-                        'thirdlevelchild'=>[]
-                    ]
-                ]
-            ]
-       ],Classes::getClassTree('testparent'));
-    }
-    
-    public function testCreateObjectViaName() {
-        $this->setupClasses();
-        $test = Classes::createObject('testparent');
-        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Testobjects\TestParent'));
-    }
-    
-    public function testCreateObjectViaNamespace() {
-        $this->setupClasses();
-        $test = Classes::createObject('Sunhill\ORM\Tests\Testobjects\TestParent');
-        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Testobjects\TestParent'));
-    }
-    
-    /**
-     * @dataProvider IsAProvider
-     * @group IsA
-     */
-    public function testIsA($test,$param,$expect) {
-        $this->setupClasses();
-        $test = new $test();
-        $this->assertEquals($expect,Classes::isA($test,$param));
-    }
-        
-    public function IsAProvider() {
-        return [
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','testparent',true],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestParent',true],
-            ['Sunhill\ORM\Tests\Testobjects\TestChild','testparent',true],
-            ['Sunhill\ORM\Tests\Testobjects\TestChild','Sunhill\ORM\Tests\Testobjects\TestParent',true],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','testchild',false],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestChild',false],
-            ['Sunhill\ORM\Tests\Testobjects\Dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Testobjects\Dummy','Sunhill\ORM\Tests\Testobjects\TestParent',false],
-        ];
-    }
-    
-    /**
-     * @dataProvider IsAClassProvider
-     * @group IsA
-     */
-    public function testIsAClass($test,$param,$expect) {
-        $this->setupClasses();
-        $test = new $test();
-        $this->assertEquals($expect,Classes::isAClass($test,$param));
-    }
-    
-    public function IsAClassProvider() {
-        return [
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','testparent',true],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestParent',true],
-            ['Sunhill\ORM\Tests\Testobjects\TestChild','testparent',false],
-            ['Sunhill\ORM\Tests\Testobjects\TestChild','Sunhill\ORM\Tests\Testobjects\TestParent',false],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','testchild',false],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestChild',false],
-            ['Sunhill\ORM\Tests\Testobjects\Dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Testobjects\Dummy','Sunhill\ORM\Tests\Testobjects\TestParent',false],
-        ];
-    }
-    
-    /**
-     * @dataProvider IsSubclassOfProvider
-     * @group IsA
-     */
-    public function testIsSubclassOf($test,$param,$expect) {
-        $this->setupClasses();
-        $test = new $test();
-        $this->assertEquals($expect,Classes::isSubclassOf($test,$param));
-    }
-        
-    public function IsSubclassOfProvider() {
-        return [
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','testparent',false],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestParent',false],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','testchild',false],
-            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestChild',false],
-            ['Sunhill\ORM\Tests\Testobjects\TestChild','testparent',true],
-            ['Sunhill\ORM\Tests\Testobjects\TestChild','Sunhill\ORM\Tests\Testobjects\TestParent',true],
-            ['Sunhill\ORM\Tests\Testobjects\Dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Testobjects\Dummy','Sunhill\ORM\Tests\Testobjects\TestParent',false],
-        ];
-    }
-    
-    /**
-     * @dataProvider GetInheritanceProvider
-     * @param unknown $test
-     * @param unknown $include_self
-     * @param unknown $expect
-     */
-    public function testGetInheritance($test,$include_self,$expect) {
-        $this->setupClasses();
-        $this->assertEquals($expect,Classes::getInheritanceOfClass($test,$include_self));    
-    }
-    
-    public function GetInheritanceProvider() {
-        return [
-            ['testparent',false,['object']],
-            ['testparent',true,['testparent','object']],
-            ['testchild',true,['testchild','testparent','object']]
-        ];
-    }
-    
-    /**
-     * @dataProvider GetUsedTablesProvider
-     * @param unknown $test
-     * @param unknown $expect
-     */
-    public function testGetUsedTables($test,$expect) 
-    {
-        $this->setupClasses();
-        $list = Classes::getUsedTablesOfClass($test);
-        sort($list);
-        $this->assertEquals($expect,$list);
-    }
-    
-    public function GetUsedTablesProvider() 
-    {
-        return [
-          ['testparent',['objects','testparents']],
-          ['testchild',['objects','testchildren','testparents']]
-        ];
-    }
-    
-/**    
-    public function testSearchClassWithTranslation() {
-        $this->assertEquals('dummies',Classes::getClass('dummy','name_p'));
-    }
-*/    
 }

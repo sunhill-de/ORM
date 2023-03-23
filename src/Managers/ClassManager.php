@@ -436,9 +436,12 @@ class ClassManager
     
     /**
      * Tests if this class is in the class cache
+     * 
      * @param unknown $test The class to test
+     * 
+     * Test: testCheckClass
      */
-    private function checkClass($test) 
+    protected function checkClass($test) 
     {
         if (is_null($test)) {
             throw new ORMException("Null was passed to checkClass");
@@ -448,86 +451,102 @@ class ClassManager
     
 
     /**
-     * Searches for the class named '$name'
+     * Searches for the class named '$name', when $field is set it returns this field
+     * 
      * @param string $name
      * @param unknown $field
      * @throws ORMException
      * @return unknown
+     * 
+     * Test: testGetClass
      */
-    public function getClass($test,$field=null) 
+    public function getClass($test,?string $field = null) 
     {        
-        $name = $this->getClassName($test);
-        $this->checkClass($name);
-        $class = $this->classes[$name];
+        $name = $this->checkClass($this->getClassName($test));
+
         if (is_null($field)) {
-            return $class;
+            return $this->classes[$name];
         } else {
-            if (array_key_exists($field,$class)) {
-                return $class[$field];
+            if ($this->classes[$name]['class']::hasInfo($field)) {
+                // Pass it through getField to get translation (if there is any)
+                return $this->classes[$name]['class']::getInfo($field);                
             } else {
-                throw new ORMException("The class '$name' doesn't export '$field'.");
+                return $this->classes[$name][$field];
             }
         }
     }
        
     /**
-     * Return the table of class '$name'. Alias for getClass($name,'table')
-     * @param string $name
-     * @return unknown
+     * Return the table of class '$class'. Alias for getClass($class,'table')
+     * 
+     * @param $class The class to get the table of
+     * @return string The name of the database table
+     * 
+     * Test: testClassTable
      */
-    public function getTableOfClass(string $name) 
+    public function getTableOfClass($class): string 
     {
-        $name = $this->checkClass($this->searchClass($name));
-        return $this->getClass($name,'table');
+        return $this->getClass($class,'table');
     }
     
     /**
-     * Return the parent of class '$name'. Alias for getClass($name,'parent')
-     * @param string $name
-     * @return unknown
+     * Return the parent of class '$class'. Alias for getClass($class,'parent')
+     * 
+     * @param $class The class to get the parent of
+     * @return string The name of the parent of the given class
+     * 
+     * Test: testClassParent
      */
-    public function getParentOfClass(string $name) 
+    public function getParentOfClass($class): string 
     {
-        $name = $this->checkClass($this->searchClass($name));
-        return $this->getClass($name,'parent');
+        return $this->getClass($class,'parent');
     }
     
     /**
      * Returns the inheritance of the given class.
-     * @param string $name
+     * 
+     * @param $class The class to get the parent of
      * @param bool $include_self
+     * 
+     * Test: testGetInheritance
      */
-    public function getInheritanceOfClass(string $name,bool $include_self = false) 
+    public function getInheritanceOfClass($class,bool $include_self = false) 
     {
-        $name = $this->checkClass($this->searchClass($name));
+        $class = $this->checkClass($class);
+
         if ($include_self) {
-            $result = [$name];
+            $result = [$class];
         } else {
             $result = [];
         }
+        
         do {
-            $name = $this->getParentOfClass($name);
-            $result[] = $name;
-        } while ($name !== 'object');
+            $class = $this->getParentOfClass($class);
+            $result[] = $class;
+        } while ($class !== 'object');
+        
         return $result;
     }
        
     /**
      * Return an associative array of the children of the passed class. The array is in the form
      *  name_of_child=>[list_of_children_of_this_child]
-     * @param string $name Name of the class to which all children should be searched. Default=object
+     *  
+     * @param string $class Name of the class to which all children should be searched. Default=object
      * @param int $level search children only to this depth. -1 means search all children. Default=-1
+     * 
+     * Test: testGetChildrenOfClass
      */
-    public function getChildrenOfClass(string $name='object',int $level=-1) : array 
+    public function getChildrenOfClass($class='object',int $level=-1) : array 
     {
-        $name = $this->checkClass($this->searchClass($name));
+        $class = $this->checkClass($class);
         
         $result = [];
         if (!$level) { // We reached top level
             return $result;
         }
         foreach ($this->classes as $class_name => $info) {
-            if ($info['parent'] === $name) {
+            if ($info['parent'] === $class) {
                 $result[$class_name] = $this->getChildrenOfClass($class_name,$level-1);
             }
         }
@@ -536,45 +555,55 @@ class ClassManager
         
     /**
      * Returns all properties of the given class
+     * 
      * @param string $class The class to search for properties
      * @return Descriptor of all properties
+     * 
+     * Test: testGetPropertiesOfClass
      */
-    public function getPropertiesOfClass(string $class) 
+    public function getPropertiesOfClass($class) 
     {
-        $name = $this->checkClass($this->searchClass($class));
-        return $this->getClass($name,'properties');
+        return $this->getClass($class,'properties');
     }
     
     /**
      * Return only the Descriptor of a given property of a given class
+     * 
      * @param string $class The class to search for the property
      * @param string $property The property to search for
      * @return Descriptor of this property
+     * 
+     * Test: testGetPropertyOfClass
      */
-    public function getPropertyOfClass(string $class,string $property) 
+    public function getPropertyOfClass($class,string $property) 
     {
-        $class = $this->checkClass($this->searchClass($class));
         return $this->getPropertiesOfClass($class)[$property];
     }
        
     /**
-     * Return the full qualified namespace name of the class 'name'. Alias for getClass($name,'class')
-     * @param string $name
+     * Return the full qualified namespace name of the class 'name'. Alias for getClass($class,'class')
+     * 
+     * @param string $class
      * @return unknown
+     * 
+     * Test: testGetNamespaceOfClass
      */
-    public function getNamespaceOfClass(string $name) 
+    public function getNamespaceOfClass($class) 
     {
-        $name = $this->checkClass($this->searchClass($name));
-        return $this->getClass($name,'class');
+        $result = $this->getClass($class,'class');
+        return $this->getClass($class,'class');
     }
     
     /**
      * Returns an array of all used tables of this class
-     * @param string $name
+     * 
+     * @param string $class
+     * 
+     * Test: testGetUsedTablesOfClass
      */
-    public function getUsedTablesOfClass(string $name)
+    public function getUsedTablesOfClass(string $class)
     {
-        $inheritance = $this->getInheritanceOfClass($name, true);
+        $inheritance = $this->getInheritanceOfClass($class, true);
         
         $result = [];
         
@@ -587,34 +616,43 @@ class ClassManager
     
     /**
      * Creates an instance of the passes class
+     * 
      * @param string $class is either the namespace or the class name
      * @return ORMObject The created instance of $class
+     * 
+     * Test: testCreateObject
      */
-    public function createObject(string $class) 
+    public function createObject($class) 
     {
-        $class = $this->checkClass($this->searchClass($class));
-        $namespace = $this->getNamespaceOfClass($this->searchClass($class));
-        $result = new $namespace();
-        return $result;
+        $classspace = $this->getNamespaceOfClass($class);
+
+        return new $classspace();        
     }
        
     /**
      * The reimplementation of is_a() that works with class names too
+     * 
      * @param unknown $test
      * @param unknown $class
      * @return boolean
+     * 
+     * Test: testIsA
      */
     public function isA($test,$class) 
     {
-        $namespace = $this->getNamespaceOfClass($this->checkClass($this->searchClass($class)));
+        $namespace = $this->getNamespaceOfClass($class);
+        
         return is_a($test,$namespace);
     }
     
     /**
      * Returns true is $test is exactly a $class and not of its children
+     * 
      * @param unknown $test
      * @param unknown $class
      * @return boolean
+     * 
+     * Test: isAClass
      */
     public function isAClass($test,$class) 
     {
@@ -625,9 +663,12 @@ class ClassManager
     /**
      * Naming convention compatible method
      * The reimplementation of is_subclass_of() that works with class names too
+     * 
      * @param unknown $test
      * @param unknown $class
      * @return boolean
+     * 
+     * Test: isSubclassOf
      */
     public function isSubclassOf($test,$class) 
     {
