@@ -321,7 +321,7 @@ class ORMObject extends PropertiesHaving
 	                    $newobject->$name[] = $this->$name[$i];
 	                }
 	                break;
-	            case 'Calculated':
+	            case 'calculated':
 	                break;
 	            default:
 	                $newobject->$name = $this->$name;
@@ -339,15 +339,15 @@ class ORMObject extends PropertiesHaving
 	    foreach ($this->properties as $property) {
 	        $name = $property->getName();
 	        switch ($property->getType()) {
-	            case 'ArrayOfObjects':
-	            case 'ArrayOfStrings':
-	            case 'External_references':
-	            case 'Tags':
+	            case 'arrayOfObjects':
+	            case 'arrayOfStrings':
+	            case 'external_references':
+	            case 'tags':
 	                for ($i=0;$i<count($source->$name);$i++) {
 	                    $this->$name[] = $source->$name[$i];
 	                }
 	                break;
-	            case 'Calculated':
+	            case 'calculated':
 	                break;
 	            default:
 	                $this->$name = $source->$name;

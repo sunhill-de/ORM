@@ -11,8 +11,9 @@ use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\Tests\DBTestCase;
 use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\Dummy;
-use Sunhill\ORM\Tests\Objects\ThirdLevelChild;
+
+use Sunhill\ORM\Tests\Testobjects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 
 
 class ObjectDegradeTest extends DatabaseTestCase
@@ -20,63 +21,45 @@ class ObjectDegradeTest extends DatabaseTestCase
     
     public function testOneStepDegration() {
         $test = new ThirdLevelChild;
-        $test->parentchar='ABC';
-        $test->parentint=123;
-        $test->parentfloat=1.23;
-        $test->parenttext='ABC DEF';
-        $test->parentdatetime='2001-01-01 01:01:01';
-        $test->parentdate='2011-01-01';
-        $test->parenttime='11:11:11';
-        $test->parentenum='testA';
         $add = new Dummy();
         $add->dummyint = 123;
-        $test->parentobject = $add;
-        $test->parentoarray[] = $add;
+        $test->testobject = $add;
+        $test->testoarray[] = $add;
         $test->childint = 1;
         $test->childchildint = 2;
-        Tags::addTag('TestTag');
-        $test->tags->stick('TestTag');
+        $test->tags->stick('TagA');
         
         $test->commit();
         $id = $test->getID();
+        
         $new = $test->degrade('secondlevelchild');
         $new->commit();
         
         Objects::flushCache();
         $read = Objects::load($id);
-        $this->assertEquals(123,$read->parentoarray[0]->dummyint);
+        $this->assertEquals(123,$read->testoarray[0]->dummyint);
         $this->assertEquals('secondlevelchild',Objects::getClassNameOf($id));
+        $this->assertEquals(1,$read->childint);
     }
     
     public function testTwoStepDegration() {
         $test = new ThirdLevelChild;
-        $test->parentchar='ABC';
-        $test->parentint=123;
-        $test->parentfloat=1.23;
-        $test->parenttext='ABC DEF';
-        $test->parentdatetime='2001-01-01 01:01:01';
-        $test->parentdate='2011-01-01';
-        $test->parenttime='11:11:11';
-        $test->parentenum='testA';
         $add = new Dummy();
         $add->dummyint = 123;
-        $test->parentobject = $add;
-        $test->parentoarray[] = $add;
+        $test->testobject = $add;
+        $test->testoarray[] = $add;
         $test->childint = 1;
         $test->childchildint = 2;
-        $test->thirdlevelobject = $add;
-        $test->thirdlevelsarray[] = 'AAA';
-        $test->thirdlevelsarray[] = 'BBB';
-        //Tags::addTag('TestTag');
-        $test->tags->stick('TestTag');
+        $test->tags->stick('TagA');
+        
         $test->commit();
         $id = $test->getID();
-        $new = $test->degrade('testparent');
+        $new = $test->degrade('referenceonly');
         $new->commit();
         Objects::flushCache();
         $read = Objects::load($id);
-        $this->assertEquals(123,$read->parentoarray[0]->dummyint);
-        $this->assertEquals('testparent',Objects::getClassNameOf($id));
+        $this->assertEquals(123,$read->testoarray[0]->dummyint);
+        $this->assertEquals('referenceonly',Objects::getClassNameOf($id));
         return $test;
     }
        
