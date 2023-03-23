@@ -32,7 +32,7 @@ class StorageModuleMySQLSimple extends StorageModuleBase
                     $this->storage->$name = $value;
                 }
             } else {
-                throw new StorageException("Eine ID '$id' gibt es in der Tabelle '$table' nicht.");
+                throw new StorageException("There is no ID '$id' in the table '$table'.");
             }
         }  
         return $id;
