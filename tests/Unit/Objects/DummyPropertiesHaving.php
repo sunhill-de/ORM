@@ -32,4 +32,9 @@ class DummyPropertiesHaving extends PropertiesHaving
         static::$property_definitions = [];
         return static::$method('test');
     }
+    
+    public static function callAddProperty()
+    {
+        return static::integer('test');
+    }
 }

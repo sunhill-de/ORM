@@ -15,5 +15,11 @@ class AnotherDummyPropertiesHaving extends DummyPropertiesHaving
     {
         static::integer('test');
     }
+
+    public static function callAddProperty()
+    {
+        return static::integer('test');
+    }
+    
 }
 

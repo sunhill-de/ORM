@@ -2,6 +2,7 @@
 
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
+use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Objects\PropertiesHaving;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Objects\PropertiesHavingException;
@@ -56,7 +57,7 @@ class PropertiesHaving_PropertyTest extends TestCase
         /**
          * Note: this is not a pretty test. It's here for the sake of completeness
          */
-        $this->assertEquals(\PHPUnit\Framework\TestCase::class,
+        $this->assertEquals(\PHPUnit\Framework\TestResult::class,
             DummyPropertiesHaving::callStaticMethod('getCallingClass'));    
     }
     
@@ -67,6 +68,27 @@ class PropertiesHaving_PropertyTest extends TestCase
     {
         $this->assertEquals('\\'.PropertyInteger::class,
             DummyPropertiesHaving::callStaticMethod('getPropertyClass',['Integer'], false));
+    }
+   
+    /**
+     * @dataProvider GetCallingClassnameProvider
+     * 
+     * Tests: getCallingClassname
+     */
+    public function testGetCallingClassname($class, $expect)
+    {
+        Classes::flushClasses();
+        Classes::registerClass(DummyPropertiesHaving::class);
+        Classes::registerClass(AnotherDummyPropertiesHaving::class);        
+        $this->assertEquals($expect, $class::callAddProperty()->class);
+    }
+    
+    public function GetCallingClassnameProvider()
+    {
+        return [
+            [DummyPropertiesHaving::class,'DummyPropertiesHaving'],
+            [AnotherDummyPropertiesHaving::class,'AnotherDummyPropertiesHaving'],
+        ];    
     }
     
     /**

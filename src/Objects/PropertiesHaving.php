@@ -661,7 +661,7 @@ class PropertiesHaving extends Hookable
 	protected static function getCallingClass(): string 
     {
 	    $caller = debug_backtrace();
-	    return $caller[4]['class'];
+	    return $caller[5]['class'];
 	}
 	
 	/**
@@ -694,7 +694,7 @@ class PropertiesHaving extends Hookable
 	    if (!is_null($class)) {
 	        return $class;
 	    }
-	    $class = Classes::searchClass(self::getCallingClass());
+	    $class = Classes::searchClass(static::getCallingClass());
 	    if (is_null($class)) {
 	        return '';
 	    } else {
