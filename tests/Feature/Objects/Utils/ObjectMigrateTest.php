@@ -8,48 +8,47 @@ use Illuminate\Support\Facades\DB;
 
 use Sunhill\ORM\Objects\ORMObject;
 
-use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 
-use Sunhill\ORM\Tests\Objects\Dummy;
-use Sunhill\ORM\Tests\Objects\testA;
-use Sunhill\ORM\Tests\Objects\testD;
-use Sunhill\ORM\Tests\Objects\testE;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 
-class ObjectMigrateTest extends DBTestCase
+class ObjectMigrateTest extends DatabaseTestCase
 {
 
-    public function setUp() : void {
-        parent::setUp();    
-        Classes::flushClasses();
-        Classes::registerClass(testA::class);
-        Classes::registerClass(testD::class);
-        Classes::registerClass(testE::class);
-        Classes::registerClass(Dummy::class);
-    }
-    
     public function testSanity() {
-        DB::statement('drop table if exists testA');
-        DB::statement('create table testA (id int primary key,testint int)');
+        DB::statement('drop table if exists dummies');
+        DB::statement('create table dummies (id int primary key,dummyint int)');
         $this->expectException(\Exception::class);
-        $test = new testA();
+        $test = new Dummy();
         $test->testint = 123;
         $test->testchar = 'AAA';
         $test->commit();
+    }
+    
+    public function testMissingTable()
+    {
+        DB::statement('drop table if exists dummies');
+        $this->assertDatabaseHasNotTable('dummies');
+        
+        Classes::migrateClass('dummy');
+        
+        $this->assertDatabaseHasTable('dummies');
     }
     
     public function testNewField() {
-        DB::statement('drop table if exists testA');
-        DB::statement('create table testA (id int primary key,testint int)');
-        Classes::migrateClass('testA');
-        $test = new testA();
-        $test->testint = 123;
-        $test->testchar = 'AAA';
+        DB::statement('drop table if exists dummies');
+        DB::statement('create table testA (id int primary key)');
+        
+        Classes::migrateClass('dummy');
+        
+        $test = new Dummy();
+        $test->dummyint = 123;
         $test->commit();
         
         $reread = Objects::load($test->getID());
-        $this->assertEquals('AAA',$reread->testchar);
+        $this->assertEquals(123,$reread->dummyint);
     }
 
     public function testRemovedField1() {

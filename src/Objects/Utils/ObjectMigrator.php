@@ -15,6 +15,7 @@
 namespace Sunhill\ORM\Objects\Utils;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Facades\Classes;
 
 class ObjectMigrator 
@@ -64,15 +65,7 @@ class ObjectMigrator
      */
     private function tableExists(): bool
     {
-        $tables = DB::select("SHOW TABLES LIKE '".$this->class_tablename."'");
-        foreach ($tables as $name => $table) {
-            foreach ($table as $field) {
-                if ($field == $this->class_tablename) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return Schema::hasTable($this->class_tablename);
     }
     
     /**
