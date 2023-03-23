@@ -25,9 +25,9 @@ class ThirdLevelChild extends SecondLevelChild
 	
 	public function postPromotion($from) 
 	{
-	    if (is_a($from,'Sunhill\ORM\Tests\Objects\SecondLevelChild')) {
+	    if (is_a($from,SecondLevelChild::class)) {
 	        $this->childchildint = $this->childint * 2;
-	    } elseif (is_a($from,'Sunhill\ORM\Tests\Objects\Passthru')) {	        
+	    } elseif (is_a($from,ReferenceOnly::class)) {	        
 	        $this->childint = 2;
 	        $this->childchildint = $this->childint * 2;	        
 	    } else {
