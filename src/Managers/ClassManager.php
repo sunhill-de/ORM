@@ -682,7 +682,7 @@ class ClassManager
      */
     public function migrateClass(string $class_name) 
     {
-        $class_name = $this->checkClass($this->searchClass($class_name));
+        $class_name = $this->checkClass($class_name);
         $migrator = new ObjectMigrator();
         $migrator->migrate($class_name);
     }
