@@ -97,7 +97,7 @@ class StorageModuleMySQLSimple extends StorageModuleBase
     
     private function update_core(int $id) 
     {
-        DB::table('objects')->where('id',$id)->update(['updated_at'=>DB::raw('now()')]);
+        DB::table('objects')->where('id',$id)->update(['updated_at'=>DB::raw('current_timestamp')]);
     }
     
     private function update_table($id, $table, $fields) 
