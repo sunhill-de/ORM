@@ -63,8 +63,8 @@ class StorageModuleMySQLSimple extends StorageModuleBase
         $uuid = $this->getUUID();
         $this->storage->getCaller()->uuid = $uuid; // set uuid back to the object
         $fields = ['classname'=>Classes::getClassName($this->storage->getCaller()),
-            'created_at'=>DB::raw('now()'),
-            'updated_at'=>DB::raw('now()'),
+            'created_at'=>DB::raw('current_timestamp'),
+            'updated_at'=>DB::raw('current_timestamp'),
             'uuid'=>$uuid
         ];
         DB::table('objects')->insert($fields);
