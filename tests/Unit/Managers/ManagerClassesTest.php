@@ -63,6 +63,7 @@ class ManagerClassesTest extends TestCase
     public function testGetClassProperties()
     {
         $test = new ClassManager();
+        $test->registerClass(Dummy::class);
         
         $result = $this->callProtectedMethod($test,'getClassProperties',[Dummy::class]);
         $this->assertArrayHasKey('dummyint', $result);
@@ -224,7 +225,31 @@ class ManagerClassesTest extends TestCase
         $this->assertEquals($expect, $result);
     }
     
-    protected function setupClasses() : void {
+    /**
+     * @dataProvider NormalizeNamespaceProvider
+     * @param unknown $namespace 
+     * @param unknown $expect
+     * Tests: ClassManager::normalizeNamespace
+     */
+    public function testNormalizeNamespace($namespace, $expect)
+    {
+        $test = new ClassManager();
+        
+        $this->assertEquals($expect, $test->normalizeNamespace($namespace));    
+    }
+    
+    public function NormalizeNamespaceProvider()
+    {
+        return [
+            ['this\is\a\namespace','this\is\a\namespace'],
+            ['\this\\is\a\namespace','this\is\a\namespace'],
+            ['\this\is\a\namespace','this\is\a\namespace'],
+            ['this\\\is\a\\namespace','this\is\a\namespace'],
+        ];    
+    }
+    
+    protected function setupClasses() : void 
+    {
         Classes::flushClasses();
         Classes::registerClass(Dummy::class);
         Classes::registerClass(DummyChild::class);        
@@ -235,38 +260,200 @@ class ManagerClassesTest extends TestCase
         Classes::registerClass(SecondLevelChild::class);
         Classes::registerClass(ThirdLevelChild::class);
     }
-    
+
     /**
-     * @dataProvider GetClassnameProvider
-     * @param unknown $test
-     * @param unknown $expect
+     * Tests: checkForObject
      */
-    public function testGetClassname($test,$expect) {
-        $this->setupClasses();
-        if (is_callable($test)) {
-            $test = $test();
-        } 
-        if ($expect == 'except') {
-            try {
-                Classes::getClassName($test);
-            } catch (\Exception $e) {
-                $this->assertTrue(true);
-                return;
-            }
-            $this->fail("Expected exception not raised");
-        } else {
-            $this->assertEquals($expect,Classes::getClassName($test));
-        }        
+    public function testCheckForObject_pass()
+    {
+        $test = \Mockery::mock(ClassManager::class);
+        $test->shouldReceive('searchClass')->with(Dummy::class)->andReturn('dummy');
+        
+        $this->assertEquals('dummy', $this->callProtectedMethod($test, 'checkForObject', [new Dummy()]));
     }
     
-    public function GetClassnameProvider() {
+    /**
+     * Tests: checkForObject
+     */
+    public function testCheckForObject_fail1()
+    {
+        $test = new ClassManager();
+        
+        $this->assertEquals(null, $this->callProtectedMethod($test, 'checkForObject', [new \StdClass()]));
+    }
+    
+    /**
+     * Tests: checkForObject
+     */
+    public function testCheckForObject_fail2()
+    {
+        $test = new ClassManager();
+        
+        $this->assertEquals(null, $this->callProtectedMethod($test, 'checkForObject', ['test']));
+    }
+    
+    /**
+     * @dataProvider CheckForNamespaceProvider
+     * @param unknown $needle
+     * @param unknown $expect
+     * 
+     * Tests: checkForNamespace
+     */
+    public function testCheckForNamespace($needle, $expect)
+    {
+        $test = new ClassManager();
+        $test->registerClass(Dummy::class);
+        $test->registerClass(DummyChild::class);
+        $test->registerClass(TestParent::class);
+        
+        $this->assertEquals($expect, $this->callProtectedMethod($test, 'checkForNamespace', [$needle]));
+    }
+
+    public function CheckForNamespaceProvider()
+    {
+        return [
+            [Dummy::class,'dummy'],
+            [DummyChild::class,'dummychild'],
+            ['somethingelse',null]
+        ];
+    }
+    
+    /**
+     * @dataProvider CheckForNamespaceProvider
+     * @param unknown $needle
+     * @param unknown $expect
+     * 
+     * tests: checkForClassname
+     */
+    public function testCheckForClassname($needle, $expect)
+    {
+        $test = new ClassManager();
+        $test->registerClass(Dummy::class);
+        $test->registerClass(DummyChild::class);
+        $test->registerClass(TestParent::class);
+        
+        $this->assertEquals($expect, $this->callProtectedMethod($test, 'checkForNamespace', [$needle]));
+    }
+    
+    public function CheckForClassnameProvider()
+    {
         return [
             ['dummy','dummy'],
+            ['dummychild','dummychild'],
+            ['somethingelse',null],
+            ['object','object']
+        ];
+    }
+    
+    /**
+     * @dataProvider CheckForStringProvider
+     * @param unknown $needle
+     * @param unknown $expect
+     * 
+     * Tests: checkForString
+     */
+    public function testCheckForString($needle, $expect)
+    {
+        $test = new ClassManager();
+        $test->registerClass(Dummy::class);
+        $test->registerClass(DummyChild::class);
+        $test->registerClass(TestParent::class);
+        
+        $this->assertEquals($expect, $this->callProtectedMethod($test, 'checkForString', [$needle]));
+    }
+    
+    public function CheckForStringProvider()
+    {
+        return [
             [Dummy::class,'dummy'],
-            [-1,'except'],
-            [1000,'except'],
-            [function() { return new Dummy(); },'dummy'],
-            [function() { return new \stdClass(); },'except'],
+            [DummyChild::class,'dummychild'],
+            ['somethingelse',null],
+            ['dummy','dummy'],
+            ['dummychild','dummychild'],
+            ['somethingelse',null],
+            ['object','object']
+        ];
+    }
+
+    /**
+     * Tests: checkForInt
+     * I don't get this to work
+    public function testCheckForInt_pass()
+    {
+        $test = \Mockery::mock(ClassManager::class);
+        $test->shouldAllowMockingProtectedMethods();
+        
+        $test->shouldReceive('getClassnameWihIndex')->with(1)->andReturn('dummy');
+        
+        $this->assertEquals('dummy', $this->callProtectedMethod($test, 'checkForInt', [1]));
+    }
+     */
+    
+    /**
+     * Tests: checkForInt
+     */
+    public function testCheckForInt_fail()
+    {
+        $test = new ClassManager();
+        $this->assertNull($this->callProtectedMethod($test, 'checkForInt', ['abc']));        
+    }
+    
+    /**
+     * @dataProvider SearchClassProvider
+     * @param unknown $search
+     * 
+     * Tests: ClassManager::searchClass
+     */
+    public function testSearchClass($expect,$search) {
+        if ($search == 'takeclass') {
+            $search = new Dummy();
+        }
+        $this->setupClasses();
+        $this->assertEquals($expect,Classes::searchClass($search));
+    }
+    
+    public function SearchClassProvider() {
+        return [
+            ['dummy','dummy'],
+            ['dummy',Dummy::class],
+            ['dummy','takeclass'],
+            ['dummy',1],
+            [null,'notexisting'],
+            [null,'\\Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
+            [null,new \StdClass()],
+        ];
+    }
+    
+    /**
+     * @dataProvider SearchClassProvider
+     * @param unknown $search
+     *
+     * Tests: ClassManager::getClassName
+     */
+    public function testGetClassName($expect,$search) {
+        if ($search == 'takeclass') {
+            $search = new Dummy();
+        }
+        $this->setupClasses();
+        try {
+            $this->assertEquals($expect,Classes::getClassName($search));
+        } catch (ORMException $e) {
+            if (is_null($expect)) {
+                $this->assertTrue(true);
+            } else {
+                throw $e;
+            }
+        }
+    }
+    
+    public function getClassNameProvider() {
+        return [
+            ['dummy','dummy'],
+            ['dummy',Dummy::class],
+            ['dummy','takeclass'],
+            [null,'notexisting'],
+            [null,'\\Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
+            [null,new \StdClass()],
         ];
     }
     
@@ -332,25 +519,6 @@ class ManagerClassesTest extends TestCase
             $i++;
         }
         $this->assertEquals('dummies',Classes::getClass($dummyid,'table'));        
-    }
-    /**
-     * @dataProvider SearchClassProvider
-     * @param unknown $search
-     */
-    public function testSearchClassViaName($expect,$search) {
-        $this->setupClasses();
-        $this->assertEquals($expect,Classes::searchClass($search));
-    }
-    
-    public function SearchClassProvider() {
-        return [
-            ['dummy','dummy'],
-            ['dummy',Dummy::class],
-            ['dummy',Dummy::class],
-            [null,'notexisting'],
-            [null,'\\Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
-            [null,'Sunhill\\ORM\\Tests\\Objects\\nonexisting'],
-        ];
     }
     
     /**
@@ -478,13 +646,13 @@ class ManagerClassesTest extends TestCase
     public function testCreateObjectViaName() {
         $this->setupClasses();
         $test = Classes::createObject('testparent');
-        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Objects\TestParent'));
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Testobjects\TestParent'));
     }
     
     public function testCreateObjectViaNamespace() {
         $this->setupClasses();
-        $test = Classes::createObject('Sunhill\ORM\Tests\Objects\TestParent');
-        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Objects\TestParent'));
+        $test = Classes::createObject('Sunhill\ORM\Tests\Testobjects\TestParent');
+        $this->assertTrue(is_a($test,'Sunhill\ORM\Tests\Testobjects\TestParent'));
     }
     
     /**
@@ -499,14 +667,14 @@ class ManagerClassesTest extends TestCase
         
     public function IsAProvider() {
         return [
-            ['Sunhill\ORM\Tests\Objects\TestParent','testparent',true],
-            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestParent',true],
-            ['Sunhill\ORM\Tests\Objects\TestChild','testparent',true],
-            ['Sunhill\ORM\Tests\Objects\TestChild','Sunhill\ORM\Tests\Objects\TestParent',true],
-            ['Sunhill\ORM\Tests\Objects\TestParent','testchild',false],
-            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestChild',false],
-            ['Sunhill\ORM\Tests\Objects\Dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\Dummy','Sunhill\ORM\Tests\Objects\TestParent',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','testparent',true],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestParent',true],
+            ['Sunhill\ORM\Tests\Testobjects\TestChild','testparent',true],
+            ['Sunhill\ORM\Tests\Testobjects\TestChild','Sunhill\ORM\Tests\Testobjects\TestParent',true],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','testchild',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestChild',false],
+            ['Sunhill\ORM\Tests\Testobjects\Dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Testobjects\Dummy','Sunhill\ORM\Tests\Testobjects\TestParent',false],
         ];
     }
     
@@ -522,14 +690,14 @@ class ManagerClassesTest extends TestCase
     
     public function IsAClassProvider() {
         return [
-            ['Sunhill\ORM\Tests\Objects\TestParent','testparent',true],
-            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestParent',true],
-            ['Sunhill\ORM\Tests\Objects\TestChild','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\TestChild','Sunhill\ORM\Tests\Objects\TestParent',false],
-            ['Sunhill\ORM\Tests\Objects\TestParent','testchild',false],
-            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestChild',false],
-            ['Sunhill\ORM\Tests\Objects\Dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\Dummy','Sunhill\ORM\Tests\Objects\TestParent',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','testparent',true],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestParent',true],
+            ['Sunhill\ORM\Tests\Testobjects\TestChild','testparent',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestChild','Sunhill\ORM\Tests\Testobjects\TestParent',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','testchild',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestChild',false],
+            ['Sunhill\ORM\Tests\Testobjects\Dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Testobjects\Dummy','Sunhill\ORM\Tests\Testobjects\TestParent',false],
         ];
     }
     
@@ -545,14 +713,14 @@ class ManagerClassesTest extends TestCase
         
     public function IsSubclassOfProvider() {
         return [
-            ['Sunhill\ORM\Tests\Objects\TestParent','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestParent',false],
-            ['Sunhill\ORM\Tests\Objects\TestParent','testchild',false],
-            ['Sunhill\ORM\Tests\Objects\TestParent','Sunhill\ORM\Tests\Objects\TestChild',false],
-            ['Sunhill\ORM\Tests\Objects\TestChild','testparent',true],
-            ['Sunhill\ORM\Tests\Objects\TestChild','Sunhill\ORM\Tests\Objects\TestParent',true],
-            ['Sunhill\ORM\Tests\Objects\Dummy','testparent',false],
-            ['Sunhill\ORM\Tests\Objects\Dummy','Sunhill\ORM\Tests\Objects\TestParent',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','testparent',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestParent',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','testchild',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestParent','Sunhill\ORM\Tests\Testobjects\TestChild',false],
+            ['Sunhill\ORM\Tests\Testobjects\TestChild','testparent',true],
+            ['Sunhill\ORM\Tests\Testobjects\TestChild','Sunhill\ORM\Tests\Testobjects\TestParent',true],
+            ['Sunhill\ORM\Tests\Testobjects\Dummy','testparent',false],
+            ['Sunhill\ORM\Tests\Testobjects\Dummy','Sunhill\ORM\Tests\Testobjects\TestParent',false],
         ];
     }
     

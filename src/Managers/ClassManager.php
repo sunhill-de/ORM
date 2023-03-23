@@ -272,8 +272,11 @@ class ClassManager
     // *************************** Informations about a specific class **************************    
     /**
      * Normalizes the passed namespace (removes heading \ and double backslashes)
+     * 
      * @param string $namespace
      * @return string
+     * 
+     * Test: testNormalizeNamespace
      */
     public function normalizeNamespace(string $namespace): string 
     {
@@ -286,60 +289,90 @@ class ClassManager
     }
     
     /**
-     * This method returns the name of the class or null
-     * If $needle is a string with backslashes it searches the correspending class name
-     * If $needle is a string without backslahes it just returns the name
-     * if $needle is an object it gets the namespace of this object and searches it
-     * @param string $needle
+     * Checks if $needle is a object. If yes try to find it via the namespace
+     * 
+     * @param unknown $needle
+     * @return NULL|string|void|boolean|boolean
+     * 
+     * Test: testCheckForObject_pass, testCheckForObject_fail1, testCheckForObject_fail2
      */
-    public function searchClass($needle) 
+    protected function checkForObject($needle)
     {
-        
-        if (is_object($needle)) {        
-            
-            $needle = get_class($needle);
+        if (is_object($needle) && is_a($needle, ORMObject::class)) {
+            return $this->searchClass($needle::class);
         }
-        if (strpos($needle,'\\') !== false) {
-            $needle = $this->normalizeNamespace($needle);
-            foreach ($this->classes as $name => $info) {
-                if ($info['class'] === $needle) {
-                    return $info['name'];
-                }
-            }
-            return null;
-        }  else {
-            if (isset($this->classes[$needle]) || ($needle === 'object')) {
-                return $needle;
-            } else {
-                return null;
-            }
-        }
+        return false;
     }
     
     /**
-     * Returns the (internal) name of the class. It doesn't matter how the class is passed (name, namespace, object or index)
-     * @param unknown $test Could be either a string, an object or an integer
+     * Checks if $needle is a namespace of a registered class
+     * 
+     * @param string $needle
+     * @return boolean
+     * 
+     * Test: testCheckForNamespace
      */
-    public function getClassName($test) 
+    protected function checkForNamespace(string $needle)
     {
-        if (is_int($test)) {
-            return $this->getClassnameWithIndex($test);
-        } else if (is_string($test)) {
-            if (strpos($test,'\\') !== false) {
-                // We have a namespace
-                return $test::getInfo('name');
-            } else {
-                return $test;
+        $needle = $this->normalizeNamespace($needle);
+        foreach ($this->classes as $name => $info) {
+            if ($info['class'] == $needle) {
+                return $info['name'];
             }
-        } else if (is_object($test)) {
-            if (is_a($test,ORMObject::class)) {
-                return $test::getInfo('name');
-            } else {
-                throw new ORMException("Invalid object passed to get_class: ".get_class($test));
-            }
-        } else {
-            throw new ORMException("Unknown type for getClassName()");
         }
+        return false;
+    }
+    
+    /**
+     * Checks if $needle is a name of a registered class
+     * 
+     * @param string $needle
+     * @return \Sunhill\ORM\Managers\string|NULL
+     * 
+     * Test: testCheckForClassname
+     */
+    protected function checkForClassname(string $needle)
+    {
+        if (isset($this->classes[$needle]) || ($needle === 'object')) {
+            return $needle;
+        } 
+
+        return null;
+    }
+    
+    /**
+     * Checks if $needle is a string and if yes, if it's a namespace or a classname
+     * 
+     * @param unknown $needle
+     * @return void|boolean|\Sunhill\ORM\Managers\string|NULL
+     * 
+     * Test: testCheckForString
+     */
+    protected function checkForString($needle)
+    {
+        if (!is_string($needle)) {
+            return;
+        }
+        if (strpos($needle,'\\') !== false) {
+            return $this->checkForNamespace($needle);
+        }
+        return $this->checkForClassname($needle);
+    }
+    
+    /**
+     * If an int was passed, use this as an index into the classes array
+     * 
+     * @param unknown $needle
+     * @return void|array|NULL
+     * 
+     * Test: testForInt
+     */
+    protected function checkForInt($needle)
+    {
+        if (!is_numeric($needle)) {
+            return;
+        }
+        return $this->getClassnameWithIndex(intval($needle));
     }
     
     /**
@@ -347,7 +380,7 @@ class ClassManager
      * @param int $index The number of the wanted class
      * @retval string
      */
-    private function getClassnameWithIndex(int $index) 
+    protected function getClassnameWithIndex(int $index)
     {
         if ($index < 0) {
             throw new ORMException("Invalid Index '$index'");
@@ -359,7 +392,46 @@ class ClassManager
             }
             $i++;
         }
-        throw new ORMException("Invalid index '$index'");        
+        throw new ORMException("Invalid index '$index'");
+    }
+    
+    /**
+     * This method returns the name of the class or null
+     * If $needle is a string with backslashes it searches the correspending class name
+     * If $needle is a string without backslahes it just returns the name
+     * if $needle is an object it gets the namespace of this object and searches it
+     * 
+     * @param string $needle
+     * 
+     * Test: testSearchClass
+     */
+    public function searchClass($needle): ?string 
+    {
+        if ($result = $this->checkForObject($needle)) {
+            return $result;
+        }
+        if ($result = $this->checkForString($needle)) {
+            return $result;
+        }
+        if ($result = $this->checkForInt($needle)) {
+            return $result;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns the (internal) name of the class. It doesn't matter how the class is passed (name, namespace, object or index)
+     * It calls searchClass but raises an exception when nothing is found
+     * @param unknown $test Could be either a string, an object or an integer
+     * 
+     * Test: testGetClassName
+     */
+    public function getClassName($test) 
+    {
+        if ($result = $this->searchClass($test)) {
+            return $result;
+        }
+        throw new ORMException("Unknown type for getClassName()");
     }
     
     /**
@@ -371,19 +443,10 @@ class ClassManager
         if (is_null($test)) {
             throw new ORMException("Null was passed to checkClass");
         }
-        $name = $this->getClassName($test);
-        if (!isset($this->classes[$name]) && ($name !== 'object')) {
-            throw new ORMException("The class '$name' doesn't exists.");
-        }
-        return $name;
+        return $this->getClassName($test);
     }
     
 
-    private function translate(string $class,string $item) 
-    {
-        return Lang::get('ORM:testfiles.'.$class.'_'.$item);
-    }
-       
     /**
      * Searches for the class named '$name'
      * @param string $name
