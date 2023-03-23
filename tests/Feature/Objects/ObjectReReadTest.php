@@ -15,6 +15,7 @@ use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
 use Sunhill\ORM\Tests\Testobjects\SecondLevelChild;
 use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
+use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 
 class ObjectReReadTest extends DatabaseTestCase
 {
@@ -89,7 +90,8 @@ class ObjectReReadTest extends DatabaseTestCase
                     'parentdatetime'=>'2001-01-01 01:01:01',
                     'parentdate'=>'2011-01-01',
                     'parenttime'=>'11:11:11',
-                    'parentenum'=>'testA'
+                    'parentenum'=>'testA',
+                    'nosearch'=>3,
                 ],
                 [   'parentchar'=>'DEF',
                     'parentint'=>456,
@@ -98,7 +100,8 @@ class ObjectReReadTest extends DatabaseTestCase
                     'parentdatetime'=>'2002-02-02 02:02:02',
                     'parentdate'=>'2022-02-22',
                     'parenttime'=>'22:22:22',
-                    'parentenum'=>'testB'
+                    'parentenum'=>'testB',
+                    'nosearch'=>3,
                 ],
                 [   'parentchar'=>'DEF',
                     'parentint'=>456,
@@ -107,7 +110,8 @@ class ObjectReReadTest extends DatabaseTestCase
                     'parentdatetime'=>'2002-02-02 02:02:02',
                     'parentdate'=>'2022-02-22',
                     'parenttime'=>'22:22:22',
-                    'parentenum'=>'testB'
+                    'parentenum'=>'testB',
+                    'nosearch'=>3,
                 ],
             ],
 	        [ //Einfacher Test für geerbte Felder beide modifiziert
@@ -120,7 +124,8 @@ class ObjectReReadTest extends DatabaseTestCase
 	                'parentdate'=>'2011-01-01',
 	                'parenttime'=>'11:11:11',
 	                'parentenum'=>'testA',
-                    'childchar'=>'CCC',
+	                'nosearch'=>3,
+	                'childchar'=>'CCC',
 	                'childint'=>666,
 	                'childfloat'=>3.33,
 	                'childtext'=>'Lorem ipsum',
@@ -137,7 +142,8 @@ class ObjectReReadTest extends DatabaseTestCase
 	                'parentdate'=>'2022-02-22',
 	                'parenttime'=>'22:22:22',
 	                'parentenum'=>'testB',
-                    'childchar'=>'DDD',
+	                'nosearch'=>3,
+	                'childchar'=>'DDD',
 	                'childint'=>667,
 	                'childfloat'=>3.43,
 	                'childtext'=>'Sorem Lipsum',
@@ -154,6 +160,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	                'parentdate'=>'2022-02-22',
 	                'parenttime'=>'22:22:22',
 	                'parentenum'=>'testB',
+	                'nosearch'=>3,
 	                'childchar'=>'DDD',
 	                'childint'=>667,
 	                'childfloat'=>3.43,
@@ -174,6 +181,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	                'parentdate'=>'2011-01-01',
 	                'parenttime'=>'11:11:11',
 	                'parentenum'=>'testA',
+	                'nosearch'=>3,
 	                'childchar'=>'CCC',
 	                'childint'=>666,
 	                'childfloat'=>3.33,
@@ -200,6 +208,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	                'parentdate'=>'2011-01-01',
 	                'parenttime'=>'11:11:11',
 	                'parentenum'=>'testA',
+	                'nosearch'=>3,
 	                'childchar'=>'DDD',
 	                'childint'=>667,
 	                'childfloat'=>3.43,
@@ -211,28 +220,19 @@ class ObjectReReadTest extends DatabaseTestCase
 	            ],
 	        ],
 	        [ // Passthrutest
-	            SecondLevelChild::class,
-	            [   'parentchar'=>'ABC',
-	                'parentint'=>123,
-	                'parentfloat'=>1.23,
-	                'parenttext'=>'ABC DEF',
-	                'parentdatetime'=>'2001-01-01 01:01:01',
-	                'parentdate'=>'2011-01-01',
-	                'parenttime'=>'11:11:11',
-	                'parentenum'=>'testA',
-	                'childint'=>678
+	            ThirdLevelChild::class,
+	            [   
+	                'childint'=>678,
+	                'childchildint'=>789,
+	                'childchildchar'=>'ABC'
 	            ],
-	            [   'childint'=>1314
+	            [   'childint'=>1314,
+	                'childchildint'=>2345
 	            ],
-	            [   'parentchar'=>'ABC',
-	                'parentint'=>123,
-	                'parentfloat'=>1.23,
-	                'parenttext'=>'ABC DEF',
-	                'parentdatetime'=>'2001-01-01 01:01:01',
-	                'parentdate'=>'2011-01-01',
-	                'parenttime'=>'11:11:11',
-	                'parentenum'=>'testA',
-	                'childint'=>1314
+	            [   
+	                'childint'=>1314,
+	                'childchildint'=>2345,
+	                'childchildchar'=>'ABC'
 	            ],
 	        ]];
 	}
@@ -306,7 +306,8 @@ class ObjectReReadTest extends DatabaseTestCase
 	                'parentdatetime'=>'2001-01-01 01:01:01',
 	                'parentdate'=>'2011-01-01',
 	                'parenttime'=>'11:11:11',
-	                'parentenum'=>'testA'
+	                'parentenum'=>'testA',
+	                'nosearch'=>3,	                
 	            ],
 	            function($object) {
 	                $add1 = new Dummy();
@@ -370,6 +371,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	                    'parentdate'=>'2011-01-01',
 	                    'parenttime'=>'11:11:11',
 	                    'parentenum'=>'testA',
+	                    'nosearch'=>3,	                    
 	                    'childchar'=>'CCC',
 	                    'childint'=>666,
 	                    'childfloat'=>3.33,
@@ -475,7 +477,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	                ],
 	                [ // Änderung nur der untergebenen Objekte, hier mit doppelter Referenz
 	                    ReferenceOnly::class,
-	                    ['testint'=>1234],
+	                    [],
 	                    function($object) {
 	                        $add1 = new Dummy();
 	                        $add1->dummyint = 4321;
@@ -484,7 +486,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	                        return true;
 	                    },
 	                    function($object) { // Read-Callback
-	                        return ($object->testint == 1234) && ($object->testobject->dummyint == 4321) &&
+	                        return ($object->testobject->dummyint == 4321) &&
 	                               ($object->testoarray[0]->dummyint == 4321);
 	                    },
 	                    function($object) { // Modify Callback
@@ -494,9 +496,8 @@ class ObjectReReadTest extends DatabaseTestCase
 	                    function($object) { // Expect Callback
 	                        $this->assertEquals(
 	                            [
-	                             1234,666,666   
+	                             666,666   
 	                            ],[
-	                                $object->testint,
 	                                $object->testobject->dummyint,
 	                                $object->testoarray[0]->dummyint
 	                            ]	                            
@@ -508,32 +509,28 @@ class ObjectReReadTest extends DatabaseTestCase
 	                ],
 	                [ // Zirkuläre Referenzen
 	                    ReferenceOnly::class,
-	                    ['testint'=>1234],
+	                    [],
 	                    function($object) {
 	                        $add1 = new ReferenceOnly();
-	                        $add1->testint = 4321;
 	                        $add1->testobject = $object;
 	                        $object->testobject = $add1;
 	                        return true;
 	                    },
 	                    function($object) { // Read-Callback
-	                        return ($object->testint == 1234) && ($object->testobject->testint == 4321) &&
-	                        ($object->testobject->testobject->testint == 1234);
+	                        return ($object->testobject->testobject == $object);
 	                    },
 	                    function($object) { // Modify Callback
-	                        $object->testobject->testint = 666;
 	                        return true;
 	                    },
 	                    function($object) { // Expect Callback
-	                        return ($object->testint == 1234) && ($object->testobject->testint == 666) &&
-	                        ($object->testobject->testobject->testint == 1234);
+	                        return ($object->testobject->testobject == $object);
 	                    }
 	                    
 	                    ],
 	                    
 	                    [ // Austausch eines Objektes
 	                        ReferenceOnly::class,
-	                        ['testint'=>1234],
+	                        [],
 	                        function($object) {
 	                            $add1 = new Dummy();
 	                            $add1->dummyint = 4321;
@@ -541,7 +538,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	                            return true;
 	                        },
 	                        function($object) { // Read-Callback
-	                            return ($object->testint == 1234) && ($object->testobject->dummyint == 4321);
+	                            return ($object->testobject->dummyint == 4321);
 	                        },
 	                        function($object) { // Modify Callback
 	                            $add1 = new Dummy();
@@ -550,14 +547,14 @@ class ObjectReReadTest extends DatabaseTestCase
 	                            return true;
 	                        },
 	                        function($object) { // Expect Callback
-	                            return ($object->testint == 1234) && ($object->testobject->dummyint == 1111);
+	                            return ($object->testobject->dummyint == 1111);
 	                        }
 	                        
 	                        ],
 	                        
 	                        [ // Löschen einer Referenz
 	                        ReferenceOnly::class,
-	                        ['testint'=>1234],
+	                        [],
 	                        function($object) {
 	                            $add1 = new Dummy();
 	                            $add1->dummyint = 4321;
@@ -578,7 +575,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	                        ],
 	                        [ // Einfaches Ändern eines untergeordneten Objektes
 	                            ReferenceOnly::class,
-	                            ['testint'=>1234],
+	                            [],
 	                            function($object) {
 	                                $add1 = new Dummy();
 	                                $add1->dummyint = 4321;
@@ -607,7 +604,6 @@ class ObjectReReadTest extends DatabaseTestCase
 	       Objects::flushCache();
 	       $object = new ReferenceOnly();
 	       $child  = new Dummy();
-	       $object->testint = 123;
 	       $child->dummyint = 234;
 	       $object->testobject = $child;
 	       $object->commit();
@@ -630,7 +626,6 @@ class ObjectReReadTest extends DatabaseTestCase
 	        $sub[$i]->dummyint = $i;
 	        $main[$i] = new ReferenceOnly();
 	        $main[$i]->testobject = $sub[$i];
-	        $main[$i]->testint = $i+100;
 	        $main[$i]->commit();
 	        if ($i==50) {
 	            $id = $main[$i]->getID();
