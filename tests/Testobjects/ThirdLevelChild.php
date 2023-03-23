@@ -18,6 +18,7 @@ class ThirdLevelChild extends SecondLevelChild
     {
 		parent::setupProperties();
 		self::integer('childchildint');
+		self::varchar('childchildchar');
 		self::object('thirdlevelobject');
 		self::arrayofstrings('thirdlevelsarray');
 	}
