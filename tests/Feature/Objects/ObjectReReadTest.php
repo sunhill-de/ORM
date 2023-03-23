@@ -5,13 +5,18 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Objects\ORMObject;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\Dummy;
-use Sunhill\ORM\Tests\Objects\ReferenceOnly;
 
-class ObjectReReadTest extends DBTestCase
+use Sunhill\ORM\Tests\Testobjects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Tests\Testobjects\SecondLevelChild;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
+use Sunhill\ORM\Tests\Testobjects\TestParent;
+
+class ObjectReReadTest extends DatabaseTestCase
 {
         
     /**
@@ -24,7 +29,6 @@ class ObjectReReadTest extends DBTestCase
 	 */
 	public function testSimpleFields($classname,$init,$modify,$expect) {
 	    Objects::flushCache();
-	    $classname = 'Sunhill\\ORM\\Tests\\Objects\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
@@ -39,7 +43,7 @@ class ObjectReReadTest extends DBTestCase
 	    }
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
-	            $this->assertEquals($value,$init_object->$key,"Initialiserung von Feld '$key' fehlgeschlagen.");
+	            $this->assertEquals($value,$init_object->$key,"Initialization of field '$key' failed.");
 	        }
 	    }
 	    $init_object->commit();
@@ -49,7 +53,7 @@ class ObjectReReadTest extends DBTestCase
 	    $read_object = Objects::load($init_object->getID());
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
-	            $this->assertEquals($value,$read_object->$key,"Wiederauslesen von Feld '$key' fehlgeschlagen.");
+	            $this->assertEquals($value,$read_object->$key,"Read of field '$key' failed.");
 	        }
 	    }
 	    if (!is_null($modify)) {
@@ -69,7 +73,7 @@ class ObjectReReadTest extends DBTestCase
 	    $reread_object = Objects::load($init_object->getID());
 	    if (!is_null($expect)) {
 	        foreach ($expect as $key => $value) {
-	            $this->assertEquals($value,$reread_object->$key,"Wiederauslesen nach Modify von Feld '$key' fehlgeschlagen.");
+	            $this->assertEquals($value,$reread_object->$key,"Read after modification of field '$key' failed.");
 	        }
 	    }
 	}
@@ -77,7 +81,7 @@ class ObjectReReadTest extends DBTestCase
 	public function SimpleFieldProvider() {
 	    return [ 
             [ //Einfacher Test für einfache Felder
-                'TestParent',
+                TestParent::class,
                 [   'parentchar'=>'ABC',
                     'parentint'=>123,
                     'parentfloat'=>1.23,
@@ -107,7 +111,7 @@ class ObjectReReadTest extends DBTestCase
                 ],
             ],
 	        [ //Einfacher Test für geerbte Felder beide modifiziert
-	            'TestChild',
+	            TestChild::class,
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -161,7 +165,7 @@ class ObjectReReadTest extends DBTestCase
 	            ],
 	        ],
 	        [ //Einfacher Test für geerbte Felder nur Kinder modifiziert
-	            'TestChild',
+	            TestChild::class,
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -207,7 +211,7 @@ class ObjectReReadTest extends DBTestCase
 	            ],
 	        ],
 	        [ // Passthrutest
-	            'SecondLevelChild',
+	            SecondLevelChild::class,
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -246,7 +250,6 @@ class ObjectReReadTest extends DBTestCase
 	 */
 	public function testComplexFields($classname,$init,$init_callback,$read_callback,$modify_callback,$expect_callback) {
 	    Objects::flushCache();
-	    $classname = 'Sunhill\\ORM\\Tests\\Objects\\'.$classname;
 	    $init_object = new $classname;
 	    if (!is_null($init)) {
 	        foreach ($init as $key => $value) {
@@ -261,7 +264,7 @@ class ObjectReReadTest extends DBTestCase
 	    }
 	    if (!is_null($init_callback)) {
 	        if (!$init_callback($init_object)) {
-	            $this->fail("Init_Callback fehlgeschlagen.");
+	            $this->fail("Init callback failed.");
 	        }
 	    }
 	    $init_object->commit(); 
@@ -271,13 +274,13 @@ class ObjectReReadTest extends DBTestCase
 	    $read_object = Objects::load($id);
 	    if (!is_null($read_callback)) {
 	        if (!$read_callback($read_object)) {
-	            $this->fail("Read_Callback fehlgeschlagen.");
+	            $this->fail("Read callback failed.");
 	        }
 	    }
 	    
 	    if (!is_null($modify_callback)) {
 	        if (!$modify_callback($read_object)) {
-	            $this->fail("Modify_Callback fehlgeschlagen.");
+	            $this->fail("Modify callback failed.");
 	        }
 	    }
 	    $read_object->commit();
@@ -286,7 +289,7 @@ class ObjectReReadTest extends DBTestCase
 	    $reread_object = Objects::load($init_object->getID());
 	    if (!is_null($expect_callback)) {
 	        if (!$expect_callback($reread_object)) {
-	            $this->fail("Expect_Callback fehlgeschlagen.");
+	            $this->fail("Expect callback failed.");
 	        }
 	    }
 	    $this->assertTrue(true); // Damit nicht Risky
@@ -295,7 +298,7 @@ class ObjectReReadTest extends DBTestCase
 	public function ComplexFieldProvider() {
 	    return [ 
 	        [ // Einfacher Test mit Komplexen-Felder
-	            'TestParent',
+	            TestParent::class,
 	            [   'parentchar'=>'ABC',
 	                'parentint'=>123,
 	                'parentfloat'=>1.23,
@@ -358,7 +361,7 @@ class ObjectReReadTest extends DBTestCase
 	            },
 	            ],
 	            [ //Einfacher Test für geerbte Felder beide modifiziert
-	                'TestChild',
+	                TestChild::class,
 	                [   'parentchar'=>'ABC',
 	                    'parentint'=>123,
 	                    'parentfloat'=>1.23,
@@ -471,7 +474,7 @@ class ObjectReReadTest extends DBTestCase
 	                },
 	                ],
 	                [ // Änderung nur der untergebenen Objekte, hier mit doppelter Referenz
-	                    'ReferenceOnly',
+	                    ReferenceOnly::class,
 	                    ['testint'=>1234],
 	                    function($object) {
 	                        $add1 = new Dummy();
@@ -504,7 +507,7 @@ class ObjectReReadTest extends DBTestCase
 	                    
 	                ],
 	                [ // Zirkuläre Referenzen
-	                    'ReferenceOnly',
+	                    ReferenceOnly::class,
 	                    ['testint'=>1234],
 	                    function($object) {
 	                        $add1 = new ReferenceOnly();
@@ -529,7 +532,7 @@ class ObjectReReadTest extends DBTestCase
 	                    ],
 	                    
 	                    [ // Austausch eines Objektes
-	                        'ReferenceOnly',
+	                        ReferenceOnly::class,
 	                        ['testint'=>1234],
 	                        function($object) {
 	                            $add1 = new Dummy();
@@ -553,7 +556,7 @@ class ObjectReReadTest extends DBTestCase
 	                        ],
 	                        
 	                        [ // Löschen einer Referenz
-	                        'ReferenceOnly',
+	                        ReferenceOnly::class,
 	                        ['testint'=>1234],
 	                        function($object) {
 	                            $add1 = new Dummy();
@@ -574,7 +577,7 @@ class ObjectReReadTest extends DBTestCase
 	                        
 	                        ],
 	                        [ // Einfaches Ändern eines untergeordneten Objektes
-	                            'ReferenceOnly',
+	                            ReferenceOnly::class,
 	                            ['testint'=>1234],
 	                            function($object) {
 	                                $add1 = new Dummy();
