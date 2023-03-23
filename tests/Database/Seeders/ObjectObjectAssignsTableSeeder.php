@@ -63,7 +63,7 @@ class ObjectObjectAssignsTableSeeder extends Seeder {
 	        
 	        ['container_id'=>24,'element_id'=>1,'field'=>'childoarray','index'=>0],
 	       
-	        ['container_id'=>25,'element_id'=>2,'field'=>'childobject','index'=>0],
+	        ['container_id'=>25,'element_id'=>2,'field'=>'parentobject','index'=>0],
 	        
 	        ['container_id'=>27,'element_id'=>1,'field'=>'testobject','index'=>0],
 	        ['container_id'=>27,'element_id'=>2,'field'=>'testoarray','index'=>0],

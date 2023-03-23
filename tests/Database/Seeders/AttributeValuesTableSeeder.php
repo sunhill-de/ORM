@@ -26,6 +26,8 @@ class AttributeValuesTableSeeder extends Seeder {
 
 	        ['attribute_id'=>8,'object_id'=>8,'value'=>'999','textvalue'=>''],
 	        
+	        ['attribute_id'=>2,'object_id'=>17,'value'=>'654','textvalue'=>''],
+	        ['attribute_id'=>3,'object_id'=>17,'value'=>'543','textvalue'=>''],
 	    ]);
 	}
 }
