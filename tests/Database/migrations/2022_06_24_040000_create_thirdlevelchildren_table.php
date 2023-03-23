@@ -16,6 +16,7 @@ class CreateThirdlevelChildrenTable extends Migration
         Schema::create('thirdlevelchildren', function (Blueprint $table) {
             $table->integer('id');
             $table->integer('childchildint');
+            $table->char('childchildchar')->nullable();
         });
     }
 
