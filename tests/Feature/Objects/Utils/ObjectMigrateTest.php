@@ -13,6 +13,7 @@ use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 
 use Sunhill\ORM\Tests\Testobjects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
 
 class ObjectMigrateTest extends DatabaseTestCase
 {
@@ -52,10 +53,10 @@ class ObjectMigrateTest extends DatabaseTestCase
     }
 
     public function testRemovedField1() {
-        DB::statement('drop table if exists testA');
-        DB::statement('create table testA (id int primary key,testint int,testchar varchar(100),additional int)');
-        testA::migrate();
-        $test = new testA();
+        DB::statement('drop table if exists dummies');
+        DB::statement('create table dummies (id int primary key,testint int,testchar varchar(100),additional int)');
+        Dummy::migrate();
+        $test = new Dummy();
         $test->testint = 123;
         $test->commit();
         
@@ -149,16 +150,15 @@ class ObjectMigrateTest extends DatabaseTestCase
     }
     
     public function testPassthru() {
-        DB::statement('drop table if exists testE');
-        DB::statement("create table testE (id int primary key)");
-        testE::migrate();
-        $test = new testE();
+        DB::statement('drop table if exists referenceonlies');
+        ReferenceOnly::migrate();
+        $test = new ReferenceOnly();
         $dummy = new Dummy;
         $dummy->dummyint = 2;
-        $test->testfield[] = $dummy;
+        $test->testoarray[] = $dummy;
         $test->commit();
         Objects::flushCache();
         $read = Objects::load($test->getID());
-        $this->assertEquals($read->testfield[0]->dummyint,2);
+        $this->assertEquals($read->testoarray[0]->dummyint,2);
     }
 }

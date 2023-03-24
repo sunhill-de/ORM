@@ -38,32 +38,62 @@ class ObjectMigrator
         if ($class_name == 'object') {
             return; // Dont migrate object because its done with migrate:fresh
         }
+        
+        $this->storeInformations($class_name);
+        $this->migrateTable();
+    }
+    
+    /**
+     * Stores the important information for later work
+     * 
+     * @param string $class_name
+     * 
+     * Test: tests/Unit/Objects/Utils/ObjectMigratorTest::testStoreInformations
+     */
+    protected function storeInformations(string $class_name)
+    {
         $this->class_name = $class_name;
         $this->class_namespace = Classes::getNamespaceOfClass($class_name);
         $this->class_tablename = Classes::getTableOfClass($class_name);
         
         // Initialize the properties otherwise we can't access them
-        $this->class_namespace::initializeProperties();
-            
+        $this->class_namespace::initializeProperties();        
+    }
+    
+    /**
+     * If the table already exists, check if we have to change it otherwise
+     * create the table from scratch
+     * 
+     * Test: tests/Unit/Objects/Utils/ObjectMigratorTest::testMigrateTable
+     */
+    protected function migrateTable()
+    {
         if ($this->tableExists()) {
-            // If the table already exsists, check if we have to change it
-            $current = $this->getCurrentProperties();
-            $database = $this->getDatabaseProperties();
-            $removed = $this->removeColumns($current,$database);
-            $added = $this->addColumns($current,$database);
-            $altered = $this->alterColums($current,$database);
-            $this->postMigration($added,$removed,$altered);
+            $this->fixTable();
         } else {
             // If the table doesn't exists, create it
             $this->createTable();
-        }
+        }        
+    }
+
+    protected function fixTable()
+    {
+        // If the table already exsists, check if we have to change it
+        $current = $this->getCurrentProperties();
+        $database = $this->getDatabaseProperties();
+        $removed = $this->removeColumns($current,$database);
+        $added = $this->addColumns($current,$database);
+        $altered = $this->alterColums($current,$database);
+        $this->postMigration($added,$removed,$altered);        
     }
     
     /**
      * Check if the table of this object exists at all
      * @return boolean true, of the table exists otherwise false
+     * 
+     * Test: tests/Unit/Objects/Utils/ObjectMigratorTest::testTableExists
      */
-    private function tableExists(): bool
+    protected function tableExists(): bool
     {
         return Schema::hasTable($this->class_tablename);
     }
@@ -143,10 +173,12 @@ class ObjectMigrator
      */
     private function getDatabaseProperties() 
     {
-        $fields = DB::select("SHOW COLUMNS FROM ".$this->class_tablename);
+        $fields = Schema::getColumnListing($this->class_tablename);
         $result = array();
         foreach ($fields as $field) {
-            $result[$field->Field] = ['type'=>$field->Type,'null'=>$field->Null];
+            $result[$field] = [
+                'type'=>DB::connection()->getDoctrineColumn($this->class_tablename, $field)->getType(),
+                'null'=>true];
         }
         return $result;
     }
