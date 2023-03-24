@@ -1,17 +1,15 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Feature;
+namespace Sunhill\ORM\Tests\Feature\Objects;
 
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\Dummy;
-use Sunhill\ORM\Tests\Objects\ReferenceOnly;
-use Sunhill\ORM\Facades\Tags;
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Tests\DatabaseTestCase;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Tags;
+use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 
-class RegressionTest extends DBTestCase
+class RegressionTest extends DatabaseTestCase
 {
     public function testRegeression1() {
        $test = new ReferenceOnly();
@@ -24,7 +22,6 @@ class RegressionTest extends DBTestCase
 	   $test->testobject = $obj1;
 	   $test->testoarray[] = $obj2;
 	   $test->testoarray[] = $obj3;
-	   $test->testint = 666;
 	   $test->commit();
        
 	   Objects::flushCache();

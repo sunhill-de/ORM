@@ -6,11 +6,11 @@
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2021-10-05
- * Localization: unknown
- * Documentation: unknown
+ * Reviewstatus: 2023-03-23
+ * Localization: not necessary
+ * Documentation: complete
  * Tests: tests/Unit/Managers/ManagerClassesTest.php
- * Coverage: unknown
+ * Coverage: 98,8% (2023-03-23)
  */
 namespace Sunhill\ORM\Managers;
 
