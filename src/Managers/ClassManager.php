@@ -166,7 +166,7 @@ class ClassManager
      * 
      * Test: testRegisterClass*
      */
-    public function registerClass(string $classname): bool 
+    public function registerClass(string $classname, bool $ignore_duplicate = false): bool 
     {
         if (!class_exists($classname)) {
             throw new ORMException("The class '$classname' is not accessible.");
@@ -174,7 +174,11 @@ class ClassManager
         } 
         $information = $this->buildClassInformation($classname);
         if (isset($this->classes[$information['name']])) {
-            throw new ORMException("The class '$classname' is already registered.");
+            if ($ignore_duplicate) {
+                return $this->classes[$information['name']]; 
+            } else {
+                throw new ORMException("The class '$classname' is already registered.");
+            } 
         }
         $this->classes[$information['name']] = $information;
         return true;

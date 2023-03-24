@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Tests\Database\Seeders\DatabaseSeeder;
+use Sunhill\ORM\Tests\Testobjects\CalcClass;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\DummyChild;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
@@ -46,6 +47,7 @@ class DatabaseTestCase extends TestCase
         Classes::registerClass(ReferenceOnly::class);
         Classes::registerClass(SecondLevelChild::class);
         Classes::registerClass(ThirdLevelChild::class);
+        Classes::registerClass(CalcClass::class);
     }
         
 }
