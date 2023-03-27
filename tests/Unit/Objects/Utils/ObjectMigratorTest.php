@@ -30,4 +30,15 @@ class ObjectMigratorTest extends DatabaseTestCase
         $this->setProtectedProperty($test, 'class_tablename', 'notexisting');
         $this->assertFalse($this->callProtectedMethod($test, 'tableExists'));
     }
+    
+    /**
+     * Tests: ObjectMigrator::getTypeOfTableColumn
+     */
+    public function testGetTypeOfTableColumn()
+    {
+        $test = new ObjectMigrator();
+        $this->setProtectedProperty($test, 'class_tablename', 'objects');
+        $this->assertEquals('integer', $this->callProtectedMethod($test, 'getTypeOfTableColumn',['id']));        
+    }
+    
 }

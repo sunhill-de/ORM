@@ -83,6 +83,7 @@ class ObjectMigrator
         $database = $this->getDatabaseProperties();
         $removed = $this->removeColumns($current,$database);
         $added = $this->addColumns($current,$database);
+        
         $altered = $this->alterColums($current,$database);
         $this->postMigration($added,$removed,$altered);        
     }
@@ -168,16 +169,32 @@ class ObjectMigrator
     }
     
     /**
+     * Returns the Type of the given table column
+     * 
+     * @param string $column
+     * @return string
+     * 
+     * Test: tests/Unit/Objects/Utils/ObjectMigratorTest::testGetTypeOfTableColumn
+     */
+    protected function getTypeOfTableColumn(string $column)
+    {
+        return DB::getSchemaBuilder()->getColumnType($this->class_tablename, $column); 
+    }
+    
+    /**
      * Return the current properties of the database
      * @return NULL[][]
      */
-    private function getDatabaseProperties() 
+    protected function getDatabaseProperties() 
     {
         $fields = Schema::getColumnListing($this->class_tablename);
         $result = array();
         foreach ($fields as $field) {
+            if ($field == 'id') {
+                continue;
+            }
             $result[$field] = [
-                'type'=>DB::connection()->getDoctrineColumn($this->class_tablename, $field)->getType(),
+                'type'=>$this->getTypeOfTableColumn($field),
                 'null'=>true];
         }
         return $result;
@@ -234,7 +251,7 @@ class ObjectMigrator
             if (array_key_exists($name,$database)) {
                 $type = self::mapType($info);
                 if ($type !== $database[$name]['type']) {
-                    $statement = 'alter table '.$this->class_tablename.' change column '.$name.' '.$name.' '.$type;
+                    $statement = 'alter table '.$this->class_tablename.' modify column '.$name.' '.$name.' '.$type;
                     DB::statement($statement);
                     $result[] = $name;
                 }
