@@ -15,7 +15,7 @@ use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 
-class ManagerClassesTest extends TestCase
+class ClassManagerTest extends TestCase
 {
  
     /**
