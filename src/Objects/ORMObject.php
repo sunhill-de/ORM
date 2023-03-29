@@ -442,7 +442,7 @@ class ORMObject extends PropertiesHaving
 	        }
 	    }
 	    if (!$allowed) {
-	        throw new \Sunhill\ORM\Properties\AttributeException(__("The attribute ':attribute' is not allowed for this object.",['attribute'=>$attribute->name]));
+	        throw new AttributeException("The attribute '".$attribute->name."' is not allowed for this object.");
 	    }	    
 	}
 	
