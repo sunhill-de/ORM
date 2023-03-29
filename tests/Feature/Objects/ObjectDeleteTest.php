@@ -6,15 +6,15 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\TestChild;
-use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 
-class ObjectDeleteTest extends DBTestCase
+class ObjectDeleteTest extends DatabaseTestCase
 {
     function testCantLoad() {
-        $test = new TestChild;
+        $test = new TestChild();
         $test->parentchar='ABC';
         $test->parentint=123;
         $test->parentfloat=1.23;
@@ -23,6 +23,7 @@ class ObjectDeleteTest extends DBTestCase
         $test->parentdate='2011-01-01';
         $test->parenttime='11:11:11';
         $test->parentenum='testA';
+        $test->nosearch=12;
         $test->childchar='ABC';
         $test->childint=123;
         $test->childfloat=1.23;
