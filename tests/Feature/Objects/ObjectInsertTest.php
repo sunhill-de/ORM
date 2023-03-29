@@ -2,14 +2,13 @@
 
 namespace Sunhill\ORM\Tests\Feature;
 
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
+use Sunhill\ORM\Tests\Testobjects\TestParent;
 
-class ObjectInsertTest extends DBTestCase
+class ObjectInsertTest extends DatabaseTestCase
 {
     
     /**
@@ -37,15 +36,15 @@ class ObjectInsertTest extends DBTestCase
     
     public function InsertProvider() {
         return [
-            ["\\Sunhill\\ORM\\Tests\\Objects\\Dummy",['dummyint'=>666],null,'dummyint',666],
-            ["\\Sunhill\\ORM\\Tests\\Objects\\Dummy",['dummyint'=>666],function($object){
+            [Dummy::class,['dummyint'=>666],null,'dummyint',666],
+            [Dummy::class,['dummyint'=>666],function($object){
                 $object->tags->stick('TagA');
                 $object->tags->stick('TagB');
             },'tags[1]','TagB'],
-            ["\\Sunhill\\ORM\\Tests\\Objects\\Dummy",['dummyint'=>666],function($object){
+            [Dummy::class,['dummyint'=>666],function($object){
                 $object->int_attribute = 898;
             },'int_attribute',898],
-            ['\\Sunhill\\ORM\\Tests\\Objects\\TestParent',
+            [TestParent::class,
             [   'parentchar'=>'ABC',
                 'parentint'=>123,
                 'parentfloat'=>1.23,
@@ -53,10 +52,11 @@ class ObjectInsertTest extends DBTestCase
                 'parentdatetime'=>'2001-01-01 01:01:01',
                 'parentdate'=>'2011-01-01',
                 'parenttime'=>'11:11:11',
-                'parentenum'=>'testA'
+                'parentenum'=>'testA',
+                'nosearch'=>1,
             ],null,'parentchar','ABC'],
             
-            ['\\Sunhill\\ORM\\Tests\\Objects\\TestParent',
+            [TestParent::class,
             [   'parentchar'=>'ABC',
                 'parentint'=>123,
                 'parentfloat'=>1.23,
@@ -64,13 +64,14 @@ class ObjectInsertTest extends DBTestCase
                 'parentdatetime'=>'2001-01-01 01:01:01',
                 'parentdate'=>'2011-01-01',
                 'parenttime'=>'11:11:11',
-                'parentenum'=>'testA'
+                'parentenum'=>'testA',
+                'nosearch'=>1,
             ],function($object){
                 $dummy = new Dummy();
                 $dummy->dummyint = 333;
                 $object->parentobject = $dummy;
             },'parentobject->dummyint',333],
-            ['\\Sunhill\\ORM\\Tests\\Objects\\TestParent',
+            [TestParent::class,
                 [   'parentchar'=>'ABC',
                     'parentint'=>123,
                     'parentfloat'=>1.23,
@@ -78,7 +79,8 @@ class ObjectInsertTest extends DBTestCase
                     'parentdatetime'=>'2001-01-01 01:01:01',
                     'parentdate'=>'2011-01-01',
                     'parenttime'=>'11:11:11',
-                    'parentenum'=>'testA'
+                    'parentenum'=>'testA',
+                    'nosearch'=>1,
                 ],function($object){
                     $dummy1 = new Dummy();
                     $dummy1->dummyint = 333;
@@ -87,21 +89,7 @@ class ObjectInsertTest extends DBTestCase
                     $object->parentoarray[] = $dummy1;
                     $object->parentoarray[] = $dummy2;
                 },'parentoarray[1]->dummyint',444],
-                ['\\Sunhill\\ORM\\Tests\\Objects\\TestParent',
-                    [   'parentchar'=>'ABC',
-                        'parentint'=>123,
-                        'parentfloat'=>1.23,
-                        'parenttext'=>'ABC DEF',
-                        'parentdatetime'=>'2001-01-01 01:01:01',
-                        'parentdate'=>'2011-01-01',
-                        'parenttime'=>'11:11:11',
-                        'parentenum'=>'testA'
-                    ],function($object){
-                        $object->parentsarray[] = 'E1';
-                        $object->parentsarray[] = 'E2';
-                    },'parentsarray[1]','E2'],
-                   
-                    ['\\Sunhill\\ORM\\Tests\\Objects\\TestChild',
+                [TestParent::class,
                     [   'parentchar'=>'ABC',
                         'parentint'=>123,
                         'parentfloat'=>1.23,
@@ -110,6 +98,23 @@ class ObjectInsertTest extends DBTestCase
                         'parentdate'=>'2011-01-01',
                         'parenttime'=>'11:11:11',
                         'parentenum'=>'testA',
+                        'nosearch'=>1,                        
+                    ],function($object){
+                        $object->parentsarray[] = 'E1';
+                        $object->parentsarray[] = 'E2';
+                    },'parentsarray[1]','E2'],
+                   
+                    [TestChild::class,
+                    [   'parentchar'=>'ABC',
+                        'parentint'=>123,
+                        'parentfloat'=>1.23,
+                        'parenttext'=>'ABC DEF',
+                        'parentdatetime'=>'2001-01-01 01:01:01',
+                        'parentdate'=>'2011-01-01',
+                        'parenttime'=>'11:11:11',
+                        'parentenum'=>'testA',
+                        'nosearch'=>1,
+                        
                         'childchar'=>'CCC',
                         'childint'=>666,
                         'childfloat'=>3.33,
@@ -120,7 +125,7 @@ class ObjectInsertTest extends DBTestCase
                         'childenum'=>'testB'
                     ],null,'childdate','2011-02-02'],
                     
-                    ['\\Sunhill\\ORM\\Tests\\Objects\\TestChild',
+                    [TestChild::class,
                         [   'parentchar'=>'ABC',
                             'parentint'=>123,
                             'parentfloat'=>1.23,
@@ -129,6 +134,8 @@ class ObjectInsertTest extends DBTestCase
                             'parentdate'=>'2011-01-01',
                             'parenttime'=>'11:11:11',
                             'parentenum'=>'testA',
+                            'nosearch'=>1,
+                            
                             'childchar'=>'CCC',
                             'childint'=>666,
                             'childfloat'=>3.33,
@@ -143,7 +150,7 @@ class ObjectInsertTest extends DBTestCase
                             $object->childsarray[] = 'CE1';
                             $object->childsarray[] = 'CE2';
                         },'childsarray[1]','CE2'],
-                        ['\\Sunhill\\ORM\\Tests\\Objects\\TestChild',
+                        [TestChild::class,
                             [   'parentchar'=>'ABC',
                                 'parentint'=>123,
                                 'parentfloat'=>1.23,
@@ -152,6 +159,8 @@ class ObjectInsertTest extends DBTestCase
                                 'parentdate'=>'2011-01-01',
                                 'parenttime'=>'11:11:11',
                                 'parentenum'=>'testA',
+                                'nosearch'=>1,
+                                
                                 'childchar'=>'CCC',
                                 'childint'=>666,
                                 'childfloat'=>3.33,
@@ -167,7 +176,7 @@ class ObjectInsertTest extends DBTestCase
                                 $object->childsarray[] = 'CE2';
                             },'parentsarray[1]','E2'],
                             
-                            ['\\Sunhill\\ORM\\Tests\\Objects\\TestChild',
+                            [TestChild::class,
                                 [   'parentchar'=>'ABC',
                                     'parentint'=>123,
                                     'parentfloat'=>1.23,
@@ -176,6 +185,8 @@ class ObjectInsertTest extends DBTestCase
                                     'parentdate'=>'2011-01-01',
                                     'parenttime'=>'11:11:11',
                                     'parentenum'=>'testA',
+                                    'nosearch'=>1,
+                                    
                                     'childchar'=>'CCC',
                                     'childint'=>666,
                                     'childfloat'=>3.33,
@@ -199,7 +210,7 @@ class ObjectInsertTest extends DBTestCase
                                     $object->childoarray[] = $dummy4;
                                 },'parentoarray[1]->dummyint',2222],
                                 
-                                ['\\Sunhill\\ORM\\Tests\\Objects\\TestChild',
+                                [TestChild::class,
                                     [   'parentchar'=>'ABC',
                                         'parentint'=>123,
                                         'parentfloat'=>1.23,
@@ -208,6 +219,8 @@ class ObjectInsertTest extends DBTestCase
                                         'parentdate'=>'2011-01-01',
                                         'parenttime'=>'11:11:11',
                                         'parentenum'=>'testA',
+                                        'nosearch'=>1,
+                                        
                                         'childchar'=>'CCC',
                                         'childint'=>666,
                                         'childfloat'=>3.33,
@@ -232,7 +245,7 @@ class ObjectInsertTest extends DBTestCase
                                     },'childoarray[1]->dummyint',4444],
                                     ];
     }
-    
+    /**
     protected function getField($loader,$fieldname) {
         $match = '';
         if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]->(?P<subfield>\w+)/',$fieldname,$match)) {
@@ -258,4 +271,5 @@ class ObjectInsertTest extends DBTestCase
         }
     }
     
+    */
 }
