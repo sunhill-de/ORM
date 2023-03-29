@@ -5,13 +5,13 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Properties\AttributeException;
 
-class ObjectAttributeTest extends DBTestCase
+class ObjectAttributeTest extends DatabaseTestCase
 {
     
     /**
