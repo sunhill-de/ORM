@@ -2,17 +2,15 @@
 
 namespace Sunhill\ORM\Tests\Feature;
 
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Tests\DatabaseTestCase;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 
-class ObjectReReadStampsTest extends DBTestCase
+class ObjectReReadStampsTest extends DatabaseTestCase
 {
     
     public function testTimestamps() {
-        $add = new \Sunhill\ORM\Tests\Objects\Dummy();
+        $add = new Dummy();
         $add->dummyint = 123;
         $add->commit();
         Objects::flushCache();
