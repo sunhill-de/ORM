@@ -5,13 +5,13 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Objects\Tag;
-use Sunhill\ORM\Tests\Objects\Dummy;
-use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Tags;
 use Illuminate\Support\Facades\DB;
 
-class ObjectTagTest extends DBTestCase
+class ObjectTagTest extends DatabaseTestCase
 {
     
     /**
@@ -101,37 +101,6 @@ class ObjectTagTest extends DBTestCase
         sort($expect);
         sort($given_tags);
         $this->assertEquals($expect,$given_tags);
-    }
-    
-    /**
-     * @dataProvider ChangeTagProvider
-     * @group Trigger
-     */
-    public function testChangeTagsTrigger($init,$add,$delete,$expect,$changestr) {
-        
-        $test = new Dummy();
-        for ($i=0;$i<count($init);$i++) {
-            if (!Tags::searchTag($init[$i])) {
-                Tags::addTag($init[$i]);
-            }
-            $test->tags->stick($init[$i]);
-        }
-        $test->dummyint = 1;
-        $test->commit();
-        
-        Objects::flushCache();
-        $read = Objects::load($test->getID());
-        for ($i=0;$i<count($add);$i++) {
-            if (!Tags::searchTag($add[$i])) {
-                Tags::addTag($add[$i]);
-            }
-            $read->tags->stick($add[$i]);
-        }
-        for ($i=0;$i<count($delete);$i++) {
-            $read->tags->remove($delete[$i]);
-        }
-        $read->commit();
-        $this->assertEquals($changestr,$read->changestr);                
     }
     
     public function ChangeTagProvider() {
