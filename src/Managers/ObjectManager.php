@@ -79,7 +79,7 @@ class ObjectManager
 
 		private function getCountForClass(string $class): int 
 		{
-			$count = DB::table($class::$table_name)->select(DB::raw('count(*) as count'))->first();
+			$count = DB::table($class::getInfo('table'))->select(DB::raw('count(*) as count'))->first();
 			return $count->count;
 		}
 
