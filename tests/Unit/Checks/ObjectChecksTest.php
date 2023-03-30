@@ -45,11 +45,11 @@ class ObjectChecksTest extends CheckTestCase
     public function testRepairableProblems($check, $destroy_callback)
     {
         $checker = new ObjectChecks();
-        $this->assertEquals('passed',$this->runCheck($checker, $check, false));
+        $this->assertEquals('passed',$this->runCheck($checker, $check, false),'Initial sanity check failed.');
         $destroy_callback();
         $this->assertEquals('failed',$this->runCheck($checker, $check, false));
         $this->assertEquals('repaired',$this->runCheck($checker, $check, true));
-        $this->assertEquals('passed',$this->runCheck($checker, $check, false));
+        $this->assertEquals('passed',$this->runCheck($checker, $check, false),'Repaired sanity check failed.');
     }
     
     /**
