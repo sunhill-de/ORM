@@ -5,32 +5,23 @@ namespace Sunhill\ORM\Tests\Feature;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 
 class HookingObject extends ORMObject  {
 
-    public static $table_name = 'hookings';
     
     public static $hook_str = '';
     
-    public static $object_infos = [
-        'name'=>'HookingObject',            // A repetition of static:$object_name @todo see above
-        'table'=>'hookings',         // A repitition of static:$table_name
-        'name_s'=>'Hookingtest A object',   // A human readable name in singular
-        'name_p'=>'Hookingtest A objects',  // A human readable name in plural
-        'description'=>'For hooking tests only',
-        'options'=>0,               // Reserved for later purposes
-    ];
     protected static function setupProperties() {
         parent::setupProperties();
         self::integer('hooking_int')->setDefault(0);
         self::varchar('hookstate')->setDefault('');
-        self::object('ofield')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
+        self::object('ofield')->setAllowedObjects(['dummy']);
         self::arrayofstrings('strarray');
-        self::arrayOfObjects('objarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
+        self::arrayOfObjects('objarray')->setAllowedObjects(['dummy']);
     }
     
     protected function setupHooks() {
@@ -46,7 +37,7 @@ class HookingObject extends ORMObject  {
                 $params['TO'] = Objects::load($params['TO']);
             }
         }
-        if (is_a($params['FROM'],'\\Sunhill\\ORM\\Tests\\Objects\\Dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Tests\\Objects\\Dummy') ) {
+        if (is_a($params['FROM'],Dummy::class) || is_a($params['TO'],Dummy::class) ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
             $this->hookstate = '(ofield:'.$from.'=>'.$to.')';
@@ -64,7 +55,7 @@ class HookingObject extends ORMObject  {
                 $params['TO'] = Objects::load($params['TO']);
             }
         }
-        if (is_a($params['FROM'],'\\Sunhill\\ORM\\Tests\\Objects\\Dummy') || is_a($params['TO'],'\\Sunhill\\ORM\\Tests\\Objects\\Dummy') ) {
+        if (is_a($params['FROM'],Dummy::class) || is_a($params['TO'],Dummy::class) ) {
             $from = empty($params['FROM'])?'NULL':$params['FROM']->dummyint;
             $to = empty($params['TO'])?'NULL':$this->ofield->dummyint;
             self::$hook_str = '(ofield:'.$from.'=>'.$to.')';
@@ -147,27 +138,27 @@ class HookingObject extends ORMObject  {
         $hilf = $this->hookstate;
         return $hilf;
     }
+   
+    protected static function setupInfos()
+    {
+        static::addInfo('name', 'HookingObject');
+        static::addInfo('table', 'hookings');
+        static::addInfo('name_s', 'Hookingtest parent object');
+        static::addInfo('name_p', 'Hookingtest parent objects');
+        static::addInfo('description', 'For testing');
+        static::addInfo('options', 0);
+    }
     
 }
 
 class HookingChild extends HookingObject {
  
-    public static $object_infos = [
-        'name'=>'HookingChild',            // A repetition of static:$object_name @todo see above
-        'table'=>'childhookings',         // A repitition of static:$table_name
-        'name_s'=>'Hookingtest A object',   // A human readable name in singular
-        'name_p'=>'Hookingtest A objects',  // A human readable name in plural
-        'description'=>'For hooking tests only',
-        'options'=>0,               // Reserved for later purposes
-    ];
     public static $child_hookstr;
-    
-    public static $table_name = 'childhookings';
-    
+        
     protected static function setupProperties() {
         parent::setupProperties();
         self::integer('childhooking_int')->setDefault(0);
-        self::arrayOfObjects('childhooking_oarray')->setAllowedObjects(['\\Sunhill\\ORM\\Tests\\Objects\\Dummy']);
+        self::arrayOfObjects('childhooking_oarray')->setAllowedObjects(['dummy']);
     }
     
     protected function setupHooks() {
@@ -198,18 +189,30 @@ class HookingChild extends HookingObject {
         }
         self::$child_hookstr = $hilf.')';
     }
+ 
+    protected static function setupInfos()
+    {
+        static::addInfo('name', 'HookingChild');
+        static::addInfo('table', 'childhookings');
+        static::addInfo('name_s', 'Hookingtest child object');
+        static::addInfo('name_p', 'Hookingtest child objects');
+        static::addInfo('description', 'For testing');
+        static::addInfo('options', 0);
+    }
     
 }
 
-class ObjectHookTest extends DBTestCase
+class ObjectHookTest extends DatabaseTestCase
 {
     protected function setupHookTables() {
         DB::statement("drop table if exists hookings ");
         DB::statement("drop table if exists childhookings ");
         DB::statement("create table hookings (id int primary key,hooking_int int,hookstate varchar(100))");       
         DB::statement("create table childhookings (id int primary key,childhooking_int int)");
+        Classes::flushClasses();
         Classes::registerClass(HookingObject::class);
         Classes::registerClass(HookingChild::class);
+        Classes::registerClass(Dummy::class);
     }
     
     /**
