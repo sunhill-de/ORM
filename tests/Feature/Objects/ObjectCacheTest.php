@@ -6,11 +6,12 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 
-class ObjectCacheTest extends DBTestCase
+class ObjectCacheTest extends DatabaseTestCase
 {
     
     public function testGetClassOf() {
@@ -27,7 +28,7 @@ class ObjectCacheTest extends DBTestCase
     public function testIsCached() {
         $first  = Objects::load(1);
         if (!$first) {
-            $this->fail('Objekt nicht gefunden.');
+            $this->fail('Objekt not found.');
         }
         $this->assertTrue(Objects::isCached(1));        
     }
