@@ -45,6 +45,7 @@ class ObjectsTableSeeder extends Seeder {
 	        ['id'=>29,'classname'=>"referenceonly",'uuid'=>'dd23','created_at'=>'2019-05-15 10:00:00'],
 	        ['id'=>30,'classname'=>"referenceonly",'uuid'=>'ee123','created_at'=>'2019-05-15 10:00:00'],
 	        
+	        ['id'=>31,'classname'=>'calcclass','uuid'=>'ff123','created_at'=>'2019-05-15 10:00:00'],
 	    ]);
 	}
 }

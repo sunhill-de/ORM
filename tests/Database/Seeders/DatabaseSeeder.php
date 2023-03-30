@@ -29,5 +29,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TestSimpleChildrenTableSeeder::class);
         $this->call(ReferenceOnliesTableSeeder::class);
         $this->call(SecondLevelChildrenTableSeeder::class);
+        $this->call(CalcClassSeeder::class);
     }
 }
