@@ -20,14 +20,14 @@ class TestChild extends TestParent
 	    self::integer('childint')->searchable();
 	    self::varchar('childchar')->searchable()->nullable();
 	    self::float('childfloat')->searchable();
-	    self::text('childtext');
-	    self::datetime('childdatetime');
-	    self::date('childdate');
-		self::time('childtime');
-		self::enum('childenum')->setValues(['testA','testB','testC']);
-		self::object('childobject')->setAllowedObjects(['dummy'])->setDefault(null);;
-		self::arrayofstrings('childsarray');
-		self::arrayOfObjects('childoarray')->setAllowedObjects(['dummy']);
+	    self::text('childtext')->searchable();
+	    self::datetime('childdatetime')->searchable();
+	    self::date('childdate')->searchable();
+		self::time('childtime')->searchable();
+		self::enum('childenum')->setValues(['testA','testB','testC'])->searchable();
+		self::object('childobject')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
+		self::arrayofstrings('childsarray')->searchable();
+		self::arrayOfObjects('childoarray')->setAllowedObjects(['dummy'])->searchable();
 		self::calculated('childcalc')->searchable();
     }
 
