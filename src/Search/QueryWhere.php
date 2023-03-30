@@ -112,20 +112,23 @@ abstract class QueryWhere extends QueryAtom {
         }
     }
     
+    protected function assembleIn()
+    {
+         $result = ' in (';
+         $first = true;
+         foreach ($this->value as $value) {
+             $result .= ($first?'':',').$this->escape($value);
+             $first = false;
+         }         
+         return $result.')';
+    }
+    
     protected function getThisWherePart() 
     {
         if ($this->relation == 'in') {
-            $result = $this->getQueryPrefix().' '.$this->alias.'.'.$this->field.' in (';
-            $first = true;
-            foreach ($this->value as $value) {
-                $result .= ($first?'':',').$this->escape($value);
-                $first = false;
-            }
-            $result .= ')';
-        } else {
-            $result = $this->getQueryPrefix().' '.$this->alias.'.'.$this->field.' '.$this->relation." ".$this->escape($this->value);
-        }
-        return $result;
+            return $this->getQueryPrefix().' '.$this->alias.'.'.$this->field.$this->assembleIn();
+        } 
+        return $this->getQueryPrefix().' '.$this->alias.'.'.$this->field.' '.$this->relation." ".$this->escape($this->value);
     }
     
     public function getQueryPart() 
