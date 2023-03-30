@@ -128,14 +128,17 @@ class ObjectSearchTest extends DatabaseTestCase
             ["TestParent",'parentint','=',123,[10,12,17,26]],
             ["TestParent",'parentint','=',111,[9]],
             ["TestParent",'parentint','=',5,[]],
-            ["TestParent",'parentint','<',300,[9,10,11,12,13,17,26]],
+            ["TestParent",'parentint','<',234,[9,10,11,12,17,26]],
+            ["TestParent",'parentint','<=',234,[9,10,11,12,13,17,26]],
             ["TestParent",'parentint','>',800,[19,25]],
+            ["TestParent",'parentint','>=',800,[18,19,25]],
             ["TestParent","parentint", "<>", 123, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
             ["TestParent","parentint", "in", [111,123],[9,10,12,17,26]],            
             ["TestChild", 'parentint','=',123,[17]],
             ["TestChild", 'parentint','=',5,[]],
             ["TestChild", 'parentint','<',400,[17,23]],
             ["TestChild", 'parentint','>',700,[18,19,24]],
+            ["TestChild", "parentint", "!=", 123, [18,19,20,21,22,23,24]],
             ["TestChild", "parentint", "<>", 123, [18,19,20,21,22,23,24]],
             ["TestChild", "parentint", "in", [800,123],[17,18]],            
             ["TestChild", 'childint','=',801,[18]],
@@ -148,8 +151,10 @@ class ObjectSearchTest extends DatabaseTestCase
             ["TestParent",'parentfloat','=',1.23,[10,12,17,26]],
             ["TestParent",'parentfloat','=',1.11,[9]],
             ["TestParent",'parentfloat','=',5,[]],
-            ["TestParent",'parentfloat','<',3,[9,10,11,12,13,17,26]],
+            ["TestParent",'parentfloat','<',2.34,[9,10,11,12,17,26]],
+            ["TestParent",'parentfloat','<=',2.34,[9,10,11,12,13,17,26]],
             ["TestParent",'parentfloat','>',8,[19,25]],
+            ["TestParent",'parentfloat','>=',8,[18,19,25]],
             ["TestParent","parentfloat", "<>", 1.23, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
             ["TestParent","parentfloat", "in", [1.11,1.23],[9,10,12,17,26]],
             ["TestChild", 'parentfloat','=',1.23,[17]],
@@ -168,9 +173,12 @@ class ObjectSearchTest extends DatabaseTestCase
             ["TestParent",'parentchar','=',"DEF",[10,13,18,21,25]],
             ["TestParent",'parentchar','=',"EEE",[12]],
             ["TestParent",'parentchar','=',"WWW",[]],
-            ["TestParent",'parentchar','<',"CCC",[9,23]],
-            ["TestParent",'parentchar','>',"YYY",[19,20]],
+            ["TestParent",'parentchar','<',"DEF",[9,23]],
+            ["TestParent",'parentchar','<=',"DEF",[9,10,13,18,21,23,25]],
+            ["TestParent",'parentchar','>',"XZT",[19,20]],
+            ["TestParent",'parentchar','>=',"XZT",[15,19,20]],
             ["TestParent","parentchar", "<>", "DEF", [9,11,12,14,15,17,19,20,22,23]],
+            ["TestParent","parentchar", "!=", "DEF", [9,11,12,14,15,17,19,20,22,23]],
             ["TestParent","parentchar", "in", ["DEF","ABC"],[9,10,13,18,21,25]],
             ["TestParent","parentchar", "begins with", "A",[9,23]],
             ["TestParent","parentchar", "begins with", "AB",[9]],
@@ -180,7 +188,7 @@ class ObjectSearchTest extends DatabaseTestCase
             ["TestParent","parentchar", "ends with", "K",[]],            
             ["TestParent","parentchar", "consists", "B",[9]],
             ["TestParent","parentchar", "consists", "R",[17,22,23]],
-            ["TestParent","parentchar", "consists", "K",[]],                        
+            ["TestParent","parentchar", "consists", "K",[]],
             ["TestChild",'parentchar','=',"DEF",[18,21]],
             ["TestChild",'parentchar','=',"ZZZ",[19]],
             ["TestChild",'parentchar','=',"WWW",[]],
@@ -212,7 +220,7 @@ class ObjectSearchTest extends DatabaseTestCase
             ["TestChild","childchar", "ends with", "K",[]],
             ["TestChild","childchar", "consists", "O",[20]],
             ["TestChild","childchar", "consists", "W",[17,22,23]],
-            ["TestChild","childchar", "consists", "K",[]],
+            ["TestChild","childchar", "consists", "K",[]],            
             // enum 
             ["TestParent", "parentenum", "=", "testA", [12]],
             ["TestParent", "parentenum", "=", "testB", [10,15,18,22,26]],
@@ -295,19 +303,49 @@ class ObjectSearchTest extends DatabaseTestCase
             ["TestChild", "childsarray", "none of", ["ABCD","Yea","OPQRSTU"], [19,21,22,23,24]],
             ["TestChild", "childsarray", "all of", ["Yea","Yupp"], [18]],
             ["TestChild", "childsarray", "empty", null, [19,21,22,23]],
-                        
-            ["TestParent",'Aobject','=',1,[7,13]],
-            ["TestParent","Aobject",'=',2,[8]],
-            ["TestChild","Aobject","=",1,[13]],
-            ["TestParent","Aobject","in",[1,2],[7,8,13]],
-            ["TestParent","Aobject","=",null,[5,6,9,10,11,12,14,15]],
+            // Object fields                        
+            ["TestParent",'parentobject','=',1,[9]],
+            ["TestParent","parentobject","=",3,[17]],
+            ["TestParent","parentobject",'=',4,[10,12,18]],
+            ["TestParent","parentobject",'=',null,[13,14,15,16,21,22,23,24,26]],
+            ["TestParent","parentobject","!=",null,[9,10,11,12,17,18,19,20,25]],
+            ["TestParent","parentobject","in",[1,3,4],[9,10,12,17,18]],            
+            ["TestChild","parentobject","=",3,[17]],
+            ["TestChild","parentobject",'=',4,[18]],
+            ["TestChild","parentobject",'=',null,[21,22,23,24]],
+            ["TestChild","parentobject","!=",null,[17,18,19,20]],
+            ["TestChild","parentobject","in",[1,3,4],[17,18]],            
+            ["TestChild","childobject","=",3,[17,19]],
+            ["TestChild","childobject",'=',4,[18]],
+            ["TestChild","childobject",'=',null,[20,21,22,23,24]],
+            ["TestChild","childobject","!=",null,[17,18,19]],
+            ["TestChild","childobject","in",[3,4],[17,18,19]],
+            // array of objects
+            ["TestParent", "parentoarray","has",3,[9,10,13,18]],
+            ["TestParent", "parentoarray","has",8,[]], 
+            ["TestParent", "parentoarray","has",7,[11,19]],
+            ["TestParent", "parentoarray","one of",[1,2],[9,10,11,13,14,18,19]],            
+            ["TestParent", "parentoarray","all of",[1,2],[10,13,18]],
+            ["TestParent", "parentoarray","all of",[1,7],[]],
+            ["TestParent", "parentoarray","none of",[1,2,3],[12,15,16,17,20,21,22,23,24,25,26]],
+            ["TestParent", "parentoarray","empty",null,     [12,15,16,20,21,23,24,25,26]],
             
-            ["TestParent","Aoarray","has",3,[9]],
-            ["TestParent","Aoarray","has",1,[]],
-            ["TestParent","Aoarray","one of",[3,1],[9]],
-            ["TestParent","Aoarray","all of",[3,4],[9]],
-            ["TestParent","Aoarray","none of",[3,4],[5,6,7,8,10,11,12,13,14,15]],
-            ["TestChild","Boarray","empty",null,[10,11,12,14,15]],
+            ["TestChild", "parentoarray","has",3,[18]],
+            ["TestChild", "parentoarray","has",8,[]],
+            ["TestChild", "parentoarray","one of",[1,2],[18,19]],
+            ["TestChild", "parentoarray","all of",[1,2],[18]],
+            ["TestChild", "parentoarray","all of",[1,7],[]],
+            ["TestChild", "parentoarray","none of",[1,2,3],[17,20,21,22,23,24]],
+            ["TestChild", "parentoarray","empty",null,     [20,21,23,24]],
+            
+            ["TestChild", "childoarray","has",1,[20,24]],
+            ["TestChild", "childoarray","has",8,[]],
+            ["TestChild", "childoarray","one of",[3,4],[17,20]],
+            ["TestChild", "childoarray","all of",[4,5],[17]],
+            ["TestChild", "childoarray","all of",[1,7],[]],
+    //@todo no expected result        ["TestChild", "childoarray","none of",[1,2,3],[17,18,19,21,22,23,25]],
+            ["TestChild", "childoarray","empty",null,     [19,21,22,23]],
+            
         ];
     }
     
@@ -316,29 +354,32 @@ class ObjectSearchTest extends DatabaseTestCase
      */
     public function testPassObject() {
         $test = Objects::load(1);
-        $result = $this->simplify_result(\Sunhill\ORM\Tests\Objects\TestParent::search()->where('Aobject','=',$test)->get());
-        $this->assertEquals([7,13],$result);
+        $result = $this->simplify_result(TestParent::search()->where('parentobject','=',$test)->get());
+        $this->assertEquals([9],$result);
         
     }
     
+    /**
+     * @group Focus
+     */
     public function testGetFirst() {
-         $result = \Sunhill\ORM\Tests\Objects\TestParent::search()->where('parentchar','=','ABC')->first();
-        $this->assertEquals(5,$result);        
+         $result = TestParent::search()->where('parentchar','=','DEF')->first();
+        $this->assertEquals(10,$result);        
     }
     
     /**
      * @group Focus
      */
     public function testGetFirstWithOneResult() {
-        $result = \Sunhill\ORM\Tests\Objects\TestParent::search()->where('parentint','=','111')->first();
-        $this->assertEquals(5,$result);
+        $result = TestParent::search()->where('parentint','=','111')->first();
+        $this->assertEquals(9,$result);
     }
     
     /**
      * @group Focus
      */
     public function testGetFirstWithNoResult() {
-        $result = \Sunhill\ORM\Tests\Objects\TestParent::search()->where('parentint','=','666')->first();
+        $result = TestParent::search()->where('parentint','=','776')->first();
         $this->assertEquals(null,$result);
     }
     
@@ -347,61 +388,23 @@ class ObjectSearchTest extends DatabaseTestCase
      * @group complex
      */
     public function testComplexSearchIDs($searchclass,$field1,$relation1,$value1,$field2,$relation2,$value2,$expect) {
-         $classname = "\\Sunhill\\ORM\\Tests\\Objects\\".$searchclass;
+         $classname = "\\Sunhill\\ORM\\Tests\\Testobjects\\".$searchclass;
          $result = $this->simplify_result($classname::search()->where($field1,$relation1,$value1)->where($field2,$relation2,$value2)->get());
         $this->assertEquals($expect,$result);
     }
     
     public function ComplexProvider() {
         return [
-            ["TestParent",'parentint','<',300,'parentint','<>','222',[5]],
-            ["TestParent",'parentint','<',300,'parentchar','=','ABC',[5]],
-            ["TestChild",'parentint','>',300,'childint','=','602',[12,13]], 
-            ["TestParent",'tags','has','TagA','parentint','<>',222,[5]],
-            ["TestParent",'tags','has','TagA','tags','has','TagC',[6]],
-            ["TestParent",'Acalc','<>','111=ABC','tags','has','TagA',[6]],
-            ["TestParent",'Aobject','=',1,'parentint','<','502',[7]],
-            ["TestChild","Boarray","empty",null,'Asarray','has','testC',[]],
-            ["TestParent",'Asarray','has','testA','Asarray','has','testC',[8]],
+            ["TestParent",'parentint','<',200,'parentint', '<>','123',[9]],
+            ["TestParent",'parentint','=',123,'parentchar','=', 'DEF',[10]],            
+            ["TestChild", 'parentint','>',300,'childint',  '=', '777',[24]],             
+            ["TestParent",'tags','has','TagD','parentint','<',200,[9,17]],            
+            ["TestParent",'tags','has','TagA','tags','has','TagB',[17]],            
+            ["TestParent",'parentcalc','=','123A','tags','has','TagF.TagG.TagE',[10,12]],            
+            ["TestParent",'parentobject','=',2,'parentint','<','700',[20]],            
+            ["TestChild","childoarray","empty",null,'parentsarray','has not','ABCD',[19,21,22,23]],
+            ["TestParent",'parentsarray','has','HALLO','parentsarray','has','HELLO',[19]],
         ];
     }
     
-    /**
-     * @group regression
-     */
-    public function testSearcRegression() {
-        $test = new TestParent();
-        $test->unify();
-        $this->assertTrue(true);
-    }
-    
-    /**
-     * @dataProvider SearchFieldProvider
-     */
-    public function testSearchKeyfield($class,$keyfield,$expect) {
-        $classname = 'Sunhill\\ORM\\Tests\\Objects\\'.$class;
-        $search = $classname::SearchKeyfield($keyfield);
-        if ($expect == 0) {
-            $this->assertNull($search);
-        } else {
-            $this->assertEquals($search->getID(),$expect);
-        }
-    }
-    
-    public function SearchFieldProvider() {
-        return [
-            ['TestParent','111 ABC',5],
-            ['TestParent','502 GGT',12],
-            ['TestParent','999 ZZZ',0],
-            ['TestChild','601 BBB',11],
-            ['TestChild','111 ABC',10],
-            ['TestChild','603 ADD',14],
-            ['TestChild','502 GGT',0],
-        ];
-    }
-    
-    public function testSearchkeyfieldException() {
-        $this->expectException(ORMException::class);
-        Dummy::SearchKeyfield('Keyfield');
-    }
 }
