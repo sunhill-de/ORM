@@ -6,10 +6,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\Objects\Dummy;
-use Sunhill\ORM\Tests\Objects\TestParent;
-use Sunhill\ORM\Tests\Objects\TestChild;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\TestParent;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Seeder\Seeder;
@@ -35,10 +36,10 @@ class TestSeeder2 extends Seeder {
         ]);
         $this->SeedObject(TestParent::class,
             ['parentint','parentchar','parentfloat','parenttext','parentdatetime','parentdate','parenttime',
-             'parentenum','parentobject','parentsarray','parentoarray'],
+             'parentenum','parentobject','parentsarray','parentoarray','nosearch'],
             [
-                'parent1'=>[1,'A',1.1,'AA','2020-02-02 10:00:00','2020-02-03','10:01:00','testA',null,null,null],
-                'parent2'=>[2,'B',2.2,'BB','2021-02-02 10:00:00','2021-02-03','11:01:00','testB','->Dummy1',['AAA','BBB','CCC'],['->Dummy1','->Dummy2']],                
+                'parent1'=>[1,'A',1.1,'AA','2020-02-02 10:00:00','2020-02-03','10:01:00','testA',null,null,null,1],
+                'parent2'=>[2,'B',2.2,'BB','2021-02-02 10:00:00','2021-02-03','11:01:00','testB','->Dummy1',['AAA','BBB','CCC'],['->Dummy1','->Dummy2'],2],                
             ]);
     }
     
@@ -54,20 +55,20 @@ class TestSeeder3 extends Seeder {
         ]);
         $this->SeedObject(TestParent::class,
             ['parentint','parentchar','parentfloat','parenttext','parentdatetime','parentdate','parenttime',
-                'parentenum','parentobject','parentsarray','parentoarray'],
+                'parentenum','parentobject','parentsarray','parentoarray','nosearch'],
             [
-                'parent1'=>[1,'A',1.1,'AA','2020-02-02 10:00:00','2020-02-03','10:01:00','testA',null,null,null],
-                'parent2'=>[2,'B',2.2,'BB','2021-02-02 10:00:00','2021-02-03','11:01:00','testB','->Dummy1',['AAA','BBB','CCC'],['->Dummy1','->Dummy2']],
+                'parent1'=>[1,'A',1.1,'AA','2020-02-02 10:00:00','2020-02-03','10:01:00','testA',null,null,null,1],
+                'parent2'=>[2,'B',2.2,'BB','2021-02-02 10:00:00','2021-02-03','11:01:00','testB','->Dummy1',['AAA','BBB','CCC'],['->Dummy1','->Dummy2'],2],
             ]);
         $this->SeedObject(TestChild::class,
             ['parentint','parentchar','parentfloat','parenttext','parentdatetime','parentdate','parenttime',
-                'parentenum','parentobject','parentsarray','parentoarray',
+                'parentenum','parentobject','parentsarray','parentoarray','nosearch',
                 'childint','childchar','childfloat','childtext','childdatetime','childdate','childtime',
                 'childenum','childobject','childsarray','childoarray'],
             [
-                'child1'=>[ 1,'A',1.1,'AA','2020-02-02 10:00:00','2020-02-03','10:01:00','testA',null,null,null,
+                'child1'=>[ 1,'A',1.1,'AA','2020-02-02 10:00:00','2020-02-03','10:01:00','testA',null,null,null,1,
                             11,'CA',2.1,'CAA','2020-02-02 10:00:00','2020-02-03','10:01:00','testC',null,null,null],
-                'child2'=>[ 2,'B',2.2,'BB','2021-02-02 10:00:00','2021-02-03','11:01:00','testB','->Dummy1',['AAA','BBB','CCC'],['->Dummy1','->Dummy2'],
+                'child2'=>[ 2,'B',2.2,'BB','2021-02-02 10:00:00','2021-02-03','11:01:00','testB','->Dummy1',['AAA','BBB','CCC'],['->Dummy1','->Dummy2'],1,
                             3,'CB',3.2,'CB','2021-02-02 10:00:00','2021-02-03','11:01:00','testB','->Dummy2',['AAAA','BBBB','CCCC'],['->Dummy3','->Dummy1']
                 ],
             ]);
@@ -78,7 +79,7 @@ class TestSeeder3 extends Seeder {
 class TestSeeder4 extends Seeder {
     
     public function Seed() {
-        $this->SeedObject(Dummy::class,['dummyint','tags'],[
+        $this->SeedObject(\Sunhill\ORM\Tests\Testobjects\Dummy::class,['dummyint','tags'],[
             'Dummy1'=>[1,null],
             'Dummy2'=>[2,['TagA','TagB.TagC']],
             'Dummy3'=>[3,null]
@@ -86,7 +87,7 @@ class TestSeeder4 extends Seeder {
     }
 }
 
-class SeederTest extends DBTestCase
+class SeederTest extends DatabaseTestCase
 {
        
 	public function testSeedCreatesValue() {
