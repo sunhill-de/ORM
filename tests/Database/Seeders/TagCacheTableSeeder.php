@@ -21,6 +21,7 @@ class TagCacheTableSeeder extends Seeder {
 		    ['id'=>10,'name'=>'TagE','tag_id'=>8],
 		    ['id'=>11,'name'=>'TagG.TagE','tag_id'=>8],
 		    ['id'=>12,'name'=>'TagF.TagG.TagE','tag_id'=>8],
-		]);
+	        ['id'=>13,'name'=>'TagZ','tag_id'=>9],
+	    ]);
 	}
 }
