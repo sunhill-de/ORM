@@ -115,28 +115,28 @@ class QueryBuilder
             throw new QueryException(__("The field ':field' is not searchable.",['field'=>$field]));
         }
         switch ($property->type) {
-            case 'Tags':
+            case 'tags':
                 $part = new QueryWhereTag($this,$property,$relation,$value);
                 break;
-            case 'Attribute_char':
-            case 'Attribute_float':
-            case 'Attribute_int':
-            case 'Attribute_float':
+            case 'attribute_char':
+            case 'attribute_float':
+            case 'attribute_int':
+            case 'attribute_float':
                 $part = new QueryWhere_attribute($this,$property,$relation,$value);
                 break;
-            case 'ArrayOfObjects':
+            case 'arrayOfObjects':
                 $part = new QueryWhereArrayOfObjects($this,$property,$relation,$value);
                 break;
-            case 'ArrayOfStrings':
+            case 'arrayOfStrings':
                 $part = new QueryWhereArrayOfStrings($this,$property,$relation,$value);
                 break;
-            case 'Varchar':
+            case 'varchar':
                 $part = new QueryWhereString($this,$property,$relation,$value);
                 break;
-            case 'Object':
+            case 'object':
                 $part = new QueryWhereObject($this,$property,$relation,$value);
                 break;
-            case 'Calculated':
+            case 'calculated':
                 $part = new QueryWhereCalculated($this,$property,$relation,$value);
                 break;
             default:
