@@ -14,6 +14,8 @@
 
 namespace Sunhill\ORM\Search;
 
+use Illuminate\Support\Facades\DB;
+
 abstract class QueryWhereArray extends QueryWhere 
 {
     
@@ -34,6 +36,11 @@ abstract class QueryWhereArray extends QueryWhere
         abstract protected function getAssocField();
         abstract protected function getElementIDList($value);
         abstract protected function getElement($element);
+
+        protected function getFieldPart()
+        {
+            return "and field = '".$this->field."'";    
+        }
         
         public function getThisWherePart() 
         {
@@ -49,11 +56,11 @@ abstract class QueryWhereArray extends QueryWhere
                     break;
                 case 'has any':
                 case 'not empty':
-                    $result .= ' a.id in (select container_id from '.$this->getAssocTable().')';
+                    $result .= ' a.id in (select container_id from '.$this->getAssocTable().' where 1 '.$this->getFieldPart().')';
                     break;
                 case 'has none':
                 case 'empty':
-                    $result .= ' a.id not in (select container_id from '.$this->getAssocTable().' where field = "'.$this->field.'")';
+                    $result .= ' a.id not in (select container_id from '.$this->getAssocTable().' where 1 '.$this->getFieldPart().')';
                     break;
                 case 'all of':
                     $result .= ' ('.$this->getAllOfPart().')';
@@ -68,7 +75,7 @@ abstract class QueryWhereArray extends QueryWhere
             $first = true;
             foreach ($this->value as $value) {
                 $value = $this->getElement($value);
-                $result .= ($first?'':' and ').' exists (select container_id from '.$this->getAssocTable().' where container_id = a.id and '.$this->getAssocField().$value.')';
+                $result .= ($first?'':' and ').' exists (select container_id from '.$this->getAssocTable().' where container_id = a.id and '.$this->getAssocField().$value.' '.$this->getFieldPart().')';
                 $first = false;
             }
             return $result;

@@ -30,6 +30,11 @@ class QueryWhereTag extends QueryWhereArray
         return 'tag_id';
     }
     
+    protected function getFieldPart()
+    {
+        return "";
+    }
+    
     protected function getElementIDList($value) 
     {
         if (is_int($value)) {
