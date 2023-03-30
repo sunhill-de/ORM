@@ -18,6 +18,7 @@ class TagsTableSeeder extends Seeder {
 		    ['id'=>6,'name'=>'TagF','parent_id'=>0,'options'=>0],		    
 		    ['id'=>7,'name'=>'TagG','parent_id'=>6,'options'=>0],
 		    ['id'=>8,'name'=>'TagE','parent_id'=>7,'options'=>0],
-		]);
+	        ['id'=>9,'name'=>'TagZ','parent_id'=>0,'options'=>0],
+	    ]);
 	}
 }
