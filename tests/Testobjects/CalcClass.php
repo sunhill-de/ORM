@@ -38,7 +38,7 @@ class CalcClass extends ORMObject {
     
     protected static function setupInfos()
     {
-        static::addInfo('name', 'CalcClass');
+        static::addInfo('name', 'calcclass');
         static::addInfo('table', 'calcclasses');
         static::addInfo('name_s', 'calcclass');
         static::addInfo('name_p', 'calcclassed');
