@@ -53,7 +53,7 @@ abstract class QueryWhereArray extends QueryWhere
                     break;
                 case 'has none':
                 case 'empty':
-                    $result .= ' a.id not in (select container_id from '.$this->getAssocTable().')';
+                    $result .= ' a.id not in (select container_id from '.$this->getAssocTable().' where field = "'.$this->field.'")';
                     break;
                 case 'all of':
                     $result .= ' ('.$this->getAllOfPart().')';
