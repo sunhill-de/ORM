@@ -42,35 +42,31 @@ class QueryWhereCalculated extends QueryWhere
             'consists'=>'scalar',
             'contains'=>'scalar',
         ];
-    
+
+     protected function getInnerQuery()
+     {
+         $result = "select object_id from caching where fieldname = '".$this->field."' and value "; 
+         switch ($this->relation) {
+             case 'begins with':
+                 $result .= 'like '.$this->escape($this->value.'%'); break;
+             case 'ends with':
+                 $result .= 'like '.$this->escape('%'.$this->value); break;
+             case 'contains':
+                 $result .= 'like '.$this->escape("%".$this->value."%"); break;
+             case '!=':
+             case '<>':    
+                 $result .= '<> '.$this->escape($this->value); break;
+             case 'in':
+                 $result .= $this->assembleIn(); break;
+             default:
+                 $result .= $this->relation.' '.$this->escape($this->value); break;
+         }
+         return $result;
+     }
+     
      public function getThisWherePart() 
      {
-         $result = $this->getQueryPrefix()." ";
-         switch ($this->relation) {
-             case '=':
-                  return $result.'a.id in (select object_id from caching where value = '.$this->escape($this->value).')';
-                  break;
-             case '<>':
-             case '!=':
-                 return $result.'a.id not in (select object_id from caching where value = '.$this->escape($this->value).')';
-                 break;
-             case 'begins with':
-                 $this->value .= '%';
-                 return $result.'a.id in (select object_id from caching where value like '.$this->escape($this->value).')';
-                 break;
-             case 'ends with':
-                 $this->value = '%'.$this->value;
-                 return $result.'a.id in (select object_id from caching where value like '.$this->escape($this->value).')';
-                 break;
-             case 'consists':
-             case 'contains':
-                 $this->value = '%'.$this->value.'%';
-                 return $result.'a.id in (select object_id from caching where value like '.$this->escape($this->value).')';
-                 break;
-             default:
-                 return parent::getThisWherePart();
-         }
-        return $result;
-    }
+         return $this->getQueryPrefix()." a.id in (".$this->getInnerQuery().')';
+     }
     
 }
