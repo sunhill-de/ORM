@@ -1,10 +1,10 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit\Properties;
+namespace Sunhill\ORM\Tests\Feature\Properties;
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Properties\PropertyArrayBase;
-use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Properties\PropertyArrayOfObjects;
 
 class ArrayOfObjectsTest extends TestCase

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit\Properties;
+namespace Sunhill\ORM\Tests\Feature\Properties;
 
 use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -10,8 +10,8 @@ use Sunhill\ORM\Properties\PropertyArrayOfObjects;
 use Sunhill\ORM\Properties\PropertyArrayOfStrings;
 use Sunhill\ORM\Properties\PropertyEnum;
 use Sunhill\ORM\Validators\ValidatorException;
-use Sunhill\ORM\Tests\Objects\TestParent;
-use Sunhill\ORM\Tests\Objects\TestChild;
+use Sunhill\ORM\Tests\Testobjects\TestParent;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Facades\Classes;
 
 class PropertyValidateTest extends TestCase
