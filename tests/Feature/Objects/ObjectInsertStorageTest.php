@@ -7,15 +7,12 @@
  * Reviewstate: 2020-08-12
  */
 
-namespace Sunhill\ORM\Tests\Unit\Objects;
+namespace Sunhill\ORM\Tests\Feature\Objects;
 
-use Illuminate\Foundation\Testing\WithFaker;
-use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Tests\Objects\ObjectUnit;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
 
-class ObjectInsertTest extends DBTestCase
+class ObjectInsertStorageTest extends DatabaseTestCase
 {
    
     public function testStorageCreation() {

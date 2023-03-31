@@ -1,14 +1,10 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit\Objects;
+namespace Sunhill\ORM\Tests\Feature\Objects;
 
-use Sunhill\ORM\Tests\DBTestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Sunhill\ORM\Tests\Objects\ObjectUnit;
-use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 
-class ObjectReadTest extends DBTestCase
+class ObjectReadStorageTest extends DatabaseTestCase
 {
 
     /**

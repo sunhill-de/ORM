@@ -1,5 +1,5 @@
 <?php
-namespace Sunhill\ORM\Tests\Unit;
+namespace Sunhill\ORM\Tests\Feature\Objects;
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Objects\ORMObject;

@@ -7,16 +7,15 @@
  * Reviewstate: 2020-08-12
  */
 
-namespace Sunhill\ORM\Tests\Unit\Objects;
+namespace Sunhill\ORM\Tests\Feature\PropertyQuery;
 
-use Illuminate\Foundation\Testing\WithFaker;
-use Sunhill\ORM\Tests\DBTestCase;
-use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\PropertyQuery\PropertyQuery;
 use Sunhill\ORM\Properties\Property;
-use Sunhill\ORM\Tests\Objects\SimpleChild;
+use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
 
-class PropertyQueryTest extends DBTestCase
+class PropertyQueryTest extends DatabaseTestCase
 {
     
       // Tests a simple get on a PropertyQuery
@@ -85,14 +84,21 @@ class PropertyQueryTest extends DBTestCase
   
       public function testGetProperties()
       {
-          $test = new SimpleChild();
-          $result = $test->getProperties()->where('Type','Integer')->get();
+          $test = new TestSimpleChild();
+          $result = $test->getProperties()->where('Type','integer')->get();
           $this->assertEquals(2,count($result));          
+      }
+      
+      public function testGetPropertiesChild()
+      {
+          $test = new TestChild();
+          $result = $test->getProperties()->where('Type','integer')->get();
+          $this->assertEquals(3,count($result));
       }
       
       public function testStaticGetProperties()
       {
-          $result = SimpleChild::staticGetProperties()->where('Type','Integer')->get();
+          $result = TestSimpleChild::staticGetProperties()->where('Type','integer')->get();
           $this->assertEquals(2,count($result));          
       }
 }
