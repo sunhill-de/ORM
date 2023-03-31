@@ -2,11 +2,11 @@
 
 namespace Sunhill\ORM\Tests\Unit\Properties;
 
-use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Properties\PropertyTags;
 
-class TagsTest extends DBTestCase
+class TagsTest extends DatabaseTestCase
 {
     public function testArrayEmpty() {
         $test = new PropertyTags();

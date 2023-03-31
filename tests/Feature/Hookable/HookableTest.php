@@ -7,7 +7,7 @@
  * Reviewstate: 2020-08-10
  */
 
-namespace Sunhill\ORM\Tests\Unit;
+namespace Sunhill\ORM\Tests\Feature\Hookable;
 
 use Sunhill\ORM\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;

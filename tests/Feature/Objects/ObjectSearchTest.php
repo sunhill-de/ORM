@@ -34,7 +34,7 @@ class ObjectSearchTest extends DatabaseTestCase
     
     public function testSearchWithNoCondition_oneresult()
     {
-        $this->assertEquals([27], $this->simplify_result(CalcClass::search()->get()));    
+        $this->assertEquals([31], $this->simplify_result(CalcClass::search()->get()));    
     }
     
     public function testSearchWithNoCondition_moreresults() {
