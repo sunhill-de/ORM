@@ -2,7 +2,7 @@
 
 namespace Sunhill\ORM\Tests\Unit\Managers;
 
-use Sunhill\ORM\Tests\DBTestCase;
+use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Managers\TagManager;
 use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\ORMException;
@@ -11,21 +11,13 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\Descriptor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-define('NUMBER_OF_TAGS', 8);
-define('NUMBER_OF_ORPHANED_TAGS', 6);
-define('NUMBER_OF_ROOT_TAGS', 5);
+define('NUMBER_OF_TAGS', 9);
+define('NUMBER_OF_ORPHANED_TAGS', 3);
+define('NUMBER_OF_ROOT_TAGS', 6);
 
-class ManagerTagTest extends DBTestCase
+class TagManagerTest extends DatabaseTestCase
 {
 
-    use RefreshDatabase;
-    
-    public function testDummy()
-    {
-        DB::statement("start transaction");
-        $this->assertTrue(true);
-    }
-    
     // ========================== Test count with different accessibilities  ==================================
     // total number of tags
     public function testCount() {
@@ -56,7 +48,7 @@ class ManagerTagTest extends DBTestCase
      * @group orphaned
      */
     public function testAllOrphaned() {
-        $this->assertEquals('TagC',Tags::getAllOrphaned()[0]->name);    
+        $this->assertEquals('TagF',Tags::getAllOrphaned()[0]->name);    
     }
     
     // Find orphaned tags
@@ -64,7 +56,7 @@ class ManagerTagTest extends DBTestCase
      * @group orphaned
      */
     public function testOrphaned() {
-        $this->assertEquals('TagC',Tags::getOrphaned(0)->name);
+        $this->assertEquals('TagF',Tags::getOrphaned(0)->name);
     }
 
 // ========================= tests with root tags ===================================    
