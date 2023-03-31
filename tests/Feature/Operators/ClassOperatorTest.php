@@ -4,9 +4,9 @@ namespace Sunhill\ORM\Tests\Unit\Operators;
 use \Sunhill\ORM\Tests\TestCase;
 use \Sunhill\ORM\Operators\ClassOperatorBase;
 use \Sunhill\Basic\Utils\Descriptor;
-use \Sunhill\ORM\Tests\Objects\Dummy;
-use \Sunhill\ORM\Tests\Objects\TestParent;
-use \Sunhill\ORM\Tests\Objects\TestChild;
+use \Sunhill\ORM\Tests\Testobjects\Dummy;
+use \Sunhill\ORM\Tests\Testobjects\TestParent;
+use \Sunhill\ORM\Tests\Testobjects\TestChild;
 
 class TestClassOperator extends ClassOperatorBase {
 

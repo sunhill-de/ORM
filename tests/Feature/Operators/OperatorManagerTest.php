@@ -6,7 +6,7 @@ use Sunhill\ORM\Managers\OperatorManager;
 use Sunhill\ORM\Operators\OperatorBase;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Facades\Operators;
-use Sunhill\ORM\Tests\Objects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 
 class ManagerOperator1 extends OperatorBase {
     
