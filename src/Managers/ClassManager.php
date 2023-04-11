@@ -690,4 +690,14 @@ class ClassManager
         $migrator = new ObjectMigrator();
         $migrator->migrate($class_name);
     }
+    
+    public function migrateClasses()
+    {
+        $classes = $this->getAllClasses();
+        if (!empty($classes)) {
+            foreach($classes as $name => $infos) {
+                $this->migrateClass($name);
+            }
+        }        
+    }
 }
