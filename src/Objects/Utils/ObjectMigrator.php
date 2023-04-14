@@ -104,17 +104,31 @@ class ObjectMigrator
      * @param string $type
      * @return string
      */
-    private function mapType(array $info): string
+    protected function mapType($table, string $table_name, string $field_name, array $info)
     {
-        switch ($info['type']) {
-            case 'Integer':
-                return 'int(11)'; break;
-            case 'Varchar':
-                return 'varchar('.(isset($info['maxlen'])?$info['maxlen']:'255').')'; break;
-            case 'Enum':
-                return 'enum('.$info['enum'].')'; break;
+        $type = strtolower($info['type']);
+        switch ($type) {
+            case 'integer':
+                $field = $table->integer($field_name); 
+                break;
+            case 'varchar':
+                $field = $table->string($field_name,isset($info['maxlen'])?$info['maxlen']:'255');
+                break;
+            case 'enum':
+                $field = $table->enum($field_name, $info['enum']);
+                break;
             default:
-                return strtolower($info['type']);
+                $field = $table->$type($field_name);
+        }
+        if (isset($info['searchable'])) {
+            $field = $field->index($table_name.'_'.$field_name);
+        }
+        if (isset($info['default'])) {
+            if ($info['default'] == 'null') {
+                $field = $field->nullable()->default(null);
+            } else {
+                $field = $field->default($info['default']);
+            }
         }
     }
     
@@ -123,13 +137,51 @@ class ObjectMigrator
      */
     private function createTable()
     {
-        $statement = 'create table '.$this->class_tablename.' (id int primary key';
-        $simple = $this->getCurrentProperties();
-        foreach ($simple as $field => $info) {
-            $statement .= ','.$field.' '.$this->mapType($info);
+        Schema::create($this->class_tablename, function ($table) {
+            $table->integer('id');
+            $simple = $this->getCurrentProperties();
+            foreach ($simple as $field => $info) {
+                $this->mapType($table, $this->class_tablename, $field, $info);
+            }
+        });
+    }
+
+    protected function insertPropertyType(&$result, $property)
+    {
+        $name = $property->getName();
+        $result[$name] = ['type'=>$property->getType()];        
+    }
+    
+    protected function insertPropertyDefault(&$result, $property)
+    {
+        $name = $property->getName();
+        if ($property->getDefaultsNull()) {
+            $result[$name]['default'] = 'null';
+        } else {
+            $default = $property->getDefault();
+            if (!is_null($default)) {
+                $result[$name]['default'] = $default;
+            }
+        }        
+    }
+    
+    protected function insertPropertyIndex(&$result, $property)
+    {
+        if ($property->getSearchable()) {
+            $result[$property->getName()]['searchable'] = true;
         }
-        $statement .= ')';
-        DB::statement($statement);
+    }
+    
+    protected function insertPropertyAdditional(&$result, $property)
+    {
+        switch ($property->getType()) {
+            case 'varchar':
+                $result[$property->getName()]['maxlen'] = $property->getMaxLen();
+                break;
+            case 'enum':
+                $result[$property->getName()]['enum'] = $property->getEnumValues();
+                break;
+        }        
     }
     
     /**
@@ -146,24 +198,10 @@ class ObjectMigrator
         }
         
         foreach ($properties[$this->class_name] as $property) {
-            $result[$property->getName()] = ['type'=>$property->getType()];
-            switch ($property->getType()) {
-                case 'Varchar':
-                    $result[$property->getName()]['maxlen'] = $property->getMaxLen();
-                    break;
-                case 'Enum':
-                    $first = true;
-                    $resultstr = '';
-                    foreach ($property->getEnumValues() as $value) {
-                        if (!$first) {
-                            $resultstr .= ',';
-                        }
-                        $resultstr .= "'$value'";
-                        $first = false;
-                    }
-                    $result[$property->getName()]['enum'] = $resultstr;
-                    break;
-            }
+            $this->insertPropertyType($result, $property);
+            $this->insertPropertyDefault($result, $property);
+            $this->insertPropertyIndex($result, $property);
+            $this->insertPropertyAdditional($result, $property);
         }
         return $result;
     }
