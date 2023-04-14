@@ -310,6 +310,11 @@ class Property extends Loggable
 	    return $this->default;
     }
 	
+    public function getDefaultsNull()
+    {
+        return $this->defaults_null;    
+    }
+    
     public function setClass(string $class) 
     {
 	    $this->class = $class;
