@@ -75,18 +75,6 @@ class ObjectMigrator
             $this->createTable();
         }        
     }
-
-    protected function fixTable()
-    {
-        // If the table already exsists, check if we have to change it
-        $current = $this->getCurrentProperties();
-        $database = $this->getDatabaseProperties();
-        $removed = $this->removeColumns($current,$database);
-        $added = $this->addColumns($current,$database);
-        
-        $altered = $this->alterColums($current,$database);
-        $this->postMigration($added,$removed,$altered);        
-    }
     
     /**
      * Check if the table of this object exists at all
@@ -97,6 +85,66 @@ class ObjectMigrator
     protected function tableExists(): bool
     {
         return Schema::hasTable($this->class_tablename);
+    }
+    
+    /**
+     * Returns the current properties of the class
+     * @return array|string|NULL[][]
+     */
+    private function getCurrentProperties()
+    {
+        $properties = $this->class_namespace::staticGetPropertiesWithFeature('simple','class');
+        
+        $result = array();
+        if (!isset($properties[$this->class_name])) {
+            return $result;
+        }
+        
+        foreach ($properties[$this->class_name] as $property) {
+            $this->insertPropertyType($result, $property);
+            $this->insertPropertyDefault($result, $property);
+            $this->insertPropertyIndex($result, $property);
+            $this->insertPropertyAdditional($result, $property);
+        }
+        return $result;
+    }
+    
+    protected function insertPropertyType(&$result, $property)
+    {
+        $name = $property->getName();
+        $result[$name] = ['type'=>$property->getType()];
+    }
+    
+    protected function insertPropertyDefault(&$result, $property)
+    {
+        $name = $property->getName();
+        if ($property->getDefaultsNull()) {
+            $result[$name]['default'] = 'null';
+        } else {
+            $default = $property->getDefault();
+            if (!is_null($default)) {
+                $result[$name]['default'] = $default;
+            }
+        }
+    }
+    
+    protected function insertPropertyIndex(&$result, $property)
+    {
+        if ($property->getSearchable()) {
+            $result[$property->getName()]['searchable'] = true;
+        }
+    }
+    
+    protected function insertPropertyAdditional(&$result, $property)
+    {
+        switch ($property->getType()) {
+            case 'varchar':
+                $result[$property->getName()]['maxlen'] = $property->getMaxLen();
+                break;
+            case 'enum':
+                $result[$property->getName()]['enum'] = $property->getEnumValues();
+                break;
+        }
     }
     
     /**
@@ -146,158 +194,78 @@ class ObjectMigrator
         });
     }
 
-    protected function insertPropertyType(&$result, $property)
+    protected function fixTable()
     {
-        $name = $property->getName();
-        $result[$name] = ['type'=>$property->getType()];        
+        $current_definition = $this->getCurrentProperties();
+        $current_database = $this->getDatabaseProperties();
+        unset($current_database['id']);
+        $this->dropRemoved($current_definition, $current_database);
+        $this->alterColumns($current_definition, $current_database);
+    /*
+            // If the table already exsists, check if we have to change it
+        $current = $this->getCurrentProperties();
+        $database = $this->getDatabaseProperties();
+        
+        $removed = $this->removeColumns($current,$database);
+        $added = $this->addColumns($current,$database);
+        
+        //     $altered = $this->alterColums($current,$database);
+        $this->postMigration($added,$removed,[]); */
     }
     
-    protected function insertPropertyDefault(&$result, $property)
+    protected function getDatabaseProperties()
     {
-        $name = $property->getName();
-        if ($property->getDefaultsNull()) {
-            $result[$name]['default'] = 'null';
-        } else {
-            $default = $property->getDefault();
-            if (!is_null($default)) {
-                $result[$name]['default'] = $default;
+        DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+        return DB::getDoctrineSchemaManager()->listTableColumns($this->class_tablename);    
+    }
+    
+    /**
+     * Drops all database table columns that aren't defined anymore
+     * @param unknown $current_definition
+     * @param unknown $current_database
+     */
+    protected function dropRemoved($current_definition, $current_database)
+    {
+        foreach ($current_database as $field => $info) {
+            if (!isset($current_definition[$field])) {
+                $this->dropColumn($field);       
             }
-        }        
-    }
-    
-    protected function insertPropertyIndex(&$result, $property)
-    {
-        if ($property->getSearchable()) {
-            $result[$property->getName()]['searchable'] = true;
         }
-    }
-    
-    protected function insertPropertyAdditional(&$result, $property)
-    {
-        switch ($property->getType()) {
-            case 'varchar':
-                $result[$property->getName()]['maxlen'] = $property->getMaxLen();
-                break;
-            case 'enum':
-                $result[$property->getName()]['enum'] = $property->getEnumValues();
-                break;
-        }        
     }
     
     /**
-     * Returns the current properties of the class
-     * @return array|string|NULL[][]
-     */
-    private function getCurrentProperties() 
-    {
-        $properties = $this->class_namespace::staticGetPropertiesWithFeature('simple','class');
-        
-        $result = array();
-        if (!isset($properties[$this->class_name])) {
-            return $result;
-        }
-        
-        foreach ($properties[$this->class_name] as $property) {
-            $this->insertPropertyType($result, $property);
-            $this->insertPropertyDefault($result, $property);
-            $this->insertPropertyIndex($result, $property);
-            $this->insertPropertyAdditional($result, $property);
-        }
-        return $result;
-    }
-    
-    /**
-     * Returns the Type of the given table column
-     * 
+     * Drops the given column
      * @param string $column
-     * @return string
-     * 
-     * Test: tests/Unit/Objects/Utils/ObjectMigratorTest::testGetTypeOfTableColumn
      */
-    protected function getTypeOfTableColumn(string $column)
+    protected function dropColumn(string $column)
     {
-        return DB::getSchemaBuilder()->getColumnType($this->class_tablename, $column); 
+        Schema::table($this->class_tablename, function($table) use ($column) {
+            $table->dropColumn($column); 
+        });
     }
     
-    /**
-     * Return the current properties of the database
-     * @return NULL[][]
-     */
-    protected function getDatabaseProperties() 
+    protected function addColumn($field, $info)
     {
-        $fields = Schema::getColumnListing($this->class_tablename);
-        $result = array();
-        foreach ($fields as $field) {
-            if ($field == 'id') {
+        Schema::table($this->class_tablename, function($table) use ($field, $info) {
+            $this->mapType($table, $this->class_tablename, $field, $info); 
+        });
+    }
+    
+    protected function testForDifferences(string $field, array $current_field, $db_field)
+    {
+        
+    }
+    
+    protected function alterColumns($current_definition, $current_database) 
+    {
+        foreach ($current_definition as $field => $info) {
+            if (!isset($current_database[$field])) {
+                $this->addColumn($field, $info);
                 continue;
             }
-            $result[$field] = [
-                'type'=>$this->getTypeOfTableColumn($field),
-                'null'=>true];
+            $this->testForDifferences($field, $info, $current_database[$field]);
         }
-        return $result;
     }
-    
-    /**
-     * Removes columns that aren't defined by the class anymore
-     * @param unknown $current
-     * @param unknown $database
-     * @param array of string The name of the columns that were removed
-     */
-    private function removeColumns($current,$database) 
-    {
-        $result = [];
-        foreach ($database as $name => $info) {
-            if (!array_key_exists($name,$current) && ($name !== 'id')) {
-                DB::statement("alter table ".$this->class_tablename." drop column ".$name);
-                $result[] = $name;
-            }
-        }
-        return $result;
-    }
-    
-    /**
-     * Add colums that are newly defined by the class
-     * @param unknown $current
-     * @param unknown $database
-     * @param array of string The name of the columns that were added
-     */
-    private function addColumns($current,$database) 
-    {
-        $result = [];
-        foreach ($current as $name => $info) {
-            if (!array_key_exists($name,$database)) {
-                $statement = 'alter table '.$this->class_tablename." add column ".$name." ";
-                $statement .= $this->mapType($info);
-                DB::statement($statement);
-                $result[] = $name;
-            }
-        }
-        return $result;
-    }
-    
-    /**
-     * Change colums that are different in database and in class
-     * @param unknown $current
-     * @param unknown $database
-     * @param array of string The name of the columns that were changed
-     */
-    private function alterColums($current,$database) 
-    {
-        $result = [];
-        foreach ($current as $name => $info) {
-            if (array_key_exists($name,$database)) {
-                $type = self::mapType($info);
-                if ($type !== $database[$name]['type']) {
-                    $statement = 'alter table '.$this->class_tablename.' modify column '.$name.' '.$name.' '.$type;
-                    DB::statement($statement);
-                    $result[] = $name;
-                }
-            }
-        }
-        return $result;
-    }
-    
     /**
      * Is called after a alteration of the database. The routine calls the routine post_migration of
      * all objects of the given class to inform the class, that the database was changed. In the post_migration
