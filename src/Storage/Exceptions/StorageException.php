@@ -12,7 +12,7 @@
  * Coverage: none
  */
 
-namespace Sunhill\ORM\Storage;
+namespace Sunhill\ORM\Storage\Exceptions;
 
 use Sunhill\ORM\ORMException;
 

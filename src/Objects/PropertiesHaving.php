@@ -15,35 +15,15 @@
  */
 namespace Sunhill\ORM\Objects;
 
-use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Search\QueryBuilder;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Hookable;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\PropertyQuery\PropertyQuery;
-use Sunhill\ORM\Tests\Unit\Objects\PropertiesHaving_PropertyTests;
 use Sunhill\ORM\Properties\Property;
 
 /**
  * Basic class for all classes that have properties.
- * This class inherits from Hookable
- * * - CONSTRUCTED
- * 
- * The class defines following hooks
- * - COMMITTING is called before a commit
- * - COMMITTED is called after a commit
- * - LOADING is called before loading
- * - LOADED is called after loading
- * - INSERTING is called before inserting
- * - INSERTED is called after inserting
- * - UPDATING is called before updating
- * - UPDATED is called after updating
- * - DELETING is called before deleting
- * - DELETED is called after deleting
- * 
- * The following hooks a defined via the properties
- * - PROPERTY_CHANGING
- * - PROPERTY_CHANGED
  *  
  * @author lokal
  */

@@ -19,7 +19,6 @@ class ReferenceOnly extends ORMObject
     protected static function setupProperties() 
     {
 		parent::setupProperties();
-		self::object('testobject')->setAllowedObjects(['dummy','referenceonly'])->setDefault(null);;
         self::arrayOfStrings('testsarray');
 		self::arrayOfObjects('testoarray')->setAllowedObjects(['dummy','referenceonly']);
 	}

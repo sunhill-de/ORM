@@ -5,6 +5,7 @@ namespace Sunhill\ORM;
 use Illuminate\Support\ServiceProvider;
 use \Sunhill\ORM\Managers\ClassManager;
 use \Sunhill\ORM\Managers\ObjectManager;
+use Sunhill\ORM\Managers\StorageManager;
 use \Sunhill\ORM\Managers\TagManager;
 use \Sunhill\ORM\Managers\AttributeManager;
 use Sunhill\ORM\Console\MigrateObjects;
@@ -30,6 +31,8 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->alias(AttributeManager::class,'attributes');
         $this->app->singleton(OperatorManager::class, function () { return new OperatorManager(); } );
         $this->app->alias(OperatorManager::class,'operators');
+        $this->app->singleton(StorageManager::class, function () { return new StorageManager(); } );
+        $this->app->alias(StorageManager::class,'storage');
     }
     
     public function boot()

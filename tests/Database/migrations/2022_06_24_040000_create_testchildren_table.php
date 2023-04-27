@@ -22,6 +22,7 @@ class CreateTestChildrenTable extends Migration
             $table->datetime('childdatetime');
             $table->date('childdate');
             $table->time('childtime');
+            $table->integer('childobject')->nullable()->default(null);
             $table->enum('childenum',['testA','testB','testC']);
         });
     }

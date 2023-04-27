@@ -18,7 +18,8 @@ class TestParentsTableSeeder extends Seeder {
 		        'parentdatetime'=>'1974-09-15 17:45:00',
 		        'parentdate'=>'1974-09-15',
 		        'parenttime'=>'17:45:00',
-		        'parentenum'=>'testC'
+		        'parentenum'=>'testC',
+		        'parentobject'=>1,
 		    ],
 	        [
 	            'id'=>10,
@@ -29,7 +30,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1970-09-15 18:45:00',
 	            'parentdate'=>'1974-09-15',
 	            'parenttime'=>'17:45:00',
-	            'parentenum'=>'testB'
+	            'parentenum'=>'testB',
+		        'parentobject'=>4,
 	        ],
 	        [
 	            'id'=>11,
@@ -40,7 +42,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1973-01-24 10:10:10',
 	            'parentdate'=>'1973-01-24',
 	            'parenttime'=>'10:10:10',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>5,
 	        ],
 	        [
 	            'id'=>12,
@@ -51,7 +54,9 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'2013-11-24 01:10:00',
 	            'parentdate'=>'2013-11-24',
 	            'parenttime'=>'01:10:00',
-	            'parentenum'=>'testA'
+	            'parentenum'=>'testA',
+	            'parentobject'=>4,
+	            
 	        ],
 	        [
 	            'id'=>13,
@@ -62,7 +67,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'2004-07-01 13:00:00',
 	            'parentdate'=>'2004-07-01',
 	            'parenttime'=>'13:00:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>null,
 	        ],
 	        [
 	            'id'=>14,
@@ -73,7 +79,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'2008-05-19 04:15:00',
 	            'parentdate'=>'2008-05-19',
 	            'parenttime'=>'04:15:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>null,
 	        ],
 	        [
 	            'id'=>15,
@@ -84,7 +91,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1974-09-15 17:45:00',
 	            'parentdate'=>'1974-09-15',
 	            'parenttime'=>'17:45:00',
-	            'parentenum'=>'testB'
+	            'parentenum'=>'testB',
+	            'parentobject'=>null,
 	        ],
 	        [
 	            'id'=>16,
@@ -95,7 +103,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'2004-07-01 17:45:00',
 	            'parentdate'=>'2004-07-01',
 	            'parenttime'=>'17:45:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>null,
 	        ],
 	        
 	        [
@@ -107,7 +116,9 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1978-06-05 11:45:00',
 	            'parentdate'=>'1978-06-05',
 	            'parenttime'=>'11:45:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>3,
+	            
 	        ],
 	        [
 	            'id'=>18,
@@ -118,7 +129,9 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1974-09-15 17:45:00',
 	            'parentdate'=>'1974-09-15',
 	            'parenttime'=>'17:45:00',
-	            'parentenum'=>'testB'
+	            'parentenum'=>'testB',
+	            'parentobject'=>4,
+	            
 	        ],
 	        [
 	            'id'=>19,
@@ -129,7 +142,9 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1941-06-10 17:45:00',
 	            'parentdate'=>'1941-06-10',
 	            'parenttime'=>'17:45:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>5,
+	            
 	        ],
 	        [
 	            'id'=>20,
@@ -140,7 +155,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1944-08-08 10:45:00',
 	            'parentdate'=>'1944-08-08',
 	            'parenttime'=>'10:45:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>2,	            
 	        ],
 	        [
 	            'id'=>21,
@@ -151,7 +167,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'2022-09-15 00:00:00',
 	            'parentdate'=>'2022-09-15',
 	            'parenttime'=>'00:00:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>null,
 	        ],
 	        [
 	            'id'=>22,
@@ -162,7 +179,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'2016-06-17 00:11:00',
 	            'parentdate'=>'2016-06-17',
 	            'parenttime'=>'00:11:00',
-	            'parentenum'=>'testB'
+	            'parentenum'=>'testB',
+	            'parentobject'=>null,
 	        ],
 	        [
 	            'id'=>23,
@@ -173,7 +191,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'2000-01-01 00:00:00',
 	            'parentdate'=>'2000-01-01',
 	            'parenttime'=>'00:00:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>null,
 	        ],
 	        [
 	            'id'=>24,
@@ -184,7 +203,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1999-12-31 23:59:59',
 	            'parentdate'=>'1999-12-31',
 	            'parenttime'=>'23:59:59',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>null,	            
 	        ],
 	        
 	        [
@@ -196,7 +216,9 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1974-09-15 17:45:00',
 	            'parentdate'=>'1974-09-15',
 	            'parenttime'=>'17:45:00',
-	            'parentenum'=>'testC'
+	            'parentenum'=>'testC',
+	            'parentobject'=>2,
+	            
 	            
 	        ],
 	        [
@@ -208,7 +230,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentdatetime'=>'1999-12-31 23:59:59',
 	            'parentdate'=>'1999-12-31',
 	            'parenttime'=>'23:59:59',
-	            'parentenum'=>'testB'
+	            'parentenum'=>'testB',
+	            'parentobject'=>null,
 	        ],
 	    ]);
 	}

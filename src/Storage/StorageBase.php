@@ -14,7 +14,6 @@
 
 namespace Sunhill\ORM\Storage;
 
-use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\ORMObject;
 
 /**
@@ -33,20 +32,15 @@ abstract class StorageBase
 {
     
     /** 
-     * Speichert das aufrufende Objekt
+     * Stores the calling ORMObject
      * @var ORMObject
      */
     protected $caller;
     
-    /**
-     * Speichert die einzelnen Entities
-     * @var array
-     * @todo Ist zur Zeit public, was eigentlich nicht so schön ist, vielleicht kann man das eleganter Lösen
-     */
-    public $entities = [];
+    protected $entities = [];
     
     /**
-     * Konstruktor, übernimmt das aufrufende Objekt als Parameter.
+     * The constructor takes the calling object as a parameter
      * @param unknown $caller
      */
     public function __construct(ORMObject $caller) 
@@ -54,27 +48,27 @@ abstract class StorageBase
         $this->caller = $caller;    
     }
     
-    abstract public function executeNeedIDQueries();
+    /**
+     * Returns the calling object
+     * @return ORMObject
+     */
+    public function getCaller()
+    {
+        return $this->caller;
+    }
+    
     
     /**
-     * @retval array Die Vererbunghirarchie der übergebenen Klasse
+     * @retval array Wrapper for getInheritance() of the caller
      */
     public function getInheritance() 
     {
         return $this->caller->getInheritance(true);
     }
     
-    /**
-     * Liefert das aufrufende Objekt zurück
-     * @return ORMObject
-     */
-    public function getCaller() 
-    {
-        return $this->caller;    
-    }
     
     /**
-     * Liefert den Entity-Eintrag für $name zurück oder null, wenn dieser nicht defniert ist
+     * Returns the entry with name $name or null if not defined
      */
     public function getEntity(string $name) 
     {
@@ -86,7 +80,7 @@ abstract class StorageBase
     }
     
     /**
-     * Wrapper für get_entity
+     * Wrapper for getEntity()
      * @param string $name
      * @return unknown
      */
@@ -96,112 +90,71 @@ abstract class StorageBase
     }
     
     /**
-     * Schreibt den Entity-Eintrag für $name
+     * Writes the entry with the name $name and the value $value
      * @param string $name
      * @param unknown $value
      */
     public function setEntity(string $name, $value) 
     {
         $this->entities[$name] = $value;
+        return $this;
     }
     
     /**
-     * Wrapper für set_entity
+     * Wrapper for setEntity()
      */
     public function __set(string $name, $value) 
     {
         return $this->setEntity($name,$value);
     }    
     
-    protected function executeChain(string $chainname, int $id, $payload = null) 
+    abstract protected function doLoad(int $id);
+    abstract protected function doStore(): int;
+    abstract protected function doUpdate(int $id);
+    abstract protected function doDelete(int $id);
+    abstract protected function doMigrate();
+    abstract protected function doPromote();
+    abstract protected function doDegrade();
+    abstract protected function doSearch();
+    
+    public function load(int $id)
     {
-        $method_name = 'prepare_'.$chainname;
-        $module_list = [];
-        foreach ($this->modules as $module_name) {
-            $full_name = "\\Sunhill\\ORM\\Storage\\StorageModule".$module_name;
-            $module = new $full_name($this);
-            if (isset($payload)) {
-                $module->$method_name($id,$payload);
-            } else {
-                $module->$method_name($id);                
-            }
-            $module_list[] = $module;
-        }
-        foreach ($module_list as $module) {
-            if (isset($payload)) {
-                $id = $module->$chainname($id,$payload);
-            } else {
-                $id = $module->$chainname($id);
-            }
-        }
-        return $id;
+        return $this->doLoad($id);        
+    }
+
+    public function Store(): int
+    {
+        return $this->doStore();
     }
     
-    /**
-     * Läd das Objekt mit der ID $id
-     * @param int $id
-     */
-    public function loadObject(int $id) 
+    public function Update(int $id)    
     {
-        $this->entities = ['id'=> $id,'tags'=>[],'attributes'=>[],'externalhooks'=>[]];
-        return $this->executeChain('load',$id);
+        return $this->doUpdate($id);
     }
     
-    public function insertObject(int $id = 0) 
+    public function Delete(int $id)
     {
-        return $this->executeChain('insert',$id);
+        return $this->doDelete($id);    
     }
     
-    public function updateObject(int $id) 
+    public function Migrate()
     {
-        return $this->executeChain('update',$id);    
+        return $this->doMigrate();    
     }
     
-    public function deleteObject(int $id) 
+    public function Promote()
     {
-        return $this->executeChain('delete',$id);    
+        return $this->doPromote();    
     }
     
-    public function degradeObject(int $id, array $degration_info) 
+    public function Degrade()
     {
-        return $this->executeChain('degrade',$id,$degration_info);
+        return $this->doDegrade();
     }
     
-    public function filterStorage($features, $grouping = null) 
+    public function Search()
     {
-        $result = [];
-        foreach ($this->entities as $entity => $value) {
-            $property = $this->getCaller()->getProperty($entity,true);
-            if (is_null($property)) { continue; }
-            if (is_array($features)) {
-                $pass = true;
-                foreach ($features as $feature) {
-                    if (!$property->hasFeature($feature)) {
-                        $pass = false;
-                    }
-                }
-            } else {
-                $pass = $property->hasFeature($features);   
-            }
-            if ($pass) {
-              // Dieses Property hat die Filter überstanden, jetzt noch gruppieren
-                if (isset($grouping)) {
-                    $group_value = $property->$grouping;
-                    if (isset($result[$group_value])) {
-                        $result[$group_value][$entity] = $value;
-                    } else {
-                        $result[$group_value] = [$entity=>$value];
-                    }
-                } else {
-                    $result[$entity] = $value;
-                }
-            }
-        }
-        return $result;
+        return $this->doSearch();    
     }
     
-    public function addNeedIDQuery(string $table, array $fixed, string $id_field) 
-    {
-        $this->caller->addNeedIDQuery($table, $fixed, $id_field);
-    }
 }

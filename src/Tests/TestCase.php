@@ -3,6 +3,7 @@
 namespace Sunhill\ORM\Tests;
 
 use Sunhill\Basic\Tests\SunhillOrchestraTestCase;
+use Sunhill\Basic\Tests\SunhillTestCase;
 use Sunhill\Basic\SunhillBasicServiceProvider;
 use Sunhill\ORM\SunhillServiceProvider;
 

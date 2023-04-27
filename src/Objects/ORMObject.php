@@ -12,15 +12,13 @@
  */
 namespace Sunhill\ORM\Objects;
 
-use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Objects\PropertiesHaving;
-use Sunhill\ORM\Objects\ObjectException;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Storage;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Storage\StorageMySQL;
 use Sunhill\ORM\Properties\PropertyAttribute;
-use \Sunhill\ORM\Properties\AttributeException;
+use Sunhill\ORM\Properties\AttributeException;
 
 /**
  * As the central class of the ORM system ORMObject provides the basic function for
@@ -44,6 +42,8 @@ class ORMObject extends PropertiesHaving
      */
     protected $needid_queries = [];
     
+    protected $loaded = false;
+    
     /**
      * Constructor for all orm classes. As a child of properties_having it calls its derrived constructor wich in turn initializes the properties.
      * Additionally it defines a few own intenal properties (tags and externalhooks)
@@ -53,6 +53,11 @@ class ORMObject extends PropertiesHaving
 	    parent::__construct();
 	    $this->properties['tags'] = self::createProperty('tags','tags','object')->setOwner($this);
 	    $this->properties['externalhooks'] = self::createProperty('externalhooks','externalHooks','object')->setOwner($this);
+	}
+	
+	protected function isLoaded(): bool
+	{
+	    return $this->loaded;
 	}
 	
 	// ========================================== NeedID-Queries ========================================
@@ -81,25 +86,17 @@ class ORMObject extends PropertiesHaving
 	    $storage->executeNeedIDQueries();
 	}
 	
-// ============================ Storagefunktionen =======================================	
+// ============================ Storagefunctions  =======================================	
 	/**
 	 * Returns the current storage or creates one if it doesn't exist
+     *
 	 * @return StorageBase
 	 */
 	final protected function getStorage(): StorageBase 
     {
-	    return $this->createStorage();
+	    return Storage::createStorage($this);
 	}
-	
-	/**
-	 * Creates a storage. By default this is a mysql storage. This method could be overwritten for debug purposes
-	 * @return StorageMySQL
-	 */
-	protected function createStorage(): StorageBase
-    {
-	    return new StorageMySQL($this);
-	}
-	    
+		    
 // ================================ Loading ========================================	
 	/**
 	 * Checks, if the object with ID $id is in the cache. If yes, return it, othwerwise return false

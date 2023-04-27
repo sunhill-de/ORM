@@ -23,6 +23,7 @@ class CreateTestParentsTable extends Migration
             $table->date('parentdate');
             $table->time('parenttime');
             $table->enum('parentenum',['testA','testB','testC']);
+            $table->integer('parentobject')->nullable()->default(null);
             $table->integer('nosearch')->nullable(0)->default(1);
         });
     }

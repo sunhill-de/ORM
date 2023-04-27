@@ -18,7 +18,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdatetime'=>'1978-06-05 11:45:00',
 	            'childdate'=>'1978-06-05',
 	            'childtime'=>'11:45:00',
-	            'childenum'=>'testC'
+	            'childenum'=>'testC',
+	            'childobject'=>null
 	        ],
 	        [
 	            'id'=>18,
@@ -29,7 +30,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdatetime'=>'1974-09-15 17:45:00',
 	            'childdate'=>'1974-09-15',
 	            'childtime'=>'17:45:00',
-	            'childenum'=>'testB'
+	            'childenum'=>'testB',
+	            'childobject'=>4
 	        ],
 	        [
 	            'id'=>19,
@@ -40,7 +42,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdatetime'=>'1941-06-10 17:45:00',
 	            'childdate'=>'1941-06-10',
 	            'childtime'=>'17:45:00',
-	            'childenum'=>'testC'
+	            'childenum'=>'testC',
+	            'childobject'=>3
 	        ],
 	        [
 	            'id'=>20,
@@ -51,7 +54,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdatetime'=>'1944-08-08 10:45:00',
 	            'childdate'=>'1944-08-08',
 	            'childtime'=>'10:45:00',
-	            'childenum'=>'testC'
+	            'childenum'=>'testC',
+	            'childobject'=>null
 	        ],
 	        [
 	            'id'=>21,
@@ -62,7 +66,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdatetime'=>'1922-09-15 00:00:00',
 	            'childdate'=>'1922-09-15',
 	            'childtime'=>'00:00:00',
-	            'childenum'=>'testC'
+	            'childenum'=>'testC',
+	            'childobject'=>null
 	        ],
 	        [
 	            'id'=>22,
@@ -73,7 +78,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdatetime'=>'1916-06-17 00:11:00',
 	            'childdate'=>'1916-06-17',
 	            'childtime'=>'00:11:00',
-	            'childenum'=>'testB'
+	            'childenum'=>'testB',
+	            'childobject'=>null
 	        ],
 	        [
 	            'id'=>23,
@@ -84,7 +90,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdatetime'=>'1900-01-01 00:00:00',
 	            'childdate'=>'1900-01-01',
 	            'childtime'=>'00:00:00',
-	            'childenum'=>'testC'
+	            'childenum'=>'testC',
+	            'childobject'=>null
 	        ],
 	        [
 	            'id'=>24,
@@ -95,7 +102,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdatetime'=>'1999-12-31 23:59:59',
 	            'childdate'=>'1999-12-31',
 	            'childtime'=>'23:59:59',
-	            'childenum'=>'testC'
+	            'childenum'=>'testC',
+	            'childobject'=>null
 	        ],
 	    ]);
 	}

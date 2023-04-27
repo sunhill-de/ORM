@@ -25,10 +25,15 @@ class CalcClass extends ORMObject {
         parent::setupProperties();
         self::integer('dummyint');
         self::calculated('calcfield');
+        self::calculated('calcfield2');
     }
     
     public function calculate_calcfield() {
         return $this->return;
+    }
+    
+    public function calculate_calcfield2() {
+        return $this->return."2";
     }
     
     public function set_return($value) {
