@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCachingTable extends Migration
+class CreateReferenceOnliesArrayTestSArrayTable extends Migration
 {
 
     /**
@@ -13,11 +13,10 @@ class CreateCachingTable extends Migration
      */
     public function up()
     {
-        Schema::create('caching', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('object_id');
-            $table->string('fieldname');
-            $table->string('value');
+        Schema::create('referenceonlies_array_testsarray', function (Blueprint $table) {
+            $table->integer('id');
+            $table->char('target');
+            $table->integer('index');
         });
     }
 
@@ -28,6 +27,6 @@ class CreateCachingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('caching');
+        Schema::dropIfExists('referenceonlies_array_testsarray');
     }
 }

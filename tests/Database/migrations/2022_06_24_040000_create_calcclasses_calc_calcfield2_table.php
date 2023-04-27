@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTestparentsArrayParentSArrayTable extends Migration
+class CreateCalcclassesCalcCalcfield2Table extends Migration
 {
 
     /**
@@ -13,10 +13,9 @@ class CreateTestparentsArrayParentSArrayTable extends Migration
      */
     public function up()
     {
-        Schema::create('testparents_array_parentsarray', function (Blueprint $table) {
+        Schema::create('calcclasses_calc_calcfield2', function (Blueprint $table) {
             $table->integer('id');
-            $table->char('target');
-            $table->integer('index');
+            $table->char('value');
         });
     }
 
@@ -27,6 +26,6 @@ class CreateTestparentsArrayParentSArrayTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('testparents_array_parentsarray');
+        Schema::dropIfExists('calcclasses_calc_calcfield2');
     }
 }

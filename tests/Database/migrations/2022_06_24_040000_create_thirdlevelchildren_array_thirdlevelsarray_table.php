@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateStringobjectassignsTable extends Migration
+class CreateThirdlevelChildrenArrayThirdlevelSArrayTable extends Migration
 {
 
     /**
@@ -13,12 +13,10 @@ class CreateStringobjectassignsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stringobjectassigns', function (Blueprint $table) {
-            $table->integer('container_id');
-            $table->string('element_id', 200);
-            $table->string('field', 50);
+        Schema::create('thirdlevelchildren_array_thirdlevelsarray', function (Blueprint $table) {
+            $table->integer('id');
+            $table->char('target');
             $table->integer('index');
-            // $table->primary(['container_id','element_id','field']);
         });
     }
 
@@ -29,6 +27,6 @@ class CreateStringobjectassignsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stringobjectassigns');
+        Schema::dropIfExists('thirdlevelchildren_array_thirdlevelsarray');
     }
 }
