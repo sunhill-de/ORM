@@ -17,7 +17,12 @@ class CreateObjectsTable extends Migration
             $table->increments('id');
             $table->string('classname');
             $table->string('uuid',40);
-            $table->timestamps();
+            $table->integer('obj_owner')->default(0);
+            $table->integer('obj_group')->default(0);
+            $table->integer('obj_read')->unsigned()->default(7);
+            $table->integer('obj_edit')->unsigned()->default(7);
+            $table->integer('obj_delete')->unsigned()->default(7);
+            $table->timestamps();            
         });
     }
 
