@@ -35,7 +35,12 @@ use Sunhill\ORM\Properties\AttributeException;
  */
 class ORMObject extends PropertiesHaving 
 {
-
+    const DEFAULT_OWNER=0;
+    const DEFAULT_GROUP=0;
+    const DEFAULT_READ=7;
+    const DEFAULT_EDIT=7;
+    const DEFAULT_DELETE=7;
+    
     /**
      * Internal storage for queries that have to be executed later when this object has an id
      * @var array
