@@ -1,5 +1,7 @@
 <?php
 
+namespace Sunhill\ORM\Tests\Unit\Storage;
+
 use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Storage\FileStorage;
 use Sunhill\ORM\Objects\ORMObject;

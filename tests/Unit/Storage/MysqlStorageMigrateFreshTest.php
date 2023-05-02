@@ -1,5 +1,7 @@
 <?php
 
+namespace Sunhill\ORM\Tests\Unit\Storage;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Tests\DatabaseTestCase;
@@ -11,10 +13,13 @@ use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Storage\Mysql\ColumnInfo;
 
-class MysqlStorageMigrateTest extends DatabaseTestCase
+class MysqlStorageMigrateFreshTest extends DatabaseTestCase
 {
-        
+    
+    use ColumnInfo, TableAssertions;
+    
     protected function checkTable($table, $fields)
     {
         $this->assertDatabaseHasTable($table);
@@ -98,82 +103,6 @@ class MysqlStorageMigrateTest extends DatabaseTestCase
         DB::table('dummychildren')->insert(['id'=>100]);
         $query = DB::table('dummychildren')->where('id',100)->first();
         $this->assertEquals(33, $query->dummychildint);        
-    }
-    
-    public function assertDatabaseTableHasColumn($table, $column)
-    {
-        $table_fields = Schema::getColumnListing($table);
-        $this->assertTrue(in_array($column, $table_fields));
-    }
-    
-    public function assertDatabaseTableHasNotColumn($table, $column)
-    {
-        $table_fields = Schema::getColumnListing($table);
-        $this->assertFalse(in_array($column, $table_fields));        
-    }
-    
-    public function testDroppedSimpleColumn()
-    {
-        Schema::drop('dummies');
-        Schema::create('dummies', function($table) {
-            $table->integer('id')->primary();
-            $table->integer('dummyint');
-            $table->integer('dropped');
-        });
-
-        $object = new Dummy();
-        $test = new MysqlStorage($object);
-            
-        $test->migrate();
-        
-        $this->assertDatabaseTableHasNotColumn('dummies','dropped');
-    }
-    
-    public function testDroppedSArryColumn()
-    {
-        Schema::create('dummies_array_sarray', function($table) {
-            $table->integer('id')->primary();
-            $table->char('target');
-            $table->integer('index');
-        });
-            
-        $object = new Dummy();
-        $test = new MysqlStorage($object);
-            
-        $test->migrate();
-            
-        $this->assertDatabaseHasNotTable('dummies_array_sarray');
-    }
-
-    public function testDroppedOArryColumn()
-    {
-        Schema::create('dummies_array_oarray', function($table) {
-            $table->integer('id')->primary();
-            $table->char('target');
-            $table->integer('index');
-        });
-            
-            $object = new Dummy();
-            $test = new MysqlStorage($object);
-            
-            $test->migrate();
-            
-            $this->assertDatabaseHasNotTable('dummies_array_oarray');
-    }
-    
-    public function testDroppedCalcColumn()
-    {
-        Schema::create('dummies_calc_calc', function($table) {
-            $table->integer('id')->primary();
-            $table->char('value');
-        });
-            
-            $object = new Dummy();
-            $test = new MysqlStorage($object);
-            
-            $test->migrate();
-            
-            $this->assertDatabaseHasNotTable('dummies_calc_calc');
     }
         
 }
