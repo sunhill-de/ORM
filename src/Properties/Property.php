@@ -148,11 +148,6 @@ class Property extends Loggable
 	 */
 	protected $validator;
 	
-	/**
-	 * Stores the hooks of this property
-	 * @var array
-	 */
-	protected $hooks = array();
 	
     /**
      * Stores the class of the property
@@ -368,7 +363,6 @@ class Property extends Loggable
     		return $this;
 		}
         	$oldvalue = $this->value;
-        	$this->valueChanging($oldvalue,$value);
 		if (!$this->dirty) {
 		    $this->shadow = $this->value;
 		    $this->dirty = true;
@@ -381,7 +375,6 @@ class Property extends Loggable
 		}
 		    
 		$this->initialized = true;
-		$this->valueChanged($oldvalue,$this->value);
 		return $this;
 	}
 
@@ -392,39 +385,6 @@ class Property extends Loggable
 	protected function doSetValue($value) 
 	{
 	    $this->value = $value;
-	}
-	
-	/**
-	 * If there is an owner this method calls its checkForHook method
-	 * @param unknown $action
-	 * @param unknown $subaction
-	 * @param unknown $info
-	 */
-	protected function checkOwnerHook($action, $subaction, $info) 
-	{
-	    if (!empty($this->owner)) {
-	        $this->owner->checkForHook($action, $subaction, $info);
-	    }
-	}
-	
-	/**
-	 * Prüft auf Hooks, die vor dem Ändern eines Wertes aufgerufen werden sollen
-	 * @param unknown $from Alter Wert der Property
-	 * @param unknown $to Neuer Wert der Property
-	 */
-	protected function valueChanging($from, $to) 
-	{
-	    $this->checkOwnerHook('PROPERTY_CHANGING',$this->getName(),array('FROM'=>$from,'TO'=>$to));
-	}
-	
-	/**
-	 * Prüft auf Hooks, die nach dem Ändern eines Wertes aufgerufen werden sollen
-	 * @param unknown $from Alter Wert der Property
-	 * @param unknown $to Neuer Wert der Property
-	 */
-	protected function valueChanged($from, $to) 
-	{
-	    $this->checkOwnerHook('PROPERTY_CHANGED',$this->getName(),array('FROM'=>$from,'TO'=>$to));
 	}
 	
 	final public function &getValue() 
@@ -713,14 +673,6 @@ class Property extends Loggable
 	   // Does nothing by default
 	}
 	
-    /**
-     * Adds an hook for this property
-     */
-	public function addHook($action,$hook,$subaction,$target) 
-	{
-	   $this->hooks[] = ['action'=>$action,'hook'=>$hook,'subaction'=>$subaction,'target'=>$target];    
-	}
-
     /**
      * Returns a Descriptor array with all static (unchangable) values of this property.
      * @return \Sunhill\basic\Utils\Descriptor The collection of values
