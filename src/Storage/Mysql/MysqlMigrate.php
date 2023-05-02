@@ -4,11 +4,13 @@ namespace Sunhill\ORM\Storage\Mysql;
 
 use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Properties\Property;
+use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Traits\PropertyUtils;
 
 class MysqlMigrate
 {
     
-    use ClassTables;
+    use ClassTables, ColumnInfo, PropertyUtils;
     
     protected $class_name;
     
@@ -20,10 +22,15 @@ class MysqlMigrate
     {
         $this->class_name = $this->storage->getCaller()::getInfo('name');
         $this->basic_table_name = $this->storage->getCaller()::getInfo('table');
-        $this->checkBasicTable();
+        $this->checkTable();
     }
     
-    protected function checkBasicTable()
+    /**
+     * First checks if the table already exists. If yes, It's not a fresh
+     * migration, so the test is a little bit more complex. If no, we simply
+     * create the new tables as required
+     */
+    protected function checkTable()
     {
         if (Schema::hasTable($this->basic_table_name)) {
             $this->checkBasicTableChange();
@@ -32,9 +39,127 @@ class MysqlMigrate
         }
     }
     
+    /**
+     * Checks the main table for column that aren't defined by the class anymore
+     * If such exists, droü them from the table
+     */
+    protected function checkForDroppedSimpleColumns()
+    {
+        $list = $this->getColumnNames($this->basic_table_name);
+        array_shift($list); // delete column 'id'
+        $class = Classes::getNamespaceOfClass($this->class_name);
+        
+        foreach ($list as $column) {
+            if (!$class::getPropertyObject($column)) {
+                Schema::dropColumns($this->basic_table_name,[$column]);
+            }
+        }
+    }
+    
+    /**
+     * Checks a additional array or calc table for unneeded tables
+     */
+    private function checkTables(array $tables, string $type)
+    {
+        $class = Classes::getNamespaceOfClass($this->class_name);
+        foreach ($tables as $table) {
+            list($dummy,$column) = explode('_'.$type.'_',$table);
+            if (!$class::getPropertyObject($column)) {
+                Schema::drop($table);
+            }
+        }        
+    }
+    
+    protected function checkForDroppedOtherColumns()
+    {
+        $tables = $this->collectClassTables($this->class_name);
+        
+        $this->checkTables($tables['array'],'array');
+        $this->checkTables($tables['calc'],'calc');
+    }
+    
+    protected function addTableField(Property $property)
+    {
+        Schema::table($this->basic_table_name, function ($table) {
+            $this->addField($this->basic_table_name, $property->getName(), $property);
+        });
+    }
+    
+    protected function checkTableFieldExists(Property $property)
+    {
+        if (!$this->columnExists($this->basic_table_name, $property->getName())) {
+            $this->addTableField($property);
+            return true;
+        }
+        return false;
+    }
+    
+    protected function checkSimpleField(Property $property)
+    {
+        if ($this->checkTableFieldExists($property)) {
+            return;
+        }
+        $type = $property->getType();
+        if ($type == $this->getColumnType($this->basic_table_name, $property->getName())) {
+            return;
+        }
+        Schema::table($this->basic_table_name, function ($table) {
+           $table->$type($property->getName())->change(); 
+        });
+    }
+    
+    protected function checkVarchar(Property $property)
+    {
+        if ($this->checkTableFieldExists($property)) {
+            return;
+        }
+    }
+    
+    protected function checkEnum(Property $property)
+    {
+        if ($this->checkTableFieldExists($property)) {
+            return;
+        }
+    }
+    
+    protected function checkNewOrChangedColumns()
+    {
+        $properties = $this->getAllProperties($this->storage->getCaller(), true);       
+        foreach ($properties as $name => $property) {
+            switch ($property->getType()) {
+                case 'integer':
+                case 'float':
+                case 'date':
+                case 'datetime':
+                case 'time':
+                case 'object':
+                    $this->checkSimpleField($property); break;
+                case 'varchar':
+                    $this->checkVarchar($property); break;
+                case 'enum':
+                    $this->checkEnum($property); break;
+                case 'arrayofstrings':
+                    $this->checkArray($property,'string'); break;
+                case 'arrayofobjects':
+                    $this->checkArray($property,'object'); break;
+                case 'calculated':
+                    $this->checkCalculated($property); break;
+                case 'tags':
+                    break;
+            }
+        }
+    }
+    
     protected function checkBasicTableChange()
     {
+        $this->checkForDroppedSimpleColumns();
+        $this->checkForDroppedOtherColumns();
         
+        // At this point the database doesn't contain any entries, that aren't 
+        // defines by the class anymore. Now we just have to search for new or
+        // changed columns
+        
+        $this->checkNewOrChangedColumns();
     }
     
     protected function createArrayOfStrings(string $field_name)
