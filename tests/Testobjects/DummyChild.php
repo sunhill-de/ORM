@@ -22,7 +22,7 @@ class DummyChild extends Dummy {
     protected static function setupProperties() 
     {
 		parent::setupProperties();
-		self::integer('dummychildint')->searchable();
+		self::integer('dummychildint')->searchable()->setDefault(33);
 	}
 
 	protected static function setupInfos()
