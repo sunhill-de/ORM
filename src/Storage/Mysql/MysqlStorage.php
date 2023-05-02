@@ -50,7 +50,8 @@ class MysqlStorage extends StorageBase
     
     protected function doMigrate()
     {
-        
+        $mysql_migrate = new MysqlMigrate($this);
+        return $mysql_migrate->doMigrate();        
     }
     
     protected function doPromote()
