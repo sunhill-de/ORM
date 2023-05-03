@@ -70,14 +70,17 @@ class MysqlLoad
         ->where('object_id',$id)->get()->toArray();
         foreach ($query as $attribute) {
             $entry = new \StdClass();
+            $entry->allowed_objects = $attribute->allowedobjects;
             $entry->name = $attribute->name;
             $entry->attribute_id = $attribute->attribute_id;
-            if ($entry->type = $attribute->type == 'text') {
+            $entry->property = $attribute->property;
+            
+            if (($entry->type = $attribute->type) == 'text') {
                 $entry->value = $attribute->textvalue;
             } else {
                 $entry->value = $attribute->value;
             }
-            $result[] = $entry;
+            $result[$attribute->name] = $entry;
         }
         $this->storage->setEntity('attributes',$result);
     }
