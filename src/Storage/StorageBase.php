@@ -116,6 +116,7 @@ abstract class StorageBase
     abstract protected function doPromote();
     abstract protected function doDegrade();
     abstract protected function doSearch();
+    abstract protected function doDrop();
     
     public function load(int $id)
     {
