@@ -24,7 +24,7 @@ class TestParent extends ORMObject
     {
 		parent::setupProperties();
 		self::integer('parentint')->searchable();
-		self::varchar('parentchar')->searchable()->nullable();
+		self::varchar('parentchar')->searchable()->setDefault(null);
 		self::float('parentfloat')->searchable();
 		self::text('parenttext')->searchable();
 		self::datetime('parentdatetime')->searchable();
