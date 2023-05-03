@@ -250,9 +250,11 @@ class ObjectManager
                 DB::statement("delete from $table where id in (select id from $master)");
             }
             DB::statement("delete from tagobjectassigns where container_id in (select id from $master)");
+            /*
             DB::statement("delete from stringobjectassigns where container_id in (select id from $master)");
             DB::statement("delete from objectobjectassigns where container_id in (select id from $master)");
             DB::statement("delete from objectobjectassigns where element_id in (select id from $master)");
+            */
             DB::table($master)->delete();
         }    
 }
