@@ -57,7 +57,7 @@ class PropertiesHaving_PropertyTest extends TestCase
         /**
          * Note: this is not a pretty test. It's here for the sake of completeness
          */
-        $this->assertEquals(\PHPUnit\Framework\TestResult::class,
+        $this->assertEquals(\PHPUnit\Framework\TestCase::class,
             DummyPropertiesHaving::callStaticMethod('getCallingClass'));    
     }
     
