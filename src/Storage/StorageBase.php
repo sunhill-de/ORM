@@ -123,6 +123,11 @@ abstract class StorageBase
         return $this->doLoad($id);        
     }
 
+    public function loadObject(int $id)
+    {
+        return $this->load($id);    
+    }
+    
     public function Store(): int
     {
         return $this->doStore();
@@ -151,6 +156,11 @@ abstract class StorageBase
     public function Degrade()
     {
         return $this->doDegrade();
+    }
+    
+    public function Drop()
+    {
+        return $this->doDrop();    
     }
     
     public function Search()
