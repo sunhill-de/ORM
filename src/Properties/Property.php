@@ -54,14 +54,7 @@ class Property extends Loggable
      * Properties get the possibility to add additinal fields (like property->set_additional)
      */
     private $additional_fields = [];
-    
-    /**
-     * This array store special "features" of this property so properties can be filtered by this featured.
-     * To check if a certain feature is set the method Property->hasFeature() is used.
-     * @var array
-     */
-    protected $features = array();
-    
+        
     /**
      * This field stores the owner of this property. It points to an descendand of PropertiesHaving 
      * Property->getOwner() reads, Property->setOwner() writes
@@ -233,20 +226,32 @@ class Property extends Loggable
 // =========================== Setter and getter ========================================	
     /**
      * sets the field Property->owner
+     * 
      * @param $owner a class of PropertiesHaving
      * @return Property a reference to this to make setter chains possible
      */
-    public function setOwner($owner)
+    public function setOwner($owner): Property
     {
 	    $this->owner = $owner;
 	    return $this;	    
     }
 
     /**
+     * Alias for setOwner()
+     * 
+     * @param Property $owner
+     * @return \Sunhill\ORM\Properties\Property
+     */
+    public function owner(Property $owner): Property
+    {
+        return $this->setOwner($owner);    
+    }
+    
+    /**
      * Returns the value of the owner field
      * @return PropertiesHaving
      */
-    public function getOwner()
+    public function getOwner(): Property
     {
 	    return $this->owner;
     }
@@ -256,10 +261,21 @@ class Property extends Loggable
      * @param $name The name of the property
      * @return Property a reference to this to make setter chains possible
      */
-    public function setName(string $name)
+    public function setName(string $name): Property
     {
 	    $this->name = $name;
 	    return $this;
+    }
+    
+    /**
+     * Alias for setName()
+     * 
+     * @param string $name
+     * @return Property
+     */
+    public function name(string $name): Property
+    {
+       return $this->setName($name); 
     }
     
     /**
