@@ -61,21 +61,25 @@ class MysqlStorage extends StorageBase
     
     protected function doPromote()
     {
-        
+        $storage_helper = new MysqlPromote($this);
+        return $storage_helper->doPromote();        
     }
     
     protected function doDegrade()
     {
-        
+        $storage_helper = new MysqlDegrade($this);
+        return $storage_helper->doDegrade();        
     }
     
     protected function doSearch()
     {
-        
+        $storage_helper = new MysqlSearch($this);
+        return $storage_helper->doSearch();        
     }
  
     protected function doDrop()
     {
-        
+        $storage_helper = new MysqlDrop($this);
+        return $storage_helper->doDrop();        
     }
 }
