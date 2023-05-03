@@ -92,5 +92,10 @@ class FileStorage extends StorageBase
     {
         
     }
-     
+ 
+    protected function doDrop()
+    {
+        
+    }
+    
 }
