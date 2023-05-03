@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Some helpers for dealing with database tables and their columns (just a wrapper
+ * around Schema)
+ */
 namespace Sunhill\ORM\Storage\Mysql;
 
 use Illuminate\Support\Facades\DB;
@@ -83,4 +87,12 @@ trait ColumnInfo
         return 0;
     }
     
+    protected function getEnumValue(string $table, string $column): array
+    {
+        $column_info = Schema::getConnection()->getDoctrineColumn($table, $column);
+        if ($this->getColumnType($table,$column) == 'enum') {
+            return $column_info->getEnum();
+        }
+        return [];        
+    }
 }

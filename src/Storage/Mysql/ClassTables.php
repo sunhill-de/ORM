@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Some helpers for collecting specialized tables (like array or calculated)
+ */
 namespace Sunhill\ORM\Storage\Mysql;
 
 use Sunhill\ORM\Facades\Classes;
