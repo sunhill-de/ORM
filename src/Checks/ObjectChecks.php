@@ -86,61 +86,7 @@ class ObjectChecks extends ChecksBase
         }
     }
     
-    /**
-     * Checks if all container objects in the objectobjectassigns table exists
-     * @return unknown
-     */
-    public function check_ObjectObjectAssignsContainerExist(bool $repair) 
-    {
-        if ($entries = $this->checkForDanglingPointers('objectobjectassigns','container_id','objects','id',true)) {
-            if ($repair) {
-                $entries = $this->repairDanglingPointers('objectobjectassigns','container_id','objects','id');                
-                $this->repair(__(':entries container objects are missing in the objectobjectassigns table',['entries'=>$entries]));
-            } else {
-               $this->fail(__(':entries container objects are missing in the objectobjectassigns table',['entries'=>$entries]));   
-            }
-        } else {
-            $this->pass();
-        }
-    }
-    
-    /**
-     * Checks if all container objects in the objectobjectassigns table exists
-     * @return unknown
-     */
-    public function check_ObjectObjectAssignsElementExist(bool $repair)
-    {
-        if ($entries = $this->checkForDanglingPointers('objectobjectassigns','element_id','objects','id',true)) {
-            if ($repair) {
-                $entries = $this->repairDanglingPointers('objectobjectassigns','element_id','objects','id');
-                $this->repair(__(':entries element objects are missing in the objectobjectassigns table',['entries'=>$entries]));
-            } else {
-                $this->fail(__(':entries element objects are missing in the objectobjectassigns table',['entries'=>$entries]));
-            }
-        } else {
-            $this->pass();
-        }
-    }
-    
-    /**
-     * Checks if all container objects in the objectobjectassigns table exists
-     * @return unknown
-     */
-    public function check_StringObjectAssignsContainerExist(bool $repair)
-    {
-        if ($entries = $this->checkForDanglingPointers('stringobjectassigns','container_id','objects','id',true)) {
-            if ($repair) {
-                $entries = $this->repairDanglingPointers('stringobjectassigns','container_id','objects','id');
-                $this->repair(__(':entries element objects are missing in the stringobjectassigns table',['entries'=>$entries]));
-            } else {
-                $this->fail(__(':entries element objects are missing in the stringobjectassigns table',['entries'=>$entries]));
-            }
-        } else {
-            $this->pass();
-        }
-    }
-    
-    protected function getDistinctClasses()
+     protected function getDistinctClasses()
     {
         $tables = DB::table('objects')->distinct('classname')->get();
         return $tables;
