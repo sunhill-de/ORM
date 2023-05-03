@@ -22,7 +22,7 @@ class MysqlStorageMigrateFreshTest extends DatabaseTestCase
     
     protected function checkTable($table, $fields)
     {
-        $this->assertDatabaseHasTable($table);
+        $this->assertDatabaseHasTable($table, "Expected table $table doesnt exist.");
         $table_fields = Schema::getColumnListing($table);
         foreach ($fields as $field) {
             if (!in_array($field,$table_fields)) {
@@ -45,7 +45,7 @@ class MysqlStorageMigrateFreshTest extends DatabaseTestCase
     {
         foreach ($tables as $table => $field) {
             Schema::drop($table);
-            $this->assertDatabaseHasNotTable($table);
+            $this->assertDatabaseHasNotTable($table, "Unexpected table $table exists.");
         }
         
         $object = new $class();

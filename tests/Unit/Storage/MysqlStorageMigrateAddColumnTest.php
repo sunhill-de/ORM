@@ -11,32 +11,42 @@ use Sunhill\ORM\Storage\Mysql\ColumnInfo;
 class MysqlStorageMigrateAddColumnTest extends DatabaseTestCase
 {
     
-    use ColumnInfo;
+    use ColumnInfo, TableAssertions;
     
-    public function testAddSimpleColumn()
+    /**
+     * @dataProvider AddASimpleColumnProvider
+     * @param unknown $table
+     * @param unknown $column
+     */
+    public function testAddASimpleColumn($column)
     {
-        Schema::dropIfExists('testparents');
-        Schema::create('testparents', function($table) {
-            $table->char('parentchar')->nullable();
-            $table->float('parentfloat');
-            $table->text('parenttext');
-            $table->datetime('parentdatetime');
-            $table->date('parentdate');
-            $table->time('parenttime');
-            $table->enum('parentenum',['testA','testB','testC']);
-            $table->integer('parentobject')->nullable()->default(null);
-            $table->integer('nosearch')->nullable(0)->default(1);
+        Schema::table('testparents', function ($dbobject) use ($column) {
+            $dbobject->dropColumn($column);
         });
-        // parentint is missing !
+        $this->assertDatabaseTableHasNotColumn('testparents', $column);
         
         $object = new TestParent();
         $test = new MysqlStorage($object);
         
         $test->migrate();
         
-        $this->assertDatabaseTableHasColumn('testparents', 'parentint');
+        $this->assertDatabaseTableHasColumn('testparents', $column);
     }
-        
+
+    public function AddASimpleColumnProvider()
+    {
+        return [
+            ['parentchar'],
+            ['parentint'],
+            ['parentfloat'],
+            ['parentdate'],
+            ['parentdatetime'],
+            ['parenttime'],
+            ['parentenum'],
+            ['parentobject'],
+        ];    
+    }
+    
     public function testAddSArrayColumn()
     {
         Schema::dropIfExists('testparents_array_parentsarray');
@@ -75,80 +85,5 @@ class MysqlStorageMigrateAddColumnTest extends DatabaseTestCase
         
         $this->assertDatabaseHasTable('testparents_calc_parentcalc');        
     }
-    
-    public function testChangedColumnType()
-    {
-        Schema::dropIfExists('testparents');
-        Schema::create('testparents', function($table) {
-            $table->integer('parentchar')->nullable();
-            $table->integer('parentint');
-            $table->float('parentfloat');
-            $table->text('parenttext');
-            $table->datetime('parentdatetime');
-            $table->date('parentdate');
-            $table->time('parenttime');
-            $table->enum('parentenum',['testA','testB','testC']);
-            $table->integer('parentobject')->nullable()->default(null);
-            $table->integer('nosearch')->nullable(0)->default(1);
-        });
-            
-       $object = new TestParent();
-       $test = new MysqlStorage($object);
-            
-       $test->migrate();
-            
-       $this->assertEquals('string',$this->getColumnType('testparents', 'parentchar'));            
-    }
-    
-    public function testChangedColumnDefault()
-    {
-        Schema::dropIfExists('testparents');
-        Schema::create('testparents', function($table) {
-            $table->char('parentchar')->nullable();
-            $table->integer('parentint');
-            $table->float('parentfloat');
-            $table->text('parenttext');
-            $table->datetime('parentdatetime');
-            $table->date('parentdate');
-            $table->time('parenttime');
-            $table->enum('parentenum',['testA','testB','testC']);
-            $table->integer('parentobject')->nullable()->default(null);
-            $table->integer('nosearch')->nullable(0)->default(1111);
-        });
-            
-        $object = new TestParent();
-        $test = new MysqlStorage($object);
-            
-        $test->migrate();
-            
-        $this->assertEquals(1,$this->getColumnDefault('testparents', 'nosearch'));            
-    }
-
-    
-    public function testChangedColumnDefaultNull()
-    {
-        Schema::dropIfExists('testparents');
-        Schema::create('testparents', function($table) {
-            $table->char('parentchar');
-            $table->integer('parentint');
-            $table->float('parentfloat');
-            $table->text('parenttext');
-            $table->datetime('parentdatetime');
-            $table->date('parentdate');
-            $table->time('parenttime');
-            $table->enum('parentenum',['testA','testB','testC']);
-            $table->integer('parentobject')->nullable()->default(null);
-            $table->integer('nosearch')->nullable(0)->default(1111);
-        });
-            
-            $object = new TestParent();
-            $test = new MysqlStorage($object);
-            
-            $this->assertFalse($this->getColumnDefaultsNull('testparents', 'parentchar'));
-            
-            $test->migrate();
-            
-            $this->assertTrue($this->getColumnDefaultsNull('testparents', 'parentchar'));
-    }
-    
+        
 }
