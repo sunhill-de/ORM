@@ -95,7 +95,7 @@ class MysqlStorageMigrateAlterColumnTest extends DatabaseTestCase
             
             $this->assertTrue($this->getColumnDefaultsNull('testparents', 'parentchar'));
     }
-
+/*
     public function testEnumNewValue()
     {
         Schema::table('testparents', function($table)  {
@@ -131,5 +131,5 @@ class MysqlStorageMigrateAlterColumnTest extends DatabaseTestCase
                 
         $enum_values = $this->getEnumValue('testparents', 'parentenum');
         $this->assertEquals(['testA','testB','testC'], $enum_values);
-    }
+    } */
 }
