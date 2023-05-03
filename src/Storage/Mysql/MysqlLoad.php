@@ -71,7 +71,7 @@ class MysqlLoad
         foreach ($query as $attribute) {
             $entry = new \StdClass();
             $entry->name = $attribute->name;
-            $netry->attribute_id = $attribute->attribute_id;
+            $entry->attribute_id = $attribute->attribute_id;
             if ($entry->type = $attribute->type == 'text') {
                 $entry->value = $attribute->textvalue;
             } else {
