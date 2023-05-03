@@ -153,13 +153,13 @@ class ORMObject extends PropertiesHaving
 	    if (empty($storage->getEntity('attributes'))) {
 	        return;
 	    }
-	    foreach ($storage->getEntity('attributes') as $name => $value) {
-	        if (!empty($value['property'])) {
-	            $property_name = $value['property'];
+	    foreach ($storage->getEntity('attributes') as $value) {
+	        if (!empty($value->property)) {
+	            $property_name = $value->property;
 	        } else {
-	            $property_name = 'Attribute'.ucfirst($value['type']);
+	            $property_name = 'Attribute'.ucfirst($value->type);
 	        }
-	        $property = $this->dynamicAddProperty($name, $property_name);
+	        $property = $this->dynamicAddProperty($value->name, $property_name);
 	        $property->load($storage);	        
 	    }
 	}
