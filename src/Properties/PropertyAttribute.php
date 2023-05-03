@@ -87,11 +87,11 @@ class PropertyAttribute extends Property {
 	protected function doLoad(StorageBase $loader,$name) 
 	{	    
 	    $this->attribute_name = $name;
-	    $this->attribute_id = $loader->entities['attributes'][$name]['attribute_id'];	    
+	    $this->attribute_id = $loader->getEntity('attributes')[$name]->attribute_id;	    
 	    $this->value = $this->extractValue($loader);
-	    $this->allowed_objects = $loader->entities['attributes'][$name]['allowedobjects'];
-	    $this->attribute_type = $loader->entities['attributes'][$name]['type'];
-	    $this->property = $loader->entities['attributes'][$name]['property'];
+ 	    $this->allowed_objects = $loader->getEntity('attributes')[$name]->allowed_objects;
+	    $this->attribute_type = $loader->getEntity('attributes')[$name]->type;
+	    $this->property = $loader->getEntity('attributes')[$name]->property;
 	}
 	
 	/**
@@ -101,7 +101,7 @@ class PropertyAttribute extends Property {
 	 */
 	protected function extractValue(StorageBase $loader) 
 	{
-	    return $this->value = $loader->entities['attributes'][$this->attribute_name]['value'];    
+	    return $this->value = $loader->getEntity('attributes')[$this->attribute_name]->value;    
 	}
 
 // ============================ Einfügen ========================================	
