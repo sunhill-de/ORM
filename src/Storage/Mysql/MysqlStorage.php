@@ -17,41 +17,46 @@ namespace Sunhill\ORM\Storage\Mysql;
 use Sunhill\ORM\Storage\StorageBase;
 
 /**
- * The implementation for storing an object into a mysql/maria database
+ * The implementation for storing a property into a mysql/maria database
  * 
  * @author klaus
  */
 class MysqlStorage extends StorageBase 
 {
       
-    // **************************** Load ********************************************
+    /**
+     * Loads the property with the given id from the storage
+     * {@inheritDoc}
+     * @see \Sunhill\ORM\Storage\StorageBase::doLoad()
+     */
     protected function doLoad(int $id)
     {
-        $mysql_load = new MysqlLoad($this);
-        $mysql_load->doLoad($id);
+        $storage_helper = new MysqlLoad($this);
+        $storage_helper->doLoad($id);
     }
     
     protected function doStore(): int
     {
-        $mysql_store = new MysqlStore($this);
-        return $mysql_store->doStore();        
+        $storage_helper = new MysqlStore($this);
+        return $storage_helper->doStore();        
     }
     
     protected function doUpdate(int $id)
     {
-        $mysql_update = new MysqlUpdate($this);
-        return $mysql_update->doUpdate($id);        
+        $storage_helper = new MysqlUpdate($this);
+        return $storage_helper->doUpdate($id);        
     }
     
     protected function doDelete(int $id)
     {
-        
+        $storage_helper = new MysqlDelete($this);
+        $storage_helper->doDelete($id);        
     }
     
     protected function doMigrate()
     {
-        $mysql_migrate = new MysqlMigrate($this);
-        return $mysql_migrate->doMigrate();        
+        $storage_helper = new MysqlMigrate($this);
+        return $storage_helper->doMigrate();        
     }
     
     protected function doPromote()
@@ -68,5 +73,9 @@ class MysqlStorage extends StorageBase
     {
         
     }
-     
+ 
+    protected function doDrop()
+    {
+        
+    }
 }
