@@ -19,8 +19,8 @@ class MysqlStorageLoadTest extends DatabaseTestCase
         $this->assertEquals(123,$test->dummyint);
         $this->assertEquals('a123',$test->uuid);
         $this->assertEquals('2019-05-15 10:00:00',$test->created_at);
-        $this->assertEquals('general_attribute',$test->attributes[0]->name);
-        $this->assertEquals(444,$test->attributes[0]->value);
+        $this->assertEquals('general_attribute',$test->attributes['general_attribute']->name);
+        $this->assertEquals(444,$test->attributes['general_attribute']->value);
     }
 
     public function testDummyChildLittleMoreComplexLoad()
@@ -52,10 +52,11 @@ class MysqlStorageLoadTest extends DatabaseTestCase
         $this->assertEquals([2,3],$test->parentoarray);
         $this->assertEquals('111A',$test->parentcalc);
         $this->assertEquals([3,4,5],$test->tags);
-        $this->assertEquals('attribute1',$test->attributes[0]->name);
-        $this->assertEquals(123,$test->attributes[0]->value);
-        $this->assertEquals('attribute2',$test->attributes[1]->name);
-        $this->assertEquals(222,$test->attributes[1]->value);
+        $this->assertEquals('attribute1',$test->attributes['attribute1']->name);
+        $this->assertEquals(123,$test->attributes['attribute1']->value);
+        $this->assertEquals('int',$test->attributes['attribute1']->type);
+        $this->assertEquals('attribute2',$test->attributes['attribute2']->name);
+        $this->assertEquals(222,$test->attributes['attribute2']->value);
         $this->assertEquals('111A',$test->parentcalc);
     }
     
