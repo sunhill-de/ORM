@@ -8,30 +8,56 @@ use Sunhill\ORM\Storage\StorageBase;
 class FakeStorage extends StorageBase
 {
     
-    protected function executeChain(string $chainname, int $id, $payload = null)
+    protected function doLoad(int $id)
     {
-        switch ($chainname) {
-            case 'load':
-                $this->entities = $this->caller->storage_values;
-                break;
-            case 'insert':
-                if (isset($this->entities['attributes'])) {
-                    foreach ($this->entities['attributes'] as $attribute) {
-                        $this->entities['attributes'][$attribute['name']]['value_id'] = 9;
-                    }
-                }
-            case 'update':
-                $this->caller->storage_values = $this->entities;
-                break;
-        }
-        return 1;
+        $this->entities = $this->caller->storage_values;
     }
     
-    public function executeNeedIDQueries()
+    protected function doStore(): int
+    {
+        if (isset($this->entities['attributes'])) {
+            foreach ($this->entities['attributes'] as $attribute) {
+                $this->entities['attributes'][$attribute['name']]['value_id'] = 9;
+            }
+        }
+        
+    }
+    
+    protected function doUpdate(int $id)
+    {
+        $this->caller->storage_values = $this->entities;
+    }
+    
+    protected function doDelete(int $id)
     {
         
     }
     
+    protected function doMigrate()
+    {
+        
+    }
+    
+    protected function doPromote()
+    {
+        
+    }
+    
+    protected function doDegrade()
+    {
+        
+    }
+    
+    protected function doSearch()
+    {
+        
+    }
+    
+    protected function doDrop()
+    {
+        
+    }
+        
 }
 
 class ObjectUnit extends ORMObject

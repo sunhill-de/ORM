@@ -32,7 +32,7 @@
   "Migrating :name: ":"Migrierge :name: ",
   "Migrating finished.":"Migration beendet",
   
-  "***** src/Objects/PropertiesHaving":"src/Objects/PropertiesHaving *****",
+  "***** src/Objects/PropertyCollection":"src/Objects/PropertyCollection *****",
   "Invalided object called.":"Invalidiertes Objekt aufgerufen",
   "Unknown property ':name'":"Unbekannte Property ':name'",
   "Property ':name' was changed in readonly state.":"Property ':name' wurde im nur-lesen-Modus geändert",

@@ -33,7 +33,7 @@ use Sunhill\ORM\Properties\AttributeException;
  * - No direct database interaction. Should be handled by the storages
  * @author lokal
  */
-class ORMObject extends PropertiesHaving 
+class ORMObject extends PropertyCollection 
 {
     const DEFAULT_OWNER=0;
     const DEFAULT_GROUP=0;
@@ -87,8 +87,6 @@ class ORMObject extends PropertiesHaving
 	 */
 	protected function executeNeedIDQueries(StorageBase $storage) 
     {
-	    $storage->entities['needid_queries'] = $this->needid_queries;
-	    $storage->executeNeedIDQueries();
 	}
 	
 // ============================ Storagefunctions  =======================================	
@@ -128,9 +126,9 @@ class ORMObject extends PropertiesHaving
 	/**
 	 * Loads the object from the storage
 	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\PropertiesHaving::doLoad()
+	 * @see \Sunhill\ORM\PropertyCollection::doLoad()
 	 */
-	protected function doLoad() 
+	protected function doLoad(StorageBase $storage, string $name) 
     {
 	    if (!$this->isLoading()) {
 	        $this->state = 'loading';
@@ -177,7 +175,7 @@ class ORMObject extends PropertiesHaving
      * inserts an object into the storage
 	 * First for every property inserting is called, afterwards insert and finally inserted.
 	 */
-	protected function doInsert()
+	protected function doInsert(StorageBase $storage, string $name)
     {
 	       $storage = $this->getStorage();
     	   $this->walkProperties('inserting', $storage);
@@ -189,7 +187,7 @@ class ORMObject extends PropertiesHaving
 	}
 
 // ========================== Update ===================================	
-	protected function doUpdate() 
+	protected function doUpdate(StorageBase $storage, string $name) 
     {
 	    $storage = $this->getStorage();
 	    $storage->setEntity('id',$this->getID());
@@ -474,7 +472,7 @@ class ORMObject extends PropertiesHaving
 
 	/**
 	 * This method must be overwritten by the derrived class to define its infos
-	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 * Test: /Unit/Objects/PropertyCollection_infoTest
 	 */
 	protected static function setupInfos()
 	{

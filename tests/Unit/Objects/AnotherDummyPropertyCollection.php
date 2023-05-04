@@ -1,12 +1,12 @@
 <?php
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
-class AnotherDummyPropertiesHaving extends DummyPropertiesHaving
+class AnotherDummyPropertyCollection extends DummyPropertyCollection
 {
     
     protected static function setupInfos()
     {
-        static::addInfo('name','AnotherDummyPropertiesHaving');
+        static::addInfo('name','AnotherDummyPropertyCollection');
         static::addInfo('test','This is another test', true);
         static::addInfo('something','else');
     }

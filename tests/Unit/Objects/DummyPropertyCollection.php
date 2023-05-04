@@ -2,15 +2,15 @@
 
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
-use Sunhill\ORM\Objects\PropertiesHaving;
-use Sunhill\ORM\Objects\PropertiesHavingException;
+use Sunhill\ORM\Objects\PropertyCollection;
+use Sunhill\ORM\Objects\PropertyCollectionException;
 
-class DummyPropertiesHaving extends PropertiesHaving
+class DummyPropertyCollection extends PropertyCollection
 {
     
     protected static function setupInfos()
     {
-        static::addInfo('name','DummyPropertiesHaving');
+        static::addInfo('name','DummyPropertyCollection');
         static::addInfo('test', 'This is a test.', true);
     }
  

@@ -19,8 +19,10 @@ use Illuminate\Support\Facades\Lang;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Objects\Utils\ObjectMigrator;
+use Sunhill\ORM\Storage\StorageBase;
 use Doctrine\Common\Lexer\Token;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Storage;
 
  /**
   * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
@@ -686,9 +688,11 @@ class ClassManager
      */
     public function migrateClass(string $class_name) 
     {
-        $class_name = $this->checkClass($class_name);
-        $migrator = new ObjectMigrator();
-        $migrator->migrate($class_name);
+        $class_namespace = $this->getNamespaceOfClass($class_name);
+        
+        $example = new $class_namespace();
+        $storage = Storage::createStorage($example);
+        $storage->migrate();
     }
     
     public function migrateClasses()

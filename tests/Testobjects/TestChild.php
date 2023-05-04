@@ -18,7 +18,7 @@ class TestChild extends TestParent
     {
 	    parent::setupProperties();
 	    self::integer('childint')->searchable();
-	    self::varchar('childchar')->searchable()->nullable();
+	    self::varchar('childchar')->searchable()->default(null);
 	    self::float('childfloat')->searchable();
 	    self::text('childtext')->searchable();
 	    self::datetime('childdatetime')->searchable();

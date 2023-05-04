@@ -1,7 +1,7 @@
 <?php
 /**
- * @file PropertiesHaving.php
- * Defines the class PropertiesHaving. This is, as the name suggents, a class that has properties. 
+ * @file PropertyCollection.php
+ * Defines the class PropertyCollection. This is, as the name suggents, a class that has properties. 
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -11,11 +11,12 @@
  * Tests: none
  * Coverage: unknown
  * PSR-State: some type hints missing
- * Tests: PropertiesHaving_infoTest
+ * Tests: PropertyCollection_infoTest
  */
 namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Search\QueryBuilder;
+use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Hookable;
 use Sunhill\ORM\Facades\Classes;
@@ -27,15 +28,9 @@ use Sunhill\ORM\Properties\Property;
  *  
  * @author lokal
  */
-class PropertiesHaving extends Hookable 
+class PropertyCollection extends Property 
 {
 	
-    protected $id;
-    
-    protected $state = 'normal';
-    
-    private $readonly = false;
-    
     protected $properties;
     
     protected static $infos;
@@ -50,10 +45,6 @@ class PropertiesHaving extends Hookable
 		$this->copyProperties();
 	}
 	
-	protected function setupHooks() {
-	    $this->addHook('COMMITTED','clearDirty');
-	}
-	
 	// ================================= ID-Handling =======================================
 	/**
 	 * Returns the current id of this object (or null, when this object wasn't stored yet) 
@@ -61,7 +52,7 @@ class PropertiesHaving extends Hookable
 	 */
 	public function getID()
     {
-	    return $this->id;
+	    return $this->storageID;
 	}
 	
 	/**
@@ -70,115 +61,18 @@ class PropertiesHaving extends Hookable
 	 */
 	public function setID(int $id)
     {
-	    $this->id = $id;
+	    $this->storageID = $id;
+	}
+		
+	public function getStorageClass(): string
+	{
+	    return 'Collection';
 	}
 	
-    /**
-	 * Sets a new value for readonly
-	 * @param bool $value
-	 * @return \Sunhill\PropertiesHaving
-	 */
-	protected function setReadonly(bool $value): PropertiesHaving
-    {
-	    $this->readonly = $value;
-	    return $this;
-	}
 	
-	/**
-	 * Returns the value for readonly
-	 * @return bool
-	 */
-	protected function getReadonly(): bool
-    {
-	    return $this->readonly;
-	}
-	
-// ============================== State-Handling ===========================================	
-	
-    /**
-     * Sets the current state of this object
-     * @param $state string the new state
-     */
-	protected function setState(string $state): PropertiesHaving 
-    {
-	    $this->state = $state;
-	    return $this;
-	}
-
-    /**
-     * Returns the current state of this object
-     * @return string
-     */
-	protected function getState(): string
-    {
-	    return $this->state;
-	}
-
-    /**
-     * Returns true if this object is comitting right now
-     * @return bool
-     */
-	protected function isCommitting(): bool
-    {
-	    return ($this->getState() == 'committing');
-	}
-	
-    /**
-     * Returns true if this object is invalid
-     * @return bool
-     */
-	protected function isInvalid(): bool
-    {
-	    return $this->getState() == 'invalid';
-	}
-	
-    /**
-     * Returns true if this object is loading right now
-     * @return bool
-     */
-    protected function isLoading(): bool 
-    {
-	   return $this->getState() == 'loading';    
-	}
-	
-	/**
-     * Raises an exception if the object is invalid
-     */
-    protected function checkValidity() 
-    {
-	    if ($this->isInvalid()) {
-	        throw new PropertiesHavingException(__('Invalided object called.'));
-	    }
-	}
 // ==================================== Loading =========================================
 	
-    /**
-     * Loads the object with the id $id from the storage
-     * @param $id int The id of the object to load
-     * @returns PropertiesHaving Reference to self
-     * @throws PropertiesHavingException If the object is invalid
-     */
-	public function load(int $id): PropertiesHaving 
-    {
-	    $this->checkValidity(); // Is this object inavlid?
-	    
-        if ($result = $this->checkCache($id)) { // Is this object already in the cache
-	        $this->setState('invalid'); // If yes, this object is invalid
-	        return $result; // Return the cache instead
-	    }
-	    
-        $this->insertCache($id); // Insert into cache
-	    $this->setID($id);       
-	    
-        $this->checkForHook('LOADING','default',array($id));
-	    $this->doLoad();
-	    $this->cleanProperties();
-	    $this->checkForHook('LOADED','default',array($id));
-	    
-        return $this;
-	}
-	
-	/**
+ 	/**
 	 * Checks if the object with the given id is already in cache
 	 * @param integer $id The id to check
      * @returns bool True if it is in the cache, false if not
@@ -199,61 +93,28 @@ class PropertiesHaving extends Hookable
     /**
      * Does the loading (has to be overwritten)
      */
-	protected function doLoad() 
-    {
+	protected function doLoad(StorageBase $loader, string $name)
+	{
+        if ($result = $this->checkCache($id)) { // Is this object already in the cache
+            $this->setState('invalid'); // If yes, this object is invalid
+            return $result; // Return the cache instead
+        }
+        
+        $this->insertCache($id); // Insert into cache
+        $this->setID($id);
+        
+        $this->doLoad();
+        $this->cleanProperties();
+        
+        return $this;
 	}
 	
-// ===================================== Committing =======================================
-	/**
-     * Stores the object into the storage
-     */
-    public function commit($caller=null) 
-    {
-	    $this->checkValidity();
-    	if (!$this->isCommitting()) { // Guard to protect from circular calls
-	        $this->setState('committing');
-	        $this->checkForHook('COMMITTING');
-	        if ($this->getID()) {
-	            $this->update(); // This object is already in a storage
-	        } else {
-	            $this->insert(); // This object is new
-	        }
-	        $this->checkForHook('COMMITTED');
-	        $this->setState('normal');
-	    }
-	    return;
-	}
-
-    /**
-     * Returns if one of the properties is modified since the last commit(), rollback() or load()
-     * @returns bool
-     */
-	protected function getDirty() 
-    {
-	    $dirty_properties = $this->getPropertiesWithFeature('',true);
-	    return (!empty($dirty_properties));	    
-	}
-	
-	protected function doRecommit() 
-    {
-	    
-	}
 	
 // ====================================== Updating ========================================	
-	/**
-     * Checks for hooks and calls do_update
-     */
-    protected function update() 
-    {
-	    $this->checkForHook('UPDATING');
-	    $this->doUpdate();
-	    $this->checkForHook('UPDATED');
-	}
-
     /**
      * Does the update work
      */
-	protected function doUpdate() 
+	protected function doUpdate(StorageBase $storage, string $name) 
     {
 	    // has to be overwritten in child objects
 	}
@@ -268,42 +129,22 @@ class PropertiesHaving extends Hookable
 
 // ======================================= Inserting ===========================================
 	/**
-     * Checks for hooks and calls do_insert
-     */
-    protected function insert() 
-    {
-	    $this->checkForHook('INSERTING');
-	    $this->doInsert();
-	    $this->checkForHook('INSERTED');
-	}
-
-	/**
 	 * Does the insert work
 	 * @param bool $recommit
 	 */
-	protected function doInsert() 
+	protected function doInsert(StorageBase $storage, string $name) 
     {
 	   // has to be overwritten in child objects 
 	}
 	
 	// ====================================== Deleting ==========================================
-	/**
-     * Checks for hooks and calls do_delete and clears the cache
-     */
-    public function delete() 
-    {
-	    $this->checkForHook('DELETING');
-	    $this->doDelete();
-	    $this->checkForHook('DELETED');
-	    $this->clearCacheEntry();
-	}
-	
     /**
      * Does the delete work
      */
 	protected function doDelete() 
     {
-	   // Has to be overwritten in child objects 
+        $this->clearCacheEntry();
+        // Has to be overwritten in child objects 
 	}
 	
     /**
@@ -364,7 +205,7 @@ class PropertiesHaving extends Hookable
     {
 	    if (isset($this->properties[$name])) {
 	        if ($this->getReadonly()) {
-	            throw new PropertiesHavingException(__("Property ':name' was changed in readonly state.",['name'=>$name]));
+	            throw new PropertyCollectionException(__("Property ':name' was changed in readonly state.",['name'=>$name]));
 	        } else {
 	            $this->properties[$name]->setValue($value);
 	            $this->checkForHook('SET',$name,array(
@@ -380,7 +221,7 @@ class PropertiesHaving extends Hookable
 	            }
 	        }
 	    } else if (!$this->handleUnknownProperty($name,$value)){
-	        throw new PropertiesHavingException(__("Unknown property ':name'",['name'=>$name]));
+	        throw new PropertyCollectionException(__("Unknown property ':name'",['name'=>$name]));
 	    }
 	}
 	
@@ -406,7 +247,7 @@ class PropertiesHaving extends Hookable
 	        if ($return_null) {
 	            return null;
 	        }
-	        throw new PropertiesHavingException(__("Unknown property ':name'",['name'=>$name]));
+	        throw new PropertyCollectionException(__("Unknown property ':name'",['name'=>$name]));
 	    }
 	    return $this->properties[$name];
 	}
@@ -534,7 +375,7 @@ class PropertiesHaving extends Hookable
 	 * Creates an empty array for infos and calls setupInfos()
 	 * Infos are class wide additional informations that are stored to a class. Useful for information
 	 * like name, table-name, editable, etc.	 
-	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 * Test: /Unit/Objects/PropertyCollection_infoTest
 	 */
 	protected static function initializeInfos()
 	{
@@ -544,11 +385,11 @@ class PropertiesHaving extends Hookable
 	
 	/**
 	 * This method must be overwritten by the derrived class to define its infos
-	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 * Test: /Unit/Objects/PropertyCollection_infoTest
 	 */
 	protected static function setupInfos()
 	{
-	    static::addInfo('name', 'propertieshaving');
+	    static::addInfo('name', 'PropertyCollection');
 	    static::addInfo('table', '');
 	    static::addInfo('name_s', 'properties having');
 	    static::addInfo('name_p', 'properties having');
@@ -561,7 +402,7 @@ class PropertiesHaving extends Hookable
 	 * @param string $key: The key for the piece of information
 	 * @param unknown $value: The value of this information
 	 * @param bool $translatable: A boolean that indicates, if the return should pass the __() function
-	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 * Test: /Unit/Objects/PropertyCollection_infoTest
 	 */
 	protected static function addInfo(string $key, $value, bool $translatable = false)
 	{
@@ -575,16 +416,16 @@ class PropertiesHaving extends Hookable
 	/**
 	 * returns the Information named $key
 	 * @param string $key
-	 * @throws PropertiesHavingException
+	 * @throws PropertyCollectionException
 	 * @return string|array|NULL|unknown
-	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 * Test: /Unit/Objects/PropertyCollection_infoTest
 	 */
 	public static function getInfo(string $key, $default = null)
 	{
         static::initializeInfos();
 	    if (!isset(static::$infos[$key])) {
 	        if (is_null($default)) {
-			    throw new PropertiesHavingException("The key '$key' is not defined.");
+			    throw new PropertyCollectionException("The key '$key' is not defined.");
 	        } else {
 	            return $default;
 	        }
@@ -600,7 +441,7 @@ class PropertiesHaving extends Hookable
 	/**
 	 * Return all avaiable infos
 	 * @return unknown
-	 * Test: /unit/Ovhects/PropertiesHaving_infoTest
+	 * Test: /unit/Ovhects/PropertyCollection_infoTest
 	 */
 	public static function getAllInfos()
 	{
@@ -612,7 +453,7 @@ class PropertiesHaving extends Hookable
 	 * Checks if the given info is defined
 	 * @param string $key
 	 * @return bool
-	 * Test: /unit/Ovhects/PropertiesHaving_infoTest
+	 * Test: /unit/Ovhects/PropertyCollection_infoTest
 	 */
 	public static function hasInfo(string $key): bool
 	{
@@ -624,7 +465,7 @@ class PropertiesHaving extends Hookable
 	 * Wrapper for the __() function
 	 * @param unknown $info
 	 * @return string|array|NULL
-	 * Test: /Unit/Objects/PropertiesHaving_infoTest
+	 * Test: /Unit/Objects/PropertyCollection_infoTest
 	 */
 	protected static function translate(string $info): string
 	{
@@ -636,7 +477,7 @@ class PropertiesHaving extends Hookable
 	 * It is used only internally and uses a quite dirty hack (debug_backtrace()) so
 	 * this method is not well testable (But at the moment it works)
 	 * @return string
-	 * Test: /unit/Ovhects/PropertiesHaving_PropertyTests::testGetCallingClass
+	 * Test: /unit/Ovhects/PropertyCollection_PropertyTests::testGetCallingClass
 	 */
 	protected static function getCallingClass(): string 
     {
@@ -650,8 +491,8 @@ class PropertiesHaving extends Hookable
 	 * @throws ORMException
 	 * @return string
 	 * Test: 
-	 * - /unit/Ovhects/PropertiesHaving_PropertyTests::testGetPropertyClass, 
-	 * - /unit/Ovhects/PropertiesHaving_PropertyTests::testGetPropertyclass_failure
+	 * - /unit/Ovhects/PropertyCollection_PropertyTests::testGetPropertyClass, 
+	 * - /unit/Ovhects/PropertyCollection_PropertyTests::testGetPropertyclass_failure
 	 */
 	protected static function getPropertyClass($type): string
 	{
@@ -688,7 +529,7 @@ class PropertiesHaving extends Hookable
 	 * @param string $type
 	 * @param unknown $class
 	 * @return unknown
-	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testCreateProperty
+	 * Test: /Unit/Objects/PropertyCollection_PropertyTests::testCreateProperty
 	 * Note: setClass is not unit testable because of the use of getCallingClass (see above)
 	 */
 	protected static function createProperty(string $name, string $type, $class = null) 
@@ -721,7 +562,7 @@ class PropertiesHaving extends Hookable
 	 * @param string $name
 	 * @return unknown|NULL
 	 * Test: 
-	 * - /Unit/Objects/PropertiesHaving_PropertyTests::testGetPropertyObject
+	 * - /Unit/Objects/PropertyCollection_PropertyTests::testGetPropertyObject
 	 */
 	public static function getPropertyObject(string $name): ?Property 
     {
@@ -737,7 +578,7 @@ class PropertiesHaving extends Hookable
 	 * Alias to getPropertyObject
 	 * @param string $name
 	 * @return \Sunhill\ORM\Properties\Property
-	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testPrepareGroup 
+	 * Test: /Unit/Objects/PropertyCollection_PropertyTests::testPrepareGroup 
 	 */
 	public static function getPropertyInfo(string $name): ?Property
 	{
@@ -749,7 +590,7 @@ class PropertiesHaving extends Hookable
 	 * 
 	 * @param unknown $group
 	 * @return string|NULL
-	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testPrepareGroup 
+	 * Test: /Unit/Objects/PropertyCollection_PropertyTests::testPrepareGroup 
 	 */
 	protected static function prepareGroup($group): ?string
 	{
@@ -761,7 +602,7 @@ class PropertiesHaving extends Hookable
 	 *
 	 * @param unknown $group
 	 * @return string|NULL
-	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testGetAllProperties
+	 * Test: /Unit/Objects/PropertyCollection_PropertyTests::testGetAllProperties
 	 */
 	protected static function getAllProperties(): array
 	{
@@ -775,7 +616,7 @@ class PropertiesHaving extends Hookable
 	 * @param array $input
 	 * @param string $feature
 	 * @return array
-	 * Test: /Unit/Objects/PropertiesHaving_PropertyTests::testFilterFeature
+	 * Test: /Unit/Objects/PropertyCollection_PropertyTests::testFilterFeature
 	 */
 	protected static function filterFeature(array $input, string $feature): array
 	{
@@ -797,7 +638,7 @@ class PropertiesHaving extends Hookable
 	 * @param array $input
 	 * @param unknown $group
 	 * @return array
-	 * Test: /Unit/Objects/PropertiesHaving_PropertyTest::testGroupResult
+	 * Test: /Unit/Objects/PropertyCollection_PropertyTest::testGroupResult
 	 */
 	protected static function groupResult(array $input, $group): array
 	{

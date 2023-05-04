@@ -20,8 +20,14 @@ namespace Sunhill\ORM\Properties;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\Basic\Loggable;
-use Sunhill\ORM\PropertiesHaving;
+use Sunhill\ORM\PropertyCollection;
+use Sunhill\ORM\Facades\Storage;
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Units\None;
+use Sunhill\ORM\Semantic\Name;
+use TijsVerkoyen\CssToInlineStyles\Css\Property\Processor;
+use League\CommonMark\Extension\DefaultAttributes\DefaultAttributesExtension;
+use Sunhill\ORM\Properties\PropertyException;
 
 /** 
  * These constants are used in get_diff_array as an optional parameter. They decide how object references should 
@@ -55,10 +61,12 @@ class Property extends Loggable
      */
     private $additional_fields = [];
         
+    protected $state = 'normal';
+    
     /**
-     * This field stores the owner of this property. It points to an descendand of PropertiesHaving 
+     * This field stores the owner of this property. It points to an descendand of PropertyCollection 
      * Property->getOwner() reads, Property->setOwner() writes
-     * @var \Sunhill\ORM\PropertiesHaving
+     * @var \Sunhill\ORM\PropertyCollection
      */
 	protected $owner;
 	
@@ -76,6 +84,24 @@ class Property extends Loggable
 	protected $value;
 	
 	/**
+	 * Does this property has a unit (by default none)
+	 * @var unknown
+	 */
+	protected $unit = None::class;
+	
+	/**
+	 * The semantic meaning of this property (by default name)
+	 * @var unknown
+	 */
+	protected $semantic = Name::class;
+	
+	/**
+	 * Is this property allowed to take null as a value (by default yes)
+	 * @var boolean
+	 */
+	protected $nullable = true;
+	
+	/**
 	 * The shadow value of this property. This is the value after the last Property->commit()
      * It is used for rollback and creation of the diff array (Property->getDiffArray())
 	 * @var void
@@ -86,7 +112,7 @@ class Property extends Loggable
 	 * The type of this property. Is set by the property itself and can't (or shouldn't) be changed
 	 * @var string
 	 */
-	protected $type;
+	protected $type = '';
 	
 	/**
 	 * The default value for the value field. In combination with Property->defaults_null this default value 
@@ -146,7 +172,7 @@ class Property extends Loggable
      * Stores the class of the property
      * @var string
      */
-	protected $class;
+	protected $class = '';
 	
 	/**
 	 * Shows if this property is searchable (true) or not (false)
@@ -154,6 +180,7 @@ class Property extends Loggable
 	 */
 	protected $searchable=false;
 	
+
 	/**
 	 * The constructor sets all values to a default
 	 */
@@ -162,33 +189,23 @@ class Property extends Loggable
 		$this->dirty = false;
 		$this->defaults_null = false;
 		$this->read_only = false;
-		if ($this->is_array()) {
-			$this->value = array();
-		}
 		$this->initialize();
 		$this->initValidator();
 	}
 	
 	/**
 	 * Extends the property with the possibility to deal with additional getters and setters
-	 * @param unknown $method
-	 * @param unknown $params
+	 * 
+	 * @param string $method
+	 * @param array $params
 	 * @return mixed|NULL|\Sunhill\ORM\Properties\Property
+	 * 
+	 * Test: /Unit/Properties/PropertyTest::testAdditionalGetter
+	 * Test: /Unit/Properties/PropertyTest::testUnknownMethod
 	 */
-	public function __call($method, $params) 
+	public function __call(string $method, array $params) 
 	{
-	    if (substr($method,0,4) == 'get_') {
-	        $name = substr($method,4);
-	        if (isset($this->additional_fields[$name])) {
-	            return $this->additional_fields[$name];
-	        } else {
-	            return null;
-	        }
-	    } else if (substr($method,0,4) == 'set_') {
-	        $name = substr($method,4);
-	        $this->additional_fields[$name] = $params[0];
-	        return $this;
-	    } else if (substr($method,0,3) == 'get') {
+         if (substr($method,0,3) == 'get') {
 	        $name = strtolower(substr($method,3));
 	        if (isset($this->additional_fields[$name])) {
 	            return $this->additional_fields[$name];
@@ -196,10 +213,11 @@ class Property extends Loggable
 	            return null;
 	        }
 	    } else if (substr($method,0,3) == 'set') {
-	        $name = substr($method,3);
+	        $name = strtolower(substr($method,3));
 	        $this->additional_fields[$name] = $params[0];
 	        return $this;
 	    }
+	    throw new PropertyException("Unknown method '$method' called");
 	}
 	
 	/**
@@ -223,12 +241,72 @@ class Property extends Loggable
 	    $this->validator = new $validator_name();    
 	}
 
-// =========================== Setter and getter ========================================	
+	// ============================== State-Handling ===========================================
+	
+	/**
+	 * Sets the current state of this object
+	 * @param $state string the new state
+	 */
+	protected function setState(string $state): Property
+	{
+	    $this->state = $state;
+	    return $this;
+	}
+	
+	/**
+	 * Returns the current state of this object
+	 * @return string
+	 */
+	protected function getState(): string
+	{
+	    return $this->state;
+	}
+	
+	/**
+	 * Returns true if this object is comitting right now
+	 * @return bool
+	 */
+	protected function isCommitting(): bool
+	{
+	    return ($this->getState() == 'committing');
+	}
+	
+	/**
+	 * Returns true if this object is invalid
+	 * @return bool
+	 */
+	protected function isInvalid(): bool
+	{
+	    return $this->getState() == 'invalid';
+	}
+	
+	/**
+	 * Returns true if this object is loading right now
+	 * @return bool
+	 */
+	protected function isLoading(): bool
+	{
+	    return $this->getState() == 'loading';
+	}
+	
+	/**
+	 * Raises an exception if the property is invalid
+	 */
+	protected function checkValidity()
+	{
+	    if ($this->isInvalid()) {
+	        throw new PropertyException(__('Invalidated property called.'));
+	    }
+	}
+	
+	// =========================== Setter and getter ========================================	
     /**
      * sets the field Property->owner
      * 
-     * @param $owner a class of PropertiesHaving
+     * @param $owner a class of PropertyCollection
      * @return Property a reference to this to make setter chains possible
+     * 
+     * Test Unit/Properties/PropertyTest::testOwner
      */
     public function setOwner($owner): Property
     {
@@ -241,6 +319,8 @@ class Property extends Loggable
      * 
      * @param Property $owner
      * @return \Sunhill\ORM\Properties\Property
+     * 
+     * Test Unit/Properties/PropertyTest::testOwner
      */
     public function owner(Property $owner): Property
     {
@@ -249,7 +329,9 @@ class Property extends Loggable
     
     /**
      * Returns the value of the owner field
-     * @return PropertiesHaving
+     * @return PropertyCollection
+     * 
+     * Test Unit/Properties/PropertyTest::testOwner
      */
     public function getOwner(): Property
     {
@@ -260,6 +342,8 @@ class Property extends Loggable
      * sets the field Property->name
      * @param $name The name of the property
      * @return Property a reference to this to make setter chains possible
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
      */
     public function setName(string $name): Property
     {
@@ -272,6 +356,8 @@ class Property extends Loggable
      * 
      * @param string $name
      * @return Property
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
      */
     public function name(string $name): Property
     {
@@ -280,6 +366,8 @@ class Property extends Loggable
     
     /**
      * Returns the name of this property
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
      */
     public function getName(): ?string 
     {
@@ -287,9 +375,84 @@ class Property extends Loggable
     }
 	
     /**
+     * Setter for unit
+     * @param string $unit
+     * @return Property
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function setUnit(string $unit): Property
+    {
+        $this->unit = $unit;
+        return $this;
+    }
+    
+    /**
+     * alias for setUnit
+     * @param string $unit
+     * @return Processor
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function unit(string $unit): Property
+    {
+        return $this->setUnit($unit);
+    }
+    
+    /**
+     * getter for unit
+     * @return string
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function getUnit(): string
+    {
+        return $this->unit;    
+    }
+    
+    /**
+     * Setter for sematic
+     * @param string $sematic
+     * @return Property
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function setSemantic(string $semantic): Property
+    {
+        $this->semantic = $semantic;
+        return $this;
+    }
+    
+    /**
+     * alias for setSematic
+     * @param string $sematic
+     * @return Processor
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function semantic(string $semantic): Property
+    {
+        return $this->setSemantic($semantic);
+    }
+    
+    /**
+     * getter for sematic
+     * @return string
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function getSemantic(): string
+    {
+        return $this->semantic;
+    }
+    
+    /**
      * sets the field Property->type
+     * 
      * @param $type The type of the property
      * @return Property a reference to this to make setter chains possible
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
      */
     public function setType(string $type)
     {
@@ -297,71 +460,294 @@ class Property extends Loggable
 	    return $this;
     }
 	
+    /**
+     * Alias for setType
+     * 
+     * @param string $type
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function type(string $type)
+    {
+        return $this->setType($type);    
+    }
+    
+    /**
+     * Getter for $type
+     * 
+     * @return string
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
     public function getType(): string
     {
 	    return $this->type;
     }
 	
     /**
-     * sets the field Property->default (and perhaps Property->defaults_null too)
+     * Setter for $class
      * 
-     * @return Property a reference to this to make setter chains possible
+     * @param string $class
+     * @return \Sunhill\ORM\Properties\Property
+     * 
+     * Test Unit/Properties/PropertyTest::testStandardGetters
      */
-    public function setDefault($default) 
-    {
-	    if (!isset($default)) {
-	        $this->defaults_null = true;
-	    }
-	    $this->default = $default;
-	    return $this;
-    }
-	
-    public function getDefault()
-    {
-	    return $this->default;
-    }
-	
-    public function getDefaultsNull()
-    {
-        return $this->defaults_null;    
-    }
-    
-    public function setClass(string $class) 
+    public function setClass(string $class): Property 
     {
 	    $this->class = $class;
 	    return $this;
     }
 	
-    public function getClass() 
+    /**
+     * Getter for $class
+     *
+     * @param string $class
+     * @return \Sunhill\ORM\Properties\Property
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function getClass(): string 
     {
 	    return $this->class;
     }
 	
-    public function setReadonly(bool $value) 
+    /**
+     * Setter for $readonly
+     *
+     * @param string $class
+     * @return \Sunhill\ORM\Properties\Property
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function setReadonly(bool $value = true): Property 
     {
 	    $this->read_only = $value;
 	    return $this;
     }
 	
+    /**
+     * Alias for setReadonly
+     *
+     * @param string $class
+     * @return \Sunhill\ORM\Properties\Property
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function readonly(bool $value = true): Property
+    {
+        return $this->setReadonly($value);    
+    }
+    
+    /**
+     * Getter for $readonly
+     *
+     * @param string $class
+     * @return \Sunhill\ORM\Properties\Property
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
     public function getReadonly(): bool
     {
 	    return $this->read_only;
     }
 	
-    public function searchable()
+    /**
+     * Setter for $searchable
+     *
+     * @param string $class
+     * @return \Sunhill\ORM\Properties\Property
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function setSearchable(bool $value = true): Property
     {
 	    $this->searchable = true;
 	    return $this;
     }
-	
-    public function getSearchable() 
+
+    /**
+     * Alias for setSearchable()
+     *
+     * @param string $class
+     * @return \Sunhill\ORM\Properties\Property
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function searchable(bool $value = true): Property
+    {
+        return $this->setSearchable($value);
+    }
+    
+    /**
+     * Getter for $earchable
+     *
+     * @return bool
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function getSearchable(): bool 
     {
 	    return $this->searchable;
     }
 	
-	
+    /**
+     * sets the field Property->default (and perhaps Property->defaults_null too)
+     *
+     * @return Property a reference to this to make setter chains possible
+     * 
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function setDefault($default): Property
+    {
+        if (!isset($default)) {
+            $this->defaults_null = true;
+        }
+        $this->default = $default;
+        return $this;
+    }
+    
+    /**
+     * Alias for setDefault()
+     *
+     * @return Property a reference to this to make setter chains possible
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function default($default)
+    {
+       return $this->setDefault($default);
+    }
+    
+    /**
+     * Returns the current default value
+     *
+     * @return null means no default value, DefaultNull::class means null is Default
+     * otheriwse it return the default value
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function getDefault()
+    {
+        if ($this->defaults_null) {
+            return DefaultNull::class;
+        }
+        return $this->default;
+    }
+    
+    /**
+     * Is null the default value?
+     * 
+     * @return boolean
+     * 
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function getDefaultsNull(): bool
+    {
+        return $this->defaults_null;
+    }
+    
+    /**
+     * Marks this property as nullable (null may be assigned as value). If there is
+     * not already a default value, set null as default too
+     * 
+     * @param bool $value
+     * @return Property
+     * 
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function nullable(bool $value = true): Property
+    {
+        $this->nullable = $value;
+        if (!$this->defaults_null && !is_null($this->default)) {
+            $this->default(null);
+        }
+        return $this;
+    }
+
+    /**
+     * Alias for nullable()
+     * 
+     * @param bool $value
+     * @return Property
+     * 
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function setNullable(bool $value = true): Property
+    {
+        return $this->nullable($value);
+    }
+    
+    /**
+     * Alias for nullable(false)
+     * 
+     * @return Property
+     * 
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function notNullable(): Property
+    {
+        return $this->nullable(false);    
+    }
+    
+    /**
+     * Getter for nullable
+     * 
+     * @return bool
+     * 
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function getNullable(): bool
+    {
+        return $this->nullable;
+    }
+    
 // ============================== Value Handling =====================================	
-	/**
+	
+    /**
+     * Raises an expcetion when the property is readonly
+     * @throws PropertyException
+     */
+    protected function checkReadonly()
+    {
+        if ($this->read_only) {
+            throw new PropertyException("Write to a read only property.");
+        }        
+    }
+    
+    protected function checkPermission()
+    {
+        
+    }
+    
+    /**
+     * If the property is already dirty, don't overwrite shadow
+     */
+    protected function handleShadow()
+    {
+        if (!$this->dirty) {
+            $this->shadow = $this->value;
+            $this->dirty = true;
+        }        
+    }
+    
+    protected function handleValue($value)
+    {
+        if (is_null($value)) {
+            if (!$this->nullable) {
+                throw new PropertyException("Property is not nullable");
+            }
+        } else {
+            $value = $this->validate($value);
+        }
+        $this->doSetValue($value);        
+    }
+    
+    protected function handleIndexValue($value, $index)
+    {
+        $this->doSetIndexedValue($index,(is_null($value)?null:$this->validate($value)));        
+    }
+    
+    /**
 	 * Writes the value of this property
 	 * @param unknown $value
 	 * @param unknown $index
@@ -370,26 +756,21 @@ class Property extends Loggable
 	 */
 	final public function setValue($value, $index = null)
 	{
-		if ($this->read_only) {
-			throw new PropertyException(__("Write to a read only property."));
-		}
+		$this->checkReadonly();
+		$this->checkPermission();
 		
-		// Prüfen, ob sich der Wert überhaupt ändert
+		// Check if the value is really changed
 		if ($this->initialized && ($value === $this->value)) {
     		return $this;
 		}
-        	$oldvalue = $this->value;
-		if (!$this->dirty) {
-		    $this->shadow = $this->value;
-		    $this->dirty = true;
-		}
-		
+
 		if (is_null($index)) {
-		      $this->doSetValue((is_null($value)?null:$this->validate($value)));
+	        $this->handleValue($value);
 		} else {
-		    $this->doSetIndexedValue($index,(is_null($value)?null:$this->validate($value)));
+            $this->handleIndexValue($value, $index);
 		}
 		    
+		$this->handleShadow();
 		$this->initialized = true;
 		return $this;
 	}
@@ -416,11 +797,7 @@ class Property extends Loggable
 			    }
 			}
 		}
-		if ($this->is_array()) {
-		        return $this;
-		} else {
-		        return $this->doGetValue();
-		}
+		return $this->doGetValue();
 	}
 
 	/**
@@ -497,20 +874,112 @@ class Property extends Loggable
 		$this->dirty = $value;
 	}
 	
+	/**
+	 * Returns, if the property is initialized
+	 * 
+	 * @return bool
+	 */
+	public function getInitialized(): bool
+	{
+	   return $this->initialized;    
+	}
+	
+	/**
+	 * A storage class indicates the storage facade, what kind of storage it has to
+	 * create
+	 * An empty value means, that this property cannot store itself into the storage
+	 * 
+	 * @return string
+	 */
+    public function getStorageClass(): string
+    {
+        return '';    
+    }
+    
+    /**
+     * A storage name tells the storage facade, what storage it should use
+     * @return string
+     */
+	public function getStorageName(): string
+	{
+	    return '';
+	}
+	
+	/**
+	 * The storage id tells the storage the unique identification (like an int ID or a 
+	 * timestamp)
+
+	 * @return NULL
+	 */
+	public function getStorageID()
+	{
+	    return null;
+	}
+	
+	protected function doPreCommit()
+	{
+	    if (!$this->initialized) {
+	        if (isset($this->default) || $this->defaults_null) {
+	            $this->value = $this->default;
+	        } else {
+	            throw new PropertyException(__("Commit of a not initialized property: ':name'",['name'=>$this->name]));
+	        }
+	        $this->initialized = true;
+	    }	    
+	}
+	
+	/**
+	 * Checks if this property can store itself. If yes, create a storage and store
+	 * the value
+	 */
+	protected function doCommit()
+	{
+	    if (empty($this->getStorageClass())) {
+	        return;
+	    }
+	    $storage = Storage::createStorage($this);
+	    if ($this->getStorageID()) {
+	        $storage->updateToStorage($this->getStorageID());
+	    } else {
+	        $this->storageID = $storage->insertIntoStorage();
+	    }
+	}
+	
+	protected function doPostCommit()
+	{
+	    $this->shadow = $this->value;	    
+	    $this->dirty = false;
+	}
+	
     /**
      * Commit the changes that where made since the last commit() or loading
      */
 	public function commit() 
 	{
-		if (!$this->initialized) {
-			if (isset($this->default) || $this->defaults_null) {
-				$this->value = $this->default;	
-			} else {
-				throw new PropertyException(__("Commit of a not initialized property: ':name'",['name'=>$this->name]));
-			}
-		}
-		$this->dirty = false;
-		$this->shadow = $this->value;
+	    $this->checkValidity();
+	    if ($this->isCommitting()) {
+	        return;
+	    }
+	    $this->setState('committing');
+	    $this->doPreCommit();
+		$this->doCommit();
+		$this->doPostCommit();
+		$this->setState('normal');
+	}
+	
+	protected function doPreRollback()
+	{
+	    
+	}
+	
+	protected function doRollback()
+	{
+	    $this->value = $this->shadow;
+	}
+	
+	protected function doPostRollback()
+	{
+	    $this->dirty = false;	    
 	}
 	
     /**
@@ -518,8 +987,15 @@ class Property extends Loggable
      */
 	public function rollback()
 	{
-		$this->dirty = false;
-		$this->value = $this->shadow;
+	    $this->checkValidity();
+	    if ($this->isCommitting()) {
+	        return;
+	    }
+	    $this->setState('committing');
+	    $this->doPreRollback();
+		$this->doRollback();
+		$this->doPostRollback();
+		$this->setState('normal');		
 	}
 	
     /**
@@ -532,57 +1008,30 @@ class Property extends Loggable
 		return $this->validator->validate($value);
 	}
 	
-    /**
-     * Checks if this property is an array 
-     * @return bool: True if it's an array otherwise false
-     */
-	public function is_array() 
-	{
-		return $this->hasFeature('array');
-	}
-	
-    /**
-     * Checks if this property is a simple property 
-     * @return bool: True if it's a simple property otherwise false
-     */
-	public function is_simple() 
-	{
-		return $this->hasFeature('simple');
-	}
-	
-    /**
-     * Tests if the property has the given feature
-     * @return bool: True if it has the feature otherwise false
-     */
-	public function hasFeature(string $test) 
-	{
-	    return in_array($test,$this->features);
-	}
-	
-	public function deleting(StorageBase $storage) 
-	{
-	   // Does nothing by default	    
-	}
-	
-	public function deleted(StorageBase $storage) 
-	{
-	   // Does nothing by default	    
-	}
-	
-	public function delete($storage) {
-	    
-	}
-	
 	// ================================== Loading ===========================================	
-	/**
-	 * Wird für jede Property aufgerufen, um den Wert aus dem Storage zu lesen
-	 * Ruft wiederrum die überschreibbare Methode do_load auf, die property-Individuelle Dinge erledigen kann
-	 * @param \Sunhill\ORM\Storage\storage_load $loader
-	 */
-	final public function load(StorageBase $loader) 
+    
+    /** 
+     * Tries to load this property from the storage with the given id
+     * 
+     * @param unknown $id
+     * @throws PropertyException
+     */
+    public function load($id)
+    {
+        if (empty($this->getStorageClass())) {
+            throw new PropertyException("This class can't load itself from a storage");
+        }
+        $storage = Storage::createStorage($this);
+        $storage->load($id);
+        $this->loadFromStorage($storage);
+    }
+	
+	final public function loadFromStorage(StorageBase $loader) 
 	{
+	    $this->checkValidity();
+	    
 	    $name = $this->getName();
-            $this->doLoad($loader,$name);
+        $this->doLoad($loader,$name);
 	    $this->initialized = true; 
 	    $this->dirty = false;
 	}
@@ -592,34 +1041,16 @@ class Property extends Loggable
 	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function doLoad(StorageBase $loader, $name) 
+	protected function doLoad(StorageBase $loader, string $name) 
 	{
 	    $this->value = $loader->$name;
 	}
 
-	/**
-	 * Wird aufgerufen, bevor das Property geladen wird
-	 * @param \Sunhill\ORM\Storage\StorageBase $storage
-	 */
-	public function loading(StorageBase $storage) 
-	{
-	   // Does nothing by default
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Property geladen ist
-	 * @param \Sunhill\ORM\Storage\StorageBase $storage
-	 */
-	public function loaded(StorageBase $storage) 
-	{
-	   // Does nothing by default
-	}
-	
 	// ============================= Insert =========================================	
 	/**
 	 * Wird für jede Property aufgerufen, um den Wert in das Storage zu schreiben
 	 */
-	public function insert(StorageBase $storage) 
+	public function insertIntoStorage(StorageBase $storage) 
 	{
 	    $this->doInsert($storage,$this->getName());
 	    $this->dirty = false;	    
@@ -636,32 +1067,11 @@ class Property extends Loggable
 	    $storage->setEntity($name, $this->value);
 	}
 	
-    /**
-     * Wird vor dem Einfügen aufgerufen
-     * @param \Sunhill\ORM\Storage\StorageBase $storage
-     */
-	public function inserting(StorageBase $storage) 
-	{
-	   // Does nothing by default
-	}
-	
-	/**
-	 * Wird nach dem Einfügen aufgerufen
-	 * @param \Sunhill\ORM\Storage\StorageBase $storage
-	 */
-	public function inserted(StorageBase $storage) 
-	{
-	   // Does nothing by default
-	}
-
-// ================================= Update ====================================	
-	public function update(StorageBase $storage) 
+	public function updateToStorage(StorageBase $storage) 
 	{
 	    if ($this->dirty) {
             $diff = $this->getDiffArray(PD_KEEP);
-	        $this->getOwner()->checkForHook('UPDATING_PROPERTY',$this->getName(),$diff);
     	    $this->doUpdate($storage,$this->getName());
-    	    $this->getOwner()->checkForHook('UPDATED_PROPERTY',$this->getName(),$diff);    	    
     	    $this->dirty = false;
 	    }
 	}
@@ -669,24 +1079,6 @@ class Property extends Loggable
 	protected function doUpdate(StorageBase $storage, string $name) {
         $diff = $this->getDiffArray(PD_ID);
 	    $storage->setEntity($name,$diff);	    
-	}
-	
-    /**
-     * Is called before an update
-     * @param \Sunhill\ORM\Storage\StorageBase $storage
-     */
-	public function updating(StorageBase $storage) 
-	{
-	    // Does nothis by default
-	}
-	
-    /**
-     * Is called after an update
-     * @param \Sunhill\ORM\Storage\StorageBase $storage
-     */
-	public function updated(StorageBase $storage) 
-	{
-	   // Does nothing by default
 	}
 	
     /**
@@ -699,7 +1091,6 @@ class Property extends Loggable
 	    $result->class = $this->class;
 	    $result->default = $this->default;
 	    $result->defaults_null = $this->defaults_null;
-	    $result->features = $this->features;
 	    $result->name = $this->name;
 	    $result->read_only = $this->read_only;
 	    $result->searchable = $this->searchable;

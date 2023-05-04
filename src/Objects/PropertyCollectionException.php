@@ -1,7 +1,7 @@
 <?php
 /**
  * @file ProperiesHavingException.php
- * Defines the exception PropertiesHavingException.
+ * Defines the exception PropertyCollectionException.
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -16,7 +16,7 @@ namespace Sunhill\ORM\Objects;
 use Sunhill\ORM\ORMException;
 
 /**
- * This exception should be raised for errors in PropertiesHaving classes
+ * This exception should be raised for errors in PropertyCollection classes
  * @author lokal
  */
-class PropertiesHavingException extends ORMException {}
+class PropertyCollectionException extends ORMException {}

@@ -107,7 +107,7 @@ class PropertyAttribute extends Property {
 // ============================ Einfügen ========================================	
 	protected function doInsert(StorageBase $storage,$name) 
 	{
-        $storage->entities['attributes'][$name] = [
+        $storage->getEntity('attributes')[$name] = [
             'name'=>$this->attribute_name,
             'attribute_id'=>$this->attribute_id,
             'allowed_objects'=>$this->allowed_objects,
@@ -119,8 +119,8 @@ class PropertyAttribute extends Property {
 	
 	protected function insertValue(StorageBase $storage) 
 	{
-	   $storage->entities['attributes'][$this->attribute_name]['value'] = $this->value;    
-	   $storage->entities['attributes'][$this->attribute_name]['textvalue'] = '';
+	    $storage->getEntity('attributes')[$this->attribute_name]['value'] = $this->value;    
+	    $storage->getEntity('attributes')[$this->attribute_name]['textvalue'] = '';
 	}
 	
 // ================================= Update =========================================
@@ -154,7 +154,7 @@ class PropertyAttribute extends Property {
 	
 	public function doUpdate($storage, $name) {
 	    $diff = $this->getDiffArray(PD_ID);
-	    $storage->entities['attributes'][$this->attribute_name] = $diff;
+	    $storage->getEntity('attributes')[$this->attribute_name] = $diff;
 	}
 	
 	// ============================ Statische Funktionen ===========================

@@ -3,9 +3,9 @@
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Objects\PropertiesHaving;
+use Sunhill\ORM\Objects\PropertyCollection;
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Objects\PropertiesHavingException;
+use Sunhill\ORM\Objects\PropertyCollectionException;
 use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\ORMException;
 use Sunhill\ORM\Properties\PropertyTimestamp;
@@ -46,11 +46,11 @@ class FakeProperty
     
 }
 
-class PropertiesHaving_PropertyTest extends TestCase
+class PropertyCollection_PropertyTest extends TestCase
 {
  
     /**
-     * Tests: PropertiesHaving::getCallingClass()
+     * Tests: PropertyCollection::getCallingClass()
      */
     public function testGetCallingClass()
     {
@@ -58,16 +58,16 @@ class PropertiesHaving_PropertyTest extends TestCase
          * Note: this is not a pretty test. It's here for the sake of completeness
          */
         $this->assertEquals(\PHPUnit\Framework\TestCase::class,
-            DummyPropertiesHaving::callStaticMethod('getCallingClass'));    
+            DummyPropertyCollection::callStaticMethod('getCallingClass'));    
     }
     
     /**
-     * Tests: PropertiesHaving::getPropertClass()
+     * Tests: PropertyCollection::getPropertClass()
      */
     public function testGetPropertyClass()
     {
         $this->assertEquals('\\'.PropertyInteger::class,
-            DummyPropertiesHaving::callStaticMethod('getPropertyClass',['Integer'], false));
+            DummyPropertyCollection::callStaticMethod('getPropertyClass',['Integer'], false));
     }
    
     /**
@@ -78,34 +78,34 @@ class PropertiesHaving_PropertyTest extends TestCase
     public function testGetCallingClassname($class, $expect)
     {
         Classes::flushClasses();
-        Classes::registerClass(DummyPropertiesHaving::class);
-        Classes::registerClass(AnotherDummyPropertiesHaving::class);        
+        Classes::registerClass(DummyPropertyCollection::class);
+        Classes::registerClass(AnotherDummyPropertyCollection::class);        
         $this->assertEquals($expect, $class::callAddProperty()->class);
     }
     
     public function GetCallingClassnameProvider()
     {
         return [
-            [DummyPropertiesHaving::class,'DummyPropertiesHaving'],
-            [AnotherDummyPropertiesHaving::class,'AnotherDummyPropertiesHaving'],
+            [DummyPropertyCollection::class,'DummyPropertyCollection'],
+            [AnotherDummyPropertyCollection::class,'AnotherDummyPropertyCollection'],
         ];    
     }
     
     /**
-     * Tests: PropertiesHaving::getPropertClass()
+     * Tests: PropertyCollection::getPropertClass()
      */
     public function testGetPropertyClass_failure()
     {
         $this->expectException(ORMException::class);
-        DummyPropertiesHaving::callStaticMethod('getPropertyClass',['NoneExisting'],false);
+        DummyPropertyCollection::callStaticMethod('getPropertyClass',['NoneExisting'],false);
     }
     
     /**
-     * Tests: PropertiesHaving::createProperty
+     * Tests: PropertyCollection::createProperty
      */
     public function testCreateProperty()
     {
-        $property = DummyPropertiesHaving::callStaticMethod('createProperty',['test','Integer','placeholder'],false);
+        $property = DummyPropertyCollection::callStaticMethod('createProperty',['test','Integer','placeholder'],false);
         $this->assertEquals(PropertyInteger::class, $property::class);
     }
     
@@ -117,7 +117,7 @@ class PropertiesHaving_PropertyTest extends TestCase
      */
     public function testPropertyMethods($method, $property_class)
     {
-        $property = DummyPropertiesHaving::callMethod($method);
+        $property = DummyPropertyCollection::callMethod($method);
         $this->assertEquals($property_class,$property::class);
     }
     
@@ -141,40 +141,40 @@ class PropertiesHaving_PropertyTest extends TestCase
     }
     
     /**
-     * Tests: PropertiesHaving::getPropertyObject
+     * Tests: PropertyCollection::getPropertyObject
      */
     public function testGetPropertyObject()
     {
-        $property = AnotherDummyPropertiesHaving::getPropertyObject('test');
+        $property = AnotherDummyPropertyCollection::getPropertyObject('test');
         $this->assertEquals(PropertyInteger::class, $property::class);
-        $this->assertNull(AnotherDummyPropertiesHaving::getPropertyObject('nonexisting'));
+        $this->assertNull(AnotherDummyPropertyCollection::getPropertyObject('nonexisting'));
     }
     
     /**
-     * tests: PropertiesHaving::prepareGroup
+     * tests: PropertyCollection::prepareGroup
      */
     public function testPrepareGroup()
     {
-        $this->assertEquals('getTest',DummyPropertiesHaving::callStaticMethod('prepareGroup',['test']));
-        $this->assertNull(DummyPropertiesHaving::callStaticMethod('prepareGroup',[null]));
+        $this->assertEquals('getTest',DummyPropertyCollection::callStaticMethod('prepareGroup',['test']));
+        $this->assertNull(DummyPropertyCollection::callStaticMethod('prepareGroup',[null]));
     }
     
     /**
-     * tests: PropertiesHaving::getAllProperties
+     * tests: PropertyCollection::getAllProperties
      */
     public function testGetAllProperties()
     {
-        $this->assertTrue(empty(DummyPropertiesHaving::callStaticMethod('getAllProperties')));
-        $this->assertFalse(empty(AnotherDummyPropertiesHaving::callStaticMethod('getAllProperties')));
+        $this->assertTrue(empty(DummyPropertyCollection::callStaticMethod('getAllProperties')));
+        $this->assertFalse(empty(AnotherDummyPropertyCollection::callStaticMethod('getAllProperties')));
     }
     
     /**
-     * tests: PropertiesHaving:filterFeature
+     * tests: PropertyCollection:filterFeature
      */
     public function testFilterFeature()
     {
         $test = ['TestA'=>new FakeProperty('TestA',true), 'TestB'=>new FakeProperty('TestB',false)];
-        $result = DummyPropertiesHaving::callStaticMethod('filterFeature', [$test,'somefeature'],false);
+        $result = DummyPropertyCollection::callStaticMethod('filterFeature', [$test,'somefeature'],false);
         $this->assertEquals(1,count($result));
         $this->assertEquals('TestA',$result['TestA']->name);
     }
@@ -182,7 +182,7 @@ class PropertiesHaving_PropertyTest extends TestCase
     public function testGroupResult()
     {
         $test = ['TestA'=>new FakeProperty('TestA',true), 'TestB'=>new FakeProperty('TestB',false)];
-        $result = DummyPropertiesHaving::callStaticMethod('groupResult', [$test,'name'],false);
+        $result = DummyPropertyCollection::callStaticMethod('groupResult', [$test,'name'],false);
         $this->assertEquals(2,count($result));
         $this->assertEquals('TestA',$result['A']['TestA']->name);
         $this->assertEquals('TestB',$result['B']['TestB']->name);

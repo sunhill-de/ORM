@@ -33,7 +33,7 @@ class ObjectCalculatedTest extends DatabaseTestCase
         $test->dummyint = 1;
    //     $test->recalcualate();
         $test->commit();
-        $hilf = DB::table('caching')->select('value')->where('object_id','=',$test->getID())->where('fieldname','=','calcfield')->first();
+        $hilf = DB::table('calcclasses_calc_calcfield')->select('value')->where('id',$test->getID())->where('fieldname','=','calcfield')->first();
         $this->assertEquals('ABC',$hilf->value);
     }
     

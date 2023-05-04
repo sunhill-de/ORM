@@ -19,7 +19,7 @@
  */
 namespace Sunhill\ORM\Managers;
 
-use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 
@@ -34,7 +34,7 @@ class StorageManager
      * 
      * @return StorageBase
      */
-    public function createStorage(ORMObject $object): StorageBase
+    public function createStorage(Property $object): StorageBase
     {
         switch (env('ORM_STORAGE_TYPE', 'mysql')) {
             case 'mysql':

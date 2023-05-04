@@ -15,6 +15,7 @@
 namespace Sunhill\ORM\Storage;
 
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Properties\Property;
 
 /**
  * Basisklasse für Storages. Die abgeleiteten Klassen müssen die protected property $modules definieren, welche die eigentlichen
@@ -43,7 +44,7 @@ abstract class StorageBase
      * The constructor takes the calling object as a parameter
      * @param unknown $caller
      */
-    public function __construct(ORMObject $caller) 
+    public function __construct(Property $caller) 
     {
         $this->caller = $caller;    
     }
@@ -131,6 +132,11 @@ abstract class StorageBase
     public function Store(): int
     {
         return $this->doStore();
+    }
+    
+    public function insertObject(): int
+    {
+        return $this->Store();    
     }
     
     public function Update(int $id)    
