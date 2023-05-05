@@ -31,7 +31,9 @@ class Tag extends Loggable
 	protected $parent = null;
 	
 	protected $name = '';
-		
+	
+	protected $state = 'normal';
+	
 	/**
 	 * Returns the tag-ID
 	 * @return number
@@ -45,13 +47,34 @@ class Tag extends Loggable
 		}
 	}
 	
+	public function load(int $id)
+	{
+	   $this->state = 'preloading';
+	   $this->tag_id = $id;
+	}
+	
+	protected function checkLoadingState()
+	{
+	    if ($this->state == 'preloading') {
+	        $query = DB::table('tags')->where('id',$this->getID())->first();
+	        $this->name = $query->name;
+	        $this->options = $query->options;
+	        if ($query->parent_id) {
+	           $this->parent = new Tag();
+	           $this->parent->load($query->parent_id);
+	           $this->state = 'normal';
+	        }
+	    }
+	}
+	
 	/**
 	 * Returns the parent tag or null if there is none
 	 * @return Tag|null
 	 */
 	public function getParent(): ?Tag
     {
-		return $this->parent;
+		$this->checkLoadingState();
+        return $this->parent;
 	}
 	
 	/**
@@ -71,7 +94,8 @@ class Tag extends Loggable
 	 */
 	public function getName(): string 
     {
-		return $this->name;
+        $this->checkLoadingState();
+        return $this->name;
 	}
 	
 	/**
@@ -87,7 +111,8 @@ class Tag extends Loggable
 	
 	public function getOptions(): int
     {
-		return $this->options;
+        $this->checkLoadingState();
+        return $this->options;
 	}
 	
 	public function setOptions(int $options): Tag 
@@ -98,7 +123,8 @@ class Tag extends Loggable
 	
 	public function isLeafable(): bool
     {
-		return $this->options & TO_LEAFABLE;
+        $this->checkLoadingState();
+        return $this->options & TO_LEAFABLE;
 	}
 	
 	public function set_Leafable(): Tag
@@ -112,155 +138,19 @@ class Tag extends Loggable
 		$this->options &= !TO_LEAFABLE;
         return $this;
 	}
-	
+		
 	/**
-	 * Saves the new or changed tag
-	 */
-	public function commit() 
-    {
-		if (!is_null($this->parent)) {
-			$this->parent->commit();
-		}
-		if (!$this->getID()) {
-			$this->create();
-		} else {
-			$this->update();
-		}
-	//	Tags::flushTagCache($this->getID(),$this->getFullPath());
-	}
-	
-	/**
-	 * Erzeugt ein neues Tag
-	 */
-	private function create() 
-    {
-		if (isset($this->parent)) {
-			$parent_id = $this->parent->getID();
-		} else {
-			$parent_id = 0;
-		}
-	    $this->tag_id = DB::table('tags')->insertGetId([
-	        'name'=>$this->name,
-	        'parent_id'=>$parent_id,
-    	    'options'=>$this->options,
-	    ]);
-	}
-	
-	/**
-	 * Speichert das geänderte Tag
-	 */
-	private function update() 
-    {
-	    if (isset($this->parent)) {
-	        $parent_id = $this->parent->getID();
-	    } else {
-	        $parent_id = 0;
-	    }
-	    DB::table('tags')->where('id',$this->tag_id)->update([
-	        'name'=>$this->name,
-	        'parent_id'=>$parent_id,
-	        'options'=>$this->options,
-	    ]);
-	}
-	
-	/**
-	 * Läd ein Tag aus der Datenbank
-	 * @param int $id Die ID des Tags
-	 */
-	public function load($id) 
-    {
-		$data = DB::table('tags')->where('id',$id)->first();
-		if (is_null($data)) {
-		    throw new \Exception("Tag mit der id '$id' nicht gefunden.");
-		    return;
-		}
-		$this->options = $data->options;
-		$this->name = $data->name;
-		$this->tag_id = $id;
-		if ($data->parent_id) {
-		    $this->parent = Tags::loadTag($data->parent_id);
-		}
-	}
-	
-	/**
-	 * Liefert den vollständigen Pfad des Tags zurück (also eine Verknüpfung mit den Elterntags)
+	 * Creates a fully assembled path of this tag and all parent tags
 	 * @return string
 	 */
 	public function getFullPath() 
     {
-		if (is_null($this->parent)) {
+        $this->checkLoadingState();
+        if (is_null($this->parent)) {
 			return $this->getName();
 		} else {
 			return $this->parent->getFullPath().".".$this->getName();
 		}
 	}
-	
-	/**
-	 * 
-	 * @param string $tag
-	 * @param boolean $autocreate
-	 */
-	protected function search($tag,$autocreate)
-    {
-		$results = self::searchTag($tag);
-		if (is_null($results)) {
-		    if ($autocreate) {
-		        $tag_obj = self::addTag($tag);
-		        $this->name = $tag_obj->getName();
-		        $this->parent = $tag_obj->getParent();
-		        $this->options = $tag_obj->get_options();
-		        $this->tag_id = $tag_obj->getID();
-		    } else {
-		        // @todo Behandlung nicht gefundener Einträge ohne $autocreate
-		        throw new TagException("Das Tag '$tag' wurde nicht gefunden.");
-		    }
-		    return $tag_obj;
-		}
-		if (is_array($results)) {
-		    throw new TagException("Das Tag '$tag' ist nicht eindeutig zuordbar.");
-		    return false;    
-		}
-		$this->name = $results->getName();
-		$this->parent = $results->getParent();
-		$this->options = $results->getOptions();
-		$this->tag_id = $results->getID();
 		
-		return $results;
-	}
-	
-    /**
-     * Deletes the tag and all references to it
-     */
-	public function delete() 
-    {
-	    $this->deleteReferences();
-	    $this->deleteChildren();
-	    $this->deleteThis();
-	}
-	
-	private function deleteReferences() 
-    {
-	    DB::table('tagcache')->where('tag_id',$this->getID())->delete();	    
-	}
-	
-	private function deleteChildren()
-    {
-	    $entries = DB::table('tagobjectassigns')->where('tag_id',$this->getID())->get();
-	    foreach ($entries as $entry) {
-	        $this->deleteChild($entry->container_id);
-	    }
-	}
-	
-	private function deleteChild(int $object_id)
-    {
-	    $object = Objects::load($object_id);
-	    $object->tags->remove($this);
-	    $object->commit();
-	}
-	
-	private function deleteThis()
-    {
-	    DB::table('tags')->where('id',$this->getID())->delete();	    
-	}
-	
 }
