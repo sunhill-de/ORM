@@ -31,7 +31,19 @@ class MysqlStorage extends StorageBase
      */
     protected function doLoad(int $id)
     {
-        $storage_helper = new MysqlLoad($this);
+        switch ($this->getCaller()->getStorageClass()) {
+            case 'Object':
+                $storage_helper = new MysqlLoadObject($this);
+                break;
+            case 'Collection':
+                $storage_helper = new MysqlLoadCollection($this);
+                break;
+            case 'Table':
+                $storage_helper = new MysqlLoadTable($this);
+                break;
+            default:
+                throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());    
+        }
         $storage_helper->doLoad($id);
     }
     

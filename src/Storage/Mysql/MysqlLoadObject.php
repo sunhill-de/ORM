@@ -11,7 +11,7 @@ use Sunhill\ORM\Objects\ORMObject;
  * @author klaus
  *
  */
-class MysqlLoad
+class MysqlLoadObject
 {
     
     use ClassTables;
