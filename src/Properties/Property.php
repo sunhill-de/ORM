@@ -994,11 +994,18 @@ class Property extends Loggable
             throw new PropertyException("This class can't load itself from a storage");
         }
         $this->setID($id);
-        $storage = Storage::createStorage($this);
-        $storage->load($id);
-        $this->loadFromStorage($storage);
+        $this->state = 'preload';
     }
 	
+    protected function checkLoadingState()
+    {
+        if ($this->state == 'preload') {
+            $storage = Storage::createStorage($this);
+            $storage->load($this->getID());
+            $this->loadFromStorage($storage);
+        }
+    }
+    
 	final public function loadFromStorage(StorageBase $loader) 
 	{
 	    $this->checkValidity();
