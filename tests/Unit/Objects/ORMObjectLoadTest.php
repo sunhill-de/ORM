@@ -21,4 +21,19 @@ class ORMObjectLoadTest extends TestCase
         $this->assertEquals('2023-05-05 10:00:00', $test->created_at);
         $this->assertEquals(0, $test->obj_owner);
     }
+    
+    public function testLazyLoading()
+    {
+        $test = new Dummy();
+        $fake_storage = new DummyStorage($test);
+        Storage::shouldReceive('createStorage')->once()->andReturn($fake_storage);
+        
+        $test->load(1);
+    
+        $property = $this->getProtectedProperty($test, 'properties')['dummyint'];
+        $this->assertNull($this->getProtectedProperty($property,'value'));
+        $this->assertEquals(123,$test->dummyint);
+        $this->assertEquals(123,$this->getProtectedProperty($property,'value'));
+    }
+    
 }
