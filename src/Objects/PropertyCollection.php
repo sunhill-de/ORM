@@ -76,6 +76,7 @@ class PropertyCollection extends Property
             return $result; // Return the cache instead
         }
         
+        $this->current_storage = $loader;
         $this->insertCache($id); // Insert into cache
         $this->setID($id);
         
@@ -163,6 +164,7 @@ class PropertyCollection extends Property
 	public function &__get($name) 
     {
 	    if (isset($this->properties[$name])) {
+            $this->checkLoadingState(); // Is this object only preloaded?
 	        return $this->properties[$name]->getValue();
 	    } else {
 	        $help = parent::__get($name);
@@ -181,6 +183,7 @@ class PropertyCollection extends Property
 	        if ($this->getReadonly()) {
 	            throw new PropertyCollectionException(__("Property ':name' was changed in readonly state.",['name'=>$name]));
 	        } else {
+	            $this->checkLoadingState(); // Is this object only preloaded?
 	            $this->properties[$name]->setValue($value);
 	        }
 	    } else if (!$this->handleUnknownProperty($name,$value)){
