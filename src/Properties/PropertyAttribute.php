@@ -84,8 +84,9 @@ class PropertyAttribute extends Property {
 	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function doLoad(StorageBase $loader,$name) 
+	protected function doLoad(StorageBase $loader) 
 	{	    
+	    $name = $this->getName();
 	    $this->attribute_name = $name;
 	    $this->attribute_id = $loader->getEntity('attributes')[$name]->attribute_id;	    
 	    $this->value = $this->extractValue($loader);

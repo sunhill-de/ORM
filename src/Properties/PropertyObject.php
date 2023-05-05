@@ -50,7 +50,8 @@ class PropertyObject extends PropertyField
 	 */
 	protected function doLoad(StorageBase $storage) 
 	{
-        $reference = $storage->$name;
+        $name = $this->getName();
+	    $reference = $storage->$name;
 	    if (!empty($reference)) {
 	        $this->doSetValue($reference);
 	    }

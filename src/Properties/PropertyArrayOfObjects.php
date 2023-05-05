@@ -67,6 +67,7 @@ class PropertyArrayOfObjects extends PropertyArrayBase
 	
 	protected function doLoad(StorageBase $loader) 
 	{
+	    $name = $this->getName();
 	    $references = $loader->$name;
 	    if (empty($references)) {
 	        return;
