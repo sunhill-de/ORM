@@ -130,7 +130,7 @@ class ORMObject extends PropertyCollection
 	            $property_name = 'Attribute'.ucfirst($value->type);
 	        }
 	        $property = $this->dynamicAddProperty($value->name, $property_name);
-	        $property->load($storage);	        
+	        $property->loadFromStorage($storage);	        
 	    }
 	}
 	
