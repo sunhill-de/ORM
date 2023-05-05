@@ -185,7 +185,7 @@ class PropertyTags extends PropertyArrayBase
 	    $storage->setEntity('tags',$result);
 	}
 	
-	protected function doLoad(StorageBase $loader,$name)  
+	protected function doLoad(StorageBase $loader)  
 	{
 	    if (empty($loader->entities['tags'])) {
 	        return;

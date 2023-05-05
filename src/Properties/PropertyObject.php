@@ -48,7 +48,7 @@ class PropertyObject extends PropertyField
 	 * {@inheritDoc}
 	 * @see \Sunhill\ORM\Properties\Property::load()
 	 */
-	protected function doLoad(StorageBase $storage, $name) 
+	protected function doLoad(StorageBase $storage) 
 	{
         $reference = $storage->$name;
 	    if (!empty($reference)) {

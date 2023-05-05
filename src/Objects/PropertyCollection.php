@@ -18,7 +18,6 @@ namespace Sunhill\ORM\Objects;
 use Sunhill\ORM\Search\QueryBuilder;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\ORMException;
-use Sunhill\ORM\Hookable;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\PropertyQuery\PropertyQuery;
 use Sunhill\ORM\Properties\Property;
@@ -34,7 +33,9 @@ class PropertyCollection extends Property
     protected $properties;
     
     protected static $infos;
-		
+
+    protected $storageClass = 'Collection';
+    
 	/**
      * Constructor calls setupProperties()
      */
@@ -44,32 +45,7 @@ class PropertyCollection extends Property
 		self::initializeProperties();
 		$this->copyProperties();
 	}
-	
-	// ================================= ID-Handling =======================================
-	/**
-	 * Returns the current id of this object (or null, when this object wasn't stored yet) 
-	 * @return int|null
-	 */
-	public function getID()
-    {
-	    return $this->storageID;
-	}
-	
-	/**
-	 * Sets the ID for the current object
-	 * @param Integer $id
-	 */
-	public function setID(int $id)
-    {
-	    $this->storageID = $id;
-	}
 		
-	public function getStorageClass(): string
-	{
-	    return 'Collection';
-	}
-	
-	
 // ==================================== Loading =========================================
 	
  	/**
@@ -93,7 +69,7 @@ class PropertyCollection extends Property
     /**
      * Does the loading (has to be overwritten)
      */
-	protected function doLoad(StorageBase $loader, string $name)
+	protected function doLoad(StorageBase $loader)
 	{
         if ($result = $this->checkCache($id)) { // Is this object already in the cache
             $this->setState('invalid'); // If yes, this object is invalid
@@ -103,7 +79,6 @@ class PropertyCollection extends Property
         $this->insertCache($id); // Insert into cache
         $this->setID($id);
         
-        $this->doLoad();
         $this->cleanProperties();
         
         return $this;
@@ -188,7 +163,6 @@ class PropertyCollection extends Property
 	public function &__get($name) 
     {
 	    if (isset($this->properties[$name])) {
-	        $this->checkForHook('GET',$name,null);
 	        return $this->properties[$name]->getValue();
 	    } else {
 	        $help = parent::__get($name);
@@ -208,17 +182,6 @@ class PropertyCollection extends Property
 	            throw new PropertyCollectionException(__("Property ':name' was changed in readonly state.",['name'=>$name]));
 	        } else {
 	            $this->properties[$name]->setValue($value);
-	            $this->checkForHook('SET',$name,array(
-	                'from'=>$this->properties[$name]->getOldValue(),
-	                'to'=>$value));
-	            if (!$this->properties[$name]->is_simple()) {
-	                $this->checkForHook('EXTERNAL',$name,array('to'=>$value,'from'=>$this->properties[$name]->getOldValue()));
-	            }
-	            if ($this->properties[$name]->getDirty()) {
-	                $this->checkForHook('FIELDCHANGE',$name,array(
-	                    'from'=>$this->properties[$name]->getOldValue(),
-	                    'to'=>$this->properties[$name]->getValue()));
-	            }
 	        }
 	    } else if (!$this->handleUnknownProperty($name,$value)){
 	        throw new PropertyCollectionException(__("Unknown property ':name'",['name'=>$name]));

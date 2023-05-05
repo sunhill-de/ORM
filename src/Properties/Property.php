@@ -28,6 +28,7 @@ use Sunhill\ORM\Semantic\Name;
 use TijsVerkoyen\CssToInlineStyles\Css\Property\Processor;
 use League\CommonMark\Extension\DefaultAttributes\DefaultAttributesExtension;
 use Sunhill\ORM\Properties\PropertyException;
+use Sunhill\ORM\Traits\Storable;
 
 /** 
  * These constants are used in get_diff_array as an optional parameter. They decide how object references should 
@@ -56,6 +57,8 @@ define ('PD_KEEP',3);
 class Property extends Loggable 
 {
 	
+    use Storable;
+    
     /**
      * Properties get the possibility to add additinal fields (like property->set_additional)
      */
@@ -884,38 +887,6 @@ class Property extends Loggable
 	   return $this->initialized;    
 	}
 	
-	/**
-	 * A storage class indicates the storage facade, what kind of storage it has to
-	 * create
-	 * An empty value means, that this property cannot store itself into the storage
-	 * 
-	 * @return string
-	 */
-    public function getStorageClass(): string
-    {
-        return '';    
-    }
-    
-    /**
-     * A storage name tells the storage facade, what storage it should use
-     * @return string
-     */
-	public function getStorageName(): string
-	{
-	    return '';
-	}
-	
-	/**
-	 * The storage id tells the storage the unique identification (like an int ID or a 
-	 * timestamp)
-
-	 * @return NULL
-	 */
-	public function getStorageID()
-	{
-	    return null;
-	}
-	
 	protected function doPreCommit()
 	{
 	    if (!$this->initialized) {
@@ -934,9 +905,10 @@ class Property extends Loggable
 	 */
 	protected function doCommit()
 	{
-	    if (empty($this->getStorageClass())) {
+	    if (!$this->isStorable()) {
 	        return;
 	    }
+	        
 	    $storage = Storage::createStorage($this);
 	    if ($this->getStorageID()) {
 	        $storage->updateToStorage($this->getStorageID());
@@ -1018,9 +990,10 @@ class Property extends Loggable
      */
     public function load($id)
     {
-        if (empty($this->getStorageClass())) {
+        if (!$this->isStorable()) {
             throw new PropertyException("This class can't load itself from a storage");
         }
+        $this->setID($id);
         $storage = Storage::createStorage($this);
         $storage->load($id);
         $this->loadFromStorage($storage);
@@ -1031,7 +1004,7 @@ class Property extends Loggable
 	    $this->checkValidity();
 	    
 	    $name = $this->getName();
-        $this->doLoad($loader,$name);
+        $this->doLoad($loader);
 	    $this->initialized = true; 
 	    $this->dirty = false;
 	}
@@ -1041,8 +1014,9 @@ class Property extends Loggable
 	 * @param \Sunhill\ORM\Storage\storage_load $loader
 	 * @param unknown $name
 	 */
-	protected function doLoad(StorageBase $loader, string $name) 
+	protected function doLoad(StorageBase $loader) 
 	{
+	    $name = $this->getName();
 	    $this->value = $loader->$name;
 	}
 
