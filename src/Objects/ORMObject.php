@@ -49,6 +49,8 @@ class ORMObject extends PropertyCollection
     
     protected $loaded = false;
     
+    protected $storageClass = 'Object';
+    
     /**
      * Constructor for all orm classes. As a child of properties_having it calls its derrived constructor wich in turn initializes the properties.
      * Additionally it defines a few own intenal properties (tags and externalhooks)
@@ -57,38 +59,13 @@ class ORMObject extends PropertyCollection
     {
 	    parent::__construct();
 	    $this->properties['tags'] = self::createProperty('tags','tags','object')->setOwner($this);
-	    $this->properties['externalhooks'] = self::createProperty('externalhooks','externalHooks','object')->setOwner($this);
 	}
 	
 	protected function isLoaded(): bool
 	{
 	    return $this->loaded;
 	}
-	
-	// ========================================== NeedID-Queries ========================================
-	
-	
-	/**
-	 * Adds another entry to the needid_queries array. This array is needed for queries that have
-	 * been executed before the id of the master object was ready. So this queries have to be updated
-	 * with the actual ID. 
-	 * @param string $table
-	 * @param array $fixed
-	 * @param string $id_field
-	 */
-	public function addNeedIDQuery(string $table, array $fixed, string $id_field) 
-    {
-	    $this->needid_queries[] = ['table'=>$table,'fixed'=>$fixed,'id_field'=>$id_field];
-	}
-	
-	/**
-	 * Processes all entries in the need_id_query
-	 * @param StorageBase $storage
-	 */
-	protected function executeNeedIDQueries(StorageBase $storage) 
-    {
-	}
-	
+		
 // ============================ Storagefunctions  =======================================	
 	/**
 	 * Returns the current storage or creates one if it doesn't exist
@@ -128,17 +105,12 @@ class ORMObject extends PropertyCollection
 	 * {@inheritDoc}
 	 * @see \Sunhill\ORM\PropertyCollection::doLoad()
 	 */
-	protected function doLoad(StorageBase $storage, string $name) 
+	protected function doLoad(StorageBase $storage) 
     {
 	    if (!$this->isLoading()) {
 	        $this->state = 'loading';
-	        $loader = $this->getStorage();
-	        $this->walkProperties('loading',$loader);
-	        $loader->loadObject($this->getID());
-            $this->walkProperties('load',$loader);
-            $this->loadAttributes($loader);
-            $this->loadExternalHooks($loader);
-            $this->walkProperties('loaded', $loader);
+            $this->walkProperties('loadFromStorage',$storage);
+            $this->loadAttributes($storage);
             $this->state = 'normal';
 	    }
 	}
@@ -162,12 +134,6 @@ class ORMObject extends PropertyCollection
 	    }
 	}
 	
-	/**
-	 * Reads the external hook from the storage
-	 */
-	protected function loadExternalHooks(StorageBase $storage)
-    {
-	}
 	
 // ========================= Insert =============================	
 	/**
@@ -178,11 +144,8 @@ class ORMObject extends PropertyCollection
 	protected function doInsert(StorageBase $storage, string $name)
     {
 	       $storage = $this->getStorage();
-    	   $this->walkProperties('inserting', $storage);
            $this->walkProperties('insert',$storage);
            $this->setID($storage->insertObject());
-           $this->executeNeedIDQueries($storage);
-           $this->walkProperties('inserted',$storage);
            $this->insertCache($this->getID());
 	}
 
@@ -191,10 +154,8 @@ class ORMObject extends PropertyCollection
     {
 	    $storage = $this->getStorage();
 	    $storage->setEntity('id',$this->getID());
-	    $this->walkProperties('updating', $storage);
 	    $this->walkProperties('update',$storage);
 	    $storage->updateObject($this->getID());
-	    $this->walkProperties('updated',$storage);
 	}
 		
 	/**
@@ -209,10 +170,8 @@ class ORMObject extends PropertyCollection
 	protected function doDelete() 
     {
 	    $storage = $this->getStorage();
-	    $this->walkProperties('deleting',$storage);
 	    $this->walkProperties('delete',$storage);
 	    $storage->deleteObject($this->getID());
-	    $this->walkProperties('deleted',$storage);
 	    $this->clearCacheEntry();
 	}
 	
@@ -255,51 +214,6 @@ class ORMObject extends PropertyCollection
 	    foreach ($properties as $property) {
 	        $property->$action($storage);
 	    }
-	}
-
-// ================================== Promotion ===========================================		
-	/**
-	 * Raises this object to a (higher) class
-	 * @param String $newclass
-	 * @return unknown
-	 */
-	public function promote(string $newclass): ORMObject 
-    {
-        return Objects::promoteObject($this,$newclass);    
-	}
-	
-	/**
-	 * The old (lower) object is called before the promotion takes place.
-	 * @param string $newclass
-	 */
-	public function prePromotion(string $newclass) 
-    {
-	    // Does nothing
-	}
-	
-	/**
-	 * The newly created (promoted) object is called after the promotion took place
-	 * @param ORMObject $from The old (lower) object
-	 */
-	public function postPromotion(ORMObject $from) 
-    {
-	    // Does nothing
-	}
-
-// ===================================== Degration =============================================	
-	public function degrade(String $newclass): ORMObject 
-    {
-	    return Objects::degradeObject($this,$newclass);
-	}
-	
-	public function preDegration(string $newclass)
-    {
-	    
-	}
-	
-	public function postDegration(ORMObject $from) 
-    {
-	    
 	}
 
 // =============================== Copying ====================================	
@@ -364,40 +278,13 @@ class ORMObject extends PropertyCollection
     {
 	    return Classes::getInheritanceOfClass(static::getInfo('name'), $full);
 	}
-	
-	/**
-	 * So called complex hooks use this method
-	 * @param string $action
-	 * @param string $hook
-	 * @param string $subaction
-	 * @param unknown $destination
-	 */
-	protected function setComplexHook(string $action, string $hook, string $subaction, $destination) 
-    {
-	    $this->hooks[$action][$subaction][] = array('destination'=>$destination,'hook'=>$hook);
-	    
-	    $parts = explode('.',$subaction);
-	    $field = array_shift($parts);
-	    $restaction = implode('.',$parts);
-	    $property = $this->getProperty($field);
-	    $property->addHook($action,$hook,$restaction,$destination);
-	//    $this->addHook('EXTERNAL','complex_changed',$field,$this,array('action'=>$action,'hook'=>$hook,'field'=>$restaction));
-	}
-	
-	protected function setExternalHook(string $action, string $subaction, $destination, $payload, string $hook)
-    {
-	    parent::setExternalHook($action,$subaction,$destination,$payload,$hook);
-        $this->getProperty('externalhooks')->setDirty(true);
-	}
-	
+		
 	public function arrayFieldNewEntry($name,$index,$value) 
     {
-	    $this->checkForHook('PROPERTY_ARRAY_NEW',$name,[$value]); 
 	}
 	
 	public function arrayFieldRemovedEntry($name,$index,$value) 
     {
-	    $this->checkForHook('PROPERTY_ARRAY_REMOVED',$name,[$value]);	    
 	}
 	
 	protected function handleUnknownProperty($name,$value) 
@@ -413,7 +300,6 @@ class ORMObject extends PropertyCollection
     {
 	   $this->checkAllowedClass($attribute);
 	   // The attribute exists and may be used for this object
-	   $this->checkForHook('ATTRIBUTE_ADDING',$attribute->name,[$value]);
 	   if (!empty($attribute->property)) {
 	       $property_name = $attribute->property;
 	   } else {
@@ -446,16 +332,6 @@ class ORMObject extends PropertyCollection
 	    }	    
 	}
 	
-	/**
-	 * This routine is called, whenever a migration on the class was performed
-	 * @param unknown $added_fields
-	 * @param unknown $removed_fields
-	 */
-	public function objectMigrated(array $added_fields, array $removed_fields, array $changed_fields) 
-    {
-	    
-	}
-	
 	// ********************** Static methods  ***************************	
 	
 	/**
@@ -468,6 +344,11 @@ class ORMObject extends PropertyCollection
 	    self::timestamp('created_at');
 	    self::timestamp('updated_at');
 	    self::varchar('uuid')->searchable()->setMaxLen(20);
+	    self::integer('obj_owner')->default(0);
+	    self::integer('obj_group')->default(0);
+	    self::integer('obj_read')->default(7);
+	    self::integer('obj_edit')->default(7);
+	    self::integer('obj_delete')->default(7);	    
 	}
 
 	/**
@@ -482,15 +363,6 @@ class ORMObject extends PropertyCollection
 	    static::addInfo('name_p', 'base objects');
 	    static::addInfo('description', 'A base class that defines storable properties.');
 	    static::addInfo('options', 0);
-	}
-	
-	// ****************** Migration **********************************
-	/**
-	 * @deprecated The migration should be done via Classes facade. This method is to be removed
-	 */
-	public static function migrate() 
-    {
-        Classes::migrateClass(static::getInfo('name'));
 	}
 	
 	/**
@@ -511,24 +383,6 @@ class ORMObject extends PropertyCollection
 	        $pointer = get_parent_class($pointer);
 	    } while (property_exists($pointer, $name)); // at least ORMObject shouldn't define it
 	    return $result;
-	}
-	
-	public static function searchKeyField(string $keyfield) 
-    {
-	   $query = static::search();
-	   $keyfields = static::defineKeyFields($keyfield);
-	   if (empty($keyfields)) {
-	       throw new ObjectException(__("The class doesn't support keyfield search"));
-	   }
-	   foreach ($keyfields as $key => $value) {
-	       $query = $query->where($key,$value);
-	   }
-	   return $query->loadIfExists();
-	}
-	
-	protected static function defineKeyFields(string $keyfield) 
-    {
-	    
 	}
 	
 }
