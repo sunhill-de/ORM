@@ -96,6 +96,28 @@ class ObjectManager
 		    return $this->getPartialObjectList($condition,'id',0,-1,$nochildren);
 		}
 
+		public function filter_class(string $class, bool $children = true)
+		{
+		    $class = Classes::getNamespaceOfClass($class);
+		    $shadow_items = [];
+		    $shadow_classes = [];
+		    for ($i = 0; $i < count($this->items); $i ++) {
+		        if ($children) {
+		            if (is_a($this->get($i), $class)) {
+		                $shadow_items[] = $this->items[$i];
+		                $shadow_classes[] = $this->getClass($i);
+		            }
+		        } else {
+		            if ($this->getClass($i) === $class) {
+		                $shadow_items[] = $this->items[$i];
+		                $shadow_classes[] = $this->class_cache[$i];
+		            }
+		        }
+		    }
+		    $this->items = $shadow_items;
+		    $this->class_cache = $shadow_classes;
+		}
+		
 		public function getPartialObjectList($class = 'object', string $order = 'id', int $delta = 0, int $limit = -1, bool $nochildren = false)
 		{
 		    if ($class == 'object') {
@@ -108,9 +130,11 @@ class ObjectManager
 		    $query = $query->orderBy($order);		    
 	        $query = $query->limit($delta,$limit);
 		    $objects = $query->get();
-
 		    if ($nochildren) {
-		        $objects->filter_class($class,false);
+		        return $objects->filter(function($value, $key) use ($class) {
+		            return ($value::class == $class);
+		        });
+		     //       $objects->filter_class($class,false);
 		    }
 		    return $objects;		    
 		}
@@ -157,7 +181,7 @@ class ObjectManager
 		            return false;
 		        }
 		        $object = new $classname();
-		        $object = $object->load($id);
+		        $object->load($id);
 		        return $object;
 		    }
 		}
