@@ -12,6 +12,7 @@
 namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\PropertyList;
 
 class TestParent extends ORMObject 
 {
@@ -20,22 +21,21 @@ class TestParent extends ORMObject
     
     public $trigger_exception = false;
     
-    protected static function setupProperties() 
+    protected static function setupProperties(PropertyList $list)
     {
-		parent::setupProperties();
-		self::integer('parentint')->searchable();
-		self::varchar('parentchar')->searchable()->setDefault(null);
-		self::float('parentfloat')->searchable();
-		self::text('parenttext')->searchable();
-		self::datetime('parentdatetime')->searchable();
-		self::date('parentdate')->searchable();
-		self::time('parenttime')->searchable();
-		self::enum('parentenum')->setValues(['testA','testB','testC'])->searchable();
-		self::object('parentobject')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
-		self::arrayofstrings('parentsarray')->searchable();
-		self::arrayOfObjects('parentoarray')->setAllowedObjects(['dummy'])->searchable();
-		self::calculated('parentcalc')->searchable();
-		self::integer('nosearch')->setDefault(1);
+		$list->integer('parentint')->searchable();
+		$list->varchar('parentchar')->searchable()->setDefault(null);
+		$list->float('parentfloat')->searchable();
+		$list->text('parenttext')->searchable();
+		$list->datetime('parentdatetime')->searchable();
+		$list->date('parentdate')->searchable();
+		$list->time('parenttime')->searchable();
+		$list->enum('parentenum')->setValues(['testA','testB','testC'])->searchable();
+		$list->object('parentobject')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
+		$list->arrayofstrings('parentsarray')->searchable();
+		$list->arrayOfObjects('parentoarray')->setAllowedObjects(['dummy'])->searchable();
+		$list->calculated('parentcalc')->searchable();
+		$list->integer('nosearch')->setDefault(1);
 	}
 	
 	public function calculate_parentcalc() 

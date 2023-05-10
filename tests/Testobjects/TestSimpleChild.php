@@ -11,6 +11,8 @@
  */
 namespace Sunhill\ORM\Tests\Testobjects;
 
+use Sunhill\ORM\Objects\PropertyList;
+
 class TestSimpleChild extends TestParent {
 
     protected static function setupInfos()

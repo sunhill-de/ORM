@@ -11,16 +11,17 @@
  */
 namespace Sunhill\ORM\Tests\Testobjects;
 
+use Sunhill\ORM\Objects\PropertyList;
+
 class ThirdLevelChild extends SecondLevelChild 
 {
 
-    protected static function setupProperties() 
+    protected static function setupProperties(PropertyList $list)
     {
-		parent::setupProperties();
-		self::integer('childchildint');
-		self::varchar('childchildchar');
-		self::object('thirdlevelobject');
-		self::arrayofstrings('thirdlevelsarray');
+		$list->integer('childchildint');
+		$list->varchar('childchildchar');
+		$list->object('thirdlevelobject');
+		$list->arrayofstrings('thirdlevelsarray');
 	}
 	
 	public function postPromotion($from) 

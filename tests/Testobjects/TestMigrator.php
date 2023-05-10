@@ -11,22 +11,23 @@
  */
 namespace Sunhill\ORM\Tests\Testobjects;
 
+use Sunhill\ORM\Objects\PropertyList;
+
 class TestMigrator extends TestParent {
 
-    protected static function setupProperties() 
+    protected static function setupProperties(PropertyList $list)
     {
-	    parent::setupProperties();
-	    self::integer('migratorint')->searchable();
-	    self::varchar('migratorchar')->searchable()->nullable();
-	    self::float('migratorfloat')->searchable();
-	    self::text('migratortext');
-	    self::datetime('migratordatetime');
-	    self::date('migratordate');
-		self::time('migratortime');
-		self::enum('migratorenum')->setValues(['testA','testB','testC']);
-		self::object('migratorobject')->setAllowedObjects(['dummy'])->setDefault(null);;
-		self::arrayofstrings('migratorsarray');
-		self::arrayOfObjects('migratoroarray')->setAllowedObjects(['dummy']);
+	    $list->integer('migratorint')->searchable();
+	    $list->varchar('migratorchar')->searchable()->nullable();
+	    $list->float('migratorfloat')->searchable();
+	    $list->text('migratortext');
+	    $list->datetime('migratordatetime');
+	    $list->date('migratordate');
+		$list->time('migratortime');
+		$list->enum('migratorenum')->setValues(['testA','testB','testC']);
+		$list->object('migratorobject')->setAllowedObjects(['dummy'])->setDefault(null);;
+		$list->arrayofstrings('migratorsarray');
+		$list->arrayOfObjects('migratoroarray')->setAllowedObjects(['dummy']);
 	}
 
 	protected static function setupInfos()

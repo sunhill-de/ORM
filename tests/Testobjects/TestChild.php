@@ -11,24 +11,25 @@
  */
 namespace Sunhill\ORM\Tests\Testobjects;
 
+use Sunhill\ORM\Objects\PropertyList;
+
 class TestChild extends TestParent 
 {
    
-    protected static function setupProperties() 
+    protected static function setupProperties(PropertyList $list)
     {
-	    parent::setupProperties();
-	    self::integer('childint')->searchable();
-	    self::varchar('childchar')->searchable()->default(null);
-	    self::float('childfloat')->searchable();
-	    self::text('childtext')->searchable();
-	    self::datetime('childdatetime')->searchable();
-	    self::date('childdate')->searchable();
-		self::time('childtime')->searchable();
-		self::enum('childenum')->setValues(['testA','testB','testC'])->searchable();
-		self::object('childobject')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
-		self::arrayofstrings('childsarray')->searchable();
-		self::arrayOfObjects('childoarray')->setAllowedObjects(['dummy'])->searchable();
-		self::calculated('childcalc')->searchable();
+	    $list->integer('childint')->searchable();
+	    $list->varchar('childchar')->searchable()->default(null);
+	    $list->float('childfloat')->searchable();
+	    $list->text('childtext')->searchable();
+	    $list->datetime('childdatetime')->searchable();
+	    $list->date('childdate')->searchable();
+		$list->time('childtime')->searchable();
+		$list->enum('childenum')->setValues(['testA','testB','testC'])->searchable();
+		$list->object('childobject')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
+		$list->arrayofstrings('childsarray')->searchable();
+		$list->arrayOfObjects('childoarray')->setAllowedObjects(['dummy'])->searchable();
+		$list->calculated('childcalc')->searchable();
     }
 
 	public function calculate_childcalc() 

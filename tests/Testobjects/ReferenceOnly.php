@@ -12,15 +12,15 @@
 namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\PropertyList;
 
 class ReferenceOnly extends ORMObject 
 {
     
-    protected static function setupProperties() 
+    protected static function setupProperties(PropertyList $list)
     {
-		parent::setupProperties();
-        self::arrayOfStrings('testsarray');
-		self::arrayOfObjects('testoarray')->setAllowedObjects(['dummy','referenceonly']);
+        $list->arrayOfStrings('testsarray');
+		$list->arrayOfObjects('testoarray')->setAllowedObjects(['dummy','referenceonly']);
 	}
 
 	protected static function setupInfos()

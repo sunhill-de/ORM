@@ -12,6 +12,7 @@
 namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\PropertyList;
 
 /**
  * Only for testing purposes
@@ -21,11 +22,11 @@ class CalcClass extends ORMObject {
 	
     public $return = 'ABC';
     
-    protected static function setupProperties() {
-        parent::setupProperties();
-        self::integer('dummyint');
-        self::calculated('calcfield');
-        self::calculated('calcfield2');
+    protected static function setupProperties(PropertyList $list)
+    {
+        $list->integer('dummyint');
+        $list->calculated('calcfield');
+        $list->calculated('calcfield2');
     }
     
     public function calculate_calcfield() {

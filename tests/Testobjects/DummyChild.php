@@ -12,6 +12,7 @@
 namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\PropertyList;
 
 /**
  * Only for testing purposes
@@ -19,10 +20,9 @@ use Sunhill\ORM\Objects\ORMObject;
  */
 class DummyChild extends Dummy {
 	
-    protected static function setupProperties() 
+    protected static function setupProperties(PropertyList $list)
     {
-		parent::setupProperties();
-		self::integer('dummychildint')->searchable()->setDefault(33);
+		$list->integer('dummychildint')->searchable()->setDefault(33);
 	}
 
 	protected static function setupInfos()

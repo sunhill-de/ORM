@@ -11,12 +11,13 @@
  */
 namespace Sunhill\ORM\Tests\Testobjects;
 
+use Sunhill\ORM\Objects\PropertyList;
+
 class SecondLevelChild extends ReferenceOnly {
     
-    protected static function setupProperties() 
+    protected static function setupProperties(PropertyList $list)
     {
-		parent::setupProperties();
-		self::integer('childint');
+		$list->integer('childint');
 	}
 
 	protected static function setupInfos()
