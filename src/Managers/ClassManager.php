@@ -108,7 +108,7 @@ class ClassManager
      */
     private function getClassProperties(string $class): array 
     {
-        $properties = $class::staticGetPropertiesWithFeature();
+        $properties = $class::getAllPropertyDefinitions();
         $result = [];
         foreach ($properties as $name => $descriptor) {
             if ($name !== 'tags') {
@@ -132,7 +132,7 @@ class ClassManager
         $properties = $this->getClassProperties($class);
         foreach ($properties as $property) {
             $result['properties'][$property->getName()] = [];
-            $features = $property->getStaticAttributes();
+            $features = $property->getAttributes();
             foreach ($features as $feat_key => $feat_value) {
                 $result['properties'][$property->getName()][$feat_key] = $feat_value;
             }            
