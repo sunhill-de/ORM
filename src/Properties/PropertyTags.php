@@ -187,11 +187,13 @@ class PropertyTags extends PropertyArrayBase
 	
 	protected function doLoad(StorageBase $loader)  
 	{
-	    if (empty($loader->entities['tags'])) {
+	    if (empty($loader->getEntity('tags'))) {
 	        return;
 	    }
-	    foreach ($loader->entities['tags'] as $tag) {
-	        $this->stick($tag);
+	    foreach ($loader->getEntity('tags') as $tag) {
+            $new_tag = new Tag();
+            $new_tag->load($tag);
+            $this->value[] = $new_tag;
 	    }
 	}
 	

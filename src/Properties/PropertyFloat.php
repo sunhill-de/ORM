@@ -2,11 +2,8 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyFloat extends PropertyField {
+class PropertyFloat extends AtomarProperty {
 	
 	protected $type = 'float';
 	
-	protected $features = ['object','simple'];
-
-	protected $validator_name = 'FloatValidator';
 }

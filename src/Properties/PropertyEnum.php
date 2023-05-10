@@ -2,25 +2,22 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyEnum extends PropertyField 
+class PropertyEnum extends AtomarProperty
 {
 	
-	protected $type = 'enum';
+	protected $type = 'string';
+		
+	protected $enum_values = [];
 	
-	protected $features = ['object','simple'];
-	
-	protected $validator_name = 'EnumValidator';
-	
-	
-	public function setEnumValues($values) 
+	public function setEnumValues(array $values): PropertyEnum 
 	{
-        $this->validator->setEnumValues($values);
+	    $this->enum_values = $values;
 	    return $this;
 	}
 	
 	public function getEnumValues() 
 	{
-	    return $this->validator->getEnumValues();
+	    return $this->enum_values;
 	}
 	
 	public function setValues($values) 

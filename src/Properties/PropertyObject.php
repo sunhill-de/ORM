@@ -19,28 +19,28 @@ use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Properties\LazyIDLoading;
 
-class PropertyObject extends PropertyField 
+class PropertyObject extends AtomarProperty
 {
 	
-    use LazyIDLoading;
-    
-	protected $type = 'object';
-	
-	protected $features = ['object','complex','objectid'];
-	
+	protected $type = 'integer';
+		
 	protected $initialized = true;
-	
-	protected $validator_name = 'ObjectValidator';
+
+	protected $allowed_objects = [];
 	
 	public function setAllowedObjects($object) 
 	{
-	    $this->validator->setAllowedObjects($object);
+	    if (is_string($object)) {
+	        $this->allowed_objects[] = $object;
+	    } else if (is_array($object)) {
+	        $this->allowed_objects = $object;
+	    }
 	    return $this;
 	}
 	
 	public function getAllowedObjects()
 	{
-	    return $this->validator->getAllowedObjects();
+        return $this->allowed_objects;
 	}
 	
 	/**

@@ -15,11 +15,10 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyText extends PropertyField 
+class PropertyText extends AtomarProperty 
 {
 
 	protected $type = 'text';
 
-	protected $features = ['object','simple'];
 	
 }

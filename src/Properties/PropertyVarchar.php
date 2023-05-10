@@ -15,13 +15,11 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyVarchar extends PropertyField 
+class PropertyVarchar extends AtomarProperty 
 {
 	
 	protected $type = 'varchar';
 	
-	protected $features = ['object','simple'];
-
 	protected $maxlen = 255;
 	
 	/**
@@ -44,4 +42,9 @@ class PropertyVarchar extends PropertyField
 	    return $this;
 	}
 
+	public function convertValue($input)
+	{
+	    return substr($input,0,$this->maxlen);
+	}
+	
 }

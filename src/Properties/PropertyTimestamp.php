@@ -14,12 +14,28 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyTimestamp extends PropertyField 
+use Sunhill\ORM\Storage\StorageBase;
+
+class PropertyTimestamp extends AtomarProperty 
 {
 
-	protected $type = 'timestamp';
+	protected $type = 'datetime';
 	
-	protected $features = ['object','complex'];
-
 	protected $initialized = true;
+	
+	/**
+	 * Timestamps don't write to the storage, the storage has to take care of updating them
+	 * 
+	 * {@inheritDoc}
+	 * @see \Sunhill\ORM\Properties\AtomarProperty::storeToStorage()
+	 */
+	public function storeToStorage(StorageBase $storage)
+	{
+	}
+	
+	public function updateToStorage(StorageBase $storage)
+	{
+	}
+	
+	
 }

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @file PropertyArrayBase.php
- * The base class for array like properties
+ * @file PropertyArray.php
+ * The base class for arrays
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -15,25 +15,17 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countable,\Iterator 
+class PropertyMap extends Property implements \ArrayAccess,\Countable,\Iterator 
 {
     
 	protected $initialized = true;
 	
 	protected $pointer = 0;
 
-	protected $element_type;
-	
 	public function __construct()
 	{
 	    parent::__construct();
 	    $this->value = [];
-	}
-	
-	public function setElementType(string $type): PropertyArrayBase
-	{
-	    $this->element_type = $type;
-	    return $this;
 	}
 	
 	/**

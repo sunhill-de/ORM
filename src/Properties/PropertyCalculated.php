@@ -20,14 +20,10 @@ use Sunhill\ORM\Storage\StorageBase;
 /**
  * The property class for calculated fields
  */
-class PropertyCalculated extends PropertyField 
+class PropertyCalculated extends AtomarProperty 
 {
 	
-	protected $type = 'calculated';
-
-	protected $features = ['complex','calculated'];
-	
-	protected $read_only = true;
+	protected $type = 'reference';
 	
 //	protected $initialized = true;
 	
@@ -75,5 +71,11 @@ class PropertyCalculated extends PropertyField
 	    }
 	    parent::doInsert($storage,$name);
 	}
-		
+
+	public function loadFromStorage(StorageBase $storage)
+	{
+	   $name = $this->getName();
+	   $this->value = $storage->$name;
+	}
+	
 }

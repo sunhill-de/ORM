@@ -15,12 +15,9 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyTime extends PropertyField {
+class PropertyTime extends AtomarProperty {
 
 	protected $type = 'time';
 
-	protected $features = ['object','simple'];
-	
-	protected $validator_name = 'TimeValidator';
 		
 }

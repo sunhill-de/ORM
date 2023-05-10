@@ -2,12 +2,18 @@
 
 namespace Sunhill\ORM\Properties;
 
-class PropertyInteger extends PropertyField {
+class PropertyInteger extends AtomarProperty {
 	
 	protected $type = 'integer';
 
-	protected $features = ['object','simple'];
+	/**
+	 * Returns
+	 * @param unknown $input
+	 * @return bool
+	 */
+	public function isValid($input): bool
+	{
+	    return is_numeric($input);
+	}
 	
-	protected $validator_name = 'IntValidator';
-
 }
