@@ -20,18 +20,18 @@ class QueryWhereArrayOfStrings extends QueryWhereArray
 
     protected function getAssocTable() 
     {
-        return 'stringobjectassigns';
+        return $this->table_name.'_array_'.$this->field.' as '.$this->help_alias;
     }
     
     protected function getAssocField() 
     {
-        return 'element_id';
+        return 'target';
     }
     
     protected function getElementIDList($value) 
     {
         if (is_string($value)) {
-            return ' = '.$this->escape($value)." and field = '".$this->field."'";
+            return ' = '.$this->escape($value);
         } else if (is_array($value)) {
             $result = ' in (';
             $first = true;
@@ -42,13 +42,13 @@ class QueryWhereArrayOfStrings extends QueryWhereArray
                 $result .= $this->escape($entry);                    
                 $first = false;
             }
-            return $result.')'." and field = '".$this->field."'";
+            return $result.')';
         }
     }
 
     protected function getElement($element) 
     {
-        return ' = '.$this->escape($element)." and field = '".$this->field."'";
+        return ' = '.$this->escape($element);
     }
     
 }

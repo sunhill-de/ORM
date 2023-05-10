@@ -32,35 +32,44 @@ abstract class QueryWhereArray extends QueryWhere
                 'empty'=>'unary'
         ];
     
+        protected $help_alias;
+        
         abstract protected function getAssocTable();
         abstract protected function getAssocField();
         abstract protected function getElementIDList($value);
         abstract protected function getElement($element);
 
+        protected function getIDField()
+        {
+            return $this->help_alias.'.id';
+        }
+        
         protected function getFieldPart()
         {
-            return "and field = '".$this->field."'";    
+            return "";    
         }
         
         public function getThisWherePart() 
         {
+            $this->help_alias = $this->parent_query->getAliasOnly();
+            
             $result = $this->getQueryPrefix();
             switch ($this->relation) {
                 case 'has':
                 case 'one of':
-                    $result .= ' a.id in (select container_id from '.$this->getAssocTable().' where '.$this->getAssocField().' '.$this->getElementIDList($this->value).')';
+                    $result .= ' a.id in (select '.$this->getIDField().' from '.$this->getAssocTable().' where '.$this->getAssocField().' '.$this->getElementIDList($this->value).')';
                     break;
                 case 'has not':
                 case 'none of':
-                    $result .= ' a.id not in (select container_id from '.$this->getAssocTable().' where '.$this->getAssocField().' '.$this->getElementIDList($this->value).')';
+                    $result .= ' a.id not in (select '.$this->getIDField().' from '.$this->getAssocTable().' where '.$this->getAssocField().' '.$this->getElementIDList($this->value).')';
                     break;
                 case 'has any':
                 case 'not empty':
-                    $result .= ' a.id in (select container_id from '.$this->getAssocTable().' where 1 '.$this->getFieldPart().')';
+                    $result .= ' a.id in (select '.$this->getIDField().' from '.$this->getAssocTable().' where 1 '.$this->getFieldPart().')';
                     break;
                 case 'has none':
                 case 'empty':
-                    $result .= ' a.id not in (select container_id from '.$this->getAssocTable().' where 1 '.$this->getFieldPart().')';
+                    $result .= ' a.id not in (select '.$this->getIDField().' from '.$this->getAssocTable().' where 1 '.$this->getFieldPart().')';
                     break;
                 case 'all of':
                     $result .= ' ('.$this->getAllOfPart().')';
@@ -75,7 +84,7 @@ abstract class QueryWhereArray extends QueryWhere
             $first = true;
             foreach ($this->value as $value) {
                 $value = $this->getElement($value);
-                $result .= ($first?'':' and ').' exists (select container_id from '.$this->getAssocTable().' where container_id = a.id and '.$this->getAssocField().$value.' '.$this->getFieldPart().')';
+                $result .= ($first?'':' and ').' exists (select '.$this->getIDField().' from '.$this->getAssocTable().' where '.$this->getIDField().' = a.id and '.$this->getAssocField().$value.' '.$this->getFieldPart().')';
                 $first = false;
             }
             return $result;

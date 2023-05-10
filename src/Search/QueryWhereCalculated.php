@@ -45,7 +45,8 @@ class QueryWhereCalculated extends QueryWhere
 
      protected function getInnerQuery()
      {
-         $result = "select object_id from caching where fieldname = '".$this->field."' and value "; 
+         $table = $this->table_name.'_calc_'.$this->field;
+         $result = "select id from $table where value "; 
          switch ($this->relation) {
              case 'begins with':
                  $result .= 'like '.$this->escape($this->value.'%'); break;

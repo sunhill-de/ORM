@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Utils\ObjectList;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Facades\Objects;
+use Illuminate\Support\Collection;
 
 class QueryBuilder 
 {
@@ -103,6 +104,11 @@ class QueryBuilder
             $this->used_tables[$table_name] = $this->next_table++;
         }         
         return $this->used_tables[$table_name];
+    }
+    
+    public function getAliasOnly()
+    {
+        return $this->next_table++;    
     }
     
     protected function getWherePart($field, $relation, $value) 
@@ -328,11 +334,11 @@ class QueryBuilder
         if (is_string($result)) {
             return $result; // We requested a dump
         } else {
-            $return = new ObjectList();
+            $return = [];
             foreach ($result as $entry) {
-                $return[] = $entry->id;
+                $return[] = Objects::load($entry->id);
             }
-            return $return;
+            return collect($return);
         }
     }
     

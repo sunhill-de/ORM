@@ -22,7 +22,7 @@ class QueryWhereTag extends QueryWhereArray
     
     protected function getAssocTable() 
     {
-        return 'tagobjectassigns';
+        return 'tagobjectassigns as '.$this->help_alias;
     }
     
     protected function getAssocField() 
@@ -33,6 +33,11 @@ class QueryWhereTag extends QueryWhereArray
     protected function getFieldPart()
     {
         return "";
+    }
+    
+    protected function getIDField()
+    {
+        return 'container_id';    
     }
     
     protected function getElementIDList($value) 

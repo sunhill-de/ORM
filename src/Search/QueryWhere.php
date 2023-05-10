@@ -49,6 +49,8 @@ abstract class QueryWhere extends QueryAtom {
     
     protected $parent_query;
     
+    protected $table_name;
+    
     public function __construct(QueryBuilder $parent_query, Property $field, $relation, $value = null) 
     {
         if (is_null($value)) {
@@ -69,7 +71,8 @@ abstract class QueryWhere extends QueryAtom {
     
     protected function getTable(Property $field) 
     {
-        $this->alias = $this->parent_query->getTable($this->getTableName($field));
+        $this->table_name = $this->getTableName($field);
+        $this->alias = $this->parent_query->getTable($this->table_name);
         $this->field = $field->getName();        
     }
     

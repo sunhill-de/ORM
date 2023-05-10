@@ -20,20 +20,20 @@ class QueryWhereArrayOfObjects extends QueryWhereArray
 
     protected function getAssocTable() 
     {
-        return 'objectobjectassigns';
+        return $this->table_name.'_array_'.$this->field.' as '.$this->help_alias;
     }
     
     protected function getAssocField()
     {
-        return 'element_id';
+        return 'target';
     }
     
     protected function getElementIDList($value) 
     {
         if (is_int($value)) {
-            return ' = '.$this->escape($value)." and field = '".$this->field."'";
+            return ' = '.$this->escape($value);
         } else if (is_object($value)) {
-            return ' = '.$this->escape($value->getID())." and field = '".$this->field."'";
+            return ' = '.$this->escape($value->getID());
         } else if (is_array($value)) {
             $result = ' in (';
             $first = true;
@@ -48,7 +48,7 @@ class QueryWhereArrayOfObjects extends QueryWhereArray
                 }
                 $first = false;
             }
-            return $result.')'." and field = '".$this->field."'";
+            return $result.')';
         }
     }
     
