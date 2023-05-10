@@ -28,7 +28,7 @@ trait PropertyUtils
 
     protected function getAllProperties($caller, bool $only_own_table = false): array
     {
-        $properties = $caller::staticGetProperties()->get();
+        $properties = $caller::getAllPropertyDefinitions();
         
         if (!$only_own_table) {
             return $properties;
