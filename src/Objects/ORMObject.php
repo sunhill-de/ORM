@@ -3,7 +3,7 @@
  * @file ORMObject.php
  * Provides the core object of the orm system named ORMObject
  * Lang en (complete)
- * Reviewstatus: 2021-04-07
+ * Reviewstatus: 2023-05-09
  * Localization: unknown
  * Documentation: unknown
  * Tests: unknown
@@ -19,6 +19,7 @@ use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Storage\StorageMySQL;
 use Sunhill\ORM\Properties\PropertyAttribute;
 use Sunhill\ORM\Properties\AttributeException;
+use Sunhill\ORM\Properties\PropertyTags;
 
 /**
  * As the central class of the ORM system ORMObject provides the basic function for
@@ -51,17 +52,7 @@ class ORMObject extends PropertyCollection
     
     protected $storageClass = 'Object';
     
-    /**
-     * Constructor for all orm classes. As a child of properties_having it calls its derrived constructor wich in turn initializes the properties.
-     * Additionally it defines a few own intenal properties (tags and externalhooks)
-     */
-	public function __construct() 
-    {
-	    parent::__construct();
-	    $this->properties['tags'] = self::createProperty('tags','tags','object')->setOwner($this);
-	}
-	
-	protected function isLoaded(): bool
+ 	protected function isLoaded(): bool
 	{
 	    return $this->loaded;
 	}
@@ -203,19 +194,6 @@ class ORMObject extends PropertyCollection
 	    }
 	}
 	
-	/**
-	 * A helper method that calls for every propery the given method an passes the given storage to it
-	 * @param string $action The name of the method that has to get called
-	 * @param \Sunhill\ORM\Storage\StorageBase $storage the storage
-	 */
-	protected function walkProperties(string $action, StorageBase $storage)
-    {
-	    $properties = $this->getPropertiesWithFeature();
-	    foreach ($properties as $property) {
-	        $property->$action($storage);
-	    }
-	}
-
 // =============================== Copying ====================================	
 	/**
 	 * This routine copies the properties to $newobject
@@ -337,18 +315,18 @@ class ORMObject extends PropertyCollection
 	/**
 	 * Initializes the properties of this object. Any child has to call its parents setupProperties() method
 	 */
-	protected static function setupProperties() 
-    {
-	    parent::setupProperties(); 
-	    self::addProperty('tags','tags')->searchable();
-	    self::timestamp('created_at');
-	    self::timestamp('updated_at');
-	    self::varchar('uuid')->searchable()->setMaxLen(20);
-	    self::integer('obj_owner')->default(0);
-	    self::integer('obj_group')->default(0);
-	    self::integer('obj_read')->default(7);
-	    self::integer('obj_edit')->default(7);
-	    self::integer('obj_delete')->default(7);	    
+	protected static function setupProperties(PropertyList $list)
+	{
+	//    $list->addProperty(PropertyTags::class,'tags')->searchable();
+	    $list->timestamp('created_at');
+	    $list->timestamp('updated_at');
+	    $list->varchar('uuid')->searchable()->setMaxLen(20);
+	    $list->integer('obj_owner')->default(0);
+	    $list->integer('obj_group')->default(0);
+	    $list->integer('obj_read')->default(7);
+	    $list->integer('obj_edit')->default(7);
+	    $list->integer('obj_delete')->default(7);
+	    $list->tags();
 	}
 
 	/**
@@ -364,25 +342,5 @@ class ORMObject extends PropertyCollection
 	    static::addInfo('description', 'A base class that defines storable properties.');
 	    static::addInfo('options', 0);
 	}
-	
-	/**
-	 * Traverses all classes in the hirachy and combines the static property $name in one resulting array
-	 *
-	 * @param string $name
-	 * @return array
-	 */
-	public static function getHirarchicArray(string $name)
-	{
-	    if (! property_exists(get_called_class(), $name)) {
-	        throw new ObjectException(__("The property ':name' doesn't exists.",['name'=>$name]));
-	    }
-	    $result = [];
-	    $pointer = get_called_class();
-	    do {
-	        $result = array_merge($result, $pointer::$$name);
-	        $pointer = get_parent_class($pointer);
-	    } while (property_exists($pointer, $name)); // at least ORMObject shouldn't define it
-	    return $result;
-	}
-	
+		
 }
