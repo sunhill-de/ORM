@@ -33,6 +33,16 @@ class DummyStorage extends StorageBase
         $this->setEntity('parentchar','ABC');
         $this->setEntity('parentint',123);
         $this->setEntity('parentfloat',1.23);
+        $this->setEntity('parenttext','Lorem ipsum');
+        $this->setEntity('parentdatetime','2023-05-10 11:43:00');
+        $this->setEntity('parentdate','2023-05-10');
+        $this->setEntity('parenttime','11:43:00');
+        $this->setEntity('parentenum','testC');
+        $this->setEntity('parentobject',1);
+        $this->setEntity('parentsarray',['AAA','BBB','CCC']);
+        $this->setEntity('parentoarray',[2,3,4]);
+        $this->setEntity('parentcalc','123A');
+        $this->setEntity('nosearch',2);
      }
      
      protected function fillValues()

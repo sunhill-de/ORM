@@ -1,6 +1,8 @@
 <?php
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
+use Sunhill\ORM\Objects\PropertyList;
+
 class AnotherDummyPropertyCollection extends DummyPropertyCollection
 {
     
@@ -11,14 +13,10 @@ class AnotherDummyPropertyCollection extends DummyPropertyCollection
         static::addInfo('something','else');
     }
     
-    protected static function setupProperties()
+    protected static function setupProperties(PropertyList $list)
     {
-        static::integer('test');
-    }
-
-    public static function callAddProperty()
-    {
-        return static::integer('test');
+        $list->integer('anothertestint');
+        $list->string('anotherteststring',10);
     }
     
 }

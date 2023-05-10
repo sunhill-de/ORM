@@ -4,6 +4,7 @@ namespace Sunhill\ORM\Tests\Unit\Objects;
 
 use Sunhill\ORM\Objects\PropertyCollection;
 use Sunhill\ORM\Objects\PropertyCollectionException;
+use Sunhill\ORM\Objects\PropertyList;
 
 class DummyPropertyCollection extends PropertyCollection
 {
@@ -18,23 +19,11 @@ class DummyPropertyCollection extends PropertyCollection
     {
         return 'Trans:'.$value;    
     }
-    
-    public static function callStaticMethod(string $string, array $params = [], bool $clear = true)
+ 
+    protected static function setupProperties(PropertyList $list)
     {
-        if ($clear) {
-            static::$property_definitions = [];
-        }
-        return static::$string(...$params);
+        $list->integer('testint');
+        $list->string('teststring',10);
     }
     
-    public static function callMethod(string $method)
-    {
-        static::$property_definitions = [];
-        return static::$method('test');
-    }
-    
-    public static function callAddProperty()
-    {
-        return static::integer('test');
-    }
-}
+ }

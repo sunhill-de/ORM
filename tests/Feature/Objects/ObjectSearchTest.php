@@ -4,7 +4,9 @@ namespace Sunhill\ORM\Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Search\QueryException;
 use Sunhill\ORM\Tests\DBTestCase;
@@ -24,10 +26,10 @@ use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 class ObjectSearchTest extends DatabaseTestCase
 {
 
-    protected function simplify_result(ObjectList $result) {
+    protected function simplify_result(Collection $result) {
         $return = [];
-        for($i=0;$i<count($result);$i++) {
-            $return[] = $result[$i]->getID($i);
+        foreach ($result as $obj) {
+            $return[] = $obj->getID();
         }
         return $return;
     }
@@ -388,9 +390,12 @@ class ObjectSearchTest extends DatabaseTestCase
      * @group complex
      */
     public function testComplexSearchIDs($searchclass,$field1,$relation1,$value1,$field2,$relation2,$value2,$expect) {
-         $classname = "\\Sunhill\\ORM\\Tests\\Testobjects\\".$searchclass;
+        
+        $classname = "\\Sunhill\\ORM\\Tests\\Testobjects\\".$searchclass;
          $result = $this->simplify_result($classname::search()->where($field1,$relation1,$value1)->where($field2,$relation2,$value2)->get());
         $this->assertEquals($expect,$result);
+        
+        
     }
     
     public function ComplexProvider() {

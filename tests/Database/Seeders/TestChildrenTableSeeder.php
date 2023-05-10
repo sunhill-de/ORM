@@ -19,7 +19,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childdate'=>'1978-06-05',
 	            'childtime'=>'11:45:00',
 	            'childenum'=>'testC',
-	            'childobject'=>null
+	            'childobject'=>3
 	        ],
 	        [
 	            'id'=>18,

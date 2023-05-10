@@ -59,6 +59,7 @@ class ObjectManagerTest extends DatabaseTestCase
     
     public function testObjectListClassFilter() {
         $list = Objects::getObjectList('dummy');
+        $item = $list[1];
         $this->assertEquals(2,$list[1]->getID());
         $count = DB::table('dummies')->select(DB::raw('count(*) as count'))->first();
         $this->assertEquals($count->count,count($list));
