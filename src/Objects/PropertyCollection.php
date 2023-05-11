@@ -366,6 +366,15 @@ class PropertyCollection extends NonAtomarProperty
         return $result;
     }
     
+    public static function getPropertyObject(string $name): ?Property
+    {
+        $properties = static::getAllPropertyDefinitions();
+        if (isset($properties[$name])) {
+            return $properties[$name];
+        }
+        return null;
+    }
+    
 	protected static function setupProperties(PropertyList $list)
 	{	
 	}
