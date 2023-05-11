@@ -102,10 +102,10 @@ class MysqlStorageStoreTest extends DatabaseTestCase
         ];
         
         $this->assertDatabaseHas('testparents',$simple_data);
-        $this->assertDatabaseHas('testparents_array_parentoarray',['id'=>$id,'target'=>$input_data['parentoarray'][0],'index'=>0]);
-        $this->assertDatabaseHas('testparents_array_parentoarray',['id'=>$id,'target'=>$input_data['parentoarray'][3],'index'=>3]);
-        $this->assertDatabaseHas('testparents_array_parentsarray',['id'=>$id,'target'=>$input_data['parentsarray'][0],'index'=>0]);
-        $this->assertDatabaseHas('testparents_array_parentsarray',['id'=>$id,'target'=>$input_data['parentsarray'][2],'index'=>2]);
+        $this->assertDatabaseHas('testparents_array_parentoarray',['id'=>$id,'value'=>$input_data['parentoarray'][0],'index'=>0]);
+        $this->assertDatabaseHas('testparents_array_parentoarray',['id'=>$id,'value'=>$input_data['parentoarray'][3],'index'=>3]);
+        $this->assertDatabaseHas('testparents_array_parentsarray',['id'=>$id,'value'=>$input_data['parentsarray'][0],'index'=>0]);
+        $this->assertDatabaseHas('testparents_array_parentsarray',['id'=>$id,'value'=>$input_data['parentsarray'][2],'index'=>2]);
 
         $this->assertDatabaseHas('testparents_calc_parentcalc',['id'=>$id,'value'=>'101A']);
     }
@@ -175,15 +175,15 @@ class MysqlStorageStoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('testparents',$simple_data_parent);
         $this->assertDatabaseHas('testchildren',$simple_data_child);
         
-        $this->assertDatabaseHas('testparents_array_parentoarray',['id'=>$id,'target'=>$input_data['parentoarray'][0],'index'=>0]);
-        $this->assertDatabaseHas('testparents_array_parentoarray',['id'=>$id,'target'=>$input_data['parentoarray'][3],'index'=>3]);
-        $this->assertDatabaseHas('testparents_array_parentsarray',['id'=>$id,'target'=>$input_data['parentsarray'][0],'index'=>0]);
-        $this->assertDatabaseHas('testparents_array_parentsarray',['id'=>$id,'target'=>$input_data['parentsarray'][2],'index'=>2]);
+        $this->assertDatabaseHas('testparents_array_parentoarray',['id'=>$id,'value'=>$input_data['parentoarray'][0],'index'=>0]);
+        $this->assertDatabaseHas('testparents_array_parentoarray',['id'=>$id,'value'=>$input_data['parentoarray'][3],'index'=>3]);
+        $this->assertDatabaseHas('testparents_array_parentsarray',['id'=>$id,'value'=>$input_data['parentsarray'][0],'index'=>0]);
+        $this->assertDatabaseHas('testparents_array_parentsarray',['id'=>$id,'value'=>$input_data['parentsarray'][2],'index'=>2]);
         
-        $this->assertDatabaseHas('testchildren_array_childoarray',['id'=>$id,'target'=>$input_data['childoarray'][0],'index'=>0]);
-        $this->assertDatabaseHas('testchildren_array_childoarray',['id'=>$id,'target'=>$input_data['childoarray'][3],'index'=>3]);
-        $this->assertDatabaseHas('testchildren_array_childsarray',['id'=>$id,'target'=>$input_data['childsarray'][0],'index'=>0]);
-        $this->assertDatabaseHas('testchildren_array_childsarray',['id'=>$id,'target'=>$input_data['childsarray'][2],'index'=>2]);
+        $this->assertDatabaseHas('testchildren_array_childoarray',['id'=>$id,'value'=>$input_data['childoarray'][0],'index'=>0]);
+        $this->assertDatabaseHas('testchildren_array_childoarray',['id'=>$id,'value'=>$input_data['childoarray'][3],'index'=>3]);
+        $this->assertDatabaseHas('testchildren_array_childsarray',['id'=>$id,'value'=>$input_data['childsarray'][0],'index'=>0]);
+        $this->assertDatabaseHas('testchildren_array_childsarray',['id'=>$id,'value'=>$input_data['childsarray'][2],'index'=>2]);
         
         $this->assertDatabaseHas('testparents_calc_parentcalc',['id'=>$id,'value'=>'101A']);
         $this->assertDatabaseHas('testchildren_calc_childcalc',['id'=>$id,'value'=>'202B']);

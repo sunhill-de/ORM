@@ -2,11 +2,10 @@
 
 use Sunhill\ORM\Semantic\Name;
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Properties\DefaultNull;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Units\None;
-use Sunhill\ORM\Properties\NonAtomarProperty;
+use Sunhill\ORM\Objects\ORMObject;
 
 class PropertyTest extends TestCase
 {
@@ -41,7 +40,7 @@ class PropertyTest extends TestCase
     
     public function testOwner()
     {
-        $test = new NonAtomarProperty();
+        $test = new ORMObject();
         $test->setOwner($test);
         $this->assertEquals($test, $test->getOwner());        
     }

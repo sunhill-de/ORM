@@ -76,4 +76,5 @@ class PropertyCollection_PropertyTest extends TestCase
         $test = new DummyPropertyCollection();
         $test->nonexisting = 10;        
     }
+    
 }
