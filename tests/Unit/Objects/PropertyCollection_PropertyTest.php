@@ -3,6 +3,7 @@
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
 use Sunhill\ORM\Tests\TestCase;
+use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Properties\PropertyException;
 
 class PropertyCollection_PropertyTest extends TestCase
@@ -77,4 +78,8 @@ class PropertyCollection_PropertyTest extends TestCase
         $test->nonexisting = 10;        
     }
     
+    public function testTestSimpleChild()
+    {
+        $this->assertEquals([], TestSimpleChild::getPropertyDefinition());        
+    }
 }
