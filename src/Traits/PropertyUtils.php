@@ -28,18 +28,11 @@ trait PropertyUtils
 
     protected function getAllProperties($caller, bool $only_own_table = false): array
     {
-        $properties = $caller::getAllPropertyDefinitions();
-        
-        if (!$only_own_table) {
-            return $properties;
+        if ($only_own_table) {
+            return $caller::getPropertyDefinition();
+        } else {
+            return $caller::getAllPropertyDefinitions();
         }
-        $result = [];
-        foreach ($properties as $key => $info) {
-            if ($info->getClass() == $caller::getInfo('name')) {
-                $result[$key] = $info;
-            }
-        }
-        return $result;
     }
     
 }
