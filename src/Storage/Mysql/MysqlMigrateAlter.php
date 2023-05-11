@@ -6,6 +6,19 @@ use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Traits\PropertyUtils;
+use Sunhill\ORM\Properties\PropertyInteger;
+use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Properties\PropertyFloat;
+use Sunhill\ORM\Properties\PropertyDate;
+use Sunhill\ORM\Properties\PropertyDatetime;
+use Sunhill\ORM\Properties\PropertyTime;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyArray;
+use Sunhill\ORM\Properties\PropertyCalculated;
+use Sunhill\ORM\Properties\PropertyEnum;
+use Sunhill\ORM\Properties\PropertyText;
+use DeepCopy\Exception\PropertyException;
+
 
 class MysqlMigrateAlter
 {
@@ -167,19 +180,33 @@ class MysqlMigrateAlter
     {
         Schema::create($table_name, function($table) use ($type) {
            $table->integer('id')->primary();
-           $table->$type('target');
+           switch ($type) {
+               case PropertyInteger::class:
+               case PropertyObject::class:
+                   $table->integer('value'); break;
+               case PropertyVarchar::class:
+               case PropertyEnum::class:
+                   $table->string('value'); break;
+               case PropertyDate::class:
+                   $table->date('value'); break;
+               case PropertyDateTime::class:
+                   $table->datetime('value'); break;
+               case PropertyTime::class:
+                   $table->time('value'); break;
+               case PropertyFloat::class:
+                   $table->float('value'); break;
+               default:
+                   throw new PropertyException("Can't build an array of ".$type);
+           }
            $table->integer('index');
         });
     }
     
-    protected function checkArray(Property $property, string $type)
+    protected function checkArray(Property $property)
     {
-        if ($type == 'object') {
-            $type = 'integer';
-        }
         $table_name = $this->basic_table_name.'_array_'.$property->getName();
         if (!$this->tableExists($table_name)) {
-            $this->addArrayTable($table_name, $type);
+            $this->addArrayTable($table_name, $property->getElementType());
             return;
         }
     }
@@ -203,29 +230,30 @@ class MysqlMigrateAlter
     
     protected function checkNewOrChangedColumns()
     {
-        $properties = $this->getAllProperties($this->storage->getCaller(), true);       
+        $properties = $this->storage->getCaller()::getPropertyDefinition();       
         foreach ($properties as $name => $property) {
-            switch ($property->getType()) {
-                case 'integer':
-                case 'float':
-                case 'date':
-                case 'datetime':
-                case 'time':
+            switch ($property::class) {
+                case PropertyInteger::class:
+                case PropertyFloat::class:
+                case PropertyDate::class:
+                case PropertyDatetime::class:
+                case PropertyTime::class:
+                case PropertyText::class:
                     $this->checkSimpleField($property); break;
-                case 'object':
+                case PropertyObject::class:
                     $this->checkObjectField($property); break;
-                case 'varchar':
+                case PropertyVarchar::class:
                     $this->checkVarchar($property); break;
-                case 'enum':
+                case PropertyEnum::class:
                     $this->checkEnum($property); break;
-                case 'arrayOfStrings':
-                    $this->checkArray($property,'string'); break;
-                case 'arrayOfObjects':
-                    $this->checkArray($property,'object'); break;
-                case 'calculated':
+                case PropertyArray::class:
+                    $this->checkArray($property); break;
+                case PropertyCalculated::class:
                     $this->checkCalculated($property); break;
                 case 'tags':
                     break;
+                default:
+                    throw new PropertyException("Unknown property type ".$property::class);
             }
         }
     }
