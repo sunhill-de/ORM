@@ -22,110 +22,37 @@ use Sunhill\ORM\Properties\LazyIDLoading;
 class PropertyObject extends AtomarProperty
 {
 	
+    use ClassCheck;
+    
 	protected $type = 'integer';
 		
 	protected $initialized = true;
-
-	protected $allowed_objects = [];
 	
-	public function setAllowedObjects($object) 
+	public function convertValue($input)
 	{
-	    if (is_string($object)) {
-	        $this->allowed_objects[] = $object;
-	    } else if (is_array($object)) {
-	        $this->allowed_objects = $object;
+	    if (is_numeric($input)) {
+	        return Objects::load($input);	        
 	    }
-	    return $this;
+	    return $input;
 	}
 	
-	public function getAllowedObjects()
-	{
-        return $this->allowed_objects;
-	}
-	
-	/**
-	 * Wird aufgerufen, nachdem das Elternobjekt geladen wurde
-	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\Properties\Property::load()
-	 */
-	protected function doLoad(StorageBase $storage) 
+	public function loadFromStorage(StorageBase $storage) 
 	{
         $name = $this->getName();
-	    $reference = $storage->$name;
-	    if (!empty($reference)) {
-	        $this->doSetValue($reference);
+	    $object_id = $storage->$name;	    
+	    if (!empty($object_id)) {
+	        $this->doSetValue($this->convertValue($object_id));
 	    }
 	}
 	
-	/**
-	 * Überschriebene Methode von Property. Prüft, ob die Objekt-ID bisher nur als Nummer gespeichert war. Wenn ja, wird das
-	 * Objekt lazy geladen.
-	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\Properties\Property::doGetValue()
-	 */
-	protected function &doGetValue() 
+	public function insertIntoStorage(StorageBase $storage) 
 	{
-	    if (is_int($this->value)) {
-	        $this->value = Objects::load($this->value);
-	    }
-            return $this->value;	    
-	}
-	
-	protected function doInsert(StorageBase $storage, string $name) 
-	{
-	    if (is_int($this->value)) {
-	        $storage->setEntity($name,$this->value);
-	    } else if (is_object($this->value)){
-	        $storage->setEntity($name,$this->value->getID());
-	    }
-	}
-	
-	public function inserting(StorageBase $storage) 
-	{
-	    $this->commitChildIfLoaded($this->value);
+        $storage->setEntity($this->getName(), $this->value->getID());
 	}
 
-	public function inserted(StorageBase $storage) 
+	public function updateToStorage(StorageBase $storage)
 	{
-	    $this->commitChildIfLoaded($this->value);	    
-	}
-	
-	/**
-	 * Erzeugt ein Diff-Array.
-	 * d.h. es wird ein Array mit (mindestens) zwei Elementen zurückgebene:
-	 * FROM ist der alte Wert
-	 * TO ist der neue Wert
-	 * @param int $type Soll bei Objekten nur die ID oder das gesamte Objekt zurückgegeben werden
-	 * @return void[]|\Sunhill\ORM\Properties\Property[]
-	 */
-	public function getDiffArray(int $type = PD_VALUE) 
-	{
-	    $diff = parent::getDiffArray($type);
-	    if ($type == PD_ID) {
-	        return [
-	            'FROM'=>$this->getLocalID($this->shadow),
-	            'TO'=>$this->getLocalID($this->value)
-	        ];
-	    } else {
-	        return $diff;
+	    if ($this->isDirty()) {
 	    }
 	}
-	
-	public function updating(StorageBase $storage) 
-	{
-        $this->inserting($storage);
-	}
-	
-	public function updated(StorageBase $storage) 
-	{
-	    $this->updating($storage);
-	}
-	
-	protected function valueChanged($from, $to) 
-	{
-	    foreach ($this->hooks as $hook) {
-	        $to->addHook($hook['action'],$hook['hook'],$hook['subaction'],$hook['target']);
-	    }
-	}
-	
 }
