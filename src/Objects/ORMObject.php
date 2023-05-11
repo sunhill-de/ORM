@@ -204,7 +204,7 @@ class ORMObject extends PropertyCollection
 	    $newobject->setID($this->getID());
 	    foreach ($this->properties as $property) {
 	        $name = $property->getName();
-	        switch ($property->getType()) {
+	        switch ($property::getType()) {
 	            case 'arrayOfObjects':
 	            case 'arrayOfStrings':
 	            case 'external_references':
@@ -230,7 +230,7 @@ class ORMObject extends PropertyCollection
 	    $this->setID($source->getID());
 	    foreach ($this->properties as $property) {
 	        $name = $property->getName();
-	        switch ($property->getType()) {
+	        switch ($property::getType()) {
 	            case 'arrayOfObjects':
 	            case 'arrayOfStrings':
 	            case 'external_references':
