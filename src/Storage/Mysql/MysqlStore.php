@@ -84,15 +84,16 @@ class MysqlStore
         $hirarchy = $this->storage->getInheritance();
         array_pop($hirarchy); // remove object
 
-        $properties = $this->storage->getCaller()->getProperties()->get();
         foreach ($hirarchy as $class) {
             $table = Classes::getTableOfClass($class);
+            $namespace = Classes::getNamespaceOfClass($class);
             $values = [
                 'id'=>$this->id
             ];
-            foreach ($properties as $property) {
-                if (($property->getClass() == $class) && $this->isSimpleProperty($property)) {
-                    $values[$property->getName()] = $this->storage->getEntity($property->getName());
+            $properties = $namespace::getPropertyDefinition();
+            foreach ($properties as $name => $property) {
+                if ($this->isSimpleProperty($property)) {
+                    $values[$name] = $this->storage->getEntity($name);
                 }
             }
             DB::table($table)->insert($values);
@@ -104,7 +105,7 @@ class MysqlStore
         $data = [];
         $index = 0;
         foreach ($this->storage->getEntity($field) as $value) {
-            $data[] = ['id'=>$this->id,'target'=>$value,'index'=>$index++];
+            $data[] = ['id'=>$this->id,'value'=>$value,'index'=>$index++];
         }
         if (!empty($data)) {
             DB::table($table)->insert($data);
