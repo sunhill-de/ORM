@@ -24,7 +24,7 @@ class PropertyObject extends AtomarProperty
 	
     use ClassCheck;
     
-	protected $type = 'integer';
+	protected static $type = 'integer';
 		
 	protected $initialized = true;
 	

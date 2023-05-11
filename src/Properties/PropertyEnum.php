@@ -5,7 +5,7 @@ namespace Sunhill\ORM\Properties;
 class PropertyEnum extends AtomarProperty
 {
 	
-	protected $type = 'string';
+	protected static $type = 'string';
 		
 	protected $enum_values = [];
 	

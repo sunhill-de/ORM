@@ -23,7 +23,7 @@ use Sunhill\ORM\Storage\StorageBase;
 class PropertyCalculated extends AtomarProperty 
 {
 	
-	protected $type = 'reference';
+	protected static $type = 'calculated';
 	
 	protected $callback;
 	

@@ -16,6 +16,6 @@ namespace Sunhill\ORM\Properties;
 class PropertyDatetime extends AtomarProperty 
 {
 
-    protected $type = 'datetime';
+    protected static $type = 'datetime';
 	    
 }

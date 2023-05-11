@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Properties;
 
 class PropertyInteger extends AtomarProperty {
 	
-	protected $type = 'integer';
+	protected static $type = 'integer';
 
 	/**
 	 * Returns

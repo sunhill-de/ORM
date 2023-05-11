@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Properties;
 
 class PropertyAttributeInt extends PropertyAttribute {
 	
-	protected $type = 'AttributeInt';
+	protected static $type = 'AttributeInt';
 
 	protected $validator_name = 'IntValidator';
 

@@ -18,7 +18,7 @@ namespace Sunhill\ORM\Properties;
 class PropertyArray extends PropertyArrayBase  
 {
     
-    protected $type = 'array';
+    protected static $type = 'array';
     
 	protected $initialized = true;
 	

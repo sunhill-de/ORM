@@ -7,7 +7,7 @@ use Sunhill\ORM\Storage\StorageBase;
 class PropertyAttributeText extends PropertyAttribute 
 {
 	
-    protected $type = 'attribute_text';
+    protected static $type = 'attribute_text';
 
     protected function extractValue(StorageBase $loader) 
     {

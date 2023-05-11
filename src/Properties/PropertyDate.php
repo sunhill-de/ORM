@@ -18,6 +18,6 @@ namespace Sunhill\ORM\Properties;
 class PropertyDate extends AtomarProperty 
 {
 	
-    protected $type = 'date';
+    protected static $type = 'date';
 	
 }

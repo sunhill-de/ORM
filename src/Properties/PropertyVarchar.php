@@ -18,7 +18,7 @@ namespace Sunhill\ORM\Properties;
 class PropertyVarchar extends AtomarProperty 
 {
 	
-	protected $type = 'varchar';
+	protected static $type = 'varchar';
 	
 	protected $maxlen = 255;
 	

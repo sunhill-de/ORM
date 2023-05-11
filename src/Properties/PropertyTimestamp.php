@@ -19,7 +19,7 @@ use Sunhill\ORM\Storage\StorageBase;
 class PropertyTimestamp extends AtomarProperty 
 {
 
-	protected $type = 'datetime';
+	protected static $type = 'datetime';
 	
 	protected $initialized = true;
 	

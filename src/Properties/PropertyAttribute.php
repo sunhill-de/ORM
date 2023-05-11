@@ -7,7 +7,7 @@ use Sunhill\ORM\Storage\StorageBase;
 
 class PropertyAttribute extends Property {
 	
-	protected $type = 'attribute';
+	protected static $type = 'attribute';
 	
 	protected $features = ['attribute','complex'];
 	

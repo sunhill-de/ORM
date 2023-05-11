@@ -18,7 +18,7 @@ namespace Sunhill\ORM\Properties;
 class PropertyBoolean extends AtomarProperty 
 {
 	
-    protected $type = 'bool';
+    protected static $type = 'bool';
 	
     public function convertValue($input)
     {

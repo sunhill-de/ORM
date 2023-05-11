@@ -38,6 +38,11 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	    return $this;
 	}
 	
+	public function getElementType(): string
+	{
+	   return $this->element_type;    
+	}
+	
 	/**
 	 * Returns the current element of the foreach loop
 	 * @return mixed

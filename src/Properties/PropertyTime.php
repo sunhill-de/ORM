@@ -17,7 +17,7 @@ namespace Sunhill\ORM\Properties;
 
 class PropertyTime extends AtomarProperty {
 
-	protected $type = 'time';
+	protected static $type = 'time';
 
 		
 }

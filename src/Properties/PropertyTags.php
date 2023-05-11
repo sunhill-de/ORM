@@ -31,7 +31,7 @@ use Sunhill\Basic\Utils\Descriptor;
 class PropertyTags extends PropertyArrayBase 
 {
 	
-	protected $type = 'tags';
+	protected static $type = 'tags';
 	
 	protected $features = ['tags','array'];
 	

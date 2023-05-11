@@ -18,7 +18,7 @@ namespace Sunhill\ORM\Properties;
 class PropertyText extends AtomarProperty 
 {
 
-	protected $type = 'text';
+	protected static $type = 'text';
 
 	
 }

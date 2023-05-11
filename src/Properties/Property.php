@@ -29,7 +29,7 @@ class Property extends Loggable
      */
     protected $owner;
     
-    protected $type = 'none';
+    protected static $type = 'none';
     
     /**
      * sets the field Property->owner
@@ -77,12 +77,6 @@ class Property extends Loggable
     public function hasOwner(): bool
     {
         return !is_null($this->owner);    
-    }
-    
-    // ================================== type ======================================
-    public function getType(): string
-    {
-        return $this->type;    
     }
     
     // ******************************* Name handling ********************************
@@ -444,11 +438,16 @@ class Property extends Loggable
         $result->unit  = $this->getUnit();
         $result->semantic = $this->getSemantic();
         $result->searchable = $this->getSearchable();
-        $result->type = $this->getType();
+        $result->type = $this::getType();
         foreach ($this->additional_fields as $key => $value) {
             $result->$key = $value;
         }
         return $result;
+    }
+    
+    public static function getType(): string
+    {
+        return static::$type;
     }
     
 }
