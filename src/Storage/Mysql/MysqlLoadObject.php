@@ -53,7 +53,7 @@ class MysqlLoadObject
     {
         $array_table = $this->getArrayTables();
         foreach ($array_table as $field => $table) {
-            $result = array_column(DB::table($table)->where('id',$id)->get()->toArray(),'target');
+            $result = array_column(DB::table($table)->where('id',$id)->get()->toArray(),'value');
             $this->storage->setEntity($field, $result);
         }
     }
