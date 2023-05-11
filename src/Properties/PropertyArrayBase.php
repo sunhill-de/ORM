@@ -15,6 +15,8 @@
 
 namespace Sunhill\ORM\Properties;
 
+use Sunhill\ORM\Storage\StorageBase;
+
 class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countable,\Iterator 
 {
     
@@ -36,17 +38,6 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	    return $this;
 	}
 	
-	/**
-	 * Checks if the property exports the array feature
-	 * @throws \Exception
-	 */
-	private function checkArray() 
-	{
-	    if (!$this->is_array()) {
-	        throw new \Exception('The property "'.$this->name.'" if of type "'.$this->type.'" and doesnt have the array feature');
-	    }
-	}
-
 	/**
 	 * Returns the current element of the foreach loop
 	 * @return mixed
@@ -137,16 +128,6 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	    $this->value = array_values($this->value); // Reindex
 	}
 	
-	protected function valueAdded($value) 
-	{
-	       
-	}
-	
-	protected function valueRemoved($value) 
-	{
-	    
-	}
-	
 	/**
 	 * Returns the number of entries in this array
 	 * {@inheritDoc}
@@ -154,78 +135,13 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	 */
 	public function count()
 	{
-	    $this->checkArray();
 	    if (is_null($this->value)) {
 	        return 0;
 	    } else {
 	        return count($this->value);
 	    }
 	}
-	
-	private function objectsEqual($obj1, $obj2)
-	{
-	    return ($obj1 === $obj2);
-	}
-	
-	private function arraySearch($needle, $haystack) 
-	{
-	    if (!is_array($haystack)) {
-	        return false;
-	    }
-	    foreach ($haystack as $entry) {
-	        if ($this->objectsEqual($needle,$entry)) {
-	            return true;
-	        }
-	    }
-	    return false;
-	}
 		
-	/**
-	 * Überschreibt die geerbte Methode und ergänzt das Resultat noch um die Einträge ADD,DELETE, NEW und REMOVED
-	 * @return array[]
-	 */
-	public function getDiffArray(int $type = PD_VALUE) 
-	{
-	    $this->checkArray();
-	    $result = ['FROM'=>[],'TO'=>[],'ADD'=>[],'DELETE'=>[],'NEW'=>[],'REMOVED'=>[]];
-	    if (isset($this->shadow)) {
-	        foreach ($this->shadow as $index=>$oldentry) {
-	            $result['FROM'][$index] = $this->getDiffEntry($oldentry, $type);
-	            if ($this->arraySearch($oldentry,$this->value)===false) {
-	                $result['DELETE'][$index] = $this->getDiffEntry($oldentry,$type);
-	                $result['REMOVED'][] = $this->getDiffEntry($oldentry,$type);
-	            }
-	        }
-	    }
-	    if (isset($this->value)) {
-    	    foreach ($this->value as $index=>$newentry) {
-    	        $result['TO'][$index] = $this->getDiffEntry($newentry,$type);
-    	        if ($this->arraySearch($newentry,$this->shadow)===false) {
-    	            $result['ADD'][$index] = $this->getDiffEntry($newentry,$type);
-    	            $result['NEW'][] = $this->getDiffEntry($newentry,$type);
-    	        }
-    	    }
-	    }
-    	return $result;
-	}
-	
-	protected function isAllowedRelation(string $relation, $value) 
-	{
-	    switch ($relation) {
-	        case 'has':
-	        case 'has not':
-	            return is_scalar($value); break;	            
-	        case 'one of':
-	        case 'none of':
-	        case 'all of':
-	            return is_array($value); break;
-	        case 'empty':
-	            return true; break;
-	        default:
-	            return false;
-	    }
-	}
-	
 	/**
 	 * This method normalizes the given value $value so that arrays with for example lazy loading could
 	 * use objects and ids
@@ -269,4 +185,43 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	{
 	    $this->value = [];
 	}
+	
+	protected function handleArrayKey($key)
+	{
+	   return $key;    
+	}
+	
+	protected function handleArrayValue($value)
+	{
+	   $element_class = $this->element_type;
+	   $element_property = new $element_class();
+	   $element_property->setValue($value);
+       return $element_property->getValue();    
+	}
+	
+	protected function setElement($key, $value)
+	{
+	   $key = $this->handleArrayKey($key);
+	   $value = $this->handleArrayValue($value);
+	   
+	   $this->value[$key] = $value;
+	}
+	
+	protected function getElement($key)
+	{
+	   $key = $this->handleArrayKey($key);
+	   
+	   return $this->value[$key];
+	}
+	
+	public function loadFromStorage(StorageBase $storage)
+	{
+        $this->clear();
+        $name = $this->getName();
+        
+        foreach ($storage->$name as $key => $value) {
+            $this->setElement($key, $value);
+        }
+	}
+	
 }
