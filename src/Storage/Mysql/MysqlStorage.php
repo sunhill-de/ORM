@@ -15,6 +15,8 @@
 namespace Sunhill\ORM\Storage\Mysql;
 
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\PropertyCollection;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -31,18 +33,12 @@ class MysqlStorage extends StorageBase
      */
     protected function doLoad(int $id)
     {
-        switch ($this->getCaller()->getStorageClass()) {
-            case 'Object':
-                $storage_helper = new MysqlLoadObject($this);
-                break;
-            case 'Collection':
-                $storage_helper = new MysqlLoadCollection($this);
-                break;
-            case 'Table':
-                $storage_helper = new MysqlLoadTable($this);
-                break;
-            default:
-                throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());    
+        if (is_a($this->getCaller(),ORMObject::class)) {
+            $storage_helper = new MysqlLoadObject($this);
+        } else if (is_a($this->getCaller(),PropertyCollection::class)) {
+            $storage_helper = new MysqlLoadCollection($this);
+        } else {
+            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
         }
         $storage_helper->doLoad($id);
     }
