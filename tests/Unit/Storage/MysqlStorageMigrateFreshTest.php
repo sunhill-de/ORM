@@ -66,15 +66,15 @@ class MysqlStorageMigrateFreshTest extends DatabaseTestCase
                 'parentenum','parenttext','parentdate',
                 'parentdatetime','parenttime','parentobject',
                 'nosearch'],
-                'testparents_array_parentoarray'=>['id','target','index'],
-                'testparents_array_parentsarray'=>['id','target','index'],
+                'testparents_array_parentoarray'=>['id','value','index'],
+                'testparents_array_parentsarray'=>['id','value','index'],
                 'testparents_calc_parentcalc'=>['id','value']]],
             [TestChild::class, [
                 'testchildren'=>['id','childint','childchar','childfloat',
                 'childenum','childtext','childdate',
                 'childdatetime','childtime','childobject'],
-                'testchildren_array_childoarray'=>['id','target','index'],
-                'testchildren_array_childsarray'=>['id','target','index'],
+                'testchildren_array_childoarray'=>['id','value','index'],
+                'testchildren_array_childsarray'=>['id','value','index'],
                 'testchildren_calc_childcalc'=>['id','value']
             ]],
             [CalcClass::class,[
@@ -87,8 +87,8 @@ class MysqlStorageMigrateFreshTest extends DatabaseTestCase
             ]],
             [ReferenceOnly::class, [
                 'referenceonlies'=>['id'],
-                'referenceonlies_array_testoarray'=>['id','target','index'],
-                'referenceonlies_array_testsarray'=>['id','target','index'],
+                'referenceonlies_array_testoarray'=>['id','value','index'],
+                'referenceonlies_array_testsarray'=>['id','value','index'],
             ]],            
         ];    
     }
