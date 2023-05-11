@@ -7,6 +7,18 @@ namespace Sunhill\ORM\Storage\Mysql;
 
 use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Properties\Property;
+use Sunhill\ORM\Properties\PropertyArray;
+use Sunhill\ORM\Properties\PropertyBoolean;
+use Sunhill\ORM\Properties\PropertyCalculated;
+use Sunhill\ORM\Properties\PropertyDate;
+use Sunhill\ORM\Properties\PropertyEnum;
+use Sunhill\ORM\Properties\PropertyFloat;
+use Sunhill\ORM\Properties\PropertyInteger;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyText;
+use Sunhill\ORM\Properties\PropertyTime;
+use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Properties\PropertyException;
 
 trait ColumnCreate
 {
@@ -24,15 +36,52 @@ trait ColumnCreate
     {
         Schema::create($this->getHelpTableName('array', $field_name), function ($table) use ($type) {
             $table->integer('id');
-            $table->$type('target');
+            $table->$type('value');
             $table->integer('index');
             $table->primary(['id','index']);
         });            
     }
     
-    protected function createArrayOfStrings(string $field_name)
+    protected function createArray(string $field_name, Property $info)
     {
-        $this->createArrayTable($field_name, 'string');
+        if (!is_a($info, PropertyArray::class)) {
+            throw new PropertyException("The field '$field_name' is not an array");
+        }
+        switch ($info->getElementType()) {
+            case PropertyInteger::class:
+                $type = 'integer';
+                break;
+            case PropertyVarchar::class:
+                $type = 'string';
+                break;
+            case PropertyTime::class:
+                $type = 'time';
+                break;
+            case PropertyText::class:
+                $type = 'text';
+                break;
+            case PropertyObject::class:
+                $type = 'integer';
+                break;
+            case PropertyFloat::class:
+                $type = 'float';                
+                break;
+            case Property::class:
+                $type = 'datetime';
+                break;
+            case PropertyDate::class:
+                $type = 'date';
+                break;
+            case PropertyBoolean::class:
+                $type = 'bool';
+                break;
+            case PropertyEnum::class:
+                $type = 'string';
+                break;
+            default:
+                throw new PropertyException("It's not possible to build a array of ".$info::class);
+        }
+        $this->createArrayTable($field_name, $type);
     }
     
     protected function createArrayOfObjects(string $field_name)
@@ -60,10 +109,11 @@ trait ColumnCreate
                 $field = $table->integer($field_name)->nullable()->default(null);
                 break;
             case 'varchar':
+            case 'string':
                 $field = $table->string($field_name,$info->getMaxLen());
                 break;
             case 'enum':
-                $field = $table->enum($field_name, $info->getEnumValues());
+                $field = $table->string($field_name);
                 break;
             case 'date':
                 $field = $table->date($field_name);
@@ -80,12 +130,8 @@ trait ColumnCreate
             case 'text':
                 $field = $table->text($field_name);
                 break;
-            case 'arrayofstrings':
-                $this->createArrayOfStrings($field_name);
-                return;
-                break;
-            case 'arrayofobjects':
-                $this->createArrayOfObjects($field_name);
+            case 'array':
+                $this->createArray($field_name, $info);
                 return;
                 break;
             case 'calculated':
