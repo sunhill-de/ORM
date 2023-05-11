@@ -51,9 +51,6 @@ trait ColumnCreate
     
     protected function addField($table, string $field_name, Property $info)
     {
-        if ($info->getClass() !== $this->storage->getCaller()::getInfo('name')) {
-            return;
-        }
         $type = strtolower($info->getType());
         switch ($type) {
             case 'integer':
