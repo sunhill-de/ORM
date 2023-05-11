@@ -319,6 +319,12 @@ class PropertyCollection extends NonAtomarProperty
     }
     
 // ================================ Static Properties ============================================    
+    protected static function hasNoOwnProperties()
+    {
+        $reflector = new \ReflectionMethod(static::class, 'setupProperties');
+        return ($reflector->getDeclaringClass()->getName() !== static::class);
+    }
+    
     /**
      * A static method that returns all properties that this class defines (not the inherited)
      * 
@@ -330,7 +336,9 @@ class PropertyCollection extends NonAtomarProperty
     {
         $list = new PropertyList(null);
         
-        static::setupProperties($list);
+        if (!static::hasNoOwnProperties()) {            
+            static::setupProperties($list);
+        }
         
         return $list->toArray();
     }
