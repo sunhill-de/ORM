@@ -16,6 +16,7 @@ class CreateTestParentsCalcParentCalcTable extends Migration
         Schema::create('testparents_calc_parentcalc', function (Blueprint $table) {
             $table->integer('id');
             $table->char('value');
+            $table->primary('id');
         });
     }
 

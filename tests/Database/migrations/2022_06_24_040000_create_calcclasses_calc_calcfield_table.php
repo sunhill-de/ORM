@@ -16,6 +16,7 @@ class CreateCalcclassesCalcCalcfieldTable extends Migration
         Schema::create('calcclasses_calc_calcfield', function (Blueprint $table) {
             $table->integer('id');
             $table->char('value');
+            $table->primary('id');
         });
     }
 

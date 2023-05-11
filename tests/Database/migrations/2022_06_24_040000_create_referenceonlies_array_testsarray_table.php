@@ -15,8 +15,9 @@ class CreateReferenceOnliesArrayTestSArrayTable extends Migration
     {
         Schema::create('referenceonlies_array_testsarray', function (Blueprint $table) {
             $table->integer('id');
-            $table->char('target');
+            $table->char('value');
             $table->integer('index');
+            $table->primary(['id','index']);
         });
     }
 

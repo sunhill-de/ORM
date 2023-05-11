@@ -15,8 +15,9 @@ class CreateTestParentsArrayParentOArrayTable extends Migration
     {
         Schema::create('testparents_array_parentoarray', function (Blueprint $table) {
             $table->integer('id');
-            $table->integer('target');
+            $table->integer('value');
             $table->integer('index');
+            $table->primary(['id','index']);
         });
     }
 

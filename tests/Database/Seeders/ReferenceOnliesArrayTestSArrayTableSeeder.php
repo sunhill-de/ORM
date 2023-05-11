@@ -9,10 +9,10 @@ class ReferenceOnliesArrayTestSArrayTableSeeder extends Seeder {
     public function run() {
         DB::table('referenceonlies_array_testsarray')->truncate();
         DB::table('referenceonlies_array_testsarray')->insert([
-            ['id'=>27,'target'=>'Test A','index'=>0],
-            ['id'=>27,'target'=>'Test B','index'=>1],
-            ['id'=>28,'target'=>'Test B','index'=>0],
-            ['id'=>28,'target'=>'Test C','index'=>1],
+            ['id'=>27,'value'=>'Test A','index'=>0],
+            ['id'=>27,'value'=>'Test B','index'=>1],
+            ['id'=>28,'value'=>'Test B','index'=>0],
+            ['id'=>28,'value'=>'Test C','index'=>1],
         ]);
     }
 

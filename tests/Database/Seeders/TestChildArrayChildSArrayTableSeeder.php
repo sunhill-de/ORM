@@ -9,13 +9,13 @@ class TestChildArrayChildSArrayTableSeeder extends Seeder {
     public function run() {
         DB::table('testchildren_array_childsarray')->truncate();
         DB::table('testchildren_array_childsarray')->insert([
-            ['id'=>17,'target'=>'OPQRSTU','index'=>0],
-            ['id'=>17,'target'=>'VXYZABC','index'=>1],
-            ['id'=>18,'target'=>'Yea','index'=>0],            
-            ['id'=>18,'target'=>'Yupp','index'=>1],
-            ['id'=>20,'target'=>'ABCD','index'=>0],
-            ['id'=>20,'target'=>'GGGG','index'=>1],            
-            ['id'=>24,'target'=>'Only entry','index'=>0],
+            ['id'=>17,'value'=>'OPQRSTU','index'=>0],
+            ['id'=>17,'value'=>'VXYZABC','index'=>1],
+            ['id'=>18,'value'=>'Yea','index'=>0],            
+            ['id'=>18,'value'=>'Yupp','index'=>1],
+            ['id'=>20,'value'=>'ABCD','index'=>0],
+            ['id'=>20,'value'=>'GGGG','index'=>1],            
+            ['id'=>24,'value'=>'Only entry','index'=>0],
         ]);
     }
 

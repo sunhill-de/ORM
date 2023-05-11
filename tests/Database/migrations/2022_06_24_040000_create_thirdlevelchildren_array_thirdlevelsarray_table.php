@@ -15,8 +15,9 @@ class CreateThirdlevelChildrenArrayThirdlevelSArrayTable extends Migration
     {
         Schema::create('thirdlevelchildren_array_thirdlevelsarray', function (Blueprint $table) {
             $table->integer('id');
-            $table->char('target');
+            $table->char('value');
             $table->integer('index');
+            $table->primary(['id','index']);
         });
     }
 
