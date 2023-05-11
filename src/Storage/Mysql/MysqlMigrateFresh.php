@@ -30,7 +30,7 @@ class MysqlMigrateFresh
         Schema::create($this->basic_table_name, function ($table) {
             $table->integer('id');
             $table->primary('id');
-            $simple = $this->storage->getCaller()->getProperties()->get();
+            $simple = $this->storage->getCaller()->getProperties();
             foreach ($simple as $field => $info) {
                 $this->addField($table, $field, $info);
             }
