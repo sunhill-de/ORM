@@ -231,6 +231,34 @@ class PropertyTags extends PropertyArrayBase
 	        return $tag->getFullPath();
 	    }
 	}
+
+// ================================ Storage management ================================	
+	public function storeToStorage(StorageBase $storage)
+	{
+	    $storage->setEntity($this->getName(), $this->getValue());
+	}
+	
+	public function updateToStorage(StorageBase $storage)
+	{
+	    $storage->setEntity($this->getName(), [
+	        'value'=>$this->getValue(),
+	        'shadow'=>$this->getShadow()
+	    ]);
+	}
+	
+	public function loadFromStorage(StorageBase $storage)
+	{
+	    if (empty($storage->getEntity('tags'))) {
+	        return;
+	    }
+	    foreach ($storage->getEntity('tags') as $tag_id) {
+	        $tag = new Tag();
+	        $tag->load($tag_id);
+	        $this->value[] = $tag;
+	        $this->shadow[] = $tag;
+	        $this->dirty = false;	        
+	    }
+	}
 	
 	
 }
