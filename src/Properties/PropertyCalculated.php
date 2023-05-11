@@ -25,6 +25,8 @@ class PropertyCalculated extends AtomarProperty
 	
 	protected $type = 'reference';
 	
+	protected $callback;
+	
 //	protected $initialized = true;
 	
 	/**
@@ -32,7 +34,21 @@ class PropertyCalculated extends AtomarProperty
 	 */
 	protected function doSetValue($value) 
 	{
-	    throw new PropertyException(__("Tried to write to a calculate field"));
+	    throw new PropertyException(__("Tried to write to a calculate field ".$this->getName()));
+	}
+	
+	protected function callCallback()
+	{
+	    $callback = $this->callback;
+	    if (is_string($this->callback)) {
+	        if (empty($this->getOwner())) {
+	            throw new PropertyException("No owner for callback defined for ".$this->getName());
+	        }
+	        return $this->getOwner()->$callback();
+	    } else if (is_callable($this->callback)) {
+	        return $callback($this->getOwner());
+	    }
+	    throw new PropertyException("No callback defined for ".$this->getName());
 	}
 	
 	/**
@@ -40,8 +56,7 @@ class PropertyCalculated extends AtomarProperty
 	 */
 	public function recalculate() 
 	{
-	    $method_name = 'calculate_'.$this->name;
-	    $newvalue = $this->owner->$method_name();
+	    $newvalue = $this->callCallback();
 	    if ($this->value !== $newvalue) { // Was there a change at all?
 	        if (!$this->getDirty()) {
 	            $this->shadow = $this->value;
@@ -76,6 +91,8 @@ class PropertyCalculated extends AtomarProperty
 	{
 	   $name = $this->getName();
 	   $this->value = $storage->$name;
+	   $this->setDirty(false);
+	   $this->initialized = true;
 	}
 	
 }
