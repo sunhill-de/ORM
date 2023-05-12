@@ -45,7 +45,10 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	/**
 	 * Returns the current element of the foreach loop
+	 * 
 	 * @return mixed
+	 * 
+	 * Test: tests/Unit/Properties/PropertyArrayTest::testForeach()
 	 */
 	public function current () 
 	{
@@ -54,7 +57,10 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	/**
 	 * Returns the current key of the foreach loop
+	 * 
 	 * @return unknown
+	 * 
+	 * Test: tests/Unit/Properties/PropertyArrayTest::testForeach()
 	 */
 	public function key () 
 	{
@@ -63,6 +69,8 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	/**
 	 * Sets the pointer to the next element
+	 * 
+	 * Test: tests/Unit/Properties/PropertyArrayTest::testForeach()
 	 */
 	public function next () 
 	{
@@ -71,6 +79,8 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	/**
 	 * Rewinds the pointer
+	 * 
+	 * Test: tests/Unit/Properties/PropertyArrayTest::testForeach()
 	 */
 	public function rewind () 
 	{
@@ -80,6 +90,8 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	/**
 	 * Checks if the pointer points to a valid element
 	 * @return boolean
+	 * 
+	 * Test: tests/Unit/Properties/PropertyArrayTest::testForeach()
 	 */
 	public function valid () 
 	{
@@ -88,47 +100,54 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	public function offsetExists($offset) 
 	{
-	    $this->checkArray();
 	    return isset($this->value[$offset]);
 	}
 	
+	/**
+	 * Sets the element with the given offset
+	 * 
+	 * @param unknown $offset
+	 * @throws PropertyException
+	 * 
+	 * Test: tests/Unit/Properties/PropertyArrayTest::testArrayCount()
+	 * Test: tests/Unit/Properties/PropertyArrayTest::testWrongIndex()
+	 */
 	public function offsetGet($offset) 
 	{
-	    $this->checkArray();
-	    return $this->doGetIndexedValue($offset);
+	    if (($offset > count($this->value)) || ($offset < 0)) {
+	        throw new PropertyException("Index $offset out of range");
+	    }
+	        
+	    return $this->value[$offset];
+	}
+
+	protected function &doGetValue()
+	{
+	    return $this;
 	}
 	
 	public function offsetSet($offset, $value) 
 	{
-	    $this->checkArray();
 	    if (!$this->dirty) {
 	        $this->shadow = $this->value;
 	        $this->dirty = true;
 	        $this->initialized = true;
 	    }
-	    $value = $this->validate($value);
+	    $value = $this->handleArrayValue($value);
 	    if (isset($offset)) {
+	        $offset = $this->handleArrayKey($offset);
 	        $this->value[$offset] = $value;
 	    } else {
 	        $this->value[] = $value;
-	    }
-	    $this->valueAdded($value);
-	    if (!empty($this->owner)) {
-	       $this->owner->arrayFieldNewEntry($this->getName(),$offset,$value);
 	    }
 	}
 	
 	public function offsetUnset($offset) 
 	{
-	    $this->checkArray();
 	    if (!$this->dirty) {
 	        $this->shadow = $this->value;
 	        $this->dirty = true;
 	    }
-	    if (!empty($this->owner)) {
-	        $this->owner->arrayFieldRemovedEntry($this->getName(),$offset,$this->value[$offset]);
-	    }
-	    $this->valueRemoved($this->value[$offset]);
 	    unset($this->value[$offset]);
 	    $this->value = array_values($this->value); // Reindex
 	}
@@ -137,6 +156,8 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	 * Returns the number of entries in this array
 	 * {@inheritDoc}
 	 * @see Countable::count()
+     *
+	 * Test test/Unit/Properties/PropertyArrayTest::testArrayCount
 	 */
 	public function count()
 	{
@@ -160,8 +181,11 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	/**
 	 * Tests if the element $value is in this array
+	 * 
 	 * @param unknown $value
 	 * @return boolean true if its in otherwise false
+	 * 
+	 * Test test/Unit/Properties/PropertyArrayTest::testIsElementIn()
 	 */
 	public function IsElementIn($value) 
 	{
@@ -176,7 +200,10 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	/**
 	 * Tests if this array property is empty (has no entries)
+	 * 
 	 * @return true if empty otherwise false
+	 * 
+	 * Test test/Unit/Properties/\PropertyArrayTest::testEmpty()
 	 */
 	public function empty() 
 	{
@@ -185,6 +212,8 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	/**
 	 * Clears the array. Removes all entries
+	 * 
+	 * Test test/Unit/Properties/\PropertyArrayTest::testEmpty()
 	 */
 	public function clear() 
 	{
@@ -200,6 +229,12 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	{
 	   $element_class = $this->element_type;
 	   $element_property = new $element_class();
+	   foreach ($this->getAttributes() as $key => $attr_value) {
+	       $method = 'set'.ucfirst($key);
+	       if (($key !== 'value') && ($key !== 'shadow')) {
+	           $element_property->$method($attr_value);
+	       }
+	   }
 	   $element_property->setValue($value);
        return $element_property->getValue();    
 	}
