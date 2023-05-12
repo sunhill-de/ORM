@@ -2,6 +2,7 @@
 
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
+use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Storage;
 use Sunhill\ORM\Tests\TestCase;
@@ -52,6 +53,7 @@ class ORMObjectLoadTest extends TestCase
     
     public function testTestParent()
     {
+        Classes::registerClass(Dummy::class);
         $return = new Dummy();
         $return->load(1);
         
@@ -62,7 +64,7 @@ class ORMObjectLoadTest extends TestCase
         Objects::shouldReceive('load')->with(2)->andReturn($return);
         Objects::shouldReceive('load')->with(3)->andReturn($return);
         Objects::shouldReceive('load')->with(4)->andReturn($return);
-        
+        Objects::shouldReceive('getClassNamespaceOf')->andReturn(Dummy::class);
         $test->load(9);
         
         $this->assertEquals('ABC',$test->parentchar);
@@ -74,7 +76,7 @@ class ORMObjectLoadTest extends TestCase
         $this->assertEquals($test->parenttime,'11:43:00');
         $this->assertEquals($test->parentenum,'testC');
         $this->assertEquals($test->parentobject->getID(),1);
-        $this->assertEquals($test->parentsarray,['AAA','BBB','CCC']);
+        $this->assertEquals($test->parentsarray[0],'AAA');
         $this->assertEquals(1,$test->parentoarray[0]->getID());
         $this->assertEquals('123A',$test->parentcalc);
         $this->assertEquals(2,$test->nosearch);

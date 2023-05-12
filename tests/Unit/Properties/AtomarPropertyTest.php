@@ -96,6 +96,27 @@ class AtomarPropertyTest extends TestCase
         $this->assertEquals(5,$test->getValue());
     }
         
+    public function testDoubleChange()
+    {
+        $test = new AtomarProperty();
+        $test->setValue(5);        
+        $test->commit();
+        $test->setValue(7);
+        $test->setValue(9);
+        $test->rollback();
+        $this->assertEquals(5,$test->getValue());
+    }
+    
+    public function testNoChange()
+    {
+        $test = new AtomarProperty();
+        $test->setValue(5);
+        $test->commit();
+        $test->setValue(5);
+        $this->assertFalse($test->getDirty());
+        $this->assertEquals(5,$test->getValue());
+    }
+    
     public function testChangeToSameValue()
     {
         $test = new AtomarProperty();
