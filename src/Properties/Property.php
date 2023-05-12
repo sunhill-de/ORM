@@ -39,7 +39,7 @@ class Property extends Loggable
      *
      * Test Unit/Properties/PropertyTest::testOwner
      */
-    public function setOwner(NonAtomarProperty $owner): Property
+    public function setOwner(?NonAtomarProperty $owner): Property
     {
         $this->owner = $owner;
         return $this;
