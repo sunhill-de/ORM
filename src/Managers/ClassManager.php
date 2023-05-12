@@ -437,7 +437,7 @@ class ClassManager
         if ($result = $this->searchClass($test)) {
             return $result;
         }
-        throw new ORMException("Unknown type for getClassName()");
+        throw new ORMException("Unknown type for getClassName() ");
     }
     
     /**
@@ -648,7 +648,7 @@ class ClassManager
     {
         $namespace = $this->getNamespaceOfClass($class);
         
-        return is_a($test,$namespace);
+        return is_a($test,$namespace, true);
     }
     
     /**
@@ -663,7 +663,7 @@ class ClassManager
     public function isAClass($test,$class) 
     {
         $namespace = $this->getNamespaceOfClass($this->checkClass($this->searchClass($class)));
-        return is_a($test,$namespace) && !is_subclass_of($test,$namespace);
+        return is_a($test,$namespace, true) && !is_subclass_of($test,$namespace);
     }
    
     /**
