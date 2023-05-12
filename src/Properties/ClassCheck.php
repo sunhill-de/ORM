@@ -10,6 +10,9 @@
 
 namespace Sunhill\ORM\Properties;
 
+use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Storage\StorageBase;
 
 trait ClassCheck 
@@ -34,7 +37,18 @@ trait ClassCheck
     
     protected function isAllowedObject($test): bool
     {
-        return true;
+        if (is_int($test)) {
+            $test = Objects::getClassNamespaceOf($test);
+        }
+        if (empty($this->allowed_objects)) {
+            return is_a($test, ORMObject::class);
+        }
+        foreach ($this->allowed_objects as $object) {
+            if (Classes::isA($test, $object)) {
+                return true;
+            }
+        }
+        return false;
     }
     
 }
