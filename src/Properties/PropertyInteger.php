@@ -13,7 +13,7 @@ class PropertyInteger extends AtomarProperty {
 	 */
 	public function isValid($input): bool
 	{
-	    return is_numeric($input);
+	    return ctype_digit($input) || is_int($input);
 	}
 	
 }

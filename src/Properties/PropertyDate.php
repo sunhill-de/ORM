@@ -20,4 +20,9 @@ class PropertyDate extends AtomarProperty
 	
     protected static $type = 'date';
 	
+    public function isValid($input): bool
+    {
+        return (bool)strtotime($input);
+    }
+    
 }

@@ -28,6 +28,11 @@ class PropertyObject extends AtomarProperty
 		
 	protected $initialized = true;
 	
+	public function isValid($input): bool
+	{
+	    return $this->isAllowedObject($input);
+	}
+	
 	public function convertValue($input)
 	{
 	    if (is_numeric($input)) {
