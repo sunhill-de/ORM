@@ -3,7 +3,9 @@
 namespace Sunhill\ORM\Tests\Feature\Objects;
 
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\PropertyList;
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Utils\ObjectList;
 
 class FakeStorage extends StorageBase
 {
@@ -70,14 +72,13 @@ class ObjectUnit extends ORMObject
         return new FakeStorage($this);
     }
     
-    protected static function setupProperties()
+    protected static function setupProperties(PropertyList $list)
     {
-        parent::setupProperties();
-        self::integer('intvalue');
-        self::object('objectvalue')->setAllowedObjects(['dummy'])->setDefault(null);
-        self::arrayofstrings('sarray');
-        self::arrayOfObjects('oarray')->setAllowedObjects(['dummy']);
-        self::calculated('calcvalue');
+        $list->integer('intvalue');
+        $list->object('objectvalue')->setAllowedObjects(['dummy'])->setDefault(null);
+        $list->arrayofstrings('sarray');
+        $list->arrayOfObjects('oarray')->setAllowedObjects(['dummy']);
+        $list->calculated('calcvalue');
     }
     
     public function calculate_calcvalue()
