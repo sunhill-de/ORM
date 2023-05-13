@@ -25,5 +25,20 @@ class DummyPropertyCollection extends PropertyCollection
         $list->integer('testint');
         $list->string('teststring',10);
     }
+ 
+    public function getIDName(): string
+    {
+        return 'id';
+    }
+    
+    public function getIDType(): string
+    {
+        return 'int';
+    }
+    
+    public static function search()
+    {
+        
+    }
     
  }

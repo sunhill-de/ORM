@@ -65,7 +65,10 @@ class DummyStorage extends StorageBase
      
      protected function doStore(): int
      {
-         
+         $this->setEntity('uuid','abcdefghi');
+         $this->setEntity('created_at','2023-05-13 19:30:20');
+         $this->setEntity('updated_at','2023-05-13 19:30:20');
+         return 1;
      }
      
      protected function doUpdate(int $id)
