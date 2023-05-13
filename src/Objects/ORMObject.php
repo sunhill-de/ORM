@@ -12,6 +12,7 @@
  */
 namespace Sunhill\ORM\Objects;
 
+use Sunhill\ORM\Facades\Attributes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Storage;
@@ -20,6 +21,7 @@ use Sunhill\ORM\Storage\StorageMySQL;
 use Sunhill\ORM\Properties\PropertyAttribute;
 use Sunhill\ORM\Properties\AttributeException;
 use Sunhill\ORM\Properties\PropertyTags;
+use Sunhill\ORM\Search\QueryBuilder;
 
 /**
  * As the central class of the ORM system ORMObject provides the basic function for
@@ -36,18 +38,14 @@ use Sunhill\ORM\Properties\PropertyTags;
  */
 class ORMObject extends PropertyCollection 
 {
+    use HandlesStorage;
+    
     const DEFAULT_OWNER=0;
     const DEFAULT_GROUP=0;
     const DEFAULT_READ=7;
     const DEFAULT_EDIT=7;
     const DEFAULT_DELETE=7;
-    
-    /**
-     * Internal storage for queries that have to be executed later when this object has an id
-     * @var array
-     */
-    protected $needid_queries = [];
-    
+        
     protected $loaded = false;
     
     protected $storageClass = 'Object';
@@ -56,7 +54,57 @@ class ORMObject extends PropertyCollection
 	{
 	    return $this->loaded;
 	}
-		
+
+	public function getIDName(): string
+	{
+	    return 'id';	    
+	}
+	
+	public function getIDType(): string
+	{
+	    return 'int';
+	}
+
+	protected function copyAttributes(StorageBase $storage)
+	{
+	    $result = [];
+	    foreach ($this->dynamic_properties as $key => $property) {
+	        $entry = new \StdClass();
+	        $entry->name = $key;
+	        $entry->attribute_id = $property->getAttributeID();
+	        $entry->value = $property->getValue();
+	        $result[] = $entry;
+	    }
+	    $storage->setEntity('attributes', $result);
+	}
+	
+	protected function preCreation(StorageBase $storage)
+	{
+	    $this->copyAttributes($storage);
+	}
+	
+	/**
+	 * Is called after the creation of an object. In this case copy the created values
+	 * uuid, created_at and updated_at back to the storage
+	 * @param StorageBase $storage
+	 */
+	protected function postCreation(StorageBase $storage)
+	{
+	    $this->uuid = $storage->getEntity('uuid');
+	    $this->created_at = $storage->getEntity('created_at');
+	    $this->updated_at = $storage->getEntity('updated_at');
+	}
+
+	protected function preUpdate(StorageBase $storage)
+	{
+	    
+	}
+	
+	protected function postUpdate(StorageBase $storage)
+	{
+	    
+	}
+	
 // ============================ Storagefunctions  =======================================	
 	/**
 	 * Returns the current storage or creates one if it doesn't exist
@@ -67,7 +115,13 @@ class ORMObject extends PropertyCollection
     {
 	    return Storage::createStorage($this);
 	}
-		    
+
+	public static function search() {
+	    $query = new QueryBuilder();
+	    $query->setCallingClass(get_called_class());
+	    return $query;
+	}
+	
 // ================================ Loading ========================================	
 	/**
 	 * Checks, if the object with ID $id is in the cache. If yes, return it, othwerwise return false
@@ -257,57 +311,13 @@ class ORMObject extends PropertyCollection
 	    return Classes::getInheritanceOfClass(static::getInfo('name'), $full);
 	}
 		
-	public function arrayFieldNewEntry($name,$index,$value) 
-    {
-	}
-	
-	public function arrayFieldRemovedEntry($name,$index,$value) 
-    {
-	}
-	
 	protected function handleUnknownProperty($name,$value) 
     {
-	    if ($attribute = PropertyAttribute::search($name)) {
-	        return $this->addAttribute($attribute,$value);
-	    } else {
-	        return parent::handleUnknownProperty($name, $value);
-	    }
-	}
-	
-	private function addAttribute($attribute,$value) 
-    {
-	   $this->checkAllowedClass($attribute);
-	   // The attribute exists and may be used for this object
-	   if (!empty($attribute->property)) {
-	       $property_name = $attribute->property;
-	   } else {
-	       $property_name = 'Attribute'.ucfirst($attribute->type);
-	   }
-	   $property = $this->dynamicAddProperty($attribute->name, $property_name);
-	   $property->setAllowedObjects($attribute->allowedobjects)
-	   ->setAttributeName($attribute->name)
-	   ->setAttributeType($attribute->type)
-	   ->setAttributeProperty($attribute->property)
-	   ->setAttributeID($attribute->id);
-	   $property->setValue($value);
-	   $property->setDirty(true);
-	   return true;
-	}
-	
-	private function checkAllowedClass($attribute) 
-    {
-	    $allowed_classes = explode(',',$attribute->allowedobjects);
-	    if (!empty($allowed_classes)) {
-	        $allowed = false;
-	        foreach ($allowed_classes as $class) {
-	            if (Classes::isA($this,$class)) {
-	                $allowed = true;
-	            }
-	        }
-	    }
-	    if (!$allowed) {
-	        throw new AttributeException("The attribute '".$attribute->name."' is not allowed for this object.");
-	    }	    
+        $attribute = Attributes::getAttributeForClass(static::class, $name);
+        $attribute_obj = $this->dynamicAddProperty($attribute->name, $attribute->type);
+        $attribute_obj->setAttributeID($attribute->id);
+        $attribute_obj->setValue($value);
+        return true;
 	}
 	
 	// ********************** Static methods  ***************************	
@@ -320,7 +330,7 @@ class ORMObject extends PropertyCollection
 	//    $list->addProperty(PropertyTags::class,'tags')->searchable();
 	    $list->timestamp('created_at');
 	    $list->timestamp('updated_at');
-	    $list->varchar('uuid')->searchable()->setMaxLen(20);
+	    $list->varchar('uuid')->searchable()->setMaxLen(20)->default(null)->nullable();
 	    $list->integer('obj_owner')->default(0);
 	    $list->integer('obj_group')->default(0);
 	    $list->integer('obj_read')->default(7);
