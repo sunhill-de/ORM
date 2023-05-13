@@ -2,6 +2,7 @@
 /**
  * @file PropertyCollection.php
  * Defines the class PropertyCollection. This is, as the name suggents, a class that has properties. 
+ * It is an abstract class. The derrived classes ORMObject or Collection should be used
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -21,15 +22,27 @@ use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Search\QueryBuilder;
 use Sunhill\ORM\Facades\Storage;
 
+use Sunhill\ORM\Properties\Commitable;
+use Sunhill\ORM\Properties\PropertyInteger;
+use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Properties\PropertyFloat;
+use Sunhill\ORM\Properties\PropertyText;
+use Sunhill\ORM\Properties\PropertyDate;
+use Sunhill\ORM\Properties\PropertyDatetime;
+use Sunhill\ORM\Properties\PropertyTime;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyArray;
+use Sunhill\ORM\Properties\PropertyMap;
+use Sunhill\ORM\Properties\PropertyPropertyCollection;
+
 /**
  * Basic class for all classes that have properties.
  *  
  * @author lokal
  */
-class PropertyCollection extends NonAtomarProperty 
+abstract class PropertyCollection extends NonAtomarProperty implements Commitable
 {
-    
-        
+            
     public function __construct()
     {
         parent::__construct();
@@ -37,16 +50,19 @@ class PropertyCollection extends NonAtomarProperty
     }
     
     protected $id;
-    
-    protected function setID(int $id)
+
+    public function getID()
     {
-        $this->id = $id;    
+        return $this->id;     
     }
     
-    public function getID(): int
+    protected function setID($id)
     {
-        return $this->id;
+        $this->id = $id;
     }
+    
+    abstract public function getIDName(): string;
+    abstract public function getIDType(): string;
     
     protected function initializeProperties()
     {
@@ -102,12 +118,6 @@ class PropertyCollection extends NonAtomarProperty
             throw new PropertyException("walkProperties: callback is neither a method name nor a closure");
         }
     }
-    
-    /**
-     * Indicates the storage class
-     * @var string
-     */
-    protected $storageClass = 'Collection';
     
 // ================================== Infos ===============================================
     /**
@@ -317,8 +327,71 @@ class PropertyCollection extends NonAtomarProperty
         } while ($class != PropertyCollection::class);
         
     }
+// ================================== Attributes =================================================
+    protected $dynamic_properties = [];
     
-// ================================ Static Properties ============================================    
+    protected function createProperty(string $type)
+    {
+        switch ($type) {
+            case 'integer':
+            case 'int':
+                return new PropertyInteger();
+                break;
+            case 'varchar':
+            case 'string':
+            case 'char':    
+                return new PropertyVarchar();
+                break;
+            case 'float':
+                return new PropertyFloat();
+                break;
+            case 'text':
+                return new PropertyText();
+                break;
+            case 'date':
+                return new PropertyDate();
+                break;
+            case 'datetime':
+                return new PropertyDateTime();
+                break;
+            case 'time':
+                return new PropertyTime();
+                break;
+            case 'array':
+                return new PropertyArray();
+                break;
+            case 'map':
+                return new PropertyMap();
+                break;
+            case 'object':
+                return new PropertyObject();
+                break;
+            case 'collection':
+                return new PropertyPropertyCollection();
+                break;
+            default:
+                throw new PropertyException("The type '$type' is not allowed for attributes.");
+        }
+    }
+    
+    protected function dynamicAddProperty(string $name,string $type)
+    {
+        $property = $this->createProperty($type);        
+        $property->setOwner($this);
+        $property->setName($name);
+        
+        $this->properties[$name] = $property;
+        $this->dynamic_properties[$name] = $property;
+        
+        return $property;
+    }
+    
+    protected function getDynamicProperties()
+    {
+        return $this->dynamic_properties;
+    }
+    
+    // ================================ Static Properties ============================================    
     protected static function hasNoOwnProperties()
     {
         $reflector = new \ReflectionMethod(static::class, 'setupProperties');
@@ -387,46 +460,27 @@ class PropertyCollection extends NonAtomarProperty
 	{	
 	}
 	
-	public static function search() {
-	    $query = new QueryBuilder();
-	    $query->setCallingClass(get_called_class());
-	    return $query;
+	abstract public static function search();
+	
+	public function commit()
+	{
+	    $this->doCommit();
+	    $this->walkProperties(function($property) { $property->commit(); } );	    
 	}
 	
-	/**
-	 * Loads the collection with the id $id from the storage
-	 * In this case it sets the state to preloaded. Accessing the properties wouhl than execute
-	 * the loading mechanism.
-	 * 
-	 * @param int $id
-	 */
-	public function load(int $id)
+	public function rollback()
 	{
-	    $this->setState('preloaded');
-	    $this->setID($id);
-	}
-
-	/**
-	 * Umplements the lazy loading mechanism, that a collection is only loaded if accessed
-	 * 
-	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\Properties\NonAtomarProperty::checkLoadingState()
-	 */
-	protected function checkLoadingState()
-	{
-	    if ($this->getState() == 'preloaded') {
-	        $this->finallyLoad();
-	    }
+        $this->doRollback();
+	    $this->walkProperties(function($property) { $property->commit(); } );
 	}
 	
-	/**
-	 * Does finally load the collection from the database
-	 */
-	protected function finallyLoad()
+	protected function doCommit()
 	{
-	    $storage = Storage::createStorage($this);
-	    $storage->load($this->getID());
-	    $this->setState('loading');
-	    $this->loadFromStorage($storage);	    
+	    
+	}
+	
+	protected function doRollback()
+	{
+	    
 	}
 }
