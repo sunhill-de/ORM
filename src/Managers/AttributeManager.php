@@ -18,6 +18,7 @@ namespace Sunhill\ORM\Managers;
 use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Properties\AttributeException;
 
 /**
  * The AttributeManager is accessed via the Attributes facade. It's a singelton class
@@ -71,7 +72,7 @@ class AttributeManager
      * @param string $allowed_objects
      * @param string $property
      */
-    public function addAttribute(string $name, string $type, string $allowed_objects, string $property)
+    public function addAttribute(string $name, string $type, string $allowed_objects = 'object', string $property = '')
     {
         DB::table('attributes')->insert(
             [
@@ -82,7 +83,7 @@ class AttributeManager
             ]);
     }
     
-    public function updateAttribute(int $id, string $name, string $type, string $allowed_objects, string $property)
+    public function updateAttribute(int $id, string $name, string $type, string $allowed_objects = 'object', string $property = '')
     {
         DB::table('attributes')->where('id',$id)->update(
             [
@@ -111,12 +112,12 @@ class AttributeManager
     
     public function getAssociatedObjectsCount(int $id): int
     {
-        return DB::table('attribute_values')->where('attribute_id',$id)->count();    
+        return DB::table('attributevalues')->where('attribute_id',$id)->count();    
     }
     
     public function getAssociatedObjects(int $id, int $offset = 0, int $limit = 0)
     {
-        $query = DB::table('attribute_values')->select('object_id as id')->where('attribute_id',$id);
+        $query = DB::table('attributevalues')->select('object_id as id')->where('attribute_id',$id);
         if ($offset) {
             $query = $query->offset($offset);
         }
@@ -142,13 +143,24 @@ class AttributeManager
         $result = [];
         $query = DB::table('attributes')->get();
         foreach ($query as $attribute) {
-            if (!in_array($attribute,$without) && $this->isAllowedClass($class, $attribute->allowedobjects)) {
+            if (!in_array($attribute->name,$without) && $this->isAllowedClass($class, $attribute->allowedobjects)) {
                 $element = new \StdClass();
                 $element->name = $attribute->name;
                 $result[] = $attribute;                                    
             }
         }
         return $result;
+    }
+    
+    public function getAttributeForClass(string $class, string $name): \StdClass
+    {
+        if (empty($query = DB::table('attributes')->where('name', $name)->first())) {
+            throw new AttributeException("The attribute '$name' doesn't exist.");
+        }
+        if (!$this->isAllowedClass($class, $query->allowedobjects)) {
+            throw new AttributeException("The attribute '$name' is not allowed for class '$class'.");
+        }
+        return $query;
     }
     
     public function getAttributeType(string $name): string
