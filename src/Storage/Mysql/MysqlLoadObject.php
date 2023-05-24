@@ -4,70 +4,39 @@ namespace Sunhill\ORM\Storage\Mysql;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Storage\ObjectHandler;
+use Sunhill\ORM\Properties\Property;
 
 /**
  * Helper class to load an object out of the database
  * @author klaus
  *
  */
-class MysqlLoadObject
+class MysqlLoadObject extends ObjectHandler
 {
     
     use ClassTables;
     
-    public function __construct(public $storage) {}
-        
+    protected $id;
     
-    public function doLoad(int $id)
+    protected $group_query;
+    
+    public function handleObject()
     {
-        $this->additional_tables = $this->collectAdditionalTables();
-        $this->loadClassTables($id);
-        $this->loadArrays($id);
-        $this->loadTags($id);
-        $this->loadAttributes($id);
-        $this->loadCalculated($id);        
+        $this->group_query = DB::table('objects');
     }
     
-    /**
-     * Loads all values from the standard tables including objects
-     * @param int $id
-     */
-    private function loadClassTables(int $id)
+    protected function prepareRun()
     {
-        $hirarchy = $this->storage->getInheritance();
-        array_pop($hirarchy); // remove object
-        
-        $query = DB::table('objects');
-        foreach ($hirarchy as $class) {
-            $table = Classes::getTableOfClass($class);
-            $query->join($table,'objects.id','=',$table.'.id');
-        }
-        $result = $query->where('objects.id',$id)->first();
-        foreach ($result as $key => $value) {
-            $this->storage->setEntity($key, $value);
-        }
+        $this->loadAttributes();
+        $this->loadTags();
     }
     
-    private function loadArrays(int $id)
-    {
-        $array_table = $this->getArrayTables();
-        foreach ($array_table as $field => $table) {
-            $result = array_column(DB::table($table)->where('id',$id)->get()->toArray(),'value');
-            $this->storage->setEntity($field, $result);
-        }
-    }
-    
-    private function loadTags(int $id)
-    {
-        $this->storage->setEntity('tags',array_column(DB::table('tagobjectassigns')->where('container_id',$id)->get()->toArray(),'tag_id'));
-    }
-    
-    private function loadAttributes(int $id)
+    protected function loadAttributes()
     {
         $result = [];
         $query = DB::table('attributevalues')->join('attributes','attributevalues.attribute_id','=','attributes.id')
-        ->where('object_id',$id)->get()->toArray();
+        ->where('object_id',$this->id)->get()->toArray();
         foreach ($query as $attribute) {
             $entry = new \StdClass();
             $entry->allowed_objects = $attribute->allowedobjects;
@@ -82,16 +51,125 @@ class MysqlLoadObject
             }
             $result[$attribute->name] = $entry;
         }
-        $this->storage->setEntity('attributes',$result);
+        $this->storage->setEntity('attributes',$result);        
     }
     
-    private function loadCalculated(int $id)
+    protected function loadTags()
     {
-        $calc_tables = $this->getCalcTables();
-        foreach ($calc_tables as $field => $table) {
-            $this->storage->setEntity($field,DB::table($table)->where('id',$id)->first()->value);
-        }
-            
+        $this->storage->setEntity('tags',array_column(DB::table('tagobjectassigns')->where('container_id',$this->id)->get()->toArray(),'tag_id'));        
     }
-        
+    
+    /**
+     * Add where id = object.id and get the result
+     * {@inheritDoc}
+     * @see \Sunhill\ORM\Storage\CollectionHandler::finishRun()
+     */
+    protected function finishRun()
+    {
+        if (!($result = $this->group_query->where('objects.id',$this->id)->first())) {
+            throw \Exception("object with id ".$this->id." not loadable.");
+        }
+        foreach ($result as $key => $value) {
+            $this->storage->setEntity($key, $value);            
+        }
+    }
+    
+    public function handlePropertyText(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyTime(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyBoolean(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyDateTime(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyDate(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyInteger(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyVarchar(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyTimestamp(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyEnum(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyObject(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyFloat(Property $property)
+    {
+        // Do nothing
+    }
+    
+    public function handlePropertyArray(Property $property)
+    {
+        $table = $property->getOwner()::getInfo('table').'_array_'.$property->getName();
+        $result = array_column(DB::table($table)->where('id',$this->id)->get()->toArray(),'value');
+        $this->storage->setEntity($property->getName(), $result);
+    }
+    
+    public function handlePropertyCalculated(Property $property)
+    {
+        $table = $property->getOwner()::getInfo('table').'_calc_'.$property->getName();
+        $result = DB::table($table)->where('id',$this->id)->first();
+        $this->storage->setEntity($property->getName(), $result->value);
+    }
+    
+    public function handlePropertyMap(Property $property)
+    {
+        $table = $property->getOwner()::getInfo('table').'_map_'.$property->getName();
+        $result = array_column(DB::table($table)->where('id',$this->id)->get()->toArray(),'value');
+        $this->storage->setEntity($property->getName(), $result);
+    }
+    
+    public function handlePropertyTags(Property $property)
+    {
+    }
+    
+    public function handlePropertyAttributes(Property $property)
+    {
+    }
+    
+    protected function handleClass($class)
+    {
+        parent::handleClass($class);
+        $table = $class::getInfo('table');
+        $this->group_query = $this->group_query->join($table,'objects.id','=',$table.'.id');
+    }
+    
+    public function doLoad(int $id)
+    {
+        $this->id = $id;
+        $this->additional_tables = $this->collectAdditionalTables();
+        $this->run();        
+    }
+            
 }
