@@ -13,6 +13,7 @@
 namespace Sunhill\ORM\Properties;
 
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Interfaces\InteractsWithStorage;
 
 class AtomarProperty extends Property implements InteractsWithStorage, Commitable
 {

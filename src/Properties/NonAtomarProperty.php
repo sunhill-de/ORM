@@ -14,8 +14,9 @@ namespace Sunhill\ORM\Properties;
 
 use Sunhill\ORM\Storage\StorageBase;
 use PHPUnit\Framework\MockObject\Builder\Identity;
+use Sunhill\ORM\Interfaces\InteractsWithStorage;
 
-abstract class NonAtomarProperty extends Property
+abstract class NonAtomarProperty extends Property implements InteractsWithStorage
 {
     
     protected function checkLoadingState()
