@@ -15,6 +15,7 @@
 namespace Sunhill\ORM\Storage\Mysql;
 
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Objects\Collection;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Objects\PropertyCollection;
 
@@ -35,7 +36,7 @@ class MysqlStorage extends StorageBase
     {
         if (is_a($this->getCaller(),ORMObject::class)) {
             $storage_helper = new MysqlLoadObject($this);
-        } else if (is_a($this->getCaller(),PropertyCollection::class)) {
+        } else if (is_a($this->getCaller(),Collection::class)) {
             $storage_helper = new MysqlLoadCollection($this);
         } else {
             throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
