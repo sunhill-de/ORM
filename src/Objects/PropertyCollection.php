@@ -61,7 +61,7 @@ abstract class PropertyCollection extends NonAtomarProperty implements Commitabl
         $this->id = $id;
     }
     
-    abstract public function getIDName(): string;
+    abstract public function getIDName(): string;    
     abstract public function getIDType(): string;
     
     protected function initializeProperties()
@@ -292,7 +292,7 @@ abstract class PropertyCollection extends NonAtomarProperty implements Commitabl
     {
         $result = [];
         
-        $static = static::getPropertyDefinition();
+        $static = static::getPropertyDefinition($this);
         foreach ($static as $key => $property) {
             $result[$key] = $this->properties[$key];
         }
@@ -377,7 +377,7 @@ abstract class PropertyCollection extends NonAtomarProperty implements Commitabl
     protected function dynamicAddProperty(string $name,string $type)
     {
         $property = $this->createProperty($type);        
-        $property->setOwner($this);
+        $property->setOwner(static::class);
         $property->setName($name);
         
         $this->properties[$name] = $property;
@@ -407,7 +407,7 @@ abstract class PropertyCollection extends NonAtomarProperty implements Commitabl
      */
     public static function getPropertyDefinition(): array
     {
-        $list = new PropertyList(null);
+        $list = new PropertyList(static::class);
         
         if (!static::hasNoOwnProperties()) {            
             static::setupProperties($list);
@@ -436,12 +436,12 @@ abstract class PropertyCollection extends NonAtomarProperty implements Commitabl
      * 
      * test: tests/Unit/Objects/PropertyCollection_PropertyTest::testDummyCollectionStatic()
      */
-    public static function getAllPropertyDefinitions(): array
+    public static function getAllPropertyDefinitions($owner = null): array
     {
         $result = [];
        
-        static::traverseInheritance(function($class) use (&$result) {
-            $result = array_merge($result, $class::getPropertyDefinition());
+        static::traverseInheritance(function($class) use (&$result, $owner) {
+            $result = array_merge($result, $class::getPropertyDefinition($owner));
         });
         
         return $result;
