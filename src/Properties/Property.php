@@ -25,9 +25,9 @@ class Property extends Loggable
     /**
      * This field stores the owner of this property. It points to an descendand of PropertyCollection
      * Property->getOwner() reads, Property->setOwner() writes
-     * @var NonAtomarProperty
+     * @var string
      */
-    protected $owner;
+    protected $owner='';
     
     protected static $type = 'none';
     
@@ -39,7 +39,7 @@ class Property extends Loggable
      *
      * Test Unit/Properties/PropertyTest::testOwner
      */
-    public function setOwner(?NonAtomarProperty $owner): Property
+    public function setOwner(string $owner): Property
     {
         $this->owner = $owner;
         return $this;
@@ -53,7 +53,7 @@ class Property extends Loggable
      *
      * Test Unit/Properties/PropertyTest::testOwner
      */
-    public function owner(NonAtomarProperty $owner): Property
+    public function owner(string $owner): Property
     {
         return $this->setOwner($owner);
     }
@@ -64,7 +64,7 @@ class Property extends Loggable
      *
      * Test Unit/Properties/PropertyTest::testOwner
      */
-    public function getOwner(): ?NonAtomarProperty
+    public function getOwner(): string
     {
         return $this->owner;
     }

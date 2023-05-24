@@ -41,8 +41,8 @@ class PropertyTest extends TestCase
     public function testOwner()
     {
         $test = new ORMObject();
-        $test->setOwner($test);
-        $this->assertEquals($test, $test->getOwner());        
+        $test->setOwner(ORMObject::class);
+        $this->assertEquals(ORMObject::class, $test->getOwner());        
     }
     
     /**
