@@ -1,7 +1,8 @@
 <?php
 /**
- * @file PropertyCollection.php
- * Defines the class PropertyCollection. This is, as the name suggents, a class that has properties. 
+ * @file Collection.php
+ * Defines the class Collection. As an extension to PropertyCollection this class just maps a 
+ * class with properties to a single table. There is no hirachy as with ORMObject. 
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -81,10 +82,6 @@ class Collection extends PropertyCollection
     protected $storageClass = 'Collection';
     
 	public static function search() {
-	    return DB::table();
-	    $query = new QueryBuilder();
-	    $query->setCallingClass(get_called_class());
-	    return $query;
 	}
 	
 	
