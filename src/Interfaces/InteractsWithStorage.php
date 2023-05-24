@@ -8,7 +8,7 @@
  * Documentation: complete
  */
 
-namespace Sunhill\ORM\Properties;
+namespace Sunhill\ORM\Interfaces;
 
 use Sunhill\ORM\Storage\StorageBase;
 
