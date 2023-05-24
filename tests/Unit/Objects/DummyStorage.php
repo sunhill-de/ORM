@@ -26,6 +26,13 @@ class DummyStorage extends StorageBase
          $this->setEntity('classname','dummy');
          $this->setEntity('dummyint', 123);
          $this->setEntity('tags', [1,2,3]);
+         $attribute = new \StdClass();
+         $attribute->allowed_objects = 'object';
+         $attribute->attribute_id = 4;
+         $attribute->name = 'general_attribute';
+         $attribute->type = 'integer';
+         $attribute->value = 444;
+         $this->setEntity('attributes',[$attribute]);
      }
      
      protected function fillTestParent()

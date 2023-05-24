@@ -36,6 +36,17 @@ class ORMObjectLoadTest extends TestCase
         $this->assertEquals(1,$test->tags[0]->getID());        
     }
     
+    public function testDummyAttributes()
+    {
+        $test = new Dummy();
+        $fake_storage = new DummyStorage($test);
+        Storage::shouldReceive('createStorage')->once()->andReturn($fake_storage);
+        
+        $test->load(1);
+        
+        $this->assertEquals(444,$test->general_attribute);        
+    }
+    
     public function testLazyLoading()
     {
         $test = new Dummy();

@@ -169,16 +169,16 @@ class ORMObject extends PropertyCollection
 	        return;
 	    }
 	    foreach ($storage->getEntity('attributes') as $value) {
-	        if (!empty($value->property)) {
-	            $property_name = $value->property;
-	        } else {
-	            $property_name = 'Attribute'.ucfirst($value->type);
-	        }
-	        $property = $this->dynamicAddProperty($value->name, $property_name);
-	        $property->loadFromStorage($storage);	        
+	        $property = $this->dynamicAddProperty($value->name, $value->type);
+	        $property->setValue($value->value);        
 	    }
 	}
 	
+	public function loadFromStorage(StorageBase $storage)
+	{
+	    parent::loadFromStorage($storage);
+	    $this->loadAttributes($storage);
+	}
 	
 // ========================= Insert =============================	
 	/**

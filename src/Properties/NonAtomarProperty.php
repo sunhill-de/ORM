@@ -35,8 +35,8 @@ abstract class NonAtomarProperty extends Property implements InteractsWithStorag
      */
     public function &__get($name)
     {
+        $this->checkLoadingState();
         if ($this->hasProperty($name)) {
-            $this->checkLoadingState();
             return $this->getProperty($name)->getValue();
         }
         throw new PropertyException("The property '$name' does not exist.");
