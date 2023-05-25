@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 class TestChildChildOArrayTableSeeder extends Seeder {
 	
     public function run() {
-        DB::table('testchildren_array_childoarray')->truncate();
-        DB::table('testchildren_array_childoarray')->insert([
+        DB::table('testchildren_childoarray')->truncate();
+        DB::table('testchildren_childoarray')->insert([
             ['id'=>17,'value'=>3,'index'=>0],
             ['id'=>17,'value'=>4,'index'=>1],
             ['id'=>17,'value'=>5,'index'=>2],            

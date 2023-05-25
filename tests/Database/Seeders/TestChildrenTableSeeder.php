@@ -112,6 +112,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childenum'=>'testC',
 	            'childobject'=>null,
 	            'childcalc'=>'777B'
+	        ]    
 	    ]);
 	}
 }
