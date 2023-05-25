@@ -131,21 +131,19 @@ class MysqlLoadObject extends ObjectHandler
     
     public function handlePropertyArray(Property $property)
     {
-        $table = $property->getOwner()::getInfo('table').'_array_'.$property->getName();
+        $table = $this->getExtraTableName($property);
         $result = array_column(DB::table($table)->where('id',$this->id)->get()->toArray(),'value');
         $this->storage->setEntity($property->getName(), $result);
     }
     
     public function handlePropertyCalculated(Property $property)
     {
-        $table = $property->getOwner()::getInfo('table').'_calc_'.$property->getName();
-        $result = DB::table($table)->where('id',$this->id)->first();
-        $this->storage->setEntity($property->getName(), $result->value);
+        // Do nothing
     }
     
     public function handlePropertyMap(Property $property)
     {
-        $table = $property->getOwner()::getInfo('table').'_map_'.$property->getName();
+        $table = $this->getExtraTableName($property);
         $result = array_column(DB::table($table)->where('id',$this->id)->get()->toArray(),'value');
         $this->storage->setEntity($property->getName(), $result);
     }
@@ -168,7 +166,6 @@ class MysqlLoadObject extends ObjectHandler
     public function doLoad(int $id)
     {
         $this->id = $id;
-        $this->additional_tables = $this->collectAdditionalTables();
         $this->run();        
     }
             
