@@ -22,22 +22,18 @@ class DatabaseSeeder extends Seeder
         $this->call(DummiesTableSeeder::class);
         $this->call(DummychildrenTableSeeder::class);
         $this->call(TestParentsTableSeeder::class);
-        $this->call(TestParentArrayParentOArrayTableSeeder::class);
-        $this->call(TestParentArrayParentSArrayTableSeeder::class);
-        $this->call(TestChildArrayChildSArrayTableSeeder::class);
-        $this->call(TestChildArrayChildOArrayTableSeeder::class);
-        $this->call(TestChildCalcChildCalcTableSeeder::class);
-        $this->call(TestParentCalcParentCalcTableSeeder::class);
+        $this->call(TestParentParentOArrayTableSeeder::class);
+        $this->call(TestParentParentSArrayTableSeeder::class);
+        $this->call(TestChildChildSArrayTableSeeder::class);
+        $this->call(TestChildChildOArrayTableSeeder::class);
         
         $this->call(TestChildrenTableSeeder::class);
         $this->call(TestSimpleChildrenTableSeeder::class);
         $this->call(ReferenceOnliesTableSeeder::class);
-        $this->call(ReferenceOnliesArrayTestOArrayTableSeeder::class);
-        $this->call(ReferenceOnliesArrayTestSArrayTableSeeder::class);
+        $this->call(ReferenceOnliesTestOArrayTableSeeder::class);
+        $this->call(ReferenceOnliesTestSArrayTableSeeder::class);
         
         $this->call(SecondLevelChildrenTableSeeder::class);
         $this->call(CalcClassSeeder::class);
-        $this->call(CalcclassesCalcCalcfieldTableSeeder::class);
-        $this->call(CalcclassesCalcCalcfield2TableSeeder::class);
     }
 }

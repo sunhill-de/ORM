@@ -9,7 +9,7 @@ class CalcClassSeeder extends Seeder {
     public function run() {
         DB::table('calcclasses')->truncate();
         DB::table('calcclasses')->insert([
-            ['id'=>31,'dummyint'=>123],
+            ['id'=>31,'dummyint'=>123,'calcfield'=>'ABC','calcfield2'=>'ABC2'],
         ]);
     }
 

@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class TestParentArrayParentOArrayTableSeeder extends Seeder {
+class TestParentParentOArrayTableSeeder extends Seeder {
 	
     public function run() {
         DB::table('testparents_array_parentoarray')->truncate();

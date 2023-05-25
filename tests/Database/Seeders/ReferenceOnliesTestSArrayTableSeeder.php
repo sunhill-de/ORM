@@ -4,7 +4,7 @@ namespace Sunhill\ORM\Tests\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class ReferenceOnliesArrayTestSArrayTableSeeder extends Seeder {
+class ReferenceOnliesTestSArrayTableSeeder extends Seeder {
 	
     public function run() {
         DB::table('referenceonlies_array_testsarray')->truncate();
