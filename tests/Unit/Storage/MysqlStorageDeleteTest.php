@@ -42,9 +42,8 @@ class MysqlStorageDeleteTest extends DatabaseTestCase
         $test->delete(9);
         
         $this->assertDatabaseMissing('testparents',['id'=>9]);
-        $this->assertDatabaseMissing('testparents_array_parentoarray', ['id'=>9]);
-        $this->assertDatabaseMissing('testparents_array_parentsarray', ['id'=>9]);
-        $this->assertDatabaseMissing('testparents_calc_parentcalc', ['id'=>9]);
+        $this->assertDatabaseMissing('testparents_parentoarray', ['id'=>9]);
+        $this->assertDatabaseMissing('testparents_parentsarray', ['id'=>9]);
     }
     
     public function testTestChild()
@@ -55,14 +54,11 @@ class MysqlStorageDeleteTest extends DatabaseTestCase
         $test->delete(18);
 
         $this->assertDatabaseMissing('testparents',['id'=>18]);
-        $this->assertDatabaseMissing('testparents_array_parentoarray', ['id'=>18]);
-        $this->assertDatabaseMissing('testparents_array_parentsarray', ['id'=>18]);
-        $this->assertDatabaseMissing('testparents_calc_parentcalc', ['id'=>18]);
+        $this->assertDatabaseMissing('testparents_parentoarray', ['id'=>18]);
+        $this->assertDatabaseMissing('testparents_parentsarray', ['id'=>18]);
         
         $this->assertDatabaseMissing('testchildren',['id'=>18]);
-        $this->assertDatabaseMissing('testchildren_array_childoarray', ['id'=>18]);
-        $this->assertDatabaseMissing('testchildren_array_childsarray', ['id'=>18]);
-        $this->assertDatabaseMissing('testchildren_calc_childcalc', ['id'=>18]);
-        
+        $this->assertDatabaseMissing('testchildren_childoarray', ['id'=>18]);
+        $this->assertDatabaseMissing('testchildren_childsarray', ['id'=>18]);        
     }
 }
