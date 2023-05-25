@@ -4,39 +4,22 @@ namespace Sunhill\ORM\Storage\Mysql;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Storage\ObjectHandler;
+use Sunhill\ORM\Properties\Property;
 
-use Sunhill\ORM\Properties\PropertyDate;
-use Sunhill\ORM\Properties\PropertyDatetime;
-use Sunhill\ORM\Properties\PropertyEnum;
-use Sunhill\ORM\Properties\PropertyFloat;
-use Sunhill\ORM\Properties\PropertyInteger;
-use Sunhill\ORM\Properties\PropertyObject;
-use Sunhill\ORM\Properties\PropertyText;
-use Sunhill\ORM\Properties\PropertyTime;
-use Sunhill\ORM\Properties\PropertyVarchar;
-
-class MysqlStore
+class MysqlStoreObject extends ObjectHandler
 {
-    
-    use ClassTables;
-    
-    public function __construct(public $storage) {}
-
+        
     protected $id = 0;
+    
+    protected $values = [];
     
     public function doStore()
     {
-        $this->additional_tables = $this->collectAdditionalTables();
-        $this->id = $this->storeObject();
-        $this->storeTables();
-        $this->storeArrays();
-        $this->storeTags();
-        $this->storeAttributes();
-        $this->storeCalculated();
+        $this->run();
         return $this->id;
     }
-
+    
     /**
      * Method taken from https://stackoverflow.com/questions/2040240/php-function-to-generate-v4-uuid
      * Generates a v4 uuid string and returns it
@@ -52,7 +35,7 @@ class MysqlStore
         
     }
     
-    protected function storeObject()
+    public function handleObject()
     {
         DB::table('objects')->insert([
             'classname'=>$this->storage->getCaller()::getInfo('name'),
@@ -62,62 +45,50 @@ class MysqlStore
             'obj_read'=>!empty($this->storage->getEntity('obj_read'))?$this->storage->getEntity('obj_read'):ORMObject::DEFAULT_READ,
             'obj_edit'=>!empty($this->storage->getEntity('obj_edit'))?$this->storage->getEntity('obj_edit'):ORMObject::DEFAULT_EDIT,
             'obj_delete'=>!empty($this->storage->getEntity('obj_delete'))?$this->storage->getEntity('obj_delete'):ORMObject::DEFAULT_DELETE,
-        ]);  
-        return DB::getPdo()->lastInsertId();
+        ]);
+        $this->id = DB::getPdo()->lastInsertId();        
     }
     
-    private function isSimpleProperty($property)
+    protected function prepareRun()
     {
-        return  is_a($property,PropertyDate::class) ||
-                is_a($property,PropertyDatetime::class) ||
-                is_a($property,PropertyTime::class) ||
-                is_a($property,PropertyEnum::class) ||
-                is_a($property,PropertyFloat::class) ||
-                is_a($property,PropertyInteger::class) ||
-                is_a($property,PropertyObject::class) ||
-                is_a($property,PropertyText::class) ||
-                is_a($property,PropertyVarchar::class);
+        
     }
     
-    protected function storeTables()
+    protected function finishRun()
     {
-        $hirarchy = $this->storage->getInheritance();
-        array_pop($hirarchy); // remove object
-
-        foreach ($hirarchy as $class) {
-            $table = Classes::getTableOfClass($class);
-            $namespace = Classes::getNamespaceOfClass($class);
-            $values = [
-                'id'=>$this->id
-            ];
-            $properties = $namespace::getPropertyDefinition();
-            foreach ($properties as $name => $property) {
-                if ($this->isSimpleProperty($property)) {
-                    $values[$name] = $this->storage->getEntity($name);
-                }
-            }
+        foreach ($this->values as $table => $values) {
             DB::table($table)->insert($values);
         }
+        $this->storeAttributes();
+        $this->storeTags();
     }
     
-    protected function storeArray(string $field, string $table)
+    protected function storeAttributes()
     {
         $data = [];
-        $index = 0;
-        foreach ($this->storage->getEntity($field) as $value) {
-            $data[] = ['id'=>$this->id,'value'=>$value,'index'=>$index++];
+        if (empty($entities = $this->storage->getEntity('attributes'))) {
+            return;
+        }
+        foreach ($entities as $entity) {
+            if ($entity->type == 'text') {
+                $data[] = [
+                    'attribute_id'=>$entity->attribute_id,
+                    'object_id'=>$this->id,
+                    'value'=>'',
+                    'textvalue'=>$entity->value
+                ];
+            } else {
+                $data[] = [
+                    'attribute_id'=>$entity->attribute_id,
+                    'object_id'=>$this->id,
+                    'value'=>$entity->value,
+                    'textvalue'=>''
+                ];
+            }
         }
         if (!empty($data)) {
-            DB::table($table)->insert($data);
+            DB::table('attributevalues')->insert($data);
         }
-    }
-    
-    protected function storeArrays()
-    {
-        $array_table = $this->getArrayTables();
-        foreach ($array_table as $field => $table) {
-            $this->storeArray($field, $table);
-        }        
     }
     
     protected function storeTags()
@@ -134,45 +105,115 @@ class MysqlStore
         }
     }
     
-    protected function storeAttributes()
+    protected function storeArray(string $field, string $table)
     {
         $data = [];
-        if (empty($entities = $this->storage->getEntity('attributes'))) {
-            return;
-        }
-        foreach ($entities as $entity) {
-          if ($entity->type == 'text') {
-                    $data[] = [
-                        'attribute_id'=>$entity->attribute_id,
-                        'object_id'=>$this->id,
-                        'value'=>'',
-                        'textvalue'=>$entity->value                        
-                    ];
-          } else {
-                    $data[] = [
-                        'attribute_id'=>$entity->attribute_id,
-                        'object_id'=>$this->id,
-                        'value'=>$entity->value,
-                        'textvalue'=>''
-                    ];                    
-          }
+        $index = 0;
+        foreach ($this->storage->getEntity($field) as $value) {
+            $data[] = ['id'=>$this->id,'value'=>$value,'index'=>$index++];
         }
         if (!empty($data)) {
-            DB::table('attributevalues')->insert($data);
+            DB::table($table)->insert($data);
         }
     }
     
-    protected function storeCalculatedField(string $name, string $table)
+    protected function handleSimpleField(Property $property)
     {
-        DB::table($table)->insert(['id'=>$this->id,'value'=>$this->storage->getEntity($name)]);    
+        $table = $property->getOwner()::getInfo('table');
+        $name = $property->getName();
+        $value = $this->storage->getEntity($name); 
+        
+        if (isset($this->values[$table])) {
+            $this->values[$table][$name] = $value;
+        } else {
+            $this->values[$table] = ['id'=>$this->id, $name => $value];
+        }
     }
     
-    protected function storeCalculated()
+    public function handlePropertyText(Property $property)
     {
-        $calc_tables = $this->getCalcTables();
-        foreach ($calc_tables as $field => $table) {
-            $this->storeCalculatedField($field, $table);
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyTime(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyBoolean(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyDateTime(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyDate(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyInteger(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyVarchar(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyTimestamp(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyEnum(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyObject(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyFloat(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyArray(Property $property)
+    {
+        $table = $this->getExtraTableName($property);
+        $values = [];
+        $index = 0;
+        foreach ($this->storage->getEntity($property->getName()) as $value) {
+            $values[] = ['id'=>$this->id,'value'=>$value,'index'=>$index++];
         }
+        DB::table($table)->insert($values);
+    }
+    
+    public function handlePropertyCalculated(Property $property)
+    {
+        $this->handleSimpleField($property);
+    }
+    
+    public function handlePropertyMap(Property $property)
+    {
+        $table = $this->getExtraTableName($property);
+        $result = array_column(DB::table($table)->where('id',$this->id)->get()->toArray(),'value');
+        $this->storage->setEntity($property->getName(), $result);
+    }
+    
+    public function handlePropertyTags(Property $property)
+    {
+    }
+    
+    public function handlePropertyAttributes(Property $property)
+    {
     }
     
 }
