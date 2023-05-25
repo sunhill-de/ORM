@@ -101,6 +101,11 @@ abstract class StorageBase
         return $this;
     }
     
+    public function hasEntity(string $name): bool
+    {
+        return isset($this->entities[$name]);    
+    }
+    
     /**
      * Wrapper for setEntity()
      */
