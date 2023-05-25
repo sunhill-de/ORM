@@ -6,7 +6,7 @@ use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Storage\CollectionHandler;
 
 
-class MysqlStoreCollection extends CollectionHandler
+class MysqlUpdateCollection extends CollectionHandler
 {
         
     protected $id = 0;

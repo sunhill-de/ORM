@@ -21,9 +21,7 @@ use Carbon\Carbon;
 
 class MysqlUpdateObject extends ObjectHandler
 {
-    
-    use ClassTables;
-    
+        
     protected $id;
       
     protected $values = [];
