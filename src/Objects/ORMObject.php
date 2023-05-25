@@ -17,11 +17,15 @@ use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Storage;
 use Sunhill\ORM\Storage\StorageBase;
-use Sunhill\ORM\Storage\StorageMySQL;
-use Sunhill\ORM\Properties\PropertyAttribute;
-use Sunhill\ORM\Properties\AttributeException;
-use Sunhill\ORM\Properties\PropertyTags;
 use Sunhill\ORM\Search\QueryBuilder;
+use Sunhill\ORM\Properties\PropertyFloat;
+use Sunhill\ORM\Properties\PropertyInteger;
+use Sunhill\ORM\Properties\PropertyText;
+use Sunhill\ORM\Properties\PropertyTime;
+use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Properties\PropertyBoolean;
+use Sunhill\ORM\Properties\PropertyDate;
+use Sunhill\ORM\Properties\PropertyDatetime;
 
 /**
  * As the central class of the ORM system ORMObject provides the basic function for
@@ -73,6 +77,24 @@ class ORMObject extends PropertyCollection
 	        $entry->name = $key;
 	        $entry->attribute_id = $property->getAttributeID();
 	        $entry->value = $property->getValue();
+	        switch ($property::class) {
+	            case  PropertyInteger::class:
+	              $entry->type = 'integer'; break;
+	            case  PropertyVarchar::class:
+	                $entry->type = 'varchar'; break;
+	            case  PropertyFloat::class:
+	                $entry->type = 'float'; break;
+	            case  PropertyBoolean::class:
+	                $entry->type = 'boolean'; break;
+	            case  PropertyText::class:
+	                $entry->type = 'text'; break;
+	            case  PropertyDate::class:
+	                $entry->type = 'date'; break;
+	            case  PropertyDatetime::class:
+	                $entry->type = 'datetime'; break;
+	            case  PropertyTime::class:
+	                $entry->type = 'time'; break;
+	        }
 	        $result[] = $entry;
 	    }
 	    $storage->setEntity('attributes', $result);
