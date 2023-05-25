@@ -67,5 +67,8 @@ class ORMObjectStoreTest extends TestCase
         $test->commit();
         
         $this->assertEquals(132,$fake_storage->getEntity('attributes')[0]->value);
+        $this->assertEquals('integer',$fake_storage->getEntity('attributes')[0]->type);
+        $this->assertEquals('int_attribute',$fake_storage->getEntity('attributes')[0]->name);
+        $this->assertEquals(1,$fake_storage->getEntity('attributes')[0]->attribute_id);
     }
 }
