@@ -25,6 +25,8 @@ class CreateTestParentsTable extends Migration
             $table->enum('parentenum',['testA','testB','testC']);
             $table->integer('parentobject')->nullable()->default(null);
             $table->integer('nosearch')->nullable(0)->default(1);
+            $table->string('parentcalc');
+            $table->primary('id');
         });
     }
 

@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateThirdlevelChildrenArrayThirdlevelSArrayTable extends Migration
+class CreateThirdlevelChildrenThirdlevelSArrayTable extends Migration
 {
 
     /**
@@ -13,7 +13,7 @@ class CreateThirdlevelChildrenArrayThirdlevelSArrayTable extends Migration
      */
     public function up()
     {
-        Schema::create('thirdlevelchildren_array_thirdlevelsarray', function (Blueprint $table) {
+        Schema::create('thirdlevelchildren_thirdlevelsarray', function (Blueprint $table) {
             $table->integer('id');
             $table->char('value');
             $table->integer('index');
@@ -28,6 +28,6 @@ class CreateThirdlevelChildrenArrayThirdlevelSArrayTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('thirdlevelchildren_array_thirdlevelsarray');
+        Schema::dropIfExists('thirdlevelchildren_thirdlevelsarray');
     }
 }

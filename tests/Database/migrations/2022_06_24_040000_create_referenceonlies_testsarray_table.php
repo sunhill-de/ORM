@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateReferenceOnliesArrayTestSArrayTable extends Migration
+class CreateReferenceOnliesTestSArrayTable extends Migration
 {
 
     /**
@@ -13,7 +13,7 @@ class CreateReferenceOnliesArrayTestSArrayTable extends Migration
      */
     public function up()
     {
-        Schema::create('referenceonlies_array_testsarray', function (Blueprint $table) {
+        Schema::create('referenceonlies_testsarray', function (Blueprint $table) {
             $table->integer('id');
             $table->char('value');
             $table->integer('index');
@@ -28,6 +28,6 @@ class CreateReferenceOnliesArrayTestSArrayTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('referenceonlies_array_testsarray');
+        Schema::dropIfExists('referenceonlies_testsarray');
     }
 }

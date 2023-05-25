@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTestparentsArrayParentSArrayTable extends Migration
+class CreateTestparentsParentSArrayTable extends Migration
 {
 
     /**
@@ -13,7 +13,7 @@ class CreateTestparentsArrayParentSArrayTable extends Migration
      */
     public function up()
     {
-        Schema::create('testparents_array_parentsarray', function (Blueprint $table) {
+        Schema::create('testparents_parentsarray', function (Blueprint $table) {
             $table->integer('id');
             $table->char('value');
             $table->integer('index');
@@ -28,6 +28,6 @@ class CreateTestparentsArrayParentSArrayTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('testparents_array_parentsarray');
+        Schema::dropIfExists('testparents_parentsarray');
     }
 }
