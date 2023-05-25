@@ -46,20 +46,38 @@ class MysqlStorage extends StorageBase
     
     protected function doStore(): int
     {
-        $storage_helper = new MysqlStore($this);
+        if (is_a($this->getCaller(),ORMObject::class)) {
+            $storage_helper = new MysqlStoreObject($this);            
+        } else if (is_a($this->getCaller(),Collection::class)) {
+            $storage_helper = new MysqlStoreCollection($this);            
+        } else {
+            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());            
+        }
         return $storage_helper->doStore();        
     }
     
     protected function doUpdate(int $id)
     {
-        $storage_helper = new MysqlUpdate($this);
+        if (is_a($this->getCaller(),ORMObject::class)) {
+            $storage_helper = new MysqlUpdateObject($this);
+        } else if (is_a($this->getCaller(),Collection::class)) {
+            $storage_helper = new MysqlUpdateCollection($this);
+        } else {
+            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
+        }
         return $storage_helper->doUpdate($id);        
     }
     
     protected function doDelete(int $id)
     {
-        $storage_helper = new MysqlDelete($this);
-        $storage_helper->doDelete($id);        
+        if (is_a($this->getCaller(),ORMObject::class)) {
+            $storage_helper = new MysqlDeleteObject($this);
+        } else if (is_a($this->getCaller(),Collection::class)) {
+            $storage_helper = new MysqlDeleteCollection($this);
+        } else {
+            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
+        }
+        return $storage_helper->doDelete($id);        
     }
     
     protected function doMigrate()
