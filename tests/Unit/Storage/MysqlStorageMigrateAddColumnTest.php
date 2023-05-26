@@ -44,12 +44,13 @@ class MysqlStorageMigrateAddColumnTest extends DatabaseTestCase
             ['parenttime'],
             ['parentenum'],
             ['parentobject'],
+            ['parentcalc'],
         ];    
     }
     
     public function testAddSArrayColumn()
     {
-        Schema::dropIfExists('testparents_array_parentsarray');
+        Schema::dropIfExists('testparents_parentsarray');
             // parentint is missing !
             
             $object = new TestParent();
@@ -57,12 +58,12 @@ class MysqlStorageMigrateAddColumnTest extends DatabaseTestCase
             
             $test->migrate();
             
-            $this->assertDatabaseHasTable('testparents_array_parentsarray');            
+            $this->assertDatabaseHasTable('testparents_parentsarray');            
     }
     
     public function testAddOArrayColumn()
     {
-        Schema::dropIfExists('testparents_array_parentoarray');
+        Schema::dropIfExists('testparents_parentoarray');
         // parentint is missing !
         
         $object = new TestParent();
@@ -70,20 +71,8 @@ class MysqlStorageMigrateAddColumnTest extends DatabaseTestCase
         
         $test->migrate();
         
-        $this->assertDatabaseHasTable('testparents_array_parentoarray');        
+        $this->assertDatabaseHasTable('testparents_parentoarray');        
     }
     
-    public function testAddCalcColumn()
-    {
-        Schema::dropIfExists('testparents_calc_parentcalc');
-        // parentint is missing !
-        
-        $object = new TestParent();
-        $test = new MysqlStorage($object);
-        
-        $test->migrate();
-        
-        $this->assertDatabaseHasTable('testparents_calc_parentcalc');        
-    }
         
 }

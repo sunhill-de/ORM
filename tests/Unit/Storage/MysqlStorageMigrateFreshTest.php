@@ -65,30 +65,27 @@ class MysqlStorageMigrateFreshTest extends DatabaseTestCase
                 'testparents'=>['id','parentint','parentchar','parentfloat',
                 'parentenum','parenttext','parentdate',
                 'parentdatetime','parenttime','parentobject',
-                'nosearch'],
-                'testparents_array_parentoarray'=>['id','value','index'],
-                'testparents_array_parentsarray'=>['id','value','index'],
-                'testparents_calc_parentcalc'=>['id','value']]],
+                'nosearch','parentcalc'],
+                'testparents_parentoarray'=>['id','value','index'],
+                'testparents_parentsarray'=>['id','value','index'],
+            ]],
             [TestChild::class, [
                 'testchildren'=>['id','childint','childchar','childfloat',
                 'childenum','childtext','childdate',
-                'childdatetime','childtime','childobject'],
-                'testchildren_array_childoarray'=>['id','value','index'],
-                'testchildren_array_childsarray'=>['id','value','index'],
-                'testchildren_calc_childcalc'=>['id','value']
+                'childdatetime','childtime','childobject','childcalc'],
+                'testchildren_childoarray'=>['id','value','index'],
+                'testchildren_childsarray'=>['id','value','index'],
             ]],
             [CalcClass::class,[
-                'calcclasses'=>['id','dummyint'],
-                'calcclasses_calc_calcfield'=>['id','value'],
-                'calcclasses_calc_calcfield2'=>['id','value'],
+                'calcclasses'=>['id','dummyint','calcfield','calcfield2'],
             ]],
             [TestSimpleChild::class,[
                 'testsimplechildren'=>['id'],
             ]],
             [ReferenceOnly::class, [
                 'referenceonlies'=>['id'],
-                'referenceonlies_array_testoarray'=>['id','value','index'],
-                'referenceonlies_array_testsarray'=>['id','value','index'],
+                'referenceonlies_testoarray'=>['id','value','index'],
+                'referenceonlies_testsarray'=>['id','value','index'],
             ]],            
         ];    
     }

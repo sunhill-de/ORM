@@ -15,8 +15,6 @@ use Sunhill\ORM\Properties\Property;
 class MysqlLoadObject extends ObjectHandler
 {
     
-    use ClassTables;
-    
     protected $id;
     
     protected $group_query;

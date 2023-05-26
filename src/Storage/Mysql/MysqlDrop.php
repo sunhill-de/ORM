@@ -85,10 +85,7 @@ class MysqlDrop
     protected function deleteHelpingTables($child)
     {
         $class_tables = $this->collectClassTables($child);
-        foreach ($class_tables['array'] as $table) {
-            Schema::drop($table);
-        }
-        foreach ($class_tables['calc'] as $table) {
+        foreach ($class_tables as $table) {
             Schema::drop($table);
         }
     }

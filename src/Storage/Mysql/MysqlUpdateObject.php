@@ -208,7 +208,6 @@ class MysqlUpdateObject extends ObjectHandler
     public function doUpdate(int $id)
     {
         $this->id = $id;
-        $this->additional_tables = $this->collectAdditionalTables();
         $this->run();
     }
         

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @file MysqlMigrateFresh
+ * Helper that creates a fresh table of the given object or collection
+ */
 namespace Sunhill\ORM\Storage\Mysql;
 
 use Illuminate\Support\Facades\Schema;
@@ -9,8 +12,6 @@ use Sunhill\ORM\Traits\PropertyUtils;
 
 class MysqlMigrateFresh
 {
-    
-    use ClassTables, ColumnInfo, PropertyUtils, ColumnCreate;
     
     protected $class_name;
     
@@ -31,8 +32,9 @@ class MysqlMigrateFresh
             $table->integer('id');
             $table->primary('id');
             $simple = $this->storage->getCaller()->getProperties();
+            $helper = new MysqlObjectAddColumn($table);
             foreach ($simple as $field => $info) {
-                $this->addField($table, $field, $info);
+                $helper->handleProperty($info);
             }
         });            
     }
