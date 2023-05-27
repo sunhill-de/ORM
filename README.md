@@ -87,16 +87,18 @@ class testclass extends ORMObject
 ...
 
 ```
-The properties are later accessed like normal class members (e.g. "$test->integer_field"). There is an internal validation of the assigned values (so $test->integer_field = "ABC" will raise an exception). Array properties are accessed like normal array members ($test->array_field[1]). There is the property type "object" that takes other ORMObjects as values. These are accessed like this: $test->object_field->some_property. For more information see [Properties](doc/properties.md)
+The properties are later accessed like normal class members (e.g. "$test->integer_field"). There is an internal validation of the assigned values (so $test->integer_field = "ABC" will raise an exception). Array properties are accessed like normal array members ($test->array_field[1]). There is the property type "object" that takes other ORMObjects as values. These are accessed like this: $test->object_field->some_property. For more information see [Properties](doc/md/PROPERTIES.md)
 
 ### Collection and ORMObject
 While the core component is a ORMObject there is a more simple form called Collection. The difference is explained here:
 
 #### Collection
 A collection is a simple flat object to database mapping like Eloquent. There is no hirarchy on the other hand there is less overhead while dealing with collections. 
+See [Collection](doc/md/COLLECTION.md)
 
 #### ORMObject
 The ORMObject was (and is) the main motivation to write this package. It provides an easy way to map a hirarchic class structure to an database.
+See [Collection](doc/md/ORMOBJECT.md)
 
 ### Storage
 
@@ -106,12 +108,46 @@ The ORMObject was (and is) the main motivation to write this package. It provide
 
 ### Facades
 #### Classes facade
+The Classes facade provides an easy access to informations about classes.
+The most important methods are:
+###### registerClass()
+A class that should be accessible via the ORMFramework has to be registered first. Normally this should be done in the ServiceProvider of the application (or package). The method takes the classname including the namespace of the class to register (like TestClass::class). After the registration the class is accessible via its name.
+
+###### searchClass()
+This method searches for the class with the given name, classname or index. It returns null if the class is not found.
+
+###### getTableOfClass()
+Returns the name of the storage table of the given class.
+
+###### getInheritanceOfClass()
+Returns an array of all ancestors of this class (including ORMObject)
+
+###### getPropertiesOfClass()
+Returns an array of the properties of this class.
+
+##### createObject()
+Creates an empty object of the given class.
+
+##### isA()
+Tests if this class is a direct descendant of the given class.
+
+##### isAClass()
+Tests if this class is an instance of the given class (not a descendant)
+
+##### isSubclassOf()
+Tests if this class is a subclass of the given class.
+
 #### Objects facade
+The Objects facade provides an easy access to informations about objects.
+
 #### Tags facade
+The Tags facade provides an easy access to informations about tags.
+
 #### Attributes facade
+The Attributes facade provides an easy access to informations about attributes.
 
 ## See also
-[Internal details](doc/internal.md)
+[Internal details](doc/md/INTERNAL.md)
 
 ### Database
 see also wiki.
