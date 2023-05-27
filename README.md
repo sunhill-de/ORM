@@ -104,6 +104,12 @@ The ORMObject was (and is) the main motivation to write this package. It provide
 
 ### Attributes
 
+### Facades
+#### Classes facade
+#### Objects facade
+#### Tags facade
+#### Attributes facade
+
 ## See also
 [Internal details](doc/internal.md)
 
