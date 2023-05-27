@@ -1,4 +1,5 @@
-#Properties
+
+# Properties
 A property is a like a member variable of an Collection or ORMObject. They are accessed like normal members and normally you don't have to worry about there internal details. The only thing is, that you have to define them in the static setupProperties() method. This method takes a PropertyList parameter. A PropertyList is just a helper class that provides some defining methods to make it easy to define the properties (in fact it uses an similar concept like migrations of laravel). Via this PropertyList parameter you define the properties of your class. All property defining methods (like integer(), string(), etc.) take a name of the property as a parameter.
 
 ## Modifiers for all properties
@@ -11,7 +12,7 @@ These modifiers are synonym and mark this property as readonly. A attempt to giv
 These modifiers are synonym and mark this properts as searchable. The attempt to search for a non-searchable property will raise an exception. See [Searching](doc/searching.md) for more details about searching.
 
 ### unit() / setUnit()
-Every property can have an unit. This is part of the semantics mechanism an explained in detail [there](doc/semantic.md)
+Every property can have an unit. This is part of the semantics mechanism an explained in detail [there](doc/md/SEMANTIC.md)
 
 ### semantic() / setSemantic()
 
