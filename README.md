@@ -125,19 +125,19 @@ Returns an array of all ancestors of this class (including ORMObject)
 ###### getPropertiesOfClass()
 Returns an array of the properties of this class.
 
-##### createObject()
+###### createObject()
 Creates an empty object of the given class.
 
-##### isA()
+###### isA()
 Tests if this class is a direct descendant of the given class.
 
-##### isAClass()
+###### isAClass()
 Tests if this class is an instance of the given class (not a descendant)
 
-##### isSubclassOf()
+###### isSubclassOf()
 Tests if this class is a subclass of the given class.
 
-#### Objects facade
+##### Objects facade
 The Objects facade provides an easy access to informations about objects.
 
 #### Tags facade
@@ -148,6 +148,3 @@ The Attributes facade provides an easy access to informations about attributes.
 
 ## See also
 [Internal details](doc/md/INTERNAL.md)
-
-### Database
-see also wiki.
