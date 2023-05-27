@@ -18,7 +18,7 @@ The table <b>objects</b> defines the following fields:
 Note: By default the obj_xxxx fields are set to very open values. Anybody can read, edit and delete the objects.
 
 ### Table <b>tags</b>
-Tags are a way to add markers to an object. Tags are organized in a hirarchic way, so a tag can have a parent or child tag.  For more information see [Tags](doc/md/TAGS.md)
+Tags are a way to add markers to an object. Tags are organized in a hirarchic way, so a tag can have a parent or child tag.  For more information see [Tags](/doc/md/TAGS.md)
 
 The tags are stored in the table tags and this defines the following columns:
 - id = an auto increment field of the id of this tag
@@ -38,7 +38,7 @@ To store what tag is assiged to what object this table is used. (It's a simple n
 - tag_id = the id of the tag the object is assigned to
 
 ### Table <b>attributes</b>
-Attributes are a way to add dynamic properties to objects. Dynamic means not every object of the given class has to define this property. This makes it possible to store additional information to certain objects. For more information see [Attributes](doc/md/ATTRIBUTES.md)
+Attributes are a way to add dynamic properties to objects. Dynamic means not every object of the given class has to define this property. This makes it possible to store additional information to certain objects. For more information see [Attributes](/doc/md/ATTRIBUTES.md)
 
 This table stores the information about a certain attribute and defines the following columns:
 - id = An auto incremented id of this attribute

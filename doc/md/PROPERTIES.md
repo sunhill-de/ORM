@@ -9,7 +9,7 @@ While defining properties you can modifiy some parameters of the property. Modif
 These modifiers are synonym and mark this property as readonly. A attempt to give this property a new value will raise an exception.
 
 ### searchable() / setSearchable()
-These modifiers are synonym and mark this properts as searchable. The attempt to search for a non-searchable property will raise an exception. See [Searching](doc/searching.md) for more details about searching.
+These modifiers are synonym and mark this properts as searchable. The attempt to search for a non-searchable property will raise an exception. See [Searching](/doc/searching.md) for more details about searching.
 
 ### unit() / setUnit()
 Every property can have an unit. This is part of the semantics mechanism an explained in detail [there](doc/md/SEMANTIC.md)
