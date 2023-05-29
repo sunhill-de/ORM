@@ -15,12 +15,19 @@ class MysqlStorageDeleteTest extends DatabaseTestCase
         $object = new Dummy();
         $test = new MysqlStorage($object);
         
+        $this->assertDatabaseHas('objects', ['id'=>1]);
+        $this->assertDatabaseHas('dummies', ['id'=>1]);
+        $this->assertDatabaseHas('tagobjectassigns', ['container_id'=>1]);
+        $this->assertDatabaseHas('attributeobjectassigns', ['object_id'=>1]);
+        $this->assertDatabaseHas('attr_general_attribute', ['object_id'=>1]);
+        
         $test->delete(1);
         
         $this->assertDatabaseMissing('objects', ['id'=>1]);
         $this->assertDatabaseMissing('dummies', ['id'=>1]);
         $this->assertDatabaseMissing('tagobjectassigns', ['container_id'=>1]);
-        $this->assertDatabaseMissing('attributevalues', ['object_id'=>1]);
+        $this->assertDatabaseMissing('attributeobjectassigns', ['object_id'=>1]);
+        $this->assertDatabaseMissing('attr_general_attribute', ['object_id'=>1]);
     }
 
     public function testDummyChildLittleMoreComplexDelete()

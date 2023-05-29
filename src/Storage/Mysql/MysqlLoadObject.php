@@ -33,22 +33,17 @@ class MysqlLoadObject extends ObjectHandler
     protected function loadAttributes()
     {
         $result = [];
-        $query = DB::table('attributevalues')->join('attributes','attributevalues.attribute_id','=','attributes.id')
-        ->where('object_id',$this->id)->get()->toArray();
+        $query = DB::table('attributeobjectassigns')->join('attributes','attributes.id','=','attributeobjectassigns.attribute_id')->where('object_id',$this->id)->get();
         foreach ($query as $attribute) {
+            $val_query = DB::table('attr_'.$attribute->name)->where('object_id',$this->id)->first();
             $entry = new \StdClass();
             $entry->allowed_objects = $attribute->allowedobjects;
             $entry->name = $attribute->name;
             $entry->attribute_id = $attribute->attribute_id;
-            $entry->property = $attribute->property;
-            
-            if (($entry->type = $attribute->type) == 'text') {
-                $entry->value = $attribute->textvalue;
-            } else {
-                $entry->value = $attribute->value;
-            }
+            $entry->type = $attribute->type;
+            $entry->value = $val_query->value;
             $result[$attribute->name] = $entry;
-        }
+        }        
         $this->storage->setEntity('attributes',$result);        
     }
     

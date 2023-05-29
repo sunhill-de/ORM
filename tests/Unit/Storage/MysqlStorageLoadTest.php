@@ -54,7 +54,7 @@ class MysqlStorageLoadTest extends DatabaseTestCase
         $this->assertEquals([3,4,5],$test->tags);
         $this->assertEquals('attribute1',$test->attributes['attribute1']->name);
         $this->assertEquals(123,$test->attributes['attribute1']->value);
-        $this->assertEquals('int',$test->attributes['attribute1']->type);
+        $this->assertEquals('integer',$test->attributes['attribute1']->type);
         $this->assertEquals('attribute2',$test->attributes['attribute2']->name);
         $this->assertEquals(222,$test->attributes['attribute2']->value);
         $this->assertEquals('111A',$test->parentcalc);

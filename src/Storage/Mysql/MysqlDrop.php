@@ -70,8 +70,20 @@ class MysqlDrop
     protected function deleteAttributes()
     {
         $classname = $this->storage->getCaller()::getInfo('name');
+        $tables = DB::table('attributeobjectassigns')
+            ->join('attributes','attributeobjectassigns.attribute_id','=','attributes.id')
+            ->whereIn('attributeobjectassigns.object_id',function($query) use ($classname) {
+                $query->select('id')->from('objects')->where('classname',$classname);
+            })
+            ->groupBy('attributes.id')
+            ->select('attributes.name as name')->get();
+        foreach ($tables as $table) {
+            DB::table('attr_'.$table->name)->whereIn('object_id',function($query) use ($classname) {
+                $query->select('id')->from('objects')->where('classname',$classname);
+            })->delete();
+        }
         
-        DB::table('attributevalues')->whereIn('object_id',function($query) use ($classname) {
+        DB::table('attributeobjectassigns')->whereIn('object_id',function($query) use ($classname) {
             $query->select('id')->from('objects')->where('classname',$classname);
         })->delete();
         

@@ -28,17 +28,29 @@ class DatabaseTestCaseTest extends DatabaseTestCase
            // Core tables
             ['objects'],
             ['attributes'],
-            ['attributevalues'],
+            ['attributeobjectassigns'],
             ['tagcache'],
             ['tags'],
             ['tagobjectassigns'],
            
            // Test tables 
+            ['calcclasses'],
             ['dummies'],
             ['dummychildren'],
+            ['referenceonlies'],
             ['testparents'],
             ['testchildren'],
-            ['testsimplechildren']
+            ['testsimplechildren'],
+            ['thirdlevelchildren'],
+            
+            ['attr_attribute1'],
+            ['attr_attribute2'],
+            ['attr_char_attribute'],
+            ['attr_child_attribute'],
+            ['attr_float_attribute'],
+            ['attr_general_attribute'],
+            ['attr_int_attribute'],
+            ['attr_text_attribute'],
         ];
     }
     

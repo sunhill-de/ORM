@@ -70,24 +70,13 @@ class MysqlStoreObject extends ObjectHandler
             return;
         }
         foreach ($entities as $entity) {
-            if ($entity->type == 'text') {
-                $data[] = [
-                    'attribute_id'=>$entity->attribute_id,
-                    'object_id'=>$this->id,
-                    'value'=>'',
-                    'textvalue'=>$entity->value
-                ];
+            if (is_null($entity->value)) {
+                DB::table('attributeobjectassigns')->where(['attribute_id'=>$entity->attribute_id,'object_id'=>$this->id])->delete();
+                DB::table('attr_'.$entity->name)->where(['object_id'=>$this->id])->delete();
             } else {
-                $data[] = [
-                    'attribute_id'=>$entity->attribute_id,
-                    'object_id'=>$this->id,
-                    'value'=>$entity->value,
-                    'textvalue'=>''
-                ];
+                DB::table('attributeobjectassigns')->updateOrInsert(['attribute_id'=>$entity->attribute_id,'object_id'=>$this->id]);
+                DB::table('attr_'.$entity->name)->insert(['object_id'=>$this->id,'value'=>$entity->value]);
             }
-        }
-        if (!empty($data)) {
-            DB::table('attributevalues')->insert($data);
         }
     }
     

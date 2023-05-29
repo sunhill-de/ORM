@@ -29,7 +29,8 @@ class MysqlStorageDropTest extends DatabaseTestCase
         $test->drop();
         
         $this->assertDatabaseMissing('tagobjectassigns', ['container_id'=>1]);
-        $this->assertDatabaseMissing('attributevalues', ['object_id'=>1]);
+        $this->assertDatabaseMissing('attributeobjectassigns', ['object_id'=>1]);
+        $this->assertDatabaseMissing('attr_general_attribute', ['object_id'=>1]);
         $this->assertDatabaseMissing('objects', ['classname'=>'dummy']);
         $this->assertDatabaseMissing('objects', ['classname'=>'dummychild']);
         $this->assertDatabaseHasNotTable('dummies');

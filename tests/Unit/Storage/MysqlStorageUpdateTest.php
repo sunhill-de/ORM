@@ -109,8 +109,10 @@ class MysqlStorageUpdateTest extends DatabaseTestCase
         
         $test->update(9);
         
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>2,'object_id'=>9,'value'=>234]);
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>3,'object_id'=>9,'value'=>333]);        
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>2,'object_id'=>9]);
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>3,'object_id'=>9]);
+        $this->assertDatabaseHas('attr_attribute1',['object_id'=>9,'value'=>234]);
+        $this->assertDatabaseHas('attr_attribute2',['object_id'=>9,'value'=>333]);
     }
     
     public function testChangeOneAttributes()
@@ -127,8 +129,10 @@ class MysqlStorageUpdateTest extends DatabaseTestCase
         
         $test->update(9);
         
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>2,'object_id'=>9,'value'=>234]);
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>3,'object_id'=>9,'value'=>222]);
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>2,'object_id'=>9]);
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>3,'object_id'=>9]);
+        $this->assertDatabaseHas('attr_attribute1',['object_id'=>9,'value'=>234]);
+        $this->assertDatabaseHas('attr_attribute2',['object_id'=>9,'value'=>222]);
     }
     
     public function testAddAttributes()
@@ -145,7 +149,8 @@ class MysqlStorageUpdateTest extends DatabaseTestCase
         
         $test->update(1);
         
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>5,'object_id'=>1,'value'=>'DEF']);
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>5,'object_id'=>1]);
+        $this->assertDatabaseHas('attr_char_attribute',['object_id'=>1,'value'=>'DEF']);
     }
     
     public function testRemoveAttributes()
@@ -162,8 +167,10 @@ class MysqlStorageUpdateTest extends DatabaseTestCase
         
         $test->update(9);
         
-        $this->assertDatabaseMissing('attributevalues',['attribute_id'=>2,'object_id'=>9]);
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>3,'object_id'=>9,'value'=>222]);
+        $this->assertDatabaseMissing('attributeobjectassigns',['attribute_id'=>2,'object_id'=>9]);
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>3,'object_id'=>9]);
+        $this->assertDatabaseMissing('attr_attribute1',['object_id'=>9,'value'=>234]);
+        $this->assertDatabaseHas('attr_attribute2',['object_id'=>9,'value'=>222]);
     }
     
     public function testDummyChild()

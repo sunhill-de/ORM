@@ -60,8 +60,10 @@ class MysqlStorageStoreTest extends DatabaseTestCase
         $test->setEntity('attributes',[$attribute1,$attribute2]);
         $id = $test->Store();
         
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>1,'object_id'=>$id,'value'=>'1509']);
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>5,'object_id'=>$id,'value'=>'LOREM']);
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>1,'object_id'=>$id]);
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>5,'object_id'=>$id]);
+        $this->assertDatabaseHas('attr_int_attribute',['object_id'=>$id,'value'=>1509]);
+        $this->assertDatabaseHas('attr_char_attribute',['object_id'=>$id,'value'=>'LOREM']);
     }
         
     public function testTestParent()

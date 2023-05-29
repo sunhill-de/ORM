@@ -59,17 +59,14 @@ class MysqlUpdateObject extends ObjectHandler
             return;
         }
         $values = $this->storage->getEntity('attributes');
-        foreach ($values as $value) {
-            if ($value->value == null) {
-                DB::table('attributevalues')->where(['object_id'=>$this->id,'attribute_id'=>$value->attribute_id])->delete();
-            } else if ($value->type == 'text') {
-                $insert[] = ['attribute_id'=>$value->attribute_id,'object_id'=>$this->id,'value'=>'','textvalue'=>$value->value];
+        foreach ($values as $entity) {
+            if (is_null($entity->value)) {
+                DB::table('attributeobjectassigns')->where(['attribute_id'=>$entity->attribute_id,'object_id'=>$this->id])->delete();
+                DB::table('attr_'.$entity->name)->where(['object_id'=>$this->id])->delete();
             } else {
-                $insert[] = ['attribute_id'=>$value->attribute_id,'object_id'=>$this->id,'value'=>$value->value,'textvalue'=>''];                    
+                DB::table('attributeobjectassigns')->insertOrIgnore(['attribute_id'=>$entity->attribute_id,'object_id'=>$this->id]);
+                DB::table('attr_'.$entity->name)->updateOrInsert(['object_id'=>$this->id],['value'=>$entity->value]);
             }
-        }
-        if (!empty($insert)) {
-            DB::table('attributevalues')->upsert($insert,['attribute_id','object_id'],['value','textvalue']);
         }
     }
     

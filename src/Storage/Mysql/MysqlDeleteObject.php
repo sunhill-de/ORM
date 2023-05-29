@@ -42,7 +42,11 @@ class MysqlDeleteObject extends ObjectHandler
     
     protected function deleteAttributes()
     {
-        DB::table('attributevalues')->where('object_id',$this->id)->delete();
+        $tables = DB::table('attributeobjectassigns')->join('attributes','attributeobjectassigns.attribute_id','=','attributes.id')->where('attributeobjectassigns.object_id',$this->id)->groupBy('attributes.id')->select('attributes.name as name')->get();
+        foreach ($tables as $table) {
+            DB::table('attr_'.$table->name)->where('object_id',$this->id)->delete(); 
+        }
+        DB::table('attributeobjectassigns')->where('object_id',$this->id)->delete();
     }
     
     protected function deleteTags()
