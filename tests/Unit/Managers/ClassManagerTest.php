@@ -14,6 +14,28 @@ use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
+use Sunhill\ORM\Managers\ClassNotORMException;
+use Sunhill\ORM\Managers\ClassNotAccessibleException;
+use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Managers\ClassNameForbiddenException;
+
+class BadClass1 extends ORMObject
+{
+    
+    protected static function setupInfos()
+    {
+        static::addInfo('name', 'Class');
+    }
+}
+
+class BadClass2 extends ORMObject
+{
+    
+    protected static function setupInfos()
+    {
+        static::addInfo('name', 'attr_');
+    }
+}
 
 class ClassManagerTest extends TestCase
 {
@@ -116,15 +138,27 @@ class ClassManagerTest extends TestCase
     }
     
     /**
-     * Tests: Classmanager::registerClass
+     * @dataProvider RegisterClassProvider
+     * @param unknown $class
+     * @param unknown $expected_exception
      */
-    public function testRegisterClass_noclass() 
+    public function testRegisterClassException($class, $expected_exception)
     {
-        $this->expectException(ORMException::class);
+        $this->expectException($expected_exception);
         
         $test = new ClassManager();
         
-        $this->callProtectedMethod($test,'registerClass',['notaclass']);        
+        $test->registerClass($class);
+    }
+
+    public function RegisterClassProvider()
+    {
+        return [
+            [static::class, ClassNotORMException::class],
+            ['abc',ClassNotAccessibleException::class],
+            [BadClass1::class,ClassNameForbiddenException::class],
+            [BadClass2::class,ClassNameForbiddenException::class]
+        ];    
     }
     
     /**
