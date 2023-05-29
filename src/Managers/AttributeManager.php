@@ -16,6 +16,7 @@
 namespace Sunhill\ORM\Managers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Properties\AttributeException;
@@ -72,25 +73,23 @@ class AttributeManager
      * @param string $allowed_objects
      * @param string $property
      */
-    public function addAttribute(string $name, string $type, string $allowed_objects = 'object', string $property = '')
+    public function addAttribute(string $name, string $type, string $allowed_objects = 'object')
     {
         DB::table('attributes')->insert(
             [
                 'name'=>$name,
                 'type'=>$type,
                 'allowedobjects'=>$allowed_objects,
-                'property'=>$property                
             ]);
     }
     
-    public function updateAttribute(int $id, string $name, string $type, string $allowed_objects = 'object', string $property = '')
+    public function updateAttribute(int $id, string $name, string $type, string $allowed_objects = 'object')
     {
         DB::table('attributes')->where('id',$id)->update(
             [
                 'name'=>$name,
                 'type'=>$type,
                 'allowedobjects'=>$allowed_objects,
-                'property'=>$property
             ]);
     }
     
@@ -98,26 +97,32 @@ class AttributeManager
     {
         DB::table('attributes')->where('id',$id)->delete();    
     }
+
+    protected function getAttributeTableName(int $id): string
+    {
+        $values = DB::table('attributes')->where('id',$id)->first();
+        return 'attr_'.$values->name;
+    }
     
     protected function deleteReferences(int $id)
     {
-        DB::table('attributevalues')->where('attribute_id',$id)->delete();
+        Schema::drop($this->getAttributeTableName($id));
     }
     
     public function deleteAttribute(int $id)
     {
-        $this->deleteDatabase($id);
         $this->deleteReferences($id);
+        $this->deleteDatabase($id);
     }
     
     public function getAssociatedObjectsCount(int $id): int
     {
-        return DB::table('attributevalues')->where('attribute_id',$id)->count();    
+        return DB::table($this->getAttributeTableName($id))->count();    
     }
     
     public function getAssociatedObjects(int $id, int $offset = 0, int $limit = 0)
     {
-        $query = DB::table('attributevalues')->select('object_id as id')->where('attribute_id',$id);
+        $query = DB::table($this->getAttributeTableName($id))->select('object_id as id');
         if ($offset) {
             $query = $query->offset($offset);
         }

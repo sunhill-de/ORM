@@ -34,23 +34,23 @@ class AttributeManagerTest extends DatabaseTestCase
     
     public function testAddAttribute()
     {
-        Attributes::addAttribute('test_attribute','int','dummy');
+        Attributes::addAttribute('test_attribute','integer','dummy');
         $this->assertDatabaseHas('attributes',['name'=>'test_attribute']);
     }
     
     public function testUpdateAttribute()
     {
-        Attributes::updateAttribute(1,'test_attribute','int','dummy');
+        Attributes::updateAttribute(1,'test_attribute','integer','dummy');
         $this->assertDatabaseHas('attributes',['id'=>1,'name'=>'test_attribute']);
     }
     
     public function testDeleteAttribute()
     {
         $this->assertDatabaseHas('attributes',['id'=>1]);
-        $this->assertDatabaseHas('attributevalues',['attribute_id'=>1]);
+        $this->assertDatabaseHasTable('attr_int_attribute');
         Attributes::deleteAttribute(1);
         $this->assertDatabaseMissing('attributes',['id'=>1]);
-        $this->assertDatabaseMissing('attributevalues',['attribute_id'=>1]);
+        $this->assertDatabaseMissingTable('attr_int_attribute');
     }
     
     public function testGetAssociatedObjectsCount()
@@ -94,6 +94,6 @@ class AttributeManagerTest extends DatabaseTestCase
     
     public function testGetAttributeType()
     {
-        $this->assertEquals('int',Attributes::getAttributeType('int_attribute'));
+        $this->assertEquals('integer',Attributes::getAttributeType('int_attribute'));
     }   
 }
