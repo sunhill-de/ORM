@@ -39,6 +39,9 @@ use Sunhill\ORM\Facades\Storage;
 class ClassManager 
 {
  
+    const FORBIDDEN_NAMES = ['object','class','integer','string','float','boolean','tag'];
+    const FORBIDDEN_BEGINNINGS = ['attr_'];
+    
     /**
      * Stores the information about the classes
      * @var array|null
@@ -159,21 +162,88 @@ class ClassManager
         return $result;
      }
     
+     /**
+      * Checks if the given classpath even exists
+      * @param string $classpath
+      * @throws ClassNotAccessibleException
+      * @return boolean
+      */
+     protected function checkClassExistance(string $classpath)
+     {
+         if (!class_exists($classpath)) {
+             throw new ClassNotAccessibleException("The class '$classpath' is not accessible.");
+             return false;
+         }
+     }
+     
+     /**
+      * Checks if the given classpath is a descendant of ORMObject
+      * @param string $classpath
+      * @throws ClassNotORMException
+      */
+     protected function checkClassType(string $classpath)
+     {
+         if (!is_a($classpath, ORMObject::class,true)) {
+             throw new ClassNotORMException("The class '$classpath' is not a descendant of ORMObject");
+         }
+     }
+
+     /**
+      * Checks if the given classname is allowed
+      * @param string $classpath
+      * @return bool
+      */
+     protected function isClassNameForbidden(string $classname): bool
+     {
+        return in_array($classname, ClassManager::FORBIDDEN_NAMES);    
+     }
+     
+     /**
+      * Checks if the classname begins with a forbidden string
+      * @param string $classpath
+      * @return bool
+      */
+     protected function isClassBeginningForbidden(string $classname): bool
+     {
+         foreach (ClassManager::FORBIDDEN_BEGINNINGS as $beginning) {
+             if (substr($classname,0,strlen($beginning)) == $beginning) {
+                 return true;
+             }
+         }
+         return false;
+     }
+     
+     /**
+      * Checks if the classname is allowed
+      * @param string $classpath
+      * @throws ClassNameForbiddenException
+      */
+     protected function checkClassName(string $classpath)
+     {
+         if ($this->isClassNameForbidden(strtolower($classpath::getInfo('name'))) || $this->isClassBeginningForbidden(strtolower($classpath::getInfo('name')))) {
+             throw new ClassNameForbiddenException("The classname '".$classpath::getInfo('name')."' is no allowed.");
+         }
+     }
+     
     /**
      * Every single class that should be accessible via the class manager should be added through this method. 
-     * In opposite to the above cache file (wich is deprecated then) this allowes testing to be easier.
+     * It is possible to use an ORMObject without registering even store it but all references to other
+     * classes (like PropertyObject) is performed via the classname. Therefore yout should register it.
      *  
      * @param $classname string The fully qualified name of the class to register
      * @return bool true if successful false if not
+     * @throws ClassNotAccessibleException::class when the class is not found
+     * @throws ClassNameForbiddenException::class when the class name is invalid
+     * @throws ClassNotORMException::class when the class is not a descendant of ORMObject
      * 
      * Test: testRegisterClass*
      */
     public function registerClass(string $classname, bool $ignore_duplicate = false): bool 
     {
-        if (!class_exists($classname)) {
-            throw new ORMException("The class '$classname' is not accessible.");
-            return false;
-        } 
+        $this->checkClassExistance($classname);
+        $this->checkClassType($classname);
+        $this->checkClassName($classname);
+        
         $information = $this->buildClassInformation($classname);
         if (isset($this->classes[$information['name']])) {
             if ($ignore_duplicate) {
