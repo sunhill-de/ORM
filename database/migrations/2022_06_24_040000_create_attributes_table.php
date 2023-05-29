@@ -18,7 +18,6 @@ class CreateAttributesTable extends Migration
             $table->string('name');
             $table->string('allowedobjects');
             $table->string('type');
-            $table->string('property');
             $table->timestamps();
         });
     }
