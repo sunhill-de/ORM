@@ -16,8 +16,17 @@ class DatabaseSeeder extends Seeder
         $this->call(TagsTableSeeder::class);
         $this->call(TagCacheTableSeeder::class);
         $this->call(AttributesTableSeeder::class);
-        $this->call(AttributeValuesTableSeeder::class);
+        $this->call(AttributeObjectAssignsTableSeeder::class);        
         $this->call(TagObjectAssignsTableSeeder::class);
+        
+        $this->call(AttrAttribute1TableSeeder::class);
+        $this->call(AttrAttribute2TableSeeder::class);
+        $this->call(AttrCharAttributeTableSeeder::class);
+        $this->call(AttrChildAttributeTableSeeder::class);
+        $this->call(AttrFloatAttributeTableSeeder::class);
+        $this->call(AttrGeneralAttributeTableSeeder::class);
+        $this->call(AttrIntAttributeTableSeeder::class);
+        $this->call(AttrTextAttributeTableSeeder::class);        
         
         $this->call(DummiesTableSeeder::class);
         $this->call(DummychildrenTableSeeder::class);
