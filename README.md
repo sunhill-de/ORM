@@ -1,4 +1,4 @@
-# ORM
+# ORM {#mainpage}
 The basic ORM framework of the sunhill project provides a <b>O</b>bject-<b>R</b>elational-<b>M</b>anager extension for the laravel framework. In opposite to <b>Eloquent</b> the sunhill ORM project respects inheritance.
 That means you can use a object hirarchy tree that is mapped to the database tables. So it is easy to search for objects that a descendands of a certain object. 
 
@@ -21,10 +21,7 @@ class test extends ORMObject {
 	{
 	    static::addInfo('name', 'test');
 	    static::addInfo('table', 'tests');
-	    static::addInfo('name_s', 'test');
-	    static::addInfo('name_p', 'tests');
 	    static::addInfo('description', 'A demonstration class');
-	    static::addInfo('options', 0);
 	}
    
 }
@@ -40,10 +37,7 @@ class extendedtest extends test {
 	{
 	    static::addInfo('name', 'extenedtest');
 	    static::addInfo('table', 'extendedtests');
-	    static::addInfo('name_s', 'extendedtest');
-	    static::addInfo('name_p', 'extendedtests');
 	    static::addInfo('description', 'A derrived demonstration class');
-	    static::addInfo('options', 0);
 	}
    
 }
@@ -100,51 +94,24 @@ See [Collection](doc/md/COLLECTION.md)
 The ORMObject was (and is) the main motivation to write this package. It provides an easy way to map a hirarchic class structure to an database.
 See [Collection](doc/md/ORMOBJECT.md)
 
+### Classes and Objects
+As usual there is a difference between a class and an object. A class is the blueprint for objects while objects are a concrete implementation of a class. Therefore there a two seperate facades for accessing informations about classes (called <b>Classes</b>, see ClassManager) and objects (called <b>Objects</b> see ObjectManager).
+
 ### Storage
+The main intension for writing the sunhill ORM package was to store objects into a database. But the concept of storages adds the possibility to store objects whereever you want to (file, database, website). To accomplish that there is the concept of storages. Collections and ORMObjects manage the properties and the concept of dirtyness while a storage handles to reading, creating, modifying and erasing of the data to and from the concrete storage. Objects communicate via the <b>Storage</b> facade (see StorageManager) with the desired storage. For more informations see [Storage](doc/md/STORAGE.md)
 
 ### Tags
+Tags are strings that can be attached to an Object. Tags are managed in a hirarchic way, so that a tag can have several child tags. The managing of tags are provided by the <b>Tags</b> facade (see TagManager). For more informations see [Tags](doc/md/TAGS.md)
 
 ### Attributes
+Attributes are dynamic properties that can be assigned later to an object. That means a certain object can have this attribute but it doesn't has to. Attributes can be accesed (for reading and writing) as normal properties or member variables. Internally the ORM framework looks for a appropriate pre-defined attribute with this name and checks if this attribute is allowed for this class. If yes, the property is dynamically added to the object and can be accessed like any other property (and is stored in the storage and loaded back like any other property). For more information see [Attributes](doc/md/ATTRIBUTES.md) and the <b>Attributes</b> facade (see AttributeManager).
 
-### Facades
-#### Classes facade
-The Classes facade provides an easy access to informations about classes.
-The most important methods are:
-###### registerClass()
-A class that should be accessible via the ORMFramework has to be registered first. Normally this should be done in the ServiceProvider of the application (or package). The method takes the classname including the namespace of the class to register (like TestClass::class). After the registration the class is accessible via its name.
+### Other utilities
+#### Checks
+The ORM package defines a artisan console command called 'sunhill:check' that executes a number of pre-defined checks. A check is a simple consistency probe for a single entity (like a database structure). With the execution of ./artisan sunhill:check all those checks are executed and return if there is a problem with any of the entities. The command has also the parameter --repair that tries to repair the found problem in the same run. For more informations see [Checks](doc/md/CHECKS.md).
 
-###### searchClass()
-This method searches for the class with the given name, classname or index. It returns null if the class is not found.
-
-###### getTableOfClass()
-Returns the name of the storage table of the given class.
-
-###### getInheritanceOfClass()
-Returns an array of all ancestors of this class (including ORMObject)
-
-###### getPropertiesOfClass()
-Returns an array of the properties of this class.
-
-###### createObject()
-Creates an empty object of the given class.
-
-###### isA()
-Tests if this class is a direct descendant of the given class.
-
-###### isAClass()
-Tests if this class is an instance of the given class (not a descendant)
-
-###### isSubclassOf()
-Tests if this class is a subclass of the given class.
-
-##### Objects facade
-The Objects facade provides an easy access to informations about objects.
-
-#### Tags facade
-The Tags facade provides an easy access to informations about tags.
-
-#### Attributes facade
-The Attributes facade provides an easy access to informations about attributes.
+### Migrations
+The ORM package defines an artisan console command called 'sunhill:migrate' that creates the storage structurs (like database tables) for every defined class. For more informations see [Migrations](doc/md/MIGRATIONS.md).
 
 ## See also
 [Internal details](doc/md/INTERNAL.md)

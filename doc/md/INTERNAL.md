@@ -45,7 +45,16 @@ This table stores the information about a certain attribute and defines the foll
 - name = The name of this attribute
 - allowedobjects = a comma seperated list of classes this attribute can assigned to
 - type = The type of the attribute
-- property = deprecated column that will be removed later
+
+### Table attributeobjectassigns
+For searching purposes this is a help table that connects the attributes with the objects in form of a n:m table. This table defines the following columns:
+- object_id: int = The id of the object
+- attribute_id: int = The id of the attribute
+
+### Table of attribute values
+Every attribute has an own table that stores its attribute values. This table is named after the attribute (so if the attribute is called testvalue the table is also called testvalue. Note: no plural here). This table consist of two columns:
+- object_id: int = The id of the object
+- value = Depending of the type of the attribute 
 
 ### Table <b>attributevalues</b>
 This table combines the objects and attributes and stores the values. It defines the following columns:

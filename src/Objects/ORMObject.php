@@ -369,10 +369,7 @@ class ORMObject extends PropertyCollection
 	{
 	    static::addInfo('name', 'object');
 	    static::addInfo('table', 'objects');
-	    static::addInfo('name_s', 'base object');
-	    static::addInfo('name_p', 'base objects');
 	    static::addInfo('description', 'A base class that defines storable properties.');
-	    static::addInfo('options', 0);
 	}
 		
 }
