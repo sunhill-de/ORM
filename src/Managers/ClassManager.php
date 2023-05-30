@@ -23,6 +23,7 @@ use Sunhill\ORM\Storage\StorageBase;
 use Doctrine\Common\Lexer\Token;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Storage;
+use Sunhill\ORM\Query\BasicQuery;
 
  /**
   * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
@@ -773,5 +774,10 @@ class ClassManager
                 $this->migrateClass($name);
             }
         }        
+    }
+    
+    public function query(): BasicQuery
+    {
+        return new ClassQuery();
     }
 }

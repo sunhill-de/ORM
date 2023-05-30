@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Schema;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Properties\AttributeException;
+use Sunhill\ORM\Query\BasicQuery;
 
 /**
  * The AttributeManager is accessed via the Attributes facade. It's a singelton class
@@ -172,6 +173,11 @@ class AttributeManager
     {
         $query = DB::table('attributes')->select('type')->where('name',$name)->first();
         return $query->type;        
+    }
+    
+    public function query(): BasicQuery
+    {
+        
     }
 }
  

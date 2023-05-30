@@ -875,4 +875,31 @@ class ClassManagerTest extends TestCase
         ];
     }
 
+    /**
+     * @dataProvider QueryProvider
+     * @group query
+     */
+    public function testQuery($callback, $modifier, $expect)
+    {
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
+        Classes::registerClass(DummyChild::class);
+        $query = Classes::query();
+        $result = $callback($query);
+        
+        if (is_callable($modifier)) {
+            $result = $modifier($result);
+        }
+        $this->assertEquals($expect, $result);
+    }
+    
+    public function QueryProvider()
+    {
+        return [
+            [function($query) { return $query->count(); }, null, 5],
+            [function($query) { return $query->first(); }, function($value) { return $value->name; }, 'object'],
+            [function($query) { return $query->orderBy('name')->first(); }, function($value) { return $value->name; }, 'dummy'],
+            ];
+    }
 }
