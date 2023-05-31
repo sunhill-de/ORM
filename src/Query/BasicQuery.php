@@ -19,9 +19,16 @@ abstract class BasicQuery
     
     protected $condition_builder;
     
+    protected $target;
+    
     public function __construct()
     {
         $this->condition_builder = new ConditionBuilder();    
+    }
+    
+    protected function targetCount()
+    {
+        $this->target = 'count';
     }
     
     public function count(): int
@@ -30,10 +37,20 @@ abstract class BasicQuery
         return $this->execute();
     }
     
+    protected function targetFirst()
+    {
+        $this->target = 'first';
+    }
+    
     public function first()
     {
         $this->targetFirst();
         return $this->execute();
+    }
+    
+    protected function targetGet()
+    {
+        $this->target = 'get';
     }
     
     public function get(): Collection
@@ -89,9 +106,6 @@ abstract class BasicQuery
         return $this;
     }
     
-    abstract protected function targetCount();
-    abstract protected function targetFirst();
-    abstract protected function targetGet();
     abstract protected function execute();    
     
     protected function unaryCondition($key)

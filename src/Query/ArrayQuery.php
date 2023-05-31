@@ -18,26 +18,7 @@ namespace Sunhill\ORM\Query;
 abstract class ArrayQuery extends BasicQuery
 {
     
-    protected $allowed_order_keys = ['none','name'];
-    
     abstract protected function getRawData();
-
-    protected $target;
-    
-    protected function targetCount()
-    {
-        $this->target = 'count';
-    }
-    
-    protected function targetFirst()
-    {
-        $this->target = 'first';
-    }
-    
-    protected function targetGet()
-    {
-        $this->target = 'get';
-    }
 
     protected function matches(\StdClass $entry): bool
     {
@@ -62,9 +43,6 @@ abstract class ArrayQuery extends BasicQuery
     {
         if ($this->order_key == 'none') {
             return $list;
-        }
-        if (!in_array($this->order_key,$this->allowed_order_keys)) {
-            throw new InvalidOrderException("'".$this->order_key."' is now an allowed order key.");
         }
         $key = $this->order_key;
         $dir = $this->order_direction;
