@@ -110,8 +110,11 @@ Attributes are dynamic properties that can be assigned later to an object. That 
 #### Checks
 The ORM package defines a artisan console command called 'sunhill:check' that executes a number of pre-defined checks. A check is a simple consistency probe for a single entity (like a database structure). With the execution of ./artisan sunhill:check all those checks are executed and return if there is a problem with any of the entities. The command has also the parameter --repair that tries to repair the found problem in the same run. For more informations see [Checks](doc/md/CHECKS.md).
 
-### Migrations
+#### Migrations
 The ORM package defines an artisan console command called 'sunhill:migrate' that creates the storage structurs (like database tables) for every defined class. For more informations see [Migrations](doc/md/MIGRATIONS.md).
+
+#### Queries
+All entitis of the ORM framework (like attributes, tags, classes, objects) should be able to be queried in a form laravel performs a database query (via QueryBuilder). Therefore all facaces define a query() method that returns a query class to be used in a QueryBuilder like chain. For more informations see [Queries](doc/md/QUERIES.md)
 
 ## See also
 [Internal details](doc/md/INTERNAL.md)
