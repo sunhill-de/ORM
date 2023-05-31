@@ -57,20 +57,7 @@ class ClassManager
     {
          $this->flushClasses();
     }
-    
-    /**
-     * Get the fully qualified class name and adds it to $result
-     * 
-     * @param $result The array to store the information to
-     * @param $class The full namespace of the class (not the class name!)
-     * 
-     * Test: testGetClassEntry
-     */
-    private function getClassEntry(array &$result,string $class): void 
-    {
-        $result['class'] = $class;
-    }
-    
+        
     /**
      * Get the class informations and adds them to $result
      * 
@@ -79,10 +66,14 @@ class ClassManager
      * 
      * Test: testGetClassInformationEntries
      */
-    private function getClassInformationEntries(array &$result,string $class): void 
+    private function getClassInformationEntries(\StdClass $result,string $class): void 
     {
         foreach ($class::getAllInfos() as $key => $value) {
-            $result[$key] = $class::getInfo($key); 
+            if ($value->translatable) {
+                $result->$key = __($value->value);
+            } else {
+                $result->$key = $value->value;
+            }
         }
     }
     
@@ -94,11 +85,13 @@ class ClassManager
      * 
      * Test: testGetClassParentEntry
      */
-    private function getClassParentEntry(array &$result,string $class): void 
+    private function getClassParentEntry(\StdClass $result,string $class): void 
     {
         $parent = get_parent_class($class);
-        if ($class !== 'object') { // Strange infinite loop bug
-            $result['parent'] = $parent::getInfo('name');
+        if ($class !== ORMObject::class) { 
+            $result->parent = $parent::getInfo('name');
+        } else {
+            $result->parent = '';            
         }
     }
     
@@ -130,15 +123,15 @@ class ClassManager
      * 
      * Test: testGetClassPropertyEntries
      */
-    private function getClassPropertyEntries(array &$result,string $class): void 
+    private function getClassPropertyEntries(\StdClass &$result,string $class): void 
     {
-        $result['properties'] = [];
+        $result->properties = [];
         $properties = $this->getClassProperties($class);
         foreach ($properties as $property) {
-            $result['properties'][$property->getName()] = [];
+            $result->properties[$property->getName()] = [];
             $features = $property->getAttributes();
             foreach ($features as $feat_key => $feat_value) {
-                $result['properties'][$property->getName()][$feat_key] = $feat_value;
+                $result->properties[$property->getName()][$feat_key] = $feat_value;
             }            
         }    
    }
@@ -151,11 +144,11 @@ class ClassManager
      * 
      * test: testBuildClassInformation
      */
-    private function buildClassInformation(string $classname): array 
+    private function buildClassInformation(string $classname): \StdClass 
     {
-        $result = [];
+        $result = new \StdClass();
+        $result->class = $classname;
         
-        $this->getClassEntry($result,$classname);
         $this->getClassInformationEntries($result,$classname);
         $this->getClassParentEntry($result,$classname);
         $this->getClassPropertyEntries($result,$classname);
@@ -246,14 +239,14 @@ class ClassManager
         $this->checkClassName($classname);
         
         $information = $this->buildClassInformation($classname);
-        if (isset($this->classes[$information['name']])) {
+        if (isset($this->classes[$information->name])) {
             if ($ignore_duplicate) {
-                return $this->classes[$information['name']]; 
+                return $this->classes[$information->name]; 
             } else {
                 throw new ORMException("The class '$classname' is already registered.");
             } 
         }
-        $this->classes[$information['name']] = $information;
+        $this->classes[$information->name] = $information;
         return true;
     }
     
@@ -265,44 +258,8 @@ class ClassManager
     public function flushClasses(): void 
     {
         $this->classes = [
-            'object'=>[
-                'class'=>ORMObject::class,
-                'name'=>'object',
-                'table'=>'objects',
-                'name_s'=>'object',
-                'name_p'=>'objects',
-                'description'=>'The base class for any storable object',
-                'parent'=>'',
-                'properties'=>[
-                    'created_at'=>[
-                        'class'=>'object',
-                        'defaults_null'=>false,
-                        'features'=>['object','complex'],
-                        'name'=>'created_at',
-                        'read_only'=>false,
-                        'searchable'=>false,
-                        'type'=>'timestamp'                        
-                    ],
-                    'updated_at'=>[
-                        'class'=>'object',
-                        'defaults_null'=>false,
-                        'features'=>['object','complex'],
-                        'name'=>'updated_at',
-                        'read_only'=>false,
-                        'searchable'=>false,
-                        'type'=>'timestamp'
-                    ],
-                    'uuid'=>[
-                        'class'=>'object',
-                        'defaults_null'=>false,
-                        'features'=>['object','simple'],
-                        'name'=>'uuid',
-                        'read_only'=>false,
-                        'searchable'=>true,
-                        'type'=>'varchar'
-                    ],
-                ]                
-            ]
+            'object'=>
+            $this->buildClassInformation(ORMObject::class)
         ];
     }
     
@@ -393,8 +350,8 @@ class ClassManager
     {
         $needle = $this->normalizeNamespace($needle);
         foreach ($this->classes as $name => $info) {
-            if ($info['class'] == $needle) {
-                return $info['name'];
+            if ($info->class == $needle) {
+                return $info->name;
             }
         }
         return false;
@@ -544,11 +501,11 @@ class ClassManager
         if (is_null($field)) {
             return $this->classes[$name];
         } else {
-            if ($this->classes[$name]['class']::hasInfo($field)) {
+            if ($this->classes[$name]->class::hasInfo($field)) {
                 // Pass it through getField to get translation (if there is any)
-                return $this->classes[$name]['class']::getInfo($field);                
+                return $this->classes[$name]->class::getInfo($field);                
             } else {
-                return $this->classes[$name][$field];
+                return $this->classes[$name]->$field;
             }
         }
     }
@@ -623,7 +580,7 @@ class ClassManager
             return $result;
         }
         foreach ($this->classes as $class_name => $info) {
-            if ($info['parent'] === $class) {
+            if ($info->parent === $class) {
                 $result[$class_name] = $this->getChildrenOfClass($class_name,$level-1);
             }
         }

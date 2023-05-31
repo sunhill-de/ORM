@@ -41,70 +41,6 @@ class ClassManagerTest extends TestCase
 {
  
     /**
-     * Tests: ClassManager::getClassEntry
-     */
-    public function testGetClassEntry() 
-    {
-        $test = new ClassManager();
-        
-        $result = [];
-        $this->callProtectedMethod($test,'getClassEntry',[&$result,Dummy::class]);
-        
-        $this->assertEquals(Dummy::class,$result['class']);
-    }
-    
-    /**
-     * Tests: Classmanager::getClassInformationEntries
-     */
-    public function testGetClassInformationEntries() 
-    {
-        $test = new ClassManager();
-        
-        $result = [];
-        $this->callProtectedMethod($test,'getClassInformationEntries',[&$result,Dummy::class]);
-        
-        $this->assertEquals('dummy',$result['name']);
-    }
-    
-    /**
-     * Tests: Classmanager::getClassParentEntry
-     */
-    public function testGetClassParentEntry() 
-    {
-        $test = new ClassManager();
-        
-        $result = [];
-        $this->callProtectedMethod($test,'getClassParentEntry',[&$result,Dummy::class]);
-        
-        $this->assertEquals('object',$result['parent']);
-    }
-    
-    /**
-     * Tests: Classmanager::getClassProperties
-     */
-    public function testGetClassProperties()
-    {
-        $test = new ClassManager();
-        $test->registerClass(Dummy::class);
-        
-        $result = $this->callProtectedMethod($test,'getClassProperties',[Dummy::class]);
-        $this->assertArrayHasKey('dummyint', $result);
-    }
-    
-    /**
-     * Tests: Classmanager::getClassPropertyEntries
-     */
-    public function testGetClassPropertyEntries() 
-    {
-        $test = new ClassManager();
-        
-        $result = [];
-        $this->callProtectedMethod($test,'getClassPropertyEntries',[&$result,Dummy::class]);
-        
-        $this->assertEquals('integer',$result['properties']['dummyint']['type']);
-    }
-    
-    /**
      * Tests: Classmanager::buildClassInformation
      */
     public function testBuildClassInformation() 
@@ -113,10 +49,10 @@ class ClassManagerTest extends TestCase
         
         $result = $this->callProtectedMethod($test,'buildClassInformation',[Dummy::class]);
         
-        $this->assertEquals(Dummy::class,$result['class']);
-        $this->assertEquals('dummy',$result['name']);
-        $this->assertEquals('object',$result['parent']);
-        $this->assertEquals('integer',$result['properties']['dummyint']['type']);
+        $this->assertEquals(Dummy::class,$result->class);
+        $this->assertEquals('dummy',$result->name);
+        $this->assertEquals('object',$result->parent);
+        $this->assertEquals('integer',$result->properties['dummyint']['type']);
     }
     
     /**
@@ -130,10 +66,10 @@ class ClassManagerTest extends TestCase
         
         $result = $this->getProtectedProperty($test,'classes');
         
-        $this->assertEquals(Dummy::class,$result['dummy']['class']);
-        $this->assertEquals('dummy',$result['dummy']['name']);
-        $this->assertEquals('object',$result['dummy']['parent']);
-        $this->assertEquals('integer',$result['dummy']['properties']['dummyint']['type']);
+        $this->assertEquals(Dummy::class,$result['dummy']->class);
+        $this->assertEquals('dummy',$result['dummy']->name);
+        $this->assertEquals('object',$result['dummy']->parent);
+        $this->assertEquals('integer',$result['dummy']->properties['dummyint']['type']);
         
     }
     
@@ -220,7 +156,7 @@ class ClassManagerTest extends TestCase
         $result = $test->getAllClasses();
         
         $this->assertEquals(2, count($result));
-        $this->assertEquals('dummy',$result['dummy']['name']);
+        $this->assertEquals('dummy',$result['dummy']->name);
     }
     
     /**
@@ -543,7 +479,7 @@ class ClassManagerTest extends TestCase
         try {
             $result = Classes::getClass($class, $field);
             if ($expect == 'array') {
-                $this->assertEquals('dummies', $result['table']);
+                $this->assertEquals('dummies', $result->table);
             } else {
                 $this->assertEquals($expect, $result);
             }
