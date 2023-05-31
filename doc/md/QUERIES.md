@@ -4,8 +4,10 @@ The ORM-frameworks defines queries so that all entities (like tags, classes, att
 
 ## Common query functions
 As in QueryBuilder it is possible to build chains of request elements (like ->where('this','=','that')->orderBy('something')->offset(2)->limit(2)). 
-### Finishing method
+
+### Finishing methods
 Normally there must be a finishing method. All queries should define at least:
+
 #### count(): int
 returns the count of entries that match a given condition
 
@@ -17,6 +19,7 @@ Return all entries that match a given condition. The method returns an Illuminat
 
 ### Query building
 These method always return a reference to the builder object so that chaining is possible. Normally at least the following methods should be defined
+
 #### where()/whereNot()/orWhere()/orWhereNot()
 The same method as the QueryBuilder of laravel provides. These methods can take up to three parameters (key, relation and value). If the last one is omitted it is assumed that the relation is "=" and the second parameter means the value (Example ->where('id',2) is the same as ->where('id','=',2)
 
@@ -31,6 +34,7 @@ The same method as the QueryBuilder of laravel provides. The list is ordered by 
 
 ## Classes::query()
 The [Classes facade](doc/md/CLASSES.md) defines a method ::query() that makes it possible to query for classes. 
+
 ### Element structure
 The methods ->first() and ->get() return a StdClass object or an array of StdClass objects. Each of these StdClass objects holds the informations about one single class. These are:
 - class = The fully qualified php classname including the namespace
@@ -39,4 +43,11 @@ The methods ->first() and ->get() return a StdClass object or an array of StdCla
 - parent = The internal name of the parent class. 
 - properties = An array of all properties that this class defines.
 
-
+### Difference to the standard methods
+As a addition the return objects of first() and the collection of get() provide an additional method called query() that makes it possible to use the former results for a new query on these class/classes. 
+Example: 
+Let's assume there are two classes called 'UserImages' and 'UserVideos' than hold a field called 'user_id'. With the query
+'''php
+Classes::query()->where('name','begins with','User')->get()->query()->where('user_id',3)->get();
+'''
+you get a list of all UserImages and UserVideos that belong to the user with the id 3
