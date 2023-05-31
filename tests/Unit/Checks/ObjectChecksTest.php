@@ -22,13 +22,15 @@ class ObjectChecksTest extends CheckTestCase
     {
         $checker = new ObjectChecks();
         $missing = [];
+        $dummy = new \StdClass();
+        $dummy->table = 'dummies';
+        $dummy->parent = 'object';
+        $object = new \StdClass();
+        $object->table = 'objects';
+        $object->parent = '';
         $matrix = [
-            'dummy'=>[
-                'table'=>'dummies',
-                'parent'=>'object'],
-            'object'=>[                
-                'table'=>'objects',
-                'parent'=>'']    
+            'dummy'=>$dummy,
+            'object'=>$object    
         ];
         $this->callProtectedMethod($checker, 'processTable', [$matrix, 'dummy', &$missing]);
         $this->assertTrue(empty($missing));
