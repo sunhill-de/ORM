@@ -15,9 +15,9 @@ class CreateTagcacheTable extends Migration
     {
         Schema::create('tagcache', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name',150);
+            $table->string('path_name',150);
             $table->integer('tag_id');
-            $table->boolean('fullpath')->default(false);
+            $table->boolean('is_fullpath')->default(false);
             $table->timestamps();
             // $table->primary('id');
             $table->index('name');

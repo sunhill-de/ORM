@@ -29,9 +29,9 @@ The tags are stored in the table tags and this defines the following columns:
 ### Table tagcache
 Due the reason that tags can be hirarchic there is this table that stores all combinations of the tag for searching purposes.
 - id = internal id of this tagcache entry
-- name = the name of the tag or one of this combination
+- path_name = the name of the tag or one of this combination
 - tag_id = The id of the tag this entry points to
-- fullpath = Boolean field that indicates that this entry is the fullpath of a path (true) or just a part of it (false)
+- is_fullpath = Boolean field that indicates that this entry is the fullpath of a path (true) or just a part of it (false)
  
 ### Table tagobjectassigns
 To store what tag is assiged to what object this table is used. (It's a simple n:m relation). It defines the following columns:
