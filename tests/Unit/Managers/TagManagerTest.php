@@ -340,4 +340,13 @@ class TagManagerTest extends DatabaseTestCase
             ];
     }
  
+    /**
+     * @group gettags
+     */
+    public function testGetTags()
+    {
+        $query = Tags::query()->getTags();
+        $this->assertEquals(9,count($query));
+        $this->assertEquals(1,$query[0]->getID());
+    }
 }

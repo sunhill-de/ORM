@@ -2,6 +2,7 @@
 
 namespace Sunhill\ORM;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\ServiceProvider;
 use \Sunhill\ORM\Managers\ClassManager;
 use \Sunhill\ORM\Managers\ObjectManager;
@@ -14,6 +15,7 @@ use Sunhill\Basic\Facades\Checks;
 
 use Sunhill\ORM\Checks\TagChecks;
 use Sunhill\ORM\Checks\ObjectChecks;
+use Sunhill\ORM\Facades\Tags;
 
 use Sunhill\ORM\Managers\OperatorManager;
 
@@ -48,5 +50,13 @@ class SunhillServiceProvider extends ServiceProvider
             ]);
         } 
 
+        Collection::macro('getTags', function() {
+            return $this->map(function(\StdClass $value) {
+               return Tags::loadTag($value->id); 
+            });
+        });
+        Collection::macro('getObjects', function() {
+                
+        });
     }
 }

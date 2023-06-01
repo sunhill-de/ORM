@@ -60,4 +60,8 @@ class TagQuery extends DBQuery
         $this->query->groupBy('tags.id');
     }
     
+    public function getTags()
+    {
+        return $this->get()->getTags();
+    }
 }
