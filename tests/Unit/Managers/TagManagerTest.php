@@ -424,5 +424,35 @@ class TagManagerTest extends DatabaseTestCase
         $result = Tags::searchTag('NonExistingTag');
         $this->assertNull($result);
     }
-         
+    
+    /**
+     * @dataProvider QueryProvider
+     * @group query
+     */
+    public function testQuery($callback, $modifier, $expect)
+    {
+        $query = Tags::query();
+        $result = $callback($query);
+        
+        if (is_callable($modifier)) {
+            $result = $modifier($result);
+        }
+        $this->assertEquals($expect, $result);
+    }
+    
+    public function QueryProvider()
+    {
+        return [
+            [function($query) { return $query->count(); }, null, 9],
+            [function($query) { return $query->first(); }, function($value){ return $value->name; }, 'TagA'],            
+            [function($query) { return $query->offset(5)->first(); }, function($value) { return $value->name; }, 'TagF'],
+            [function($query) { return $query->orderBy('name')->offset(5)->first(); }, function($value) { return $value->name; }, 'TagE'],
+            [function($query) { return $query->where('name','TagC')->first(); }, function($value){ return $value->name; }, 'TagC'],            
+            [function($query) { return $query->where('parent_id','<>',0)->first(); }, function($value){ return $value->name; }, 'TagC'],
+            [function($query) { return $query->where('parent','=','TagF')->first(); }, function($value){ return $value->name; }, 'TagG'],
+            [function($query) { return $query->where('is_assigned')->first(); }, function($value){ return $value->name; }, 'TagA'],
+            [function($query) { return $query->where('not_assigned')->first(); }, function($value){ return $value->name; }, 'TagG'],
+            ];
+    }
+ 
 }

@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Objects\TagException;
+use Sunhill\ORM\Query\BasicQuery;
 
 define('TagNamespace','Sunhill\ORM\Objects\Tag');
 
@@ -560,5 +561,9 @@ class TagManager
      {
      }
      
+     public function query(): TagQuery
+     {
+         return new TagQuery();
+     }
  }
  

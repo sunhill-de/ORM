@@ -17,6 +17,7 @@ class CreateTagcacheTable extends Migration
             $table->increments('id');
             $table->string('name',150);
             $table->integer('tag_id');
+            $table->boolean('fullpath')->default(false);
             $table->timestamps();
             // $table->primary('id');
             $table->index('name');
