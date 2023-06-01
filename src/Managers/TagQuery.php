@@ -23,53 +23,41 @@ use Sunhill\ORM\Query\NotAllowedRelationException;
 class TagQuery extends DBQuery
 {
     protected $keys = [
-        'id'=>'handleNumeric',
-        'parent_id'=>'handleNumeric',
-        'handle'=>'handleParent',
-        
+        'id'=>'handleNumericField',
+        'parent_id'=>'handleNumericField',
+        'parent'=>'handleParent',
+        'is assigned'=>'handleAssignment',
+        'not assigned'=>'handleAssignment',
+        'full_path'=>'handeFullpath',
+        'name'=>'handleStringField'
     ];
     
     protected function getBasicTable()
     {
-        return DB::table('tags');
+        return DB::table('tags')->join('tagcache','tagcache.tag_id','=','tags.id')->where('tagcache.is_fullpath',true)->select('tags.*','tagcache.path_name as fullpath');
     }
  
-    protected function handleParent($relation, $value): BasicQuery
+    protected function handleParent($connection, $key, $relation, $value)
     {
-        $subquery = DB::table('tags')->where('name',$value);
-        $this->query->whereIn('id', $subquery);
+        $subquery = DB::table('tags')->select('id')->where('name',$value);
+        $this->query->whereIn('tags.parent_id', $subquery);
         return $this;
     }
     
-    protected function handleFullpath($relation, $value): BasicQuery
+    protected function handleFullpath($connection, $key, $relation, $value)
     {
         
     }
     
-    protected function handleAssigned(bool $positive)
+    protected function handleAssignment($connection, $key, $relation, $value)
     {
-        
-    }
-    
-    public function where($key, $relation = null, $value = null): BasicQuery
-    {
-        switch ($key) {
-            case 'parent':
-                return $this->handleParent($relation, $value);
-            case 'full_path':
-                return $this->handleFullpath($relation, $value);
-            case 'is assigned':
-                return $this->handleAssigned(true);
-            case 'not assigned':
-                return $this->handleAssigned(false);
-            case 'id':
-            case 'parent_id':
-                return $this->handleNumericFields($key, $relation, $value);
-            case 'name':
-                return $this->handleStringField($key, $relation, $value);
-            default:
-                throw new UnknownFieldException("Unknown key field in where condition: '$key'"); 
+        $this->query->leftJoin('tagobjectassigns','tags.id','=','tagobjectassigns.tag_id');
+        if ($key == 'is assigned') {
+            $this->query->whereNotNull('tagobjectassigns.container_id');
+        } else {
+            $this->query->whereNull('tagobjectassigns.container_id');            
         }
+        $this->query->groupBy('tags.id');
     }
-        
+    
 }

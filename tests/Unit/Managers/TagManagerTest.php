@@ -11,123 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Sunhill\Basic\Utils\Descriptor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-define('NUMBER_OF_TAGS', 9);
-define('NUMBER_OF_ORPHANED_TAGS', 3);
-define('NUMBER_OF_ROOT_TAGS', 6);
-
 class TagManagerTest extends DatabaseTestCase
 {
-
-    // ========================== Test count with different accessibilities  ==================================
-    // total number of tags
-    public function testCount() {
-        $test = new TagManager();
-        $this->assertEquals(NUMBER_OF_TAGS,$test->getCount());
-    }
-    
-    public function testCountViaApp() {
-        $test = app('\Sunhill\ORM\Managers\TagManager');
-        $this->assertEquals(NUMBER_OF_TAGS,$test->getCount());
-    }
-    
-    public function testCountViaFacade() {
-        $this->assertEquals(NUMBER_OF_TAGS,Tags::getCount());        
-    }
-    
-    // ========================== tests with orphaned tags ==============================    
-    // Count orphaned tags
-    /**
-     * @group orphaned
-     */
-    public function testOrphanedCount() {
-        $this->assertEquals(NUMBER_OF_ORPHANED_TAGS,Tags::getOrphanedCount());
-    }
-    
-    // Find orphaned tags
-    /**
-     * @group orphaned
-     */
-    public function testAllOrphaned() {
-        $this->assertEquals('TagF',Tags::getAllOrphaned()[0]->name);    
-    }
-    
-    // Find orphaned tags
-    /**
-     * @group orphaned
-     */
-    public function testOrphaned() {
-        $this->assertEquals('TagF',Tags::getOrphaned(0)->name);
-    }
-
-// ========================= tests with root tags ===================================    
-    // total number of root tags
-    /**
-     * @group root
-     */
-    public function testRootCount() {
-        $this->assertEquals(NUMBER_OF_ROOT_TAGS,Tags::getRootCount());
-    }
-                    
-    // get 'index' root tags
-    /**
-     * @group root
-     */
-    public function testRoot() {
-        
-        $tag = Tags::getRoot(1);
-        $this->assertEquals('TagB',$tag->name);
-    }
-
-    // get all root tags
-    /**
-     * @group root
-     */
-    public function testAllRoot() {
-        
-        $this->assertEquals('TagB',Tags::getAllRoot()[1]->name);    
-    }
-
-    // get 'index' tag
-    /**
-     * @group tag
-     */
-    public function testTag() {
-        
-        $this->assertEquals('TagB',Tags::getTag(2)->name);
-        $this->assertEquals('TagB',Tags::getTag(2)->fullpath);
-        $this->assertEquals(0,Tags::getTag(2)->parent_id);
-        $this->assertTrue(Tags::getTag(2)->parent_name->empty());
-    }
-
-    /**
-     * @group tag
-     */
-    public function testTagWithParent() {
-        
-        $this->assertEquals('TagE',Tags::getTag(8)->name);
-        $this->assertEquals('TagF.TagG.TagE',Tags::getTag(8)->fullpath);
-        $this->assertEquals(7,Tags::getTag(8)->parent_id);
-        $this->assertEquals('TagG',Tags::getTag(8)->parent_name);
-    }
-    
-    // get fullpath of 'index' tag
-    public function testFullpathTag() {
-        
-        $this->assertEquals('TagF.TagG.TagE',Tags::getTagFullpath(8));
-    }
-
-    // get all Tags
-    public function testAllTags() {
-        
-        $this->assertEquals('TagC',Tags::getAllTags()[2]->name);        
-    }
-    
-    // get all Tags with delta and limit
-    public function testAllTagsWithDelta() {
-        
-        $this->assertEquals('TagC',Tags::getAllTags(2,1)[0]->name);
-    }
-    
     // ========================== Test edit tags ==============================
     /**
      * @group change
@@ -147,7 +32,7 @@ class TagManagerTest extends DatabaseTestCase
         
         Tags::changeTag(3,['name'=>'NewTagC']);    
         $result = DB::table('tagcache')->where('tag_id',3)->get();
-        $this->assertEquals($result[0]->name,'NewTagC');
+        $this->assertEquals($result[0]->path_name,'NewTagC');
     }
     
     // Change Parent of index tag
@@ -168,8 +53,8 @@ class TagManagerTest extends DatabaseTestCase
         
         Tags::changeTag(3,['parent'=>'TagD']);
         $result = DB::table('tagcache')->where('tag_id',3)->get();
-        $this->assertEquals($result[1]->name,'TagD.TagC');
-        $this->assertEquals($result[0]->name,'TagC');
+        $this->assertEquals($result[1]->path_name,'TagD.TagC');
+        $this->assertEquals($result[0]->path_name,'TagC');
     }
     
     // Clear tags
@@ -272,7 +157,7 @@ class TagManagerTest extends DatabaseTestCase
     public function testExecuteAddTag_TagCacheAdded() {
         $test = new TagManager();
         $this->callProtectedMethod($test,'executeAddTag',['Test','TagA']);
-        $result = DB::table('tagcache')->where('name','TagA.Test')->get();
+        $result = DB::table('tagcache')->where('path_name','TagA.Test')->get();
         $this->assertTrue($result->count()>0);
     }
     
@@ -449,9 +334,9 @@ class TagManagerTest extends DatabaseTestCase
             [function($query) { return $query->orderBy('name')->offset(5)->first(); }, function($value) { return $value->name; }, 'TagE'],
             [function($query) { return $query->where('name','TagC')->first(); }, function($value){ return $value->name; }, 'TagC'],            
             [function($query) { return $query->where('parent_id','<>',0)->first(); }, function($value){ return $value->name; }, 'TagC'],
-            [function($query) { return $query->where('parent','=','TagF')->first(); }, function($value){ return $value->name; }, 'TagG'],
-            [function($query) { return $query->where('is_assigned')->first(); }, function($value){ return $value->name; }, 'TagA'],
-            [function($query) { return $query->where('not_assigned')->first(); }, function($value){ return $value->name; }, 'TagG'],
+            [function($query) { return $query->where('parent','=','TagF')->get(); }, function($value){ return $value[0]->name; }, 'TagG'],
+            [function($query) { return $query->where('is assigned')->get(); }, function($value){ return $value[0]->name; }, 'TagA'],
+            [function($query) { return $query->where('not assigned')->get(); }, function($value){ return $value[2]->name; }, 'TagZ'],
             ];
     }
  

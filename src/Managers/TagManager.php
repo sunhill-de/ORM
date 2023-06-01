@@ -47,80 +47,6 @@ class TagManager
                 ->leftJoin('tags as b','b.id','=','a.parent_id');
     }
 
-// ================= Handling of orphaned tags ================================     
-     /**
-      * Returns the number of orphaned tags (tags that aren't assigned to any objects)
-      * @return int
-      */
-     public function getOrphanedCount(): int 
-     {
-         $result = DB::table('tags')->select(DB::raw('count(tags.id) as count'))
-         ->leftJoin('tagobjectassigns','tags.id','=','tagobjectassigns.tag_id')
-         ->whereNull('tagobjectassigns.tag_id')->first();
-         return $result->count;
-     }
-     
-     /**
-      * Returns an array of all orphaned tags [id,name,fullname]
-      * @return \Manager\Utils\Descriptor
-      */
-     public function getAllOrphaned(): array 
-     {
-         $query = static::prepareQuery()->leftJoin('tagobjectassigns as c','c.tag_id','=','a.id')
-                ->whereNull('c.tag_id')->get();
-         $return = [];
-         foreach ($query as $result) {
-            $return[] = $this->getQueryDescriptor($result);
-         }
-         return $return;
-     }
-     
-     /**
-      * Returns the orphaned tag with the given index
-      * @param int $index
-      * @return \Manager\Utils\Descriptor
-      */
-     public function getOrphaned(int $index): Descriptor
-     {
-         $query = static::prepareQuery()->leftJoin('tagobjectassigns as c','c.tag_id','=','a.id')
-                ->whereNull('c.tag_id')->offset($index)->limit(1)->first();
-         return $this->getQueryDescriptor($query);
-     }
-
-// ===================== Handling of root tags =========================     
-     /**
-      * Returns the total count of root tags (tags that don't have a parent tag)
-      * @return int
-      */
-     public function getRootCount() : int 
-     {
-         $result = DB::table('tags')->select(DB::raw('count(*) as count'))->whereNull('parent_id')->orWhere('parent_id',0)->first();
-         return $result->count;
-     }
-     
-     /**
-      * Returns the root tag with index $index
-      * @param int $index
-      */
-     public function getRoot(int $index) 
-     {
-        return $this->getAllRoot()[$index];
-     }
-     
-     /**
-      * Return all root tags
-      * @return array of Descriptor
-      */
-     public function getAllRoot(): array 
-     {
-         $query = $this->prepareQuery()->whereNull('a.parent_id')->orWhere('a.parent_id',0)->get();
-         $return = [];
-         foreach ($query as $result) {
-             $return[] = $this->getQueryDescriptor($result);
-         }
-         return $return;         
-     }
-   
 // ===================== Handling of all tags ==============================     
      /**
       * Return the total count of tags
@@ -259,7 +185,7 @@ class TagManager
              } else {
                  $tag_name = $rest;
              }
-             db::table('tagcache')->insert(['tag_id'=>$id,'name'=>$tag_name]);
+             db::table('tagcache')->insert(['tag_id'=>$id,'path_name'=>$tag_name,'is_fullpath'=>empty($parts)]);
          } while (!empty($parts));         
      }
      
@@ -379,12 +305,15 @@ class TagManager
         $tag = $this->loadTag($id);
         $full_path = $tag->getFullPath();
 	    $fullpath = explode('.',$full_path);
+	    $is_fullpath = true;
 	    while (!empty($fullpath)) {
 	        DB::table('tagcache')->insert([
-	            'name'=>implode('.',$fullpath),
-	            'tag_id'=>$id
+	            'path_name'=>implode('.',$fullpath),
+	            'tag_id'=>$id,
+	            'is_fullpath'=>$is_fullpath
 	        ]);
 	        array_shift($fullpath);
+	        $is_fullpath = false;
 	    }
 	    return $id;
     }
@@ -470,7 +399,7 @@ class TagManager
      {
          return $this->prepareQuery()
                 ->join('tagcache', 'tagcache.tag_id','=','a.id')
-                ->where('tagcache.name',$name)->get();         
+                ->where('tagcache.path_name',$name)->get();         
      }
      
      /**
