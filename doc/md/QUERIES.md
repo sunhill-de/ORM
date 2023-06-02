@@ -43,11 +43,37 @@ The methods ->first() and ->get() return a StdClass object or an array of StdCla
 - parent = The internal name of the parent class. 
 - properties = An array of all properties that this class defines.
 
-### Difference to the standard methods
-As a addition the return objects of first() and the collection of get() provide an additional method called query() that makes it possible to use the former results for a new query on these class/classes. 
-Example: 
-Let's assume there are two classes called 'UserImages' and 'UserVideos' than hold a field called 'user_id'. With the query
-'''php
-Classes::query()->where('name','begins with','User')->get()->query()->where('user_id',3)->get();
-'''
-you get a list of all UserImages and UserVideos that belong to the user with the id 3
+### Additional methods
+#### query()
+This method makes it possible to use the result of a class query to do an object query
+
+## Tags::query()
+The [Tags facade](doc/md/TAGS.md) defines a method ::query() that makes it possible to query for tags.
+
+### Element structure
+The methods ->first() and ->get() return a StdClass object of an array of StdClass object. Each of these StdClass objects holds the information about one single class. These are:
+- id = The id of the tag
+- name = The name of the tag
+- full_path = The complete name of the tag including its parents
+- parent_id = The id of the parent class 
+
+### Additional method
+
+#### delete()
+Like in Laravel this deletes the set of tags that are selected before. If there is no where statement then the whole tags table is wiped.
+So: 
+```Tags::query()->delete()``` wipes everything
+```Tags::query()->where('id',2)->delete()``` deletes the tag with id 2
+
+#### update()
+Like in Laravel this updates a Tag. The fields name, parent_id and options take the values directly while an update to the field parent takes the (unique!) name of a tag, searches it and assigns it to parent_id.
+So 
+```Tags::query()->where('id',2)->update('parent','TagC');``` makes TagC the parent of TagB.
+```Tags::query()->where('id',2)->update('name','TagC');``` renames TagB to TagC.
+Be careful
+```Tags::query()->update('name','TagC');``` will rename ALL tags to TagC without warning.
+
+#### getTags()
+In addition to get() this method preloads the tags and return a collection of all tags that fit to the condition.
+
+
