@@ -14,13 +14,12 @@ class CreateTagcacheTable extends Migration
     public function up()
     {
         Schema::create('tagcache', function (Blueprint $table) {
-            $table->increments('id');
             $table->string('path_name',150);
             $table->integer('tag_id');
             $table->boolean('is_fullpath')->default(false);
             $table->timestamps();
             // $table->primary('id');
-            $table->index('name');
+            $table->primary(['path_name','tag_id']);
         });
     }
 
