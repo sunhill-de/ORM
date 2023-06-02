@@ -22,6 +22,8 @@ namespace Sunhill\ORM\Managers;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
+use Sunhill\ORM\Query\BasicQuery;
+use Sunhill\ORM\Storage\Mysql\MysqlStorageSupport;
 
 /**
  * The StorageManager is accessed via the Storage facade. It's a singelton class
@@ -40,6 +42,26 @@ class StorageManager
             case 'mysql':
                 return new MysqlStorage($object);                
         }
+    }
+    
+    public function tagQuery(): BasicQuery
+    {
+        switch (env('ORM_STORAGE_TYPE', 'mysql')) {
+            case 'mysql':
+                $storage_support = new MysqlStorageSupport();
+                break;
+        }
+        return $storage_support->tagQuery();
+    }
+    
+    public function attributeQuery(): BasicQuery
+    {
+        switch (env('ORM_STORAGE_TYPE', 'mysql')) {
+            case 'mysql':
+                $storage_support = new MysqlStorageSupport();
+                break;
+        }
+        return $storage_support->attributeQuery();
     }
 }
  

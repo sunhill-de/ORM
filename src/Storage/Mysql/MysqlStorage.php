@@ -14,6 +14,7 @@
 
 namespace Sunhill\ORM\Storage\Mysql;
 
+use Sunhill\ORM\Query\BasicQuery;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Objects\Collection;
 use Sunhill\ORM\Objects\ORMObject;
@@ -109,4 +110,6 @@ class MysqlStorage extends StorageBase
         $storage_helper = new MysqlDrop($this);
         return $storage_helper->doDrop();        
     }
+    
+   
 }

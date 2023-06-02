@@ -20,6 +20,7 @@ use Sunhill\Basic\Utils\Descriptor;
 use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Objects\TagException;
 use Sunhill\ORM\Query\BasicQuery;
+use Sunhill\ORM\Facades\Storage;
 
 define('TagNamespace','Sunhill\ORM\Objects\Tag');
 
@@ -401,9 +402,9 @@ class TagManager
          return $tag;
      }
           
-     public function query(): TagQuery
+     public function query(): BasicQuery
      {
-         return new TagQuery();
+         return Storage::tagQuery();
      }
  }
  

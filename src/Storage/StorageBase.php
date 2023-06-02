@@ -16,15 +16,9 @@ namespace Sunhill\ORM\Storage;
 
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Properties\Property;
+use Sunhill\ORM\Query\BasicQuery;
 
 /**
- * Basisklasse für Storages. Die abgeleiteten Klassen müssen die protected property $modules definieren, welche die eigentlichen
- * Module für die Entity-Klassen läd.
- * Die für das Interface zu den Objekten wichtigen Methoden sind:
- * - loadObject($id)
- * - insertObject()
- * - updateObject($id)
- * - deleteObject($id)
  * 
  * @author lokal
  *
