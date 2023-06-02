@@ -388,9 +388,9 @@ class TagManager
          if (is_string($tag)) {
              $result = $this->doSearchTag($tag);
              if (count($result) == 0) {
-                 throw new TagException(__("Tag ':tag' not found.",['tag'=>$tag]));
+                 throw new TagException("Tag '$tag' not found.");
              } else if (count($result) > 1) {
-                 throw new TagException(__("Tag ':tag' not unique.",['tag'=>$tag]));
+                 throw new TagException("Tag '$tag' not unique.");
              }
              $tag_id = $result[0]->id;
          } else if (is_int($tag)) {

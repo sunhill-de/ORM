@@ -151,7 +151,7 @@ class TagChecks extends ChecksBase
             $newpostfix = $matrix[$id]->name.(empty($postfix)?"":".".$postfix);
             $entry = new \StdClass();
             $entry->id = $original_id;
-            $entry->name = $newpostfix;
+            $entry->path_name = $newpostfix;
             $result[] = $entry;
             $this->addPermutations($result, $matrix, $matrix[$id]->parent_id, $original_id, $newpostfix);
         }
@@ -171,7 +171,7 @@ class TagChecks extends ChecksBase
         $missing = [];
         $expected_list = $this->buildExpectedTagCache($this->buildTagMatrix());
         foreach ($expected_list as $entry) {
-            $query = DB::table('tagcache')->where('name',$entry->name)->get();
+            $query = DB::table('tagcache')->where('path_name',$entry->path_name)->get();
             if (!count($query)) {
                 $missing[] = $entry;
             } 
@@ -179,7 +179,7 @@ class TagChecks extends ChecksBase
         if (count($missing)) {
             if ($repair) {
                 foreach ($missing as $entry) {
-                    DB::table('tagcache')->insert(['name'=>$entry->name,'tag_id'=>$entry->id]);
+                    DB::table('tagcache')->insert(['path_name'=>$entry->path_name,'tag_id'=>$entry->id]);
                     $this->repair(":entries entries missing in the tagcache where added.",["entries"=>count($missing)]);
                 }
             } else {
@@ -194,7 +194,7 @@ class TagChecks extends ChecksBase
     protected function hasEntry(array $expect, int $id, string $name): bool
     {
         foreach ($expect as $entry) {
-            if (($entry->name == $name) && ($entry->id == $id)) {
+            if (($entry->path_name == $name) && ($entry->id == $id)) {
                 return true;
             }
         }
@@ -207,7 +207,7 @@ class TagChecks extends ChecksBase
         $expected_list = $this->buildExpectedTagCache($this->buildTagMatrix());
         $query = DB::table('tagcache')->get();
         foreach ($query as $entry) {
-            if (!$this->hasEntry($expected_list, $entry->tag_id, $entry->name)) {
+            if (!$this->hasEntry($expected_list, $entry->tag_id, $entry->path_name)) {
                 $missing[] = $entry;
             }
         }

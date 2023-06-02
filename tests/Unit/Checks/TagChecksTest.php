@@ -67,9 +67,9 @@ class TagChecksTest extends CheckTestCase
         $matrix = $this->getMatrix();
         $result = [];
         $this->callProtectedMethod($test, 'addPermutations', [&$result, $matrix, 3, 3]);
-        usort($result,function($a,$b) { return ($a->name < $b->name)?-1:1;});
+        usort($result,function($a,$b) { return ($a->path_name < $b->path_name)?-1:1;});
         $this->assertEquals(3,count($result));
-        $this->assertEquals('TagA.TagB.TagC',$result[0]->name);
+        $this->assertEquals('TagA.TagB.TagC',$result[0]->path_name);
         $this->assertEquals(3,$result[0]->id);
     }
      
@@ -81,10 +81,10 @@ class TagChecksTest extends CheckTestCase
         $test = new TagChecks();
         $matrix = $this->getMatrix();
         $result = $this->callProtectedMethod($test, 'buildExpectedTagCache',[&$matrix]);
-        usort($result,function($a,$b) { return ($a->name < $b->name)?-1:1;});
+        usort($result,function($a,$b) { return ($a->path_name < $b->path_name)?-1:1;});
         
         $this->assertEquals(7,count($result));
-        $this->assertEquals('TagD',$result[6]->name);
+        $this->assertEquals('TagD',$result[6]->path_name);
         $this->assertEquals(4,$result[6]->id);
     }
     
@@ -114,7 +114,7 @@ class TagChecksTest extends CheckTestCase
             ['check_TagObjectAssignsTagsExist',function() {DB::table('tags')->where('id',4)->delete();} ],
             ['check_TagObjectAssignsObjectsExist',function() {DB::table('objects')->where('id',10)->delete();} ],
             ['check_ExpectedTagcacheEntries',function() {DB::table('tagcache')->where('id',11)->delete();} ],
-            ['check_UnexpectedTagcacheEntries',function() {DB::table('tagcache')->insert(['name'=>'wrongtag','tag_id'=>4]);} ]
+            ['check_UnexpectedTagcacheEntries',function() {DB::table('tagcache')->insert(['path_name'=>'wrongtag','tag_id'=>4]);} ]
             ];
     }
     
