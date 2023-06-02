@@ -50,13 +50,5 @@ class SunhillServiceProvider extends ServiceProvider
             ]);
         } 
 
-        Collection::macro('getTags', function() {
-            return $this->map(function(\StdClass $value) {
-               return Tags::loadTag($value->id); 
-            });
-        });
-        Collection::macro('getObjects', function() {
-                
-        });
     }
 }

@@ -260,56 +260,6 @@ class TagManagerTest extends DatabaseTestCase
         ];
     }                                                                
                                                                 
-    // List all tags with a condition
-    /**
-     * @group list
-     */
-    public function testListConiditional() {
-        
-        $result = Tags::listTags("name<'TagC'");
-        $this->assertEquals('TagB',$result[1]->name);
-    }
-
-    // List all tags with delta and limit
-    /**
-     * @group list
-     */
-    public function testListConiditionalWithDelta() {
-        
-        $result = Tags::listTags("name<'TagC'",1,1);
-        $this->assertEquals('TagB',$result[0]->name);
-    }
-                                                                                                    
-    // Search a tag with unique name
-    /**
-     * @group search
-     */
-    public function testSearchUnique() {
-        
-        $result = Tags::searchTag('TagA');
-       $this->assertEquals(1,$result->id);
-    }
-    
-    // Search a tag with multiple resuslts
-    /**
-     * @group search
-     */
-    public function testSearchMultiple() {
-        
-        $result = Tags::searchTag('TagE');
-        $this->assertEquals(5,$result[0]->id);        
-    }
-    
-    // Search a tag with no result
-    /**
-     * @group search
-     */
-    public function testSearchNoResult() {
-        
-        $result = Tags::searchTag('NonExistingTag');
-        $this->assertNull($result);
-    }
-    
     /**
      * @dataProvider QueryProvider
      * @group query

@@ -49,36 +49,6 @@ class TagManager
 
 // ===================== Handling of all tags ==============================     
      /**
-      * Return the total count of tags
-      * @return int
-      */
-     public function getCount(): int 
-     {
-         $result = DB::table('tags')->select(DB::raw('count(*) as count'))->first();
-         return $result->count;
-     }
-
-     /**
-      * Returns an array with all tags
-      */
-     public function getAllTags($delta = null, $limit = null) 
-     {
-         $query = $this->prepareQuery();
-         if (!is_null($delta)) {
-             $query = $query->offset($delta);
-         }
-         if (!is_null($limit)) {
-             $query = $query->limit($limit);
-         }
-         $query = $query->get();
-         $return = [];
-         foreach ($query as $result) {
-             $return[] = $this->getQueryDescriptor($result);
-         }
-         return $return;
-     }
-     
-     /**
       * Return the tag with ID $id 
       * @param int $id
       * @return Descriptor
@@ -374,27 +344,6 @@ class TagManager
         $this->executeAddTag($tag->getName(),$parent?$parent->getFullPath():null);
      }
     
-     /**
-      * Lists tags with a condition and an (optional) delta and limit
-      */
-     public function listTags(string $condition, int $delta = 0, int $limit = -1) 
-     {
-
-         $query = $this->prepareQuery()->whereRaw('a.'.$condition);
-         if ($delta) {
-            $query = $query->offset($delta);
-         }
-         if ($limit > -1) {
-             $query = $query->limit($limit);
-         }
-         $results = $query->get();
-         $return = [];
-         foreach ($results as $result) {
-             $return[] = $this->getQueryDescriptor($result);
-         }
-         return $return;
-     }
-     
      protected function doSearchTag(string $name) 
      {
          return $this->prepareQuery()
@@ -451,45 +400,7 @@ class TagManager
          $tag->load($tag_id);
          return $tag;
      }
-     
-     /**
-      * Returns the count of tag that use the given tag as a parent
-      * @param unknown $tag
-      * @return int
-      */
-     public function getChildTagCount($tag): int
-     {
-         $tag = $this->findTag($tag);
-         return $this->prepareQuery()->where('a.parent_id',$tag->id)->count();
-     }
-     
-     public function getChildTagsOf($tag, $offset = 0, $limit = 0)
-     {
-         $result = [];
-         $tag = $this->findTag($tag);
-         $query_obj = $this->prepareQuery()->where('a.parent_id',$tag->id);
-         if ($offset) {
-             $query_obj = $query_obj->offset($offset);
-         }
-         if ($limit) {
-             $query_obj = $query_obj->limit($limit);
-         }
-         $query = $query_obj->get();
-         foreach ($query as $tag) {
-             $result[] = $this->getQueryDescriptor($tag);
-         }
-         return $result;
-     }
-     
-     public function getAssociatedObjectsCount($tag): int
-     {
-         return 0;
-     }
-     
-     public function getAssociatedObjects($tag, int $offset = 0, int $limit = 0)
-     {
-     }
-     
+          
      public function query(): TagQuery
      {
          return new TagQuery();

@@ -15,10 +15,8 @@
 namespace Sunhill\ORM\Managers;
 
 use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Query\BasicQuery;
+use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\Query\DBQuery;
-use Sunhill\ORM\Query\UnknownFieldException;
-use Sunhill\ORM\Query\NotAllowedRelationException;
 
 class TagQuery extends DBQuery
 {
@@ -62,6 +60,8 @@ class TagQuery extends DBQuery
     
     public function getTags()
     {
-        return $this->get()->getTags();
+        return $this->get()->map(function(\StdClass $entry){
+           return Tags::loadTag($entry->id); 
+        });
     }
 }
