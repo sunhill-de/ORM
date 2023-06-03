@@ -37,7 +37,7 @@ class MysqlLoadObject extends ObjectHandler
         foreach ($query as $attribute) {
             $val_query = DB::table('attr_'.$attribute->name)->where('object_id',$this->id)->first();
             $entry = new \StdClass();
-            $entry->allowed_objects = $attribute->allowedobjects;
+            $entry->allowed_classes = $attribute->allowed_classes;
             $entry->name = $attribute->name;
             $entry->attribute_id = $attribute->attribute_id;
             $entry->type = $attribute->type;
