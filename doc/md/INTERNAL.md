@@ -43,7 +43,7 @@ Attributes are a way to add dynamic properties to objects. Dynamic means not eve
 This table stores the information about a certain attribute and defines the following columns:
 - id = An auto incremented id of this attribute
 - name = The name of this attribute
-- allowedobjects = a comma seperated list of classes this attribute can assigned to
+- allowed_classes = a comma seperated list of classes this attribute can assigned to
 - type = The type of the attribute
 
 ### Table attributeobjectassigns
