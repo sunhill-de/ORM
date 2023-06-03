@@ -113,7 +113,7 @@ class TagChecksTest extends CheckTestCase
             ['check_TagCacheWithNotExistingTags',function() {DB::table('tags')->where('id',7)->delete();} ],            
             ['check_TagObjectAssignsTagsExist',function() {DB::table('tags')->where('id',4)->delete();} ],
             ['check_TagObjectAssignsObjectsExist',function() {DB::table('objects')->where('id',10)->delete();} ],
-            ['check_ExpectedTagcacheEntries',function() {DB::table('tagcache')->where('id',11)->delete();} ],
+            ['check_ExpectedTagcacheEntries',function() {DB::table('tagcache')->where('path_name','TagD')->delete();} ],
             ['check_UnexpectedTagcacheEntries',function() {DB::table('tagcache')->insert(['path_name'=>'wrongtag','tag_id'=>4]);} ]
             ];
     }

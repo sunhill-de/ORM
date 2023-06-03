@@ -214,7 +214,7 @@ class TagChecks extends ChecksBase
         if (count($missing)) {
             if ($repair) {
                 foreach ($missing as $entry) {
-                    DB::table('tagcache')->where('id',$entry->id)->delete();
+                    DB::table('tagcache')->where('tag_id',$entry->tag_id)->where('path_name',$entry->path_name)->delete();
                     $this->repair(":entries entries where too m in the tagcache where added.",["entries"=>count($missing)]);
                 }
             } else {
