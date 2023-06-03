@@ -1,12 +1,12 @@
 <?php
 
 /**
- * @file TagQuery.php
- * Provides the TagQuery for querying tags
+ * @file AttributeQuery.php
+ * Provides the AttributeQuery for querying attributes
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2023-03-31
+ * Reviewstatus: 2023-06-03
  * Localization: not necessary
  * Documentation: complete
  * Tests: tests/Unit/Managers/ManagerClassesTest.php
@@ -15,55 +15,171 @@
 namespace Sunhill\ORM\Storage\Mysql;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Tags;
+use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Query\DBQuery;
 use Illuminate\Support\Collection;
+use Sunhill\ORM\Managers\AttributeInvalidTypeException;
+use Sunhill\ORM\Managers\AttributeInvalidColumnException;
+use Sunhill\ORM\Query\NotAllowedRelationException;
 
-class TagQuery extends DBQuery
+class AttributeQuery extends DBQuery
 {
     protected $keys = [
         'id'=>'handleNumericField',
-        'parent_id'=>'handleNumericField',
-        'parent'=>'handleParent',
-        'is assigned'=>'handleAssignment',
-        'not assigned'=>'handleAssignment',
-        'full_path'=>'handleFullpath',
         'name'=>'handleStringField',
-        'any_path'=>'handleAnyPath'
+        'allowed_classes'=>'handleAllowedClasses',
+        'assigned'=>'handleAssigned'
     ];
 
-    protected $fullpath_only = true;
-    
     protected function getBasicTable()
     {
-        return DB::table('tags');
+        return DB::table('attributes');
     }
  
-    protected function handleParent($connection, $key, $relation, $value)
+    protected function buildChildList($target)
     {
-        $connection .= 'In';
-        $subquery = DB::table('tags')->select('id')->where('name',$value);
-        $this->query->$connection('tags.parent_id', $subquery);
-        return $this;
+        $list = Classes::getChildrenOfClass($target,1);
+        $result = array_keys($list);
+        foreach ($list as $entry => $info) {
+            $result = array_merge($result, $this->buildChildList($entry));
+        }
+        return $result;
     }
     
-    protected function handleFullpath($connection, $key, $relation, $value)
+    protected function handleAssigned($connection, $key, $relation, $value)
     {
-        if (is_null($value)) {
-            $value = $relation;
-            $relation = '=';
+        $this->query->leftJoin('attributeobjectassigns','attributes.id','=','attributeobjectassigns.attribute_id');
+        switch ($connection) {
+            case 'where':
+                $connection = 'whereNotNull'; break;
+            case 'whereNot':
+                $connection = 'whereNull'; break;
+            case 'orWhere':
+                $connection = 'orWhereNotNull'; break;
+            case 'orWhereNot':
+                $connection = 'orWhereNull'; break;
         }
-        $this->query->$connection('path_name',$relation, $value);
+        $this->query->$connection('attributeobjectassigns.object_id')->groupBy('attributes.id'); 
     }
     
-    protected function handleAnyPath($connection, $key, $relation, $value)
+    protected function handleAllowedClasses($connection, $key, $relation, $value)
     {
-        if (is_null($value)) {
-            $value = $relation;
-            $relation = '=';
+        if ($relation == 'matches') {
+            if (is_string($value)) {
+                $ancestors = Classes::getInheritanceOfClass($value, true);
+            } else if (is_a($value, ORMObject::class)) {
+                $ancestors = Classes::getInheritanceOfClass($value::getInfo('name'));
+            }
+            $this->query->$connection(function($builder) use ($ancestors) {
+                foreach ($ancestors as $child) {
+                    $builder->orWhere('allowed_classes','like','%|'.$child.'|%');
+                }
+            });
+            return;
         }
-        $this->fullpath_only = false;
-        $this->query->$connection('path_name',$relation, $value);
+        throw new NotAllowedRelationException("The operator '$relation' is not allowed in this context.");
+    }
+    
+    protected function getRealUpdate(array $input): array
+    {
+        $result = [];
+        
+        foreach ($input as $key => $value) {
+            switch ($key) {
+                case 'name':
+                    $result[$key] = $value;
+                    break;
+                case 'allowed_classes':
+                    $result[$key] = '|'.implode('|',$value).'|';
+                    break;
+                case 'type':
+                    $value = strtolower($value);
+                    if (!in_array($value,['integer','string','float','boolean','date','datetime','time','text'])) {
+                        throw new AttributeInvalidTypeException("The type '$value' is not a valid type.");
+                    }
+                    $result[$key] = $value;
+                    break;
+                default:
+                    throw new AttributeInvalidColumnException("The column '$key' does not exist.");
+            }
+        }
+        
+        return $result;
+    }
+    
+    protected function updateName(int $id, string $from, string $to)
+    {
+        Schema::rename('attr_'.$from, 'attr_'.$to);
+    }
+    
+    protected function updateType(int $id, string $attribute, string $to)
+    {
+        Schema::table('attr_'.$attribute, function ($table) use ($to) {
+            $table->$to('value')->change();
+        });
+    }
+
+    protected function classMatches($test, $child) 
+    {
+        if ($test == $child) {
+            return true;
+        }
+        $children = Classes::getChildrenOfClass($child,1);
+        foreach ($children as $child) {
+            if ($this->classMatches($test, $child)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Helper method that checks if $test is a (sub)class of any of $candidates
+     * 
+     * @param unknown $test
+     * @param array $candidates
+     * @return bool
+     */
+    protected function classMatchesAny($test, array $candidates): bool
+    {
+        foreach ($candidates as $candidate) {
+            if ($this->classMatches($test, $candidate)) {
+                return true;
+            }
+        }
+        return false;    
+    }
+    
+    protected function updateAllowedClasses(int $id, array $to)
+    {
+        $distinct_classes = DB::table('attributeobjectassigns')->join('objects','attributeobjectassigns.object_id','=','objects.id')->where('attributeobjectassigns.attribute_id',$id)->select('classname')->distinct()->get();
+        foreach ($distinct_classes as $class) {
+            if (!$this->classMatchesAny($class->classname, $to)) {
+                DB::table('attributeobjectassigns')->join('objects','attributeobjectassigns.object_id','=','objects.id')->where('attributeobjectassigns.attribute_id',$id)->where('objects.classname',$class->classname)->delete();
+            }
+        }
+    }
+    
+    public function update($fields)
+    {
+        $old_values = $this->query->get();
+        
+        $real_fields = $this->getRealUpdate($fields);
+        $this->query->update($real_fields);
+        foreach ($old_values as $entry) {
+            if (isset($real_fields['name'])) {
+                $this->updateName($entry->id, $entry->name, $real_fields['name']);
+            }
+            if (isset($real_fields['type'])) {
+                $this->updateType($entry->id, $entry->name, $real_fields['type']);
+            }
+            if (isset($real_fields['allowed_classes'])) {
+                $this->updateAllowedClasses($entry->id, $fields['allowed_classes']);
+            }
+        }
     }
     
     protected function handleAssignment($connection, $key, $relation, $value)
@@ -72,92 +188,25 @@ class TagQuery extends DBQuery
         if ($key == 'is assigned') {
             $this->query->whereNotNull('tagobjectassigns.container_id');
         } else {
-            $this->query->whereNull('tagobjectassigns.container_id');            
+            $this->query->whereNull('tagobjectassigns.container_id');
         }
         $this->query->groupBy('tags.id');
     }
     
-    protected function handleFullpathOnly()
+    public function insert($fields)
     {
-        if ($this->fullpath_only) {
-            $this->query->join('tagcache','tagcache.tag_id','=','tags.id')->where('tagcache.is_fullpath',true)->select('tags.*','tagcache.path_name as fullpath');
-        } else {
-            $this->query->join('tagcache','tagcache.tag_id','=','tags.id')->select('tags.*','tagcache.path_name as fullpath');
-        }        
-    }
-    
-    public function get(): Collection
-    {
-        $this->handleFullpathOnly();
-        return parent::get();
-    }
-    
-    public function first(): \StdClass
-    {
-        $this->handleFullpathOnly();
-        return parent::first();        
+        $id = DB::table('attributes')->insertGetId($this->getRealUpdate($fields));
+        return $id;
     }
     
     public function delete()
-    {        
-        $this->query->select('tags.id');
-        DB::table('tagcache')->whereIn('tag_id',$this->query)->delete();
-        DB::table('tagobjectassigns')->whereIn('tag_id',$this->query)->delete();
+    {
+        $entries = $this->query->get();
+        DB::table('attributeobjectassigns')->whereIn('attribute_id', $this->query->select('id'))->delete();
+        foreach ($entries as $entry) {
+            Schema::drop('attr_'.$entry->name);
+        }
         $this->query->delete();
     }
     
-    protected function updateCache(int $id)
-    {
-        DB::table('tagcache')->where('tag_id',$id)->delete();
-        $current = $id;
-        $tag = DB::table('tags')->where('id',$id)->first();
-        $path = $tag->name;
-        do {
-            $current = $tag->parent_id;
-            $is_fullpath = ($current == 0)?1:0;
-            DB::table('tagcache')->insert(['path_name'=>$path,'tag_id'=>$id,'is_fullpath'=>$is_fullpath]);
-            if ($current) {
-                $tag = DB::table('tags')->where('id',$current)->first();
-                $path = $tag->name.'.'.$path;
-            }
-        } while ($current);
-    }
-    
-    protected function getRealupdate($fields)
-    {
-        $real_update = ['options'=>0];
-        foreach ($fields as $name => $newvalue) {
-            switch ($name) {
-                case 'name':
-                case 'parent_id':
-                    $real_update[$name] = $newvalue;
-                    break;
-                case 'parent':
-                    $real_update['parent_id'] = Tags::getTag($newvalue)->id;
-                    break;
-            }
-        }
-        return $real_update;
-    }
-    
-    public function update($fields)
-    {
-        $this->query->update($this->getRealUpdate($fields));
-        foreach ($this->query->get() as $entry) {
-           $this->updateCache($entry->id); 
-        }
-    }
-    
-    public function insert($fields)
-    {
-        $id = DB::table('tags')->insertGetId($this->getRealUpdate($fields));
-        $this->updateCache($id);
-    }
-    
-    public function getTags()
-    {
-        return $this->get()->map(function(\StdClass $entry){
-           return Tags::loadTag($entry->id); 
-        });
-    }
 }
