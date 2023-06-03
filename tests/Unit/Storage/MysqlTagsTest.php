@@ -5,6 +5,7 @@ namespace Sunhill\ORM\Tests\Unit\Managers;
 use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Tags;
 use Illuminate\Support\Facades\DB;
+use Sunhill\ORM\Objects\TagException;
 use Sunhill\ORM\Storage\Mysql\TagQuery;
 
 class MysqlTagsTest extends DatabaseTestCase
@@ -56,7 +57,13 @@ class MysqlTagsTest extends DatabaseTestCase
         $test = new TagQuery();
         $test->where('id',3)->delete();
         
-        $this->assertNull(Tags::getTag(3));
+        $exception = false;
+        try {
+            Tags::getTag(3);
+        } catch (TagException $e) {
+                $exception = true;
+        }
+        $this->assertTrue($exception, "The expected TagNotFound exception was not raised.");
         $this->assertEquals('TagA',Tags::getTag(1)->name);
 
         $result = DB::table('tagcache')->where('tag_id',3)->get();
