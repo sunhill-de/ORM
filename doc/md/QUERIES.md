@@ -51,16 +51,31 @@ This method makes it possible to use the result of a class query to do an object
 The [Tags facade](doc/md/TAGS.md) defines a method ::query() that makes it possible to query for tags.
 
 ### Element structure
-The methods ->first() and ->get() return a StdClass object of an array of StdClass object. Each of these StdClass objects holds the information about one single class. These are:
+The methods ->first() and ->get() return a StdClass object or an array of StdClass objects. Each of these StdClass objects holds the information about one single tag. These are:
 - id = The id of the tag
 - name = The name of the tag
 - full_path = The complete name of the tag including its parents
 - parent_id = The id of the parent class 
 
+### Field/pseudo fields
+The fields that can be used in where or orderBy clauses are
+- name = The name of the tag
+- fullpath = The name of the tag prepended by the name of the parent(s) (like ParentTag.ChildTag)
+- id = The id of the tag
+- parent_id = The id of the parent tag of 0 if there is none
+only in where statement
+- parent = Takes the name of the parent. Example: ```php query()->where('parent','TagA')->first()``` returns the first tag thats parent is TagA.
+
+
+### Additional where statements
+There are some additional where conditions for tag queries:
+- is assigned = only tags that have objects assiged to
+- not assigned = only  tags that don't have objects assigned to
+
 ### Additional method
 
 #### delete()
-Like in Laravel this deletes the set of tags that are selected before. If there is no where statement then the whole tags table is wiped.
+Like in Laravel this deletes the set of tags that where selected before. If there is no where statement then the whole tags table is wiped.
 So: 
 ```Tags::query()->delete()``` wipes everything
 ```Tags::query()->where('id',2)->delete()``` deletes the tag with id 2
@@ -76,4 +91,14 @@ Be careful
 #### getTags()
 In addition to get() this method preloads the tags and return a collection of all tags that fit to the condition.
 
+## Attributes::query()
+The [Attributes facade](doc/md/ATTRIBUTES.md) defines a method ::query() that makes it possible to query for attributes.
 
+### Element structure
+The methods ->first() and ->get() return a StdClass object or an array of StdClass objects. Each of there StdClass objects hold the information about a single tag- These are:
+- id = The id of the attribute
+- name = The name of the attribute
+- type = the type of the attribute. Allowed types are ('integer', 'string', 'float', 'date', 'datetime', 'time', 'text', 'object', 'collection')
+- allowed_classes = A comma seperated list of all classes that allowed to use this attributes. If every class should be able to use it, assign allowed_classes to "object". 
+
+### Fields/pseudo fields
