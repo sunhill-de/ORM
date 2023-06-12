@@ -341,6 +341,12 @@ class ORMObject extends PropertyCollection
         $attribute_obj->setValue($value);
         return true;
 	}
+
+	protected function getClassList()
+	{
+	    return $this->getInheritance();
+	}
+	
 	
 	// ********************** Static methods  ***************************	
 	

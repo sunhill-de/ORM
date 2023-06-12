@@ -370,8 +370,9 @@ class AtomarProperty extends Property implements InteractsWithStorage, Commitabl
     
     public function loadFromStorage(StorageBase $storage)
     {
-        $this->setValue($storage->getEntity($this->getName()));
-        $this->setShadow($storage->getEntity($this->getName()));
+        $name = $this->getName();
+        $this->setValue($storage->$name);
+        $this->setShadow($storage->$name);
         $this->setDirty(false);
     }
 

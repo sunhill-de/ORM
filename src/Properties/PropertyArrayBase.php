@@ -114,7 +114,7 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	 */
 	public function offsetGet($offset) 
 	{
-	    if (($offset > count($this->value)) || ($offset < 0)) {
+	    if (!isset($this->value[$offset])) {
 	        throw new PropertyException("Index $offset out of range");
 	    }
 	        
@@ -258,7 +258,10 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	{
         $this->clear();
         $name = $this->getName();
-        
+        if (!$storage->hasEntity($name) || is_null($storage->$name)) {
+            return;
+        }
+            
         foreach ($storage->$name as $key => $value) {
             $this->setElement($key, $value);
         }

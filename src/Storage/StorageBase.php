@@ -26,41 +26,22 @@ use Sunhill\ORM\Query\BasicQuery;
 abstract class StorageBase  
 {
     
-    /** 
-     * Stores the calling ORMObject
-     * @var ORMObject
-     */
-    protected $caller;
+    protected $source_type = 'collection';
+    
+    public function setSourceType(string $type)
+    {
+        $this->source_type = $type;
+        return $this;
+    }
+    
+    public function getSourceType(): string
+    {
+        return $this->source_type;    
+    }
     
     protected $entities = [];
     
-    /**
-     * The constructor takes the calling object as a parameter
-     * @param unknown $caller
-     */
-    public function __construct(Property $caller) 
-    {
-        $this->caller = $caller;    
-    }
-    
-    /**
-     * Returns the calling object
-     * @return ORMObject
-     */
-    public function getCaller()
-    {
-        return $this->caller;
-    }
-    
-    
-    /**
-     * @retval array Wrapper for getInheritance() of the caller
-     */
-    public function getInheritance() 
-    {
-        return $this->caller->getInheritance(true);
-    }
-    
+    protected $storage_ids = [];
     
     /**
      * Returns the entry with name $name or null if not defined
@@ -81,7 +62,7 @@ abstract class StorageBase
      */
     public function __get(string $name) 
     {
-        return $this->getEntity($name);
+        return $this->getEntity($name)->value;
     }
     
     /**
@@ -89,15 +70,44 @@ abstract class StorageBase
      * @param string $name
      * @param unknown $value
      */
-    public function setEntity(string $name, $value) 
+    public function setEntity(string $name, $value = null, string $storage_id = '', string $type = '', $shadow = null) 
     {
-        $this->entities[$name] = $value;
+        if (isset($this->entities[$name])) {
+            $this->entities[$name]->value = $value;
+            return $this;
+        }
+        $entry = new \StdClass();
+        $entry->name = $name;
+        $entry->storage_id = $storage_id;
+        $entry->type = $type;
+        $entry->value = $value;
+        $entry->shadow = $shadow;
+        
+        $this->entities[$name] = $entry;
+        if (isset($this->storage_ids[$storage_id])) {
+            $this->storage_ids[$storage_id][$name] = $entry;
+        } else {
+            $this->storage_ids[$storage_id] = [$name => $entry ];            
+        }
         return $this;
     }
     
     public function hasEntity(string $name): bool
     {
         return isset($this->entities[$name]);    
+    }
+    
+    public function getStorageIDs()
+    {
+        return array_keys($this->storage_ids);    
+    }
+    
+    public function getEntitiesOfStorageID(string $storage_id)
+    {
+        if (!isset($this->storage_ids[$storage_id])) {
+            return null;
+        }
+        return $this->storage_ids[$storage_id];
     }
     
     /**

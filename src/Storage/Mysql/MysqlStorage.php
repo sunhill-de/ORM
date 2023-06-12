@@ -29,12 +29,12 @@ class MysqlStorage extends StorageBase
     protected function callAppropriateModule(string $method, $payload = null)
     {
         $call_gate = 'do'.$method;
-        if (is_a($this->getCaller(),ORMObject::class)) {
+        if ('object' == $this->source_type) {
             $module = '\\Sunhill\\ORM\\Storage\\Mysql\\Objects\\MysqlObject'.$method;
-        } else if (is_a($this->getCaller(),Collection::class)) {
+        } else if ('collection' == $this->source_type) {
             $module = '\\Sunhill\\ORM\\Storage\\Mysql\\Collections\\MysqlCollection'.$method;
         } else {
-            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
+            throw new \Exception('Unhandled storage type: '.$this->source_type);
         }
         $storage_helper = new $module($this);
         return $storage_helper->$call_gate($payload);

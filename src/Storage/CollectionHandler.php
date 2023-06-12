@@ -23,25 +23,19 @@ abstract class CollectionHandler implements HandlesProperties
     
     protected function doRun()
     {
-        $this->handleClass($this->storage->getCaller()::class);
-        $this->handleProperties($this->storage->getCaller()::class);
-    }
-    
-    /**
-     * Returns the property with the name $name
-     * @param Property $name
-     */
-    protected function getProperty(string $name): Property
-    {
-        return $this->storage->getCaller()->getProperty($name);
+        $list = $this->storage->getStorageIDs();
+        foreach ($list as $storage_id) {
+            $this->handleClass($storage_id);
+            $this->handleProperties($storage_id);
+        }
     }
     
     /**
      * Returns the classname (without namespace) of the given property
      */
-    protected function getPropertyClassName(Property $property): string
+    protected function getPropertyClassName(string $property): string
     {
-        $namespace = explode('\\',$property::class);
+        $namespace = explode('\\',$property);
         return array_pop($namespace);        
     }
     
@@ -55,24 +49,19 @@ abstract class CollectionHandler implements HandlesProperties
     
     protected function handleProperties(string $class)
     {
-        $properties = $class::getPropertyDefinition();
+        $properties = $this->storage->getEntitiesOfStorageID($class);
         foreach ($properties as $name => $property) {
-            $method = 'handle'.$this->getPropertyClassName($property);
+            $method = 'handle'.$this->getPropertyClassName($property->type);
             $this->$method($property);
         }        
     }
     
-    protected function iterateStorage()
-    {
-        
-    }
- 
     /**
      * Returns the name of the extra table (just basic name + underscore + fieldname)
      */
-    protected function getExtraTableName(Property $property)
+    protected function getExtraTableName($property)
     {
-        return $property->getOwner()::getInfo('table').'_'.$property->getName();
+        return $property->storage_id.'_'.$property->name;
     }
     
 }

@@ -5,10 +5,26 @@ namespace Sunhill\ORM\Tests\Unit\Objects;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
+use Sunhill\ORM\Tests\Testobjects\DummyCollection;
+use Sunhill\ORM\Properties\PropertyInteger;
+use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
+use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Properties\PropertyFloat;
+use Sunhill\ORM\Properties\PropertyText;
+use Sunhill\ORM\Properties\PropertyDatetime;
+use Sunhill\ORM\Properties\PropertyDate;
+use Sunhill\ORM\Properties\PropertyTime;
+use Sunhill\ORM\Properties\PropertyEnum;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyArray;
+use Sunhill\ORM\Properties\PropertyMap;
+use Sunhill\ORM\Properties\PropertyCalculated;
 
 class DummyStorage extends StorageBase
 {
     
+     public function __construct(public $type) {}
+     
      protected function fillCommon()
      {
          $this->setEntity('uuid','123a');
@@ -52,15 +68,64 @@ class DummyStorage extends StorageBase
         $this->setEntity('nosearch',2);
      }
      
+     protected function fillDummyCollection()
+     {
+        $this->setEntity('dummyint',123, 'dummycollection', PropertyInteger::class);    
+     }
+     
+     protected function fillComplexCollection()
+     {
+         $this->setEntity('field_char','ABC','complexcollections',PropertyVarchar::class);
+         $this->setEntity('field_int',123,'complexcollections',PropertyInteger::class);
+         $this->setEntity('field_float',1.23,'complexcollections',PropertyFloat::class);
+         $this->setEntity('field_text','Lorem ipsum','complexcollections',PropertyText::class);
+         $this->setEntity('field_datetime','2023-05-10 11:43:00','complexcollections',PropertyDatetime::class);
+         $this->setEntity('field_date','2023-05-10','complexcollections',PropertyDate::class);
+         $this->setEntity('field_time','11:43:00','complexcollections',PropertyTime::class);
+         $this->setEntity('field_enum','testC','complexcollections',PropertyEnum::class);
+         $this->setEntity('field_object',1,'complexcollections',PropertyObject::class);
+         $this->setEntity('field_sarray',['AAA','BBB','CCC'],'complexcollections',PropertyArray::class);
+         $this->setEntity('field_oarray',[2,3,4],'complexcollections',PropertyArray::class);
+         $this->setEntity('field_smap',['KeyA'=>'ValueA','KeyB'=>'ValueB'],'complexcollections',PropertyMap::class);
+         $this->setEntity('field_calc','123A','complexcollections',PropertyCalculated::class);
+     }
+     
+     protected function fillEmptyCollection()
+     {
+         $this->setEntity('field_char','ABC','complexcollections',PropertyVarchar::class);
+         $this->setEntity('field_int',null,'complexcollections',PropertyInteger::class);
+         $this->setEntity('field_float',1.23,'complexcollections',PropertyFloat::class);
+         $this->setEntity('field_text','Lorem ipsum','complexcollections',PropertyText::class);
+         $this->setEntity('field_datetime','2023-05-10 11:43:00','complexcollections',PropertyDatetime::class);
+         $this->setEntity('field_date','2023-05-10','complexcollections',PropertyDate::class);
+         $this->setEntity('field_time','11:43:00','complexcollections',PropertyTime::class);
+         $this->setEntity('field_enum','testC','complexcollections',PropertyEnum::class);
+         $this->setEntity('field_object',null,'complexcollections',PropertyObject::class);
+         $this->setEntity('field_sarray',null,'complexcollections',PropertyArray::class);
+         $this->setEntity('field_oarray',null,'complexcollections',PropertyArray::class);
+         $this->setEntity('field_smap',null,'complexcollections',PropertyMap::class);
+         $this->setEntity('field_calc','123A','complexcollections',PropertyCalculated::class);
+     }
+     
      protected function fillValues()
      {
-         $this->fillCommon();
-         switch ($this->getCaller()::class) {
+         switch ($this->type) {
              case Dummy::class:
+                 $this->fillCommon();
                  $this->fillDummy();
                  break;
              case TestParent::class:
+                 $this->fillCommon();
                  $this->fillTestParent();
+                 break;
+             case DummyCollection::class:
+                 $this->fillDummyCollection();
+                 break;
+             case ComplexCollection::class:
+                 $this->fillComplexCollection();
+                 break;
+             case ComplexCollection::class.'empty':
+                 $this->fillEmptyCollection();
                  break;
          }
      }
