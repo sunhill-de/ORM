@@ -2,6 +2,7 @@
 
 namespace Sunhill\ORM\Storage\Mysql\Collections;
 
+use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Storage\CollectionHandler;
 
@@ -10,6 +11,18 @@ class MysqlCollectionDelete extends CollectionHandler
 {
         
     protected $id = 0;
+    
+    public function doDelete(int $id)
+    {
+        $this->id = $id;
+        $this->run();
+    }
+    
+    protected function handleClass(string $class)
+    {
+        parent::handleClass($class);
+        DB::table($class::getInfo('table'))->where('id',$this->id)->delete();
+    }
     
     protected function prepareRun()
     {
@@ -23,7 +36,8 @@ class MysqlCollectionDelete extends CollectionHandler
     
     public function handlePropertyArray(Property $property)
     {
-        
+        $table = $this->getExtraTableName($property);
+        DB::table($table)->where('id',$this->id)->delete();
     }
     
     public function handlePropertyBoolean(Property $property)
@@ -63,7 +77,8 @@ class MysqlCollectionDelete extends CollectionHandler
     
     public function handlePropertyMap(Property $property)
     {
-        
+        $table = $this->getExtraTableName($property);
+        DB::table($table)->where('id',$this->id)->delete();
     }
     
     public function handlePropertyObject(Property $property)
