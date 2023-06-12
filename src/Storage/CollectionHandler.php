@@ -24,6 +24,7 @@ abstract class CollectionHandler implements HandlesProperties
     protected function doRun()
     {
         $this->handleClass($this->storage->getCaller()::class);
+        $this->handleProperties($this->storage->getCaller()::class);
     }
     
     /**
@@ -50,11 +51,15 @@ abstract class CollectionHandler implements HandlesProperties
      */
     protected function handleClass(string $class)
     {
+    }
+    
+    protected function handleProperties(string $class)
+    {
         $properties = $class::getPropertyDefinition();
         foreach ($properties as $name => $property) {
             $method = 'handle'.$this->getPropertyClassName($property);
             $this->$method($property);
-        }
+        }        
     }
     
     protected function iterateStorage()
