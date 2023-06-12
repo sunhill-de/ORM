@@ -6,11 +6,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Storage\CollectionHandler;
+use Sunhill\ORM\Storage\Mysql\Utils\IgnoreSimple;
 
 
 class MysqlCollectionDrop extends CollectionHandler
 {
-        
+     
+    use IgnoreSimple;
+    
     protected $id = 0;
     
     public function doDrop()
@@ -39,74 +42,13 @@ class MysqlCollectionDrop extends CollectionHandler
         Schema::drop($this->getExtraTableName($property));
     }
     
-    public function handlePropertyBoolean(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyCalculated(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyDate(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyDateTime(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyEnum(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyFloat(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyInteger(Property $property)
-    {
-        
-    }
-    
     public function handlePropertyMap(Property $property)
     {
-        Schema::drop($this->getExtraTableName($property));
+        $this->handlePropertyArray($property);
     }
-    
+
     public function handlePropertyObject(Property $property)
     {
         
-    }
-    
-    public function handlePropertyTags(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyText(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyTime(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyTimestamp(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyVarchar(Property $property)
-    {
-        
-    }
-    
+    }    
 }

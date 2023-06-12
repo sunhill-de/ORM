@@ -5,11 +5,14 @@ namespace Sunhill\ORM\Storage\Mysql\Collections;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Storage\CollectionHandler;
+use Sunhill\ORM\Storage\Mysql\Utils\IgnoreSimple;
 
 
 class MysqlCollectionDelete extends CollectionHandler
 {
-        
+    
+    use IgnoreSimple;
+    
     protected $id = 0;
     
     public function doDelete(int $id)
@@ -40,73 +43,12 @@ class MysqlCollectionDelete extends CollectionHandler
         DB::table($table)->where('id',$this->id)->delete();
     }
     
-    public function handlePropertyBoolean(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyCalculated(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyDate(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyDateTime(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyEnum(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyFloat(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyInteger(Property $property)
-    {
-        
-    }
-    
     public function handlePropertyMap(Property $property)
     {
-        $table = $this->getExtraTableName($property);
-        DB::table($table)->where('id',$this->id)->delete();
+        $this->handlePropertyArray($property);
     }
     
     public function handlePropertyObject(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyTags(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyText(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyTime(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyTimestamp(Property $property)
-    {
-        
-    }
-    
-    public function handlePropertyVarchar(Property $property)
     {
         
     }
