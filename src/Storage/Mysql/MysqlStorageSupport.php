@@ -18,11 +18,11 @@ class MysqlStorageSupport
 {
     public function tagQuery()
     {
-        return new TagQuery();
+        return new MysqlTagQuery();
     }
     
     public function attributeQuery()
     {
-        return new AttributeQuery();
+        return new MysqlAttributeQuery();
     }
 }

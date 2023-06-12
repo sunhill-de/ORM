@@ -7,7 +7,7 @@ use Sunhill\ORM\Facades\Tags;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\TagException;
 use Sunhill\ORM\Storage\Mysql\TagQuery;
-use Sunhill\ORM\Storage\Mysql\AttributeQuery;
+use Sunhill\ORM\Storage\Mysql\MysqlAttributeQuery;
 use Sunhill\ORM\Managers\AttributeInvalidTypeException;
 
 class MysqlAttributesTest extends DatabaseTestCase
@@ -15,7 +15,7 @@ class MysqlAttributesTest extends DatabaseTestCase
 
     public function testUpdateAttributeName()
     {
-        $test = new AttributeQuery();
+        $test = new MysqlAttributeQuery();
         
         $this->assertDatabaseHasTable('attr_int_attribute');
         $this->assertDatabaseMissingTable('attr_newname');
@@ -29,7 +29,7 @@ class MysqlAttributesTest extends DatabaseTestCase
     
     public function testUpdateAttributeType()
     {
-        $test = new AttributeQuery();
+        $test = new MysqlAttributeQuery();
         
         $this->assertDatabaseHas('attributes',['id'=>1,'type'=>'integer']);
         $this->assertEquals('integer',DB::getSchemaBuilder()->getColumnType('attr_int_attribute', 'value'));
@@ -43,13 +43,13 @@ class MysqlAttributesTest extends DatabaseTestCase
     {
         $this->expectException(AttributeInvalidTypeException::class);
         
-        $test = new AttributeQuery();
+        $test = new MysqlAttributeQuery();
         $test->where('id',1)->update(['type'=>'unknown']);
     }
     
     public function testUpdateAllowedClasses()
     {
-        $test = new AttributeQuery();
+        $test = new MysqlAttributeQuery();
 
         $this->assertDatabaseHas('attributes',['id'=>1,'allowed_classes'=>'|dummy|']);
         $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>1,'object_id'=>4]);
@@ -63,7 +63,7 @@ class MysqlAttributesTest extends DatabaseTestCase
     
     public function testDeleteAttribute()
     {
-        $test = new AttributeQuery();
+        $test = new MysqlAttributeQuery();
         
         $test->where('id',1)->delete();
         
@@ -77,7 +77,7 @@ class MysqlAttributesTest extends DatabaseTestCase
      */
     public function testSimpleQueries($modifier, $expect)
     {
-        $test = new AttributeQuery();
+        $test = new MysqlAttributeQuery();
         
         $this->assertEquals($expect, $modifier($test));
     }

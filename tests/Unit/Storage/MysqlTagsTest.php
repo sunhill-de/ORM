@@ -6,14 +6,14 @@ use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Tags;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\TagException;
-use Sunhill\ORM\Storage\Mysql\TagQuery;
+use Sunhill\ORM\Storage\Mysql\MysqlTagQuery;
 
 class MysqlTagsTest extends DatabaseTestCase
 {
 
     public function testUpdateTagName() 
     {
-        $test = new TagQuery();            
+        $test = new MysqlTagQuery();            
         $test->where('id',3)->update(['name'=>'NewTagC']);
         
         $this->assertEquals('NewTagC',Tags::getTag(3)->name);
@@ -25,7 +25,7 @@ class MysqlTagsTest extends DatabaseTestCase
     
     public function testChangeTagParent() 
     {       
-        $test = new TagQuery();
+        $test = new MysqlTagQuery();
         $test->where('id',3)->update(['parent'=>'TagD']);
         
         $this->assertEquals('TagD.TagC',Tags::getTag(3)->fullpath);
@@ -39,7 +39,7 @@ class MysqlTagsTest extends DatabaseTestCase
    
     public function testClearTags() 
     {
-        $test = new TagQuery();
+        $test = new MysqlTagQuery();
         $test->delete();
 
         $result = DB::table('tagcache')->get();
@@ -54,7 +54,7 @@ class MysqlTagsTest extends DatabaseTestCase
     
     public function testDeleteTag()
     {
-        $test = new TagQuery();
+        $test = new MysqlTagQuery();
         $test->where('id',3)->delete();
         
         $exception = false;
@@ -75,7 +75,7 @@ class MysqlTagsTest extends DatabaseTestCase
     
     public function testAddTag()
     {
-        $test = new TagQuery();
+        $test = new MysqlTagQuery();
         $test->insert(['name'=>'test','parent'=>'TagA','options'=>0]);
         
         $query = DB::table('tags')->where('name','test')->first();

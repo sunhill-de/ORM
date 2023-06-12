@@ -1,7 +1,7 @@
 <?php
 
 use Sunhill\ORM\Tests\DatabaseTestCase;
-use Sunhill\ORM\Storage\Mysql\ColumnInfo;
+use Sunhill\ORM\Storage\Mysql\Utils\ColumnInfo;
 
 class ColumnInfoTest extends DatabaseTestCase
 {

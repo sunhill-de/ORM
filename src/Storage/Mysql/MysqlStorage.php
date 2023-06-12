@@ -14,11 +14,9 @@
 
 namespace Sunhill\ORM\Storage\Mysql;
 
-use Sunhill\ORM\Query\BasicQuery;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Objects\Collection;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Objects\PropertyCollection;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -27,7 +25,21 @@ use Sunhill\ORM\Objects\PropertyCollection;
  */
 class MysqlStorage extends StorageBase 
 {
-      
+    
+    protected function callAppropriateModule(string $method, $payload = null)
+    {
+        $call_gate = 'do'.$method;
+        if (is_a($this->getCaller(),ORMObject::class)) {
+            $module = '\\Sunhill\\ORM\\Storage\\Mysql\\Objects\\MysqlObject'.$method;
+        } else if (is_a($this->getCaller(),Collection::class)) {
+            $module = '\\Sunhill\\ORM\\Storage\\Mysql\\Collections\\MysqlCollection'.$method;
+        } else {
+            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
+        }
+        $storage_helper = new $module($this);
+        return $storage_helper->$call_gate($payload);
+    }
+    
     /**
      * Loads the property with the given id from the storage
      * {@inheritDoc}
@@ -35,81 +47,51 @@ class MysqlStorage extends StorageBase
      */
     protected function doLoad(int $id)
     {
-        if (is_a($this->getCaller(),ORMObject::class)) {
-            $storage_helper = new MysqlLoadObject($this);
-        } else if (is_a($this->getCaller(),Collection::class)) {
-            $storage_helper = new MysqlLoadCollection($this);
-        } else {
-            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
-        }
-        $storage_helper->doLoad($id);
+        $this->callAppropriateModule('Load', $id);
     }
     
     protected function doStore(): int
     {
-        if (is_a($this->getCaller(),ORMObject::class)) {
-            $storage_helper = new MysqlStoreObject($this);            
-        } else if (is_a($this->getCaller(),Collection::class)) {
-            $storage_helper = new MysqlStoreCollection($this);            
-        } else {
-            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());            
-        }
-        return $storage_helper->doStore();        
+        return $this->callAppropriateModule('Store');
     }
     
     protected function doUpdate(int $id)
     {
-        if (is_a($this->getCaller(),ORMObject::class)) {
-            $storage_helper = new MysqlUpdateObject($this);
-        } else if (is_a($this->getCaller(),Collection::class)) {
-            $storage_helper = new MysqlUpdateCollection($this);
-        } else {
-            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
-        }
-        return $storage_helper->doUpdate($id);        
+        $this->callAppropriateModule('Update', $id);
     }
     
     protected function doDelete(int $id)
     {
-        if (is_a($this->getCaller(),ORMObject::class)) {
-            $storage_helper = new MysqlDeleteObject($this);
-        } else if (is_a($this->getCaller(),Collection::class)) {
-            $storage_helper = new MysqlDeleteCollection($this);
-        } else {
-            throw new \Exception('Unhandled storage class: '.$this->getCaller()->getStorageClass());
-        }
-        return $storage_helper->doDelete($id);        
+        $this->callAppropriateModule('Delete', $id);
     }
     
     protected function doMigrate()
     {
-        $storage_helper = new MysqlMigrate($this);
-        return $storage_helper->doMigrate();        
+        $this->callAppropriateModule('Migrate');
     }
     
     protected function doPromote()
     {
-        $storage_helper = new MysqlPromote($this);
+        // Collections can't be promoted
+        $storage_helper = new MysqlObjectPromote($this);
         return $storage_helper->doPromote();        
     }
     
     protected function doDegrade()
     {
-        $storage_helper = new MysqlDegrade($this);
+        // Collections can't be degraded
+        $storage_helper = new MysqlObjectDegrade($this);
         return $storage_helper->doDegrade();        
     }
     
     protected function doSearch()
     {
-        $storage_helper = new MysqlSearch($this);
-        return $storage_helper->doSearch();        
+        $this->callAppropriateModule('Search');
     }
  
     protected function doDrop()
     {
-        $storage_helper = new MysqlDrop($this);
-        return $storage_helper->doDrop();        
+        $this->callAppropriateModule('Drop');
     }
-    
-   
+       
 }
