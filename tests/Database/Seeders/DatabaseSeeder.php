@@ -44,5 +44,13 @@ class DatabaseSeeder extends Seeder
         
         $this->call(SecondLevelChildrenTableSeeder::class);
         $this->call(CalcClassSeeder::class);
+
+        $this->call(DummyCollectionsTableSeeder::class);
+        $this->call(ComplexCollectionsTableSeeder::class);
+        $this->call(ComplexCollectionsFieldOArrayTableSeeder::class);
+        $this->call(ComplexCollectionsFieldSArrayTableSeeder::class);
+        $this->call(ComplexCollectionsFieldSMapTableSeeder::class);
+        
+        $this->call(ExternalTableSeeder::class);
     }
 }
