@@ -24,7 +24,7 @@ class MysqlCollectionDrop extends CollectionHandler
     protected function handleClass(string $class)
     {
         parent::handleClass($class);
-        Schema::drop($class::getInfo('table'));
+        Schema::drop($class);
     }
     
     protected function prepareRun()
@@ -37,17 +37,17 @@ class MysqlCollectionDrop extends CollectionHandler
         
     }
     
-    public function handlePropertyArray(Property $property)
+    public function handlePropertyArray($property)
     {
         Schema::drop($this->getExtraTableName($property));
     }
     
-    public function handlePropertyMap(Property $property)
+    public function handlePropertyMap($property)
     {
         $this->handlePropertyArray($property);
     }
 
-    public function handlePropertyObject(Property $property)
+    public function handlePropertyObject($property)
     {
         
     }    

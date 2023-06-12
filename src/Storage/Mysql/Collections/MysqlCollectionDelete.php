@@ -24,7 +24,7 @@ class MysqlCollectionDelete extends CollectionHandler
     protected function handleClass(string $class)
     {
         parent::handleClass($class);
-        DB::table($class::getInfo('table'))->where('id',$this->id)->delete();
+        DB::table($class)->where('id',$this->id)->delete();
     }
     
     protected function prepareRun()
@@ -37,18 +37,18 @@ class MysqlCollectionDelete extends CollectionHandler
         
     }
     
-    public function handlePropertyArray(Property $property)
+    public function handlePropertyArray($property)
     {
         $table = $this->getExtraTableName($property);
         DB::table($table)->where('id',$this->id)->delete();
     }
     
-    public function handlePropertyMap(Property $property)
+    public function handlePropertyMap($property)
     {
         $this->handlePropertyArray($property);
     }
     
-    public function handlePropertyObject(Property $property)
+    public function handlePropertyObject($property)
     {
         
     }
