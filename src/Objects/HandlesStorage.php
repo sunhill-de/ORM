@@ -2,6 +2,7 @@
 namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Facades\Storage;
+use Sunhill\ORM\Storage\StorageBase;
 
 trait HandlesStorage
 {
@@ -19,15 +20,35 @@ trait HandlesStorage
     }
     
     /**
-     * Umplements the lazy loading mechanism, that a collection is only loaded if accessed
+     * Implements the lazy loading mechanism, that a collection is only loaded if accessed
      *
-     * {@inheritDoc}
-     * @see \Sunhill\ORM\Properties\NonAtomarProperty::checkLoadingState()
      */
     protected function checkLoadingState()
     {
         if ($this->getState() == 'preloaded') {
             $this->finallyLoad();
+        }
+    }
+
+    /**
+     * Fills the storage with dummy values, so the storage knows what property to expcect
+     * 
+     * @param StorageBase $storage
+     * @param string $class
+     */
+    protected function prepareLoadForClass(StorageBase $storage, string $class)
+    {
+        $properties = $class::getPropertyDefinition();
+        foreach ($properties as $property) {
+            $storage->setEntity($property->getName(),null, $class::getInfo('table'), $property::class);
+        }
+    }
+    
+    protected function prepareLoad(StorageBase $storage)
+    {
+        $hirarchy = $this->getClassList();
+        foreach ($hirarchy as $class) {
+            $this->prepareLoadForClass($storage, $class);
         }
     }
     
@@ -37,6 +58,7 @@ trait HandlesStorage
     protected function finallyLoad()
     {
         $storage = Storage::createStorage($this);
+        $this->prepareLoad($storage);
         $storage->load($this->getID());
         $this->setState('loading');
         $this->loadFromStorage($storage);

@@ -84,5 +84,9 @@ class Collection extends PropertyCollection
 	public static function search() {
 	}
 	
+	protected function getClassList()
+	{
+	    return [static::class];
+	}
 	
 }
