@@ -166,6 +166,11 @@ class PropertyList
         
     }
     
+    public function reference(string $name, string $table_name, string $key_field = 'id'): PropertyExternalReference
+    {
+        
+    }
+    
     public function enum(string $name, array $allowed_keys = []): PropertyEnum
     {
         return $this->addProperty(PropertyEnum::class, $name)->setEnumValues($allowed_keys);
