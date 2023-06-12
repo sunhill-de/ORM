@@ -7,13 +7,12 @@ use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 
-class DropTest extends DatabaseTestCase
+class DropTest extends CollectionBase
 {
     
     public function testDropDummyCollection()
     {
-        $object = new DummyCollection();
-        $test = new MysqlStorage($object);
+        $test = $this->getDummyStorage();        
         
         $this->assertDatabaseHasTable('dummycollections');
         
@@ -25,9 +24,8 @@ class DropTest extends DatabaseTestCase
     
     public function testDropComplexCollection()
     {
-        $object = new ComplexCollection();
-        $test = new MysqlStorage($object);
-
+        $test = $this->getComplexStorage();
+        
         $this->assertDatabaseHasTable('complexcollections');
         $this->assertDatabaseHasTable('complexcollections_field_oarray');
         $this->assertDatabaseHasTable('complexcollections_field_sarray');

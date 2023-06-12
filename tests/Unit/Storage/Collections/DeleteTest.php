@@ -7,15 +7,14 @@ use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 
-class DeleteTest extends DatabaseTestCase
+class DeleteTest extends CollectionBase
 {
     
     public function testDeleteDummyCollection()
     {
         $this->assertDatabaseHas('dummycollections',['id'=>2]);
         
-        $collection = new DummyCollection();
-        $test = new MysqlStorage($collection);
+        $test = $this->getDummyStorage();
 
         $test->delete(2);
 
@@ -29,8 +28,7 @@ class DeleteTest extends DatabaseTestCase
         $this->assertDatabaseHas('complexcollections_field_oarray',['id'=>9,'value'=>2]);
         $this->assertDatabaseHas('complexcollections_field_smap',['id'=>9,'index'=>'KeyA','value'=>'ValueA']);
 
-        $collection = new ComplexCollection();
-        $test = new MysqlStorage($collection);
+        $test = $this->getComplexStorage();
         
         $test->delete(9);
         
