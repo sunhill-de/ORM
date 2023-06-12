@@ -13,6 +13,8 @@ namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\Collection;
 use Sunhill\ORM\Objects\PropertyList;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyVarchar;
 
 /**
  * Only for testing purposes
@@ -31,8 +33,9 @@ class ComplexCollection extends Collection {
         $list->time('field_time')->searchable();
         $list->enum('field_enum')->setValues(['testA','testB','testC'])->searchable();
         $list->object('field_object')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
-        $list->arrayofstrings('field_sarray')->searchable();
-        $list->arrayOfObjects('field_oarray')->setAllowedObjects(['dummy'])->searchable();
+        $list->array('field_sarray', PropertyVarchar::class)->searchable();
+        $list->array('field_oarray', PropertyObject::class)->setAllowedObjects(['dummy'])->searchable();
+        $list->map('field_smap', PropertyVarchar::class);
         $list->calculated('field_calc')->searchable();
     }
 

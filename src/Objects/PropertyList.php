@@ -153,7 +153,7 @@ class PropertyList
     
     public function map(string $name, string $type, int $max_key_length = 20): PropertyMap
     {
-        
+        return $this->addProperty(PropertyMap::class, $name)->setElementType($type)->setMaxiumKeyLength($max_key_length);
     }
     
     public function keyfield($build_instruction)

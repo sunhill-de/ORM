@@ -61,5 +61,13 @@ abstract class CollectionHandler implements HandlesProperties
     {
         
     }
+ 
+    /**
+     * Returns the name of the extra table (just basic name + underscore + fieldname)
+     */
+    protected function getExtraTableName(Property $property)
+    {
+        return $property->getOwner()::getInfo('table').'_'.$property->getName();
+    }
     
 }
