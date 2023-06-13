@@ -9,6 +9,9 @@ use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 class DeleteTest extends DatabaseTestCase
 {
     
+    /**
+     * @group deletecollection
+     */
     public function testDeleteDummyCollection()
     {
         $test = new DummyCollection();
@@ -20,6 +23,9 @@ class DeleteTest extends DatabaseTestCase
         $this->assertDatabaseMissing('dummycollections',['id'=>1]);        
     }
     
+    /**
+     * @group deletecollection
+     */
     public function testDeleteComplexCollection()
     {
         $test = new ComplexCollection();

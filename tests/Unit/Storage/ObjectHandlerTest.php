@@ -27,82 +27,82 @@ class DummyObjectHandler extends ObjectHandler
         $this->output .= 'Finished';
     }
     
-    public function handlePropertyText(Property $property)
+    public function handlePropertyText($property)
     {
         $this->output .= 'Text:'.$property->getName();
     }
 
-    public function handlePropertyTime(Property $property)
+    public function handlePropertyTime($property)
     {
         $this->output .= 'Time:'.$property->getName();        
     }
 
-    public function handlePropertyArray(Property $property)
+    public function handlePropertyArray($property)
     {
         $this->output .= 'Array:'.$property->getName();        
     }
 
-    public function handlePropertyBoolean(Property $property)
+    public function handlePropertyBoolean($property)
     {
         $this->output .= 'Boolean:'.$property->getName();        
     }
 
-    public function handlePropertyDateTime(Property $property)
+    public function handlePropertyDateTime($property)
     {
         $this->output .= 'DateTime:'.$property->getName();        
     }
 
-    public function handlePropertyDate(Property $property)
+    public function handlePropertyDate($property)
     {
         $this->output .= 'Date:'.$property->getName();        
     }
 
-    public function handlePropertyInteger(Property $property)
+    public function handlePropertyInteger($property)
     {
         $this->output .= 'Integer:'.$property->getName();        
     }
 
-    public function handlePropertyVarchar(Property $property)
+    public function handlePropertyVarchar($property)
     {
         $this->output .= 'Varchar:'.$property->getName();        
     }
 
-    public function handlePropertyTimestamp(Property $property)
+    public function handlePropertyTimestamp($property)
     {
         $this->output .= 'Timestamp:'.$property->getName();        
     }
 
-    public function handlePropertyCalculated(Property $property)
+    public function handlePropertyCalculated($property)
     {
         $this->output .= 'Calculated:'.$property->getName();        
     }
 
-    public function handlePropertyMap(Property $property)
+    public function handlePropertyMap($property)
     {
         $this->output .= 'Map:'.$property->getName();        
     }
 
-    public function handlePropertyTags(Property $property)
+    public function handlePropertyTags($property)
     {
         $this->output .= 'Tags:';        
     }
 
-    public function handlePropertyEnum(Property $property)
+    public function handlePropertyEnum($property)
     {
         $this->output .= 'Enum:'.$property->getName();        
     }
 
-    public function handlePropertyObject(Property $property)
+    public function handlePropertyObject($property)
     {
         $this->output .= 'Object:'.$property->getName();        
     }
 
-    public function handlePropertyAttributes(Property $property)
+    public function handlePropertyAttributes($property)
     {
         $this->output .= 'Attributes:';        
     }
 
-    public function handlePropertyFloat(Property $property)
+    public function handlePropertyFloat($property)
     {
         $this->output .= 'Float:'.$property->getName();        
     }

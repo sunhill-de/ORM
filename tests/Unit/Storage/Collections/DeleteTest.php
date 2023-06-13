@@ -10,6 +10,9 @@ use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 class DeleteTest extends CollectionBase
 {
     
+    /**
+     * @group deletecollection
+     */
     public function testDeleteDummyCollection()
     {
         $this->assertDatabaseHas('dummycollections',['id'=>2]);
@@ -21,6 +24,9 @@ class DeleteTest extends CollectionBase
         $this->assertDatabaseMissing('dummycollections',['id'=>2]);        
     }
     
+    /**
+     * @group deletecollection
+     */
     public function testDeleteComplexCollection()
     {
         $this->assertDatabaseHas('complexcollections',['id'=>9]);

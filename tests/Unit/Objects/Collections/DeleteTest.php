@@ -14,6 +14,9 @@ use Sunhill\ORM\Properties\PropertyMap;
 class DeleteTest extends DatabaseTestCase
 {
     
+    /**
+     * @group deletecollection
+     */
     public function testDummyCollectionDelete()
     {
         $test = new DummyCollection();
@@ -30,6 +33,9 @@ class DeleteTest extends DatabaseTestCase
         
     }
     
+    /**
+     * @group deletecollection
+     */
     public function testComplexCollectionLoading()
     {
         $test = new ComplexCollection();

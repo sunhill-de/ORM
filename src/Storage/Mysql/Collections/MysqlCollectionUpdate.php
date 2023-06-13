@@ -21,77 +21,77 @@ class MysqlCollectionUpdate extends CollectionHandler
         
     }
     
-    public function handlePropertyArray(Property $property)
+    public function handlePropertyArray($property)
     {
         
     }
     
-    public function handlePropertyBoolean(Property $property)
+    public function handlePropertyBoolean($property)
     {
         
     }
     
-    public function handlePropertyCalculated(Property $property)
+    public function handlePropertyCalculated($property)
     {
         
     }
     
-    public function handlePropertyDate(Property $property)
+    public function handlePropertyDate($property)
     {
         
     }
     
-    public function handlePropertyDateTime(Property $property)
+    public function handlePropertyDateTime($property)
     {
         
     }
     
-    public function handlePropertyEnum(Property $property)
+    public function handlePropertyEnum($property)
     {
         
     }
     
-    public function handlePropertyFloat(Property $property)
+    public function handlePropertyFloat($property)
     {
         
     }
     
-    public function handlePropertyInteger(Property $property)
+    public function handlePropertyInteger($property)
     {
         
     }
     
-    public function handlePropertyMap(Property $property)
+    public function handlePropertyMap($property)
     {
         
     }
     
-    public function handlePropertyObject(Property $property)
+    public function handlePropertyObject($property)
     {
         
     }
     
-    public function handlePropertyTags(Property $property)
+    public function handlePropertyTags($property)
     {
         
     }
     
-    public function handlePropertyText(Property $property)
+    public function handlePropertyText($property)
     {
         
     }
     
-    public function handlePropertyTime(Property $property)
+    public function handlePropertyTime($property)
     {
         
     }
     
-    public function handlePropertyTimestamp(Property $property)
+    public function handlePropertyTimestamp($property)
     {
         
     }
     
-    public function handlePropertyVarchar(Property $property)
+    public function handlePropertyVarchar($property)
     {
         
     }
