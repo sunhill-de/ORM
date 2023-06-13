@@ -14,6 +14,9 @@ use Sunhill\ORM\Properties\PropertyMap;
 class LoadTest extends DatabaseTestCase
 {
     
+    /**
+     * @group loadcollection
+     */
     public function testDummyCollectionPreloading()
     {
         $test = new DummyCollection();
@@ -26,6 +29,9 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals(PropertyInteger::class, $list['dummyint']->type);
     }
     
+    /**
+     * @group loadcollection
+     */
     public function testComplexCollectionPreloading()
     {
         $test = new ComplexCollection();
@@ -39,6 +45,9 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals(PropertyArray::class, $list['field_sarray']->type);
     }
     
+    /**
+     * @group loadcollection
+     */
     public function testDummyCollectionLoading()
     {
         $test = new DummyCollection();
@@ -51,6 +60,9 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals(123, $test->dummyint);
     }
     
+    /**
+     * @group loadcollection
+     */
     public function testComplexCollectionLoading()
     {
         $test = new ComplexCollection();
@@ -75,6 +87,9 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals('ValueB',$test->field_smap['KeyB']);        
     }
 
+    /**
+     * @group loadcollection
+     */
     public function testComplexEmptyCollectionLoading()
     {
         $test = new ComplexCollection();

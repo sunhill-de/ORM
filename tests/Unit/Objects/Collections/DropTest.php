@@ -14,6 +14,9 @@ use Sunhill\ORM\Properties\PropertyMap;
 class DropTest extends DatabaseTestCase
 {
     
+    /**
+     * @group dropcollection
+     */
     public function testDummyCollectionDelete()
     {
         $test = new DummyCollection();
@@ -21,6 +24,7 @@ class DropTest extends DatabaseTestCase
            $mock->shouldReceive('delete')->once();
            $mock->shouldReceive('setType')->once();
            $mock->shouldReceive('setEntity')->once();
+           $mock->shouldReceive('setSourceType')->once();
         });
         $storage->setType(DummyCollection::class);
         
@@ -30,6 +34,9 @@ class DropTest extends DatabaseTestCase
         
     }
     
+    /**
+     * @group dropcollection
+     */
     public function testComplexCollectionLoading()
     {
         $test = new ComplexCollection();

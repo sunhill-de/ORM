@@ -5,6 +5,9 @@ namespace Sunhill\ORM\Tests\Unit\Storage\Collections;
 class LoadTest extends CollectionBase
 {
     
+    /**
+     * @group loadcollection
+     */
     public function testLoadDummyCollection()
     {
         $test = $this->getDummyStorage();
@@ -14,6 +17,9 @@ class LoadTest extends CollectionBase
         $this->assertEquals(123,$test->dummyint);
     }
     
+    /**
+     * @group loadcollection
+     */
     public function testLoadComplexCollection()
     {
         $test = $this->getComplexStorage();

@@ -24,6 +24,7 @@ class DeleteTest extends DatabaseTestCase
            $mock->shouldReceive('delete')->once();
            $mock->shouldReceive('setType')->once();
            $mock->shouldReceive('setEntity')->once();
+           $mock->shouldReceive('setSourceType')->once();
         });
         $storage->setType(DummyCollection::class);
         

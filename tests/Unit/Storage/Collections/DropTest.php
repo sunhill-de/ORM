@@ -10,6 +10,9 @@ use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 class DropTest extends CollectionBase
 {
     
+    /**
+     * @group dropcollection
+     */
     public function testDropDummyCollection()
     {
         $test = $this->getDummyStorage();        
@@ -22,6 +25,9 @@ class DropTest extends CollectionBase
         
     }
     
+    /**
+     * @group dropcollection
+     */
     public function testDropComplexCollection()
     {
         $test = $this->getComplexStorage();

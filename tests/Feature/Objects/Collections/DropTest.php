@@ -9,6 +9,9 @@ use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 class DropTest extends DatabaseTestCase
 {
     
+    /**
+     * @group dropcollection
+     */
     public function testDropDummyCollection()
     {
         $test = new DummyCollection();
@@ -20,6 +23,9 @@ class DropTest extends DatabaseTestCase
         $this->assertDatabaseMissingTable('dummycollections');        
     }
     
+    /**
+     * @group dropcollection
+     */
     public function testDropComplexCollection()
     {        
         $this->assertDatabaseHasTable('complexcollections');

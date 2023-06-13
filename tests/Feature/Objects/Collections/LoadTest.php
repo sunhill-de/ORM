@@ -9,6 +9,9 @@ use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 class LoadTest extends DatabaseTestCase
 {
     
+    /**
+     * @group loadcollection
+     */
     public function testLoadDummyCollection()
     {
         $test = new DummyCollection();
@@ -18,6 +21,9 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals(123,$test->dummyint);
     }
     
+    /**
+     * @group loadcollection
+     */
     public function testLoadComplexCollection()
     {
         $test = new ComplexCollection();
@@ -39,6 +45,9 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals('ValueB',$test->field_smap['KeyB']);
     }
     
+    /**
+     * @group loadcollection
+     */
     public function testLoadEmptyComplexCollection()
     {
         $test = new ComplexCollection();
