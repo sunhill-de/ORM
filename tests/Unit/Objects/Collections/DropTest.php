@@ -11,7 +11,7 @@ use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 use Sunhill\ORM\Properties\PropertyMap;
 
-class DeleteTest extends DatabaseTestCase
+class DropTest extends DatabaseTestCase
 {
     
     public function testDummyCollectionDelete()

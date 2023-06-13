@@ -79,7 +79,7 @@ class Collection extends PropertyCollection
      * Indicates the storage class
      * @var string
      */
-    protected $storageClass = 'Collection';
+    protected static $storageClass = 'collection';
     
 	public static function search() 
 	{

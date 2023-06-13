@@ -128,15 +128,6 @@ class ORMObject extends PropertyCollection
 	}
 	
 // ============================ Storagefunctions  =======================================	
-	/**
-	 * Returns the current storage or creates one if it doesn't exist
-     *
-	 * @return StorageBase
-	 */
-	final protected function getStorage(): StorageBase 
-    {
-	    return Storage::createStorage($this);
-	}
 
 	public static function search() {
 	    $query = new QueryBuilder();
@@ -210,7 +201,7 @@ class ORMObject extends PropertyCollection
 	 */
 	protected function doInsert(StorageBase $storage, string $name)
     {
-	       $storage = $this->getStorage();
+	       $storage = static::getStorage();
            $this->walkProperties('insert',$storage);
            $this->setID($storage->insertObject());
            $this->insertCache($this->getID());
@@ -219,7 +210,7 @@ class ORMObject extends PropertyCollection
 // ========================== Update ===================================	
 	protected function doUpdate(StorageBase $storage, string $name) 
     {
-	    $storage = $this->getStorage();
+	    $storage = static::getStorage();
 	    $storage->setEntity('id',$this->getID());
 	    $this->walkProperties('update',$storage);
 	    $storage->updateObject($this->getID());
@@ -236,7 +227,7 @@ class ORMObject extends PropertyCollection
 	// ================================= Delete =============================================
 	protected function doDelete() 
     {
-	    $storage = $this->getStorage();
+	    $storage = static::getStorage();
 	    $this->walkProperties('delete',$storage);
 	    $storage->deleteObject($this->getID());
 	    $this->clearCacheEntry();

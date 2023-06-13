@@ -483,4 +483,26 @@ abstract class PropertyCollection extends NonAtomarProperty implements Commitabl
 	{
 	    
 	}
+	
+	protected static function getStorage()
+	{
+	    $storage = Storage::createStorage();
+	    $storage->setSourceType(static::$storageClass);
+	    return $storage;
+	}
+	
+	public static function delete($id)
+	{
+	   $storage = static::getStorage();
+	   static::prepareStorage($storage);
+	   $storage->delete($id);
+	}
+	
+	public static function drop()
+	{
+	    $storage = static::getStorage();
+	    static::prepareStorage($storage);
+	    $storage->drop();	    
+	}
+	
 }

@@ -18,19 +18,7 @@ trait HandlesStorage
         $this->setState('preloaded');
         $this->setID($id);
     }
-    
-    public function delete(int $id)
-    {
-        $storage = Storage::createStorage();
-        $this->prepareStorage($storage);
-        $storage->delete($id);
-    }
-    
-    public function drop()
-    {
         
-    }
-    
     /**
      * Implements the lazy loading mechanism, that a collection is only loaded if accessed
      *
