@@ -23,7 +23,14 @@ use Sunhill\ORM\Properties\PropertyCalculated;
 class DummyStorage extends StorageBase
 {
     
-     public function __construct(public $type) {}
+     public $state = 'none';
+     
+     public function __construct(public $type = Dummy::class) {}
+     
+     public function setType(string $type)
+     {
+        $this->type = $type;    
+     }
      
      protected function fillCommon()
      {
@@ -132,7 +139,8 @@ class DummyStorage extends StorageBase
      
      protected function doLoad(int $id)
      {
-        $this->fillValues();         
+        $this->fillValues();
+        $this->state = 'loaded';
      }
      
      protected function doStore(): int
@@ -140,16 +148,19 @@ class DummyStorage extends StorageBase
          $this->setEntity('uuid','abcdefghi');
          $this->setEntity('created_at','2023-05-13 19:30:20');
          $this->setEntity('updated_at','2023-05-13 19:30:20');
+         $this->state = 'stored';
          return 1;
      }
      
      protected function doUpdate(int $id)
      {
+         $this->state = 'updated';
          
      }
      
      protected function doDelete(int $id)
      {
+         $this->state = 'deleted';
          
      }
      

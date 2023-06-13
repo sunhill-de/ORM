@@ -19,7 +19,7 @@ class LoadTest extends DatabaseTestCase
         $test = new DummyCollection();
         $storage = new DummyStorage(DummyCollection::class);
         
-        $this->callProtectedMethod($test, 'prepareLoad',[$storage]);
+        $this->callProtectedMethod($test, 'prepareStorage',[$storage]);
         $list = $storage->getEntitiesOfStorageID('dummycollections');
         
         $this->assertEquals('dummyint', $list['dummyint']->name);
@@ -31,7 +31,7 @@ class LoadTest extends DatabaseTestCase
         $test = new ComplexCollection();
         $storage = new DummyStorage(ComplexCollection::class);
 
-        $this->callProtectedMethod($test, 'prepareLoad',[$storage]);
+        $this->callProtectedMethod($test, 'prepareStorage',[$storage]);
         $list = $storage->getEntitiesOfStorageID('complexcollections');
         
         $this->assertEquals('field_int', $list['field_int']->name);

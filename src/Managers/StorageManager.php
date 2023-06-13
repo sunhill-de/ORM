@@ -36,11 +36,11 @@ class StorageManager
      * 
      * @return StorageBase
      */
-    public function createStorage(Property $object): StorageBase
+    public function createStorage()
     {
         switch (env('ORM_STORAGE_TYPE', 'mysql')) {
             case 'mysql':
-                return new MysqlStorage($object);                
+                return new MysqlStorage();                
         }
     }
     

@@ -323,15 +323,6 @@ class ORMObject extends PropertyCollection
 	    }
 	}
 	
-	/**
-	 * This function just calls the routine of the Classes facade
-	 * @param boolean $full
-	 * @return unknown
-	 */
-	public function getInheritance(bool $full = false) 
-    {
-	    return Classes::getInheritanceOfClass(static::getInfo('name'), $full);
-	}
 		
 	protected function handleUnknownProperty($name,$value) 
     {
@@ -341,14 +332,23 @@ class ORMObject extends PropertyCollection
         $attribute_obj->setValue($value);
         return true;
 	}
-
-	protected function getClassList()
+		
+	// ********************** Static methods  ***************************	
+	
+	/**
+	 * This function just calls the routine of the Classes facade
+	 * @param boolean $full
+	 * @return unknown
+	 */
+	public static function getInheritance(bool $full = false)
 	{
-	    return $this->getInheritance();
+	    return Classes::getInheritanceOfClass(static::getInfo('name'), $full);
 	}
 	
-	
-	// ********************** Static methods  ***************************	
+	protected static function getClassList()
+	{
+	    return static::getInheritance();
+	}
 	
 	/**
 	 * Initializes the properties of this object. Any child has to call its parents setupProperties() method

@@ -8,7 +8,7 @@ trait HandlesStorage
 {
     /**
      * Loads the collection with the id $id from the storage
-     * In this case it sets the state to preloaded. Accessing the properties wouhl than execute
+     * In this case it sets the state to preloaded. Accessing the properties would then execute
      * the loading mechanism.
      *
      * @param int $id
@@ -17,6 +17,18 @@ trait HandlesStorage
     {
         $this->setState('preloaded');
         $this->setID($id);
+    }
+    
+    public function delete(int $id)
+    {
+        $storage = Storage::createStorage();
+        $this->prepareStorage($storage);
+        $storage->delete($id);
+    }
+    
+    public function drop()
+    {
+        
     }
     
     /**
@@ -30,27 +42,6 @@ trait HandlesStorage
         }
     }
 
-    /**
-     * Fills the storage with dummy values, so the storage knows what property to expcect
-     * 
-     * @param StorageBase $storage
-     * @param string $class
-     */
-    protected function prepareLoadForClass(StorageBase $storage, string $class)
-    {
-        $properties = $class::getPropertyDefinition();
-        foreach ($properties as $property) {
-            $storage->setEntity($property->getName(),null, $class::getInfo('table'), $property::class);
-        }
-    }
-    
-    protected function prepareLoad(StorageBase $storage)
-    {
-        $hirarchy = $this->getClassList();
-        foreach ($hirarchy as $class) {
-            $this->prepareLoadForClass($storage, $class);
-        }
-    }
     
     /**
      * Does finally load the collection from the database
@@ -58,7 +49,7 @@ trait HandlesStorage
     protected function finallyLoad()
     {
         $storage = Storage::createStorage($this);
-        $this->prepareLoad($storage);
+        $this->prepareStorage($storage);
         $storage->load($this->getID());
         $this->setState('loading');
         $this->loadFromStorage($storage);
@@ -98,6 +89,28 @@ trait HandlesStorage
     protected function doRollback()
     {
         
+    }
+
+    /**
+     * Fills the storage with dummy values, so the storage knows what property to expcect
+     *
+     * @param StorageBase $storage
+     * @param string $class
+     */
+    protected static function prepareStorageForClass($storage, string $class)
+    {
+        $properties = $class::getPropertyDefinition();
+        foreach ($properties as $property) {
+            $storage->setEntity($property->getName(),null, $class::getInfo('table'), $property::class);
+        }
+    }
+    
+    protected static function prepareStorage($storage)
+    {
+        $hirarchy = static::getClassList();
+        foreach ($hirarchy as $class) {
+            static::prepareStorageForClass($storage, $class);
+        }
     }
     
 }
