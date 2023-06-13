@@ -14,7 +14,7 @@ class CreateComplexCollectionsTable extends Migration
     public function up()
     {
         Schema::create('complexcollections', function (Blueprint $table) {
-            $table->integer('id');
+            $table->integer('id')->autoIncrement();
             $table->integer('field_int');
             $table->char('field_char',10)->nullable();
             $table->float('field_float');
@@ -26,7 +26,6 @@ class CreateComplexCollectionsTable extends Migration
             $table->integer('field_object')->nullable()->default(null);
             $table->integer('nosearch')->nullable(0)->default(1);
             $table->string('field_calc');
-            $table->primary('id');
         });
     }
 
