@@ -40,7 +40,7 @@ use Sunhill\ORM\Properties\PropertyDatetime;
  * - No direct database interaction. Should be handled by the storages
  * @author lokal
  */
-class ORMObject extends PropertyCollection 
+class ORMObject extends PropertiesCollection 
 {
     use HandlesStorage;
     

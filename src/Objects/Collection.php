@@ -37,7 +37,7 @@ use Sunhill\ORM\Properties\PropertyPropertyCollection;
  *  
  * @author lokal
  */
-class Collection extends PropertyCollection 
+class Collection extends PropertiesCollection 
 {
     use HandlesStorage;
     
