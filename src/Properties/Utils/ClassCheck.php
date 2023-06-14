@@ -3,7 +3,7 @@
  * @file ClassCheck.php
  * Defines the trait that checks if an given object is allowed for this object field
  * Lang en
- * Reviewstatus: 2023-05-08
+ * Reviewstatus: 2023-06-14
  * Localization: complete
  * Documentation: complete
  */
@@ -13,7 +13,6 @@ namespace Sunhill\ORM\Properties\Utils;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Storage\StorageBase;
 
 trait ClassCheck 
 {

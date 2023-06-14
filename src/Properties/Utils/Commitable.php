@@ -10,8 +10,6 @@
 
 namespace Sunhill\ORM\Properties\Utils;
 
-use Sunhill\ORM\Storage\StorageBase;
-
 interface Commitable 
 {
 

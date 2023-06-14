@@ -14,7 +14,6 @@ namespace Sunhill\ORM\Properties;
 
 use Sunhill\Basic\Loggable;
 use Sunhill\ORM\Semantic\Name;
-use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Units\None;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
 
