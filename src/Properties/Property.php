@@ -60,7 +60,7 @@ class Property extends Loggable
     
     /**
      * Returns the value of the owner field
-     * @return PropertyCollection
+     * @return PropertiesCollection
      *
      * Test Unit/Properties/PropertyTest::testOwner
      */
