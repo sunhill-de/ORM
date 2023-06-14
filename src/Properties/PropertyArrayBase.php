@@ -18,9 +18,6 @@ namespace Sunhill\ORM\Properties;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
-use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Objects\Collection;
-use Sunhill\ORM\Objects\ORMObject;
 
 class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countable,\Iterator 
 {
