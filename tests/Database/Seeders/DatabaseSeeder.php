@@ -33,8 +33,10 @@ class DatabaseSeeder extends Seeder
         $this->call(TestParentsTableSeeder::class);
         $this->call(TestParentParentOArrayTableSeeder::class);
         $this->call(TestParentParentSArrayTableSeeder::class);
+        $this->call(TestParentParentMapTableSeeder::class);
         $this->call(TestChildChildSArrayTableSeeder::class);
         $this->call(TestChildChildOArrayTableSeeder::class);
+        $this->call(TestChildChildMapTableSeeder::class);
         
         $this->call(TestChildrenTableSeeder::class);
         $this->call(TestSimpleChildrenTableSeeder::class);

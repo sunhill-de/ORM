@@ -20,7 +20,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childtime'=>'11:45:00',
 	            'childenum'=>'testC',
 	            'childobject'=>3,
-	            'childcalc'=>'777B'
+	            'childcalc'=>'777B',
+	            'childcollection'=>9,
 	        ],
 	        [
 	            'id'=>18,
@@ -33,7 +34,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childtime'=>'17:45:00',
 	            'childenum'=>'testB',
 	            'childobject'=>4,
-	            'childcalc'=>'801B'
+	            'childcalc'=>'801B',
+	            'childcollection'=>11,
 	        ],
 	        [
 	            'id'=>19,
@@ -46,7 +48,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childtime'=>'17:45:00',
 	            'childenum'=>'testC',
 	            'childobject'=>3,
-	            'childcalc'=>'900B'
+	            'childcalc'=>'900B',
+	            'childcollection'=>19,
 	        ],
 	        [
 	            'id'=>20,
@@ -59,7 +62,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childtime'=>'10:45:00',
 	            'childenum'=>'testC',
 	            'childobject'=>null,
-	            'childcalc'=>'666B'
+	            'childcalc'=>'666B',
+	            'childcollection'=>10,
 	        ],
 	        [
 	            'id'=>21,
@@ -72,7 +76,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childtime'=>'00:00:00',
 	            'childenum'=>'testC',
 	            'childobject'=>null,
-	            'childcalc'=>'112B'
+	            'childcalc'=>'112B',
+	            'childcollection'=>10,
 	        ],
 	        [
 	            'id'=>22,
@@ -85,7 +90,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childtime'=>'00:11:00',
 	            'childenum'=>'testB',
 	            'childobject'=>null,
-	            'childcalc'=>'321B'
+	            'childcalc'=>'321B',
+	            'childcollection'=>14,
 	        ],
 	        [
 	            'id'=>23,
@@ -98,7 +104,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childtime'=>'00:00:00',
 	            'childenum'=>'testC',
 	            'childobject'=>null,
-	            'childcalc'=>'345B'
+	            'childcalc'=>'345B',
+	            'childcollection'=>9,
 	        ],
 	        [
 	            'id'=>24,
@@ -111,7 +118,8 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childtime'=>'23:59:59',
 	            'childenum'=>'testC',
 	            'childobject'=>null,
-	            'childcalc'=>'777B'
+	            'childcalc'=>'777B',
+	            'childcollection'=>15,
 	        ]    
 	    ]);
 	}

@@ -20,7 +20,8 @@ class TestParentsTableSeeder extends Seeder {
 		        'parenttime'=>'17:45:00',
 		        'parentenum'=>'testC',
 		        'parentobject'=>1,
-		        'parentcalc'=>'111A'
+		        'parentcalc'=>'111A',
+		        'parentcollection'=>7,
 		    ],
 	        [
 	            'id'=>10,
@@ -33,7 +34,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'17:45:00',
 	            'parentenum'=>'testB',
 		        'parentobject'=>4,
-	            'parentcalc'=>'123A'
+	            'parentcalc'=>'123A',
+	            'parentcollection'=>5,
 	        ],
 	        [
 	            'id'=>11,
@@ -46,7 +48,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'10:10:10',
 	            'parentenum'=>'testC',
 	            'parentobject'=>5,
-	            'parentcalc'=>'222A'
+	            'parentcalc'=>'222A',
+	            'parentcollection'=>null,
 	        ],
 	        [
 	            'id'=>12,
@@ -59,7 +62,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'01:10:00',
 	            'parentenum'=>'testA',
 	            'parentobject'=>4,
-	            'parentcalc'=>'123A'
+	            'parentcalc'=>'123A',
+	            'parentcollection'=>6,
 	            
 	        ],
 	        [
@@ -73,7 +77,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'13:00:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>null,
-	            'parentcalc'=>'234A'
+	            'parentcalc'=>'234A',
+	            'parentcollection'=>5,
 	        ],
 	        [
 	            'id'=>14,
@@ -86,7 +91,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'04:15:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>null,
-	            'parentcalc'=>'555A'
+	            'parentcalc'=>'555A',
+	            'parentcollection'=>3,
 	        ],
 	        [
 	            'id'=>15,
@@ -99,7 +105,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'17:45:00',
 	            'parentenum'=>'testB',
 	            'parentobject'=>null,
-	            'parentcalc'=>'432A'
+	            'parentcalc'=>'432A',
+	            'parentcollection'=>2,
 	        ],
 	        [
 	            'id'=>16,
@@ -112,7 +119,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'17:45:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>null,
-	            'parentcalc'=>'700A'
+	            'parentcalc'=>'700A',
+	            'parentcollection'=>7,
 	        ],
 	        
 	        [
@@ -126,7 +134,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'11:45:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>3,
-	            'parentcalc'=>'123A'
+	            'parentcalc'=>'123A',
+	            'parentcollection'=>4,
 	            
 	        ],
 	        [
@@ -140,7 +149,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'17:45:00',
 	            'parentenum'=>'testB',
 	            'parentobject'=>4,
-	            'parentcalc'=>'800A'
+	            'parentcalc'=>'800A',
+	            'parentcollection'=>3,
 	            
 	        ],
 	        [
@@ -154,7 +164,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'17:45:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>5,
-	            'parentcalc'=>'900A'
+	            'parentcalc'=>'900A',
+	            'parentcollection'=>6,
 	            
 	        ],
 	        [
@@ -168,7 +179,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'10:45:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>2,
-	            'parentcalc'=>'666A'
+	            'parentcalc'=>'666A',
+	            'parentcollection'=>3,
 	        ],
 	        [
 	            'id'=>21,
@@ -181,7 +193,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'00:00:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>null,
-	            'parentcalc'=>'580A'
+	            'parentcalc'=>'580A',
+	            'parentcollection'=>1,
 	        ],
 	        [
 	            'id'=>22,
@@ -194,7 +207,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'00:11:00',
 	            'parentenum'=>'testB',
 	            'parentobject'=>null,
-	            'parentcalc'=>'432A'
+	            'parentcalc'=>'432A',
+	            'parentcollection'=>2,
 	        ],
 	        [
 	            'id'=>23,
@@ -207,7 +221,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'00:00:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>null,
-	            'parentcalc'=>'345A'
+	            'parentcalc'=>'345A',
+	            'parentcollection'=>3,
 	        ],
 	        [
 	            'id'=>24,
@@ -220,7 +235,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'23:59:59',
 	            'parentenum'=>'testC',
 	            'parentobject'=>null,
-	            'parentcalc'=>'723A'
+	            'parentcalc'=>'723A',
+	            'parentcollection'=>1,
 	        ],
 	        
 	        [
@@ -234,7 +250,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'17:45:00',
 	            'parentenum'=>'testC',
 	            'parentobject'=>2,
-	            'parentcalc'=>'999A'	            
+	            'parentcalc'=>'999A',
+	            'parentcollection'=>null,
 	        ],
 	        [
 	            'id'=>26,
@@ -247,7 +264,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parenttime'=>'23:59:59',
 	            'parentenum'=>'testB',
 	            'parentobject'=>null,
-	            'parentcalc'=>'123A'
+	            'parentcalc'=>'123A',
+	            'parentcollection'=>2,
 	        ],
 	    ]);
 	}

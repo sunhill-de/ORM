@@ -26,6 +26,7 @@ class CreateTestParentsTable extends Migration
             $table->integer('parentobject')->nullable()->default(null);
             $table->integer('nosearch')->nullable(0)->default(1);
             $table->string('parentcalc');
+            $table->integer('parentcollection')->nullable()->default(null);
             $table->primary('id');
         });
     }

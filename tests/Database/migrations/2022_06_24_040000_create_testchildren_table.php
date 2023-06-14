@@ -25,6 +25,7 @@ class CreateTestChildrenTable extends Migration
             $table->integer('childobject')->nullable()->default(null);
             $table->enum('childenum',['testA','testB','testC']);
             $table->string('childcalc');
+            $table->integer('childcollection')->nullable()->default(null);
             $table->primary('id');
         });
     }

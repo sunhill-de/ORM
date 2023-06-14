@@ -12,6 +12,7 @@
 namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\PropertyList;
+use Sunhill\ORM\Properties\PropertyObject;
 
 class TestChild extends TestParent 
 {
@@ -30,6 +31,10 @@ class TestChild extends TestParent
 		$list->arrayofstrings('childsarray')->searchable();
 		$list->arrayOfObjects('childoarray')->setAllowedClasses(['dummy'])->searchable();
 		$list->calculated('childcalc')->searchable();
+		$list->collection('childcollection')->setAllowedClasses(ComplexCollection::class)->searchable();
+		$list->keyfield('childkeyfield',':parentchar (:parentint)')->searchable();
+		$list->map('childmap')->setElementType(PropertyObject::class)->setAllowedClasses(Dummy::class)->searchable();
+		$list->externalReference('child_external', 'external', 'external_string')->setInternalKey('childchar');
     }
 
 	public function calculate_childcalc() 
