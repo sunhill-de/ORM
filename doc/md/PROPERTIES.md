@@ -82,7 +82,12 @@ $list->datetime('datetime_property');
 $list->time('time_property');
 ...
 ```
-Adds a date/datetime/time property to the collection/object. At the moment only string in the form of "YYYY-MM-DD HH:MM:SS" and their partial forms can be assigned.
+Adds a date/datetime/time property to the collection/object. At the moment only integer (Unix timestamps) or strings in the form of "YYYY-MM-DD HH:MM:SS" and their partial forms can be assigned.
+```php
+$object->date_property = '2023-06-14';
+$object->date_property = '2023-6-2'; // is expanded to 2023-06-02
+$object->date_property = 1686778521; // is converted to 2023-06-02
+```
 
 ### Enum
 ```php
