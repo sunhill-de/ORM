@@ -25,4 +25,10 @@ class PropertyEnum extends AtomarProperty
 		$this->setEnumValues($values);
 		return $this;
 	}
+	
+	public function isValid($input): bool
+	{
+        return in_array($input, $this->enum_values);
+	}
+	
 }

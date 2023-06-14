@@ -29,6 +29,12 @@ trait ClassCheck
         return $this;
     }
     
+    public function setAllowedClass($class)
+    {
+        $this->allowed_classes = $class;
+        return $this;
+    }
+    
     public function getAllowedClasses(): array
     {
         return $this->allowed_classes;
@@ -50,4 +56,16 @@ trait ClassCheck
         return false;
     }
     
+    protected function isAllowedCollection($test): bool
+    {
+        return is_a($test, $this->allowed_classes, true);    
+    }
+    
+    protected function checkForObjectConversion($input)
+    {
+        if (is_numeric($input)) {
+            return Objects::load($input);
+        }
+        return $input;        
+    }
 }

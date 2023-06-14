@@ -23,21 +23,36 @@ class PropertyObject extends AtomarProperty
 	
     use ClassCheck;
     
+    /**
+     * Indicates the internal storage type
+     * @var string
+     */
 	protected static $type = 'integer';
-		
+
+	/**
+	 * Objects are assumed as initialized (default null)
+	 * @var boolean
+	 */
 	protected $initialized = true;
 	
+	/**
+	 * Checks if the given value is an object of an allowed class
+	 * {@inheritDoc}
+	 * @see \Sunhill\ORM\Properties\AtomarProperty::isValid()
+	 */
 	public function isValid($input): bool
 	{
 	    return $this->isAllowedObject($input);
 	}
 	
+	/**
+	 * When an object field 
+	 * {@inheritDoc}
+	 * @see \Sunhill\ORM\Properties\AtomarProperty::convertValue()
+	 */
 	public function convertValue($input)
 	{
-	    if (is_numeric($input)) {
-	        return Objects::load($input);	        
-	    }
-	    return $input;
+        return $this->checkForObjectConversion($input);
 	}
 	
 	public function loadFromStorage(StorageBase $storage) 

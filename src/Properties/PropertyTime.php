@@ -15,8 +15,12 @@
 
 namespace Sunhill\ORM\Properties;
 
+use Sunhill\ORM\Properties\Utils\DateTimeCheck;
+
 class PropertyTime extends AtomarProperty {
 
+    use DateTimeCheck;
+    
 	protected static $type = 'time';
 
 		

@@ -12,17 +12,17 @@
  */
 namespace Sunhill\ORM\Properties;
 
+use Sunhill\ORM\Properties\Utils\DateTimeCheck;
+
 /**
  * A class for date properties
  */
 class PropertyDate extends AtomarProperty 
 {
 	
+    use DateTimeCheck;
+    
     protected static $type = 'date';
 	
-    public function isValid($input): bool
-    {
-        return (bool)strtotime($input);
-    }
-    
+        
 }
