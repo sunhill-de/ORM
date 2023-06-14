@@ -14,10 +14,9 @@
 
 namespace Sunhill\ORM\Properties;
 
-use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Storage\StorageBase;
-use Sunhill\ORM\Properties\LazyIDLoading;
+use Sunhill\ORM\Properties\Utils\ClassCheck;
 
 class PropertyObject extends AtomarProperty
 {

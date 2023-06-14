@@ -11,7 +11,7 @@
  * Coverage: unknown
  */
 
-namespace Sunhill\ORM\Properties;
+namespace Sunhill\ORM\Properties\Exceptions;
 
 /**
  * An exception that is raised, if a reference is assigned an invalid value

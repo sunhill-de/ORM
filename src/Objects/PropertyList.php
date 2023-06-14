@@ -16,7 +16,7 @@
 namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Properties\PropertyInteger;
-use Sunhill\ORM\Properties\PropertyException;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Properties\PropertyFloat;
 use Sunhill\ORM\Properties\PropertyBoolean;

@@ -9,7 +9,7 @@ use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Properties\AttributeException;
+use Sunhill\ORM\Properties\Exceptions\AttributeException;
 
 class ObjectAttributeTest extends DatabaseTestCase
 {

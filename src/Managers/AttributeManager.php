@@ -15,11 +15,7 @@
  */
 namespace Sunhill\ORM\Managers;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Storage;
-use Sunhill\ORM\Properties\AttributeException;
 use Sunhill\ORM\Query\BasicQuery;
 
 /**

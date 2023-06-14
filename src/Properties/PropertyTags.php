@@ -13,14 +13,13 @@
 
 namespace Sunhill\ORM\Properties;
 
-use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\TagException;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Facades\Tags;
 use Sunhill\Basic\Utils\Descriptor;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 
 /**
  * Diese Klasse repräsentiert die Property "Tags". Hier werden die Tags eines Objektes gespeichert.

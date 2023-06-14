@@ -11,7 +11,7 @@
  * Coverage: unknown
  */
 
-namespace Sunhill\ORM\Properties;
+namespace Sunhill\ORM\Properties\Exceptions;
 
 use Sunhill\ORM\ORMException;
 

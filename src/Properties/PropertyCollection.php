@@ -3,7 +3,7 @@
  * @file PropertyObject.php
  * Provides an access to a object field
  * Lang de,en
- * Reviewstatus: 2021-10-14
+ * Reviewstatus: 2023-06-14
  * Localization: none
  * Documentation: incomplete
  * Tests: unknown
@@ -14,12 +14,11 @@
 
 namespace Sunhill\ORM\Properties;
 
-use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Storage\StorageBase;
-use Sunhill\ORM\Properties\LazyIDLoading;
+use Sunhill\ORM\Properties\Utils\ClassCheck;
 
-class PropertyPropertyCollection extends AtomarProperty
+class PropertyCollection extends AtomarProperty
 {
 	
     use ClassCheck;

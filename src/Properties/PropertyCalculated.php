@@ -13,9 +13,8 @@
  */
 namespace Sunhill\ORM\Properties;
 
-use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Objects\ObjectException;
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 
 /**
  * The property class for calculated fields

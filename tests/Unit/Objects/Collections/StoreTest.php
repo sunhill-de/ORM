@@ -19,6 +19,16 @@ class StoreTest extends DatabaseTestCase
      */
     public function testDummyCollectionStore()
     {
+        $test = new DummyCollection();
+        $storage = new DummyStorage();
+        
+        Storage::shouldReceive('createStorage')->once()->andReturn($storage);
+        
+        $test->dummyint = 988;
+        $test->commit();
+        
+        $this->assertEquals('stored', $storage->state);
+        $this->assertEquals(988, $storage->dummyint);
     }
     
 }

@@ -18,10 +18,7 @@ namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Properties\NonAtomarProperty;
 use Sunhill\ORM\Properties\Property;
-use Sunhill\ORM\Properties\PropertyException;
-use Sunhill\ORM\Search\QueryBuilder;
 use Sunhill\ORM\Storage\StorageBase;
-use Sunhill\ORM\Facades\Storage;
 
 use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Properties\PropertyVarchar;
@@ -34,7 +31,6 @@ use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Properties\PropertyPropertyCollection;
-use Sunhill\ORM\Properties\Commitable;
 
 /**
  * Basic class for all classes that have properties.

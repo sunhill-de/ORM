@@ -3,7 +3,7 @@
 use Sunhill\ORM\Semantic\Name;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Properties\Property;
-use Sunhill\ORM\Properties\PropertyException;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Units\None;
 use Sunhill\ORM\Objects\ORMObject;
 

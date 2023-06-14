@@ -5,7 +5,6 @@ namespace Sunhill\ORM\Tests\Unit\Managers;
 use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Facades\Attributes;
-use Sunhill\ORM\Properties\PropertyException;
 
 class AttributeManagerTest extends DatabaseTestCase
 {

@@ -3,6 +3,7 @@
 namespace Sunhill\ORM\Storage\Mysql\Objects;
 
 use Illuminate\Support\Facades\Schema;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Properties\PropertyBoolean;
 use Sunhill\ORM\Properties\PropertyDate;

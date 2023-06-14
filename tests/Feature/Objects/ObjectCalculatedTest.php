@@ -8,7 +8,7 @@ use Sunhill\ORM\Tests\Testobjects\CalcClass;
 use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Properties\PropertyException;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 
 class ObjectCalculatedTest extends DatabaseTestCase
 {

@@ -2,7 +2,7 @@
 
 use Sunhill\ORM\Semantic\Name;
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Properties\DefaultNull;
+use Sunhill\ORM\Properties\Utils\DefaultNull;
 use Sunhill\ORM\Properties\AtomarProperty;
 use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Units\None;

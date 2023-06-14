@@ -18,8 +18,7 @@ namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Properties\NonAtomarProperty;
 use Sunhill\ORM\Properties\Property;
-use Sunhill\ORM\Properties\PropertyException;
-use Sunhill\ORM\Search\QueryBuilder;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Facades\Storage;
 
 use Sunhill\ORM\Properties\Commitable;
@@ -40,7 +39,7 @@ use Sunhill\ORM\Properties\PropertyPropertyCollection;
  *  
  * @author lokal
  */
-abstract class PropertyCollection extends NonAtomarProperty implements Commitable
+abstract class PropertyCollection extends NonAtomarProperty implements \Sunhill\ORM\Properties\Utils\Commitable
 {
             
     public function __construct()

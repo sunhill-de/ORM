@@ -2,7 +2,7 @@
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Properties\PropertyArray;
-use Sunhill\ORM\Properties\PropertyException;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\PropertyInteger;
 
 class PropertyArrayTest extends TestCase

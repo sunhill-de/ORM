@@ -8,7 +8,7 @@
  * Documentation: complete
  */
 
-namespace Sunhill\ORM\Properties;
+namespace Sunhill\ORM\Properties\Utils;
 
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Objects;

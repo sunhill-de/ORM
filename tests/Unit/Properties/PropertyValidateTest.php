@@ -1,17 +1,13 @@
 <?php
 
-use Sunhill\ORM\Semantic\Name;
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Properties\PropertyBoolean;
 use Sunhill\ORM\Properties\PropertyDate;
-use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Properties\PropertyFloat;
 use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Properties\PropertyObject;
-use Sunhill\ORM\Units\None;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\DummyChild;
 use Sunhill\ORM\Properties\PropertyVarchar;
