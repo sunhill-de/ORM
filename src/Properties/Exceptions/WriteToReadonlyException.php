@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file InvalidValueException.php
+ * @file WriteToReadonlyException.php
  * Provides the InvalidValidException
  * Lang en
  * Reviewstatus: 2021-10-14
@@ -17,6 +17,6 @@ namespace Sunhill\ORM\Properties\Exceptions;
  * An exception that is raised, if a reference is assigned an invalid value
  * @author lokal
  */
-class InvalidValueException extends PropertyException 
+class WriteToReadonlyException extends PropertyException 
 {
 }
