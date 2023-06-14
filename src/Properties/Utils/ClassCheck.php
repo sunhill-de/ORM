@@ -22,16 +22,16 @@ trait ClassCheck
     public function setAllowedClasses($object)
     {
         if (is_string($object)) {
-            $this->allowed_objects = [$object];
+            $this->allowed_classes = [$object];
         } else if (is_array($object)) {
-            $this->allowed_objects = $object;
+            $this->allowed_classes = $object;
         }
         return $this;
     }
     
     public function getAllowedClasses(): array
     {
-        return $this->allowed_objects;
+        return $this->allowed_classes;
     }
     
     protected function isAllowedObject($test): bool
@@ -39,10 +39,10 @@ trait ClassCheck
         if (is_int($test)) {
             $test = Objects::getClassNamespaceOf($test);
         }
-        if (empty($this->allowed_objects)) {
+        if (empty($this->allowed_classes)) {
             return is_a($test, ORMObject::class);
         }
-        foreach ($this->allowed_objects as $object) {
+        foreach ($this->allowed_classes as $object) {
             if (Classes::isA($test, $object)) {
                 return true;
             }
