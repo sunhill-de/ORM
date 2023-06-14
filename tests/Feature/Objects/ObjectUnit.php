@@ -75,9 +75,9 @@ class ObjectUnit extends ORMObject
     protected static function setupProperties(PropertyList $list)
     {
         $list->integer('intvalue');
-        $list->object('objectvalue')->setAllowedObjects(['dummy'])->setDefault(null);
+        $list->object('objectvalue')->setAllowedClasses(['dummy'])->setDefault(null);
         $list->arrayofstrings('sarray');
-        $list->arrayOfObjects('oarray')->setAllowedObjects(['dummy']);
+        $list->arrayOfObjects('oarray')->setAllowedClasses(['dummy']);
         $list->calculated('calcvalue');
     }
     

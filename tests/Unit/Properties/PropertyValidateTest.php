@@ -92,7 +92,7 @@ class PropertyValidateTest extends TestCase
             [
                 PropertyObject::class, 
                 function(&$property) { 
-                    $property->setAllowedObjects('dummy'); 
+                    $property->setAllowedClasses('dummy'); 
                 }, 
                 function() { 
                     return new Dummy(); 
@@ -101,7 +101,7 @@ class PropertyValidateTest extends TestCase
             [
                 PropertyObject::class,
                 function(&$property) {
-                    $property->setAllowedObjects('dummy');
+                    $property->setAllowedClasses('dummy');
                 },
                 function() {
                     return new TestParent();
@@ -110,7 +110,7 @@ class PropertyValidateTest extends TestCase
             [
                 PropertyObject::class,
                 function(&$property) {
-                    $property->setAllowedObjects('dummy');
+                    $property->setAllowedClasses('dummy');
                 },
                 function() {
                     return new DummyChild();
@@ -119,7 +119,7 @@ class PropertyValidateTest extends TestCase
             [
                 PropertyObject::class,
                 function(&$property) {
-                    $property->setAllowedObjects('dummychild');
+                    $property->setAllowedClasses('dummychild');
                 },
                 function() {
                     return new Dummy();
@@ -128,7 +128,7 @@ class PropertyValidateTest extends TestCase
             [
                 PropertyObject::class,
                 function(&$property) {
-                    $property->setAllowedObjects('dummy','testparent');
+                    $property->setAllowedClasses('dummy','testparent');
                 },
                 function() {
                     return new Dummy();
@@ -137,7 +137,7 @@ class PropertyValidateTest extends TestCase
             [
                 PropertyObject::class,
                 function(&$property) {
-                    $property->setAllowedObjects('dummychild','testparent');
+                    $property->setAllowedClasses('dummychild','testparent');
                 },
                 function() {
                     return new Dummy();

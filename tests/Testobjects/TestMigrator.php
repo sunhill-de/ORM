@@ -25,9 +25,9 @@ class TestMigrator extends TestParent {
 	    $list->date('migratordate');
 		$list->time('migratortime');
 		$list->enum('migratorenum')->setValues(['testA','testB','testC']);
-		$list->object('migratorobject')->setAllowedObjects(['dummy'])->setDefault(null);;
+		$list->object('migratorobject')->setAllowedClasses(['dummy'])->setDefault(null);;
 		$list->arrayofstrings('migratorsarray');
-		$list->arrayOfObjects('migratoroarray')->setAllowedObjects(['dummy']);
+		$list->arrayOfObjects('migratoroarray')->setAllowedClasses(['dummy']);
 	}
 
 	protected static function setupInfos()

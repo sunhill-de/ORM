@@ -31,9 +31,9 @@ class TestParent extends ORMObject
 		$list->date('parentdate')->searchable();
 		$list->time('parenttime')->searchable();
 		$list->enum('parentenum')->setValues(['testA','testB','testC'])->searchable();
-		$list->object('parentobject')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
+		$list->object('parentobject')->setAllowedClasses(['dummy'])->setDefault(null)->searchable();
 		$list->arrayofstrings('parentsarray')->searchable();
-		$list->arrayOfObjects('parentoarray')->setAllowedObjects(['dummy'])->searchable();
+		$list->arrayOfObjects('parentoarray')->setAllowedClasses(['dummy'])->searchable();
 		$list->calculated('parentcalc')->searchable();
 		$list->integer('nosearch')->setDefault(1);
 	}

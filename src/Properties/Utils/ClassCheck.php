@@ -17,9 +17,9 @@ use Sunhill\ORM\Objects\ORMObject;
 trait ClassCheck 
 {
 
-    protected $allowed_objects;
+    protected $allowed_classes;
     
-    public function setAllowedObjects($object)
+    public function setAllowedClasses($object)
     {
         if (is_string($object)) {
             $this->allowed_objects = [$object];
@@ -29,7 +29,7 @@ trait ClassCheck
         return $this;
     }
     
-    public function getAllowedObjects(): array
+    public function getAllowedClasses(): array
     {
         return $this->allowed_objects;
     }

@@ -10,7 +10,7 @@ class ObjectValidator extends ValidatorBase {
     
     private $allowed_objects;
     
-    public function setAllowedObjects($object) 
+    public function setAllowedClasses($object) 
     {
         if (!is_array($object)) {
             $this->allowed_objects = array($object);
@@ -20,7 +20,7 @@ class ObjectValidator extends ValidatorBase {
         return $this;
     }
     
-    public function getAllowedObjects()
+    public function getAllowedClasses()
     {
         return $this->allowed_objects;
     }

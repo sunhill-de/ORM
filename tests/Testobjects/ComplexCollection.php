@@ -32,9 +32,9 @@ class ComplexCollection extends Collection {
         $list->date('field_date')->searchable();
         $list->time('field_time')->searchable();
         $list->enum('field_enum')->setValues(['testA','testB','testC'])->searchable();
-        $list->object('field_object')->setAllowedObjects(['dummy'])->setDefault(null)->searchable();
+        $list->object('field_object')->setAllowedClasses(['dummy'])->setDefault(null)->searchable();
         $list->array('field_sarray', PropertyVarchar::class)->searchable();
-        $list->array('field_oarray', PropertyObject::class)->setAllowedObjects(['dummy'])->searchable();
+        $list->array('field_oarray', PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();
         $list->map('field_smap', PropertyVarchar::class);
         $list->calculated('field_calc')->searchable();
     }

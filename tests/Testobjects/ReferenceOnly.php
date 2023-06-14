@@ -20,7 +20,7 @@ class ReferenceOnly extends ORMObject
     protected static function setupProperties(PropertyList $list)
     {
         $list->arrayOfStrings('testsarray');
-		$list->arrayOfObjects('testoarray')->setAllowedObjects(['dummy','referenceonly']);
+		$list->arrayOfObjects('testoarray')->setAllowedClasses(['dummy','referenceonly']);
 	}
 
 	protected static function setupInfos()
