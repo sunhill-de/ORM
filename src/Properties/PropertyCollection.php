@@ -29,7 +29,7 @@ class PropertyCollection extends AtomarProperty
 	
 	public function isValid($input): bool
 	{
-	    return $this->isAllowedObject($input);
+	    return $this->isAllowedCollection($input);
 	}
 	
 	public function convertValue($input)
