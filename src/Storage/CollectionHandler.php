@@ -4,7 +4,6 @@ namespace Sunhill\ORM\Storage;
 
 use Sunhill\ORM\Interfaces\HandlesProperties;
 use Sunhill\ORM\Properties\Property;
-use Sunhill\ORM\Objects\PropertyCollection;
 
 abstract class CollectionHandler implements HandlesProperties
 {
