@@ -20,6 +20,7 @@ use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Properties\PropertyFloat;
 use Sunhill\ORM\Properties\PropertyBoolean;
+use Sunhill\ORM\Properties\PropertyCollection;
 use Sunhill\ORM\Properties\PropertyDate;
 use Sunhill\ORM\Properties\PropertyTimestamp;
 use Sunhill\ORM\Properties\PropertyDatetime;
@@ -31,6 +32,8 @@ use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Properties\PropertyCalculated;
 use Sunhill\ORM\Properties\PropertyTags;
+use Sunhill\ORM\Properties\PropertyKeyfield;
+use Sunhill\ORM\Properties\PropertyExternalReference;
 
 /**
  * Basic class for all classes that have properties.
@@ -131,9 +134,9 @@ class PropertyList
         return $this->addProperty(PropertyText::class, $name);        
     }
     
-    public function array(string $name, string $type): PropertyArray
+    public function array(string $name): PropertyArray
     {
-        return $this->addProperty(PropertyArray::class, $name)->setElementType($type);        
+        return $this->addProperty(PropertyArray::class, $name);        
     }
     
     public function arrayOfStrings(string $name): PropertyArray
@@ -151,24 +154,24 @@ class PropertyList
         return $this->addProperty(PropertyObject::class, $name);    
     }
     
-    public function map(string $name, string $type, int $max_key_length = 20): PropertyMap
+    public function map(string $name): PropertyMap
     {
-        return $this->addProperty(PropertyMap::class, $name)->setElementType($type)->setMaxiumKeyLength($max_key_length);
+        return $this->addProperty(PropertyMap::class, $name);
     }
     
-    public function keyfield($build_instruction)
+    public function keyfield(string $name, string $build_rule)
     {
-        
+        return $this->addProperty(PropertyKeyfield::class, $name)->setBuildRule($build_rule);
     }
     
-    public function collection(string $name, string $collection_id, string $keyfield = 'id'): PropertyCollection
+    public function collection(string $name): PropertyCollection
     {
-        
+        return $this->addProperty(PropertyCollection::class, $name);
     }
     
-    public function reference(string $name, string $table_name, string $key_field = 'id'): PropertyExternalReference
+    public function externalReference(string $name, string $table_name, string $key_field = 'id'): PropertyExternalReference
     {
-        
+        return $this->addProperty(PropertyExternalReference::class, $name);
     }
     
     public function enum(string $name, array $allowed_keys = []): PropertyEnum
