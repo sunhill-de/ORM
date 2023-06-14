@@ -14,7 +14,8 @@
 namespace Sunhill\ORM\Properties;
 
 use Sunhill\ORM\Storage\StorageBase;
-use Sunhill\ORM\Properties\Exceptions\PropertyException;
+use Sunhill\ORM\Properties\Exceptions\WriteToReadonlyException;
+use Sunhill\ORM\Properties\Exceptions\CalculatedCallbackException;
 
 /**
  * The property class for calculated fields
@@ -33,7 +34,7 @@ class PropertyCalculated extends AtomarProperty
 	 */
 	protected function doSetValue($value) 
 	{
-	    throw new PropertyException(__("Tried to write to a calculate field ".$this->getName()));
+	    throw new WriteToReadonlyException(__("Tried to write to a calculate field ".$this->getName()));
 	}
 	
 	protected function callCallback()
@@ -41,13 +42,13 @@ class PropertyCalculated extends AtomarProperty
 	    $callback = $this->callback;
 	    if (is_string($this->callback)) {
 	        if (empty($this->getOwner())) {
-	            throw new PropertyException("No owner for callback defined for ".$this->getName());
+	            throw new CalculatedCallbackException("No owner for callback defined for ".$this->getName());
 	        }
 	        return $this->getOwner()->$callback();
 	    } else if (is_callable($this->callback)) {
 	        return $callback($this->getOwner());
 	    }
-	    throw new PropertyException("No callback defined for ".$this->getName());
+	    throw new CalculatedCallbackException("No callback defined for ".$this->getName());
 	}
 	
 	/**
