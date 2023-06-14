@@ -39,7 +39,7 @@ use Sunhill\ORM\Properties\PropertyPropertyCollection;
  *  
  * @author lokal
  */
-abstract class PropertyCollection extends NonAtomarProperty implements \Sunhill\ORM\Properties\Utils\Commitable
+abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhill\ORM\Properties\Utils\Commitable
 {
             
     public function __construct()
@@ -323,7 +323,7 @@ abstract class PropertyCollection extends NonAtomarProperty implements \Sunhill\
         do {
             $callback($class);
             $class = get_parent_class($class);
-        } while ($class != PropertyCollection::class);
+        } while ($class != PropertiesCollection::class);
         
     }
 // ================================== Attributes =================================================

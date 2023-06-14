@@ -19,4 +19,4 @@ use Sunhill\ORM\ORMException;
  * This exception should be raised for errors in PropertyCollection classes
  * @author lokal
  */
-class PropertyCollectionException extends ORMException {}
+class PropertiesCollectionException extends ORMException {}
