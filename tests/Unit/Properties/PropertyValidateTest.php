@@ -11,6 +11,8 @@ use Sunhill\ORM\Properties\PropertyFloat;
 use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyCollection;
+use Sunhill\ORM\Properties\PropertyText;
+use Sunhill\ORM\Properties\PropertyTime;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\DummyChild;
@@ -96,6 +98,8 @@ class PropertyValidateTest extends TestCase
             }, false],
             
             // =========================== Date ================================
+            [PropertyDate::class, null, '01.02.2018', true],
+            [PropertyDate::class, null, '2018-02-02', true],
             [PropertyDate::class, null, '1.2.2018', true],
             [PropertyDate::class, null, '2018-2-1', true],
             [PropertyDate::class, null, 23.3, true],
@@ -105,9 +109,11 @@ class PropertyValidateTest extends TestCase
             [PropertyDate::class, null, false, false],
             [PropertyDate::class, null, 'ABC', false],
             [PropertyDate::class, null, '', false],
+            [PropertyDate::class, null, 1686778521, true],
             
             // ========================= DateTime ===============================
             [PropertyDatetime::class, null, '2018-02-01 11:11:11', true],
+            [PropertyDatetime::class, null, 1686778521, true],
             
             // =========================== Enum =================================
             [PropertyEnum::class, function(&$property) {
@@ -187,7 +193,11 @@ class PropertyValidateTest extends TestCase
                 }, false
             ],
             // =========================== Text =================================
+                [PropertyText::class, null, 'Lorem ipsum', true],
+                
             // =========================== Time =================================
+                [PropertyTime::class, null, '11:11:11', true],
+                
             // ========================== Varchar ===============================
                 [PropertyVarchar::class, null, 1, true],
                 [PropertyVarchar::class, null, 1.1, true],
