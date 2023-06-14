@@ -27,23 +27,23 @@ trait TestObject
 {
 
     /**
-     * Returns true, is $test is a valid object defined by $allowed_objects
+     * Returns true, is $test is a valid object defined by $allowed_classes
      * @param ORMObject $test
-     * @param array of ORMObject|ORMObject $allowed_objects
+     * @param array of ORMObject|ORMObject $allowed_classes
      * @throws ORMException
      * @return boolean|unknown
      */
-    protected function isValidObject($test,$allowed_objects) 
+    protected function isValidObject($test,$allowed_classes) 
     {
-        if (is_array($allowed_objects)) {
-            foreach ($allowed_objects as $object) {
+        if (is_array($allowed_classes)) {
+            foreach ($allowed_classes as $object) {
                 if (Classes::isA($test,$object)) {
                     return true;
                 }
             }
             return false;
-        } else if (is_string($allowed_objects)) {
-            return Classes::isA($test,$allowed_objects);
+        } else if (is_string($allowed_classes)) {
+            return Classes::isA($test,$allowed_classes);
         } else {
             throw new ORMException(__("isValidObject: Inavlid type passed to allowed_objects."));
         }
