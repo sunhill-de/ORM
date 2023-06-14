@@ -17,6 +17,10 @@ namespace Sunhill\ORM\Properties;
 
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
+use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
+use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Objects\Collection;
+use Sunhill\ORM\Objects\ORMObject;
 
 class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countable,\Iterator 
 {
@@ -26,6 +30,8 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	protected $pointer = 0;
 
 	protected $element_type;
+	
+	protected $allowed_classes;
 	
 	public function __construct()
 	{
@@ -42,6 +48,54 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	public function getElementType(): string
 	{
 	   return $this->element_type;    
+	}
+	
+	protected function checkForObject(string $class)
+	{
+/*	    if (!Classes::isA(Classes::getNamespaceOfClass($class), 'object')) {
+	        throw new InvalidParameterException("Parameter for setAllowedClasses is not an ORMObject.");	        
+	    } */
+	}
+	
+	protected function checkForCollection(string $class)
+	{
+/*	Sorry, removed because of too many side effects @todo fixme    
+ * if (!is_a($class, Collection::class, true)) {
+	        throw new InvalidParameterException("Parameter for setAllowedClass is not a Collection.");
+	    } */ 
+	}
+	
+	public function setAllowedClasses($allowed_classes)
+	{
+	    if ((PropertyObject::class !== $this->element_type) && !empty($this->element_type)) {
+	        throw new InvalidParameterException("setAllowedClasses only makes sense with object maps/arrays");
+	    }
+	    if (is_string($allowed_classes)) {
+	        $this->checkForObject($allowed_classes);
+	        $this->allowed_classes = [$allowed_classes];
+	    } else if (is_array($allowed_classes)) {
+	        foreach ($allowed_classes as $class) {
+	            $this->checkForObject($class);
+	        }
+	        $this->allowed_classes = $allowed_classes;
+	    } else {
+	        throw new InvalidParameterException("setAllowedClasses was passed an invalid value.");
+	    }
+	    return $this;
+	}
+	
+	public function setAllowedClass($allowed_class)
+	{
+	    if ((PropertyCollection::class !== $this->element_type)) {
+	        throw new InvalidParameterException("setAllowedClass only makes sense with collection maps/arrays");
+	    }
+	    if (is_string($allowed_class)) {
+	        $this->checkForCollection($allowed_class);
+	        $this->allowed_classes = $allowed_class;	        
+	    } else {
+	        throw new InvalidParameterException("setAllowedClass was passed an invalid value.");	        
+	    }
+	    return $this;	    
 	}
 	
 	/**
@@ -266,6 +320,21 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
         foreach ($storage->$name as $key => $value) {
             $this->setElement($key, $value);
         }
+	}
+
+	/**
+	 * Returns
+	 * @param unknown $input
+	 * @return bool
+	 */
+	public function isValid($input): bool
+	{
+	    $class = $this->element_type;
+	    $test = new $class();
+	    if (!empty($this->allowed_classes)) {
+            $test->setAllowedClasses($this->allowed_classes);
+	    }
+	    return $test->isValid($input);
 	}
 	
 }
