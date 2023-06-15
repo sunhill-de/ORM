@@ -42,15 +42,26 @@ class PropertyCalculated extends AtomarProperty
 	   $this->callback = $callback;
 	   return $this;
 	}
+
+	/**
+	 * Checks if an owner of this property is set. if not, raises an exception
+	 * 
+	 * @param unknown $owner
+	 * @throws CalculatedCallbackException
+	 */
+	protected function checkForOwner($owner)
+	{
+	    if (!isset($owner)) {
+	        throw new CalculatedCallbackException("No owner for callback defined for ".$this->getName());
+	    }	    
+	}
 	
 	protected function callCallback()
 	{
 	    $callback = $this->callback;
-	    $owner = $this->getActualPropertiesCollection();
+	    $this->checkForOwner($owner = $this->getActualPropertiesCollection());
+	    
 	    if (is_string($this->callback)) {
-	        if (!isset($owner)) {
-	            throw new CalculatedCallbackException("No owner for callback defined for ".$this->getName());
-	        }
 	        return $owner->$callback();
 	    } else if (is_callable($this->callback)) {
 	        return $callback($owner);
