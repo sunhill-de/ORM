@@ -40,10 +40,19 @@ class PropertyKeyfield extends AtomarProperty
  
     protected function recalculate()
     {
-        $this->value = preg_replace_callback("|:([a-zA-Z0-9]*)|",function($found){
+        $this->value = preg_replace_callback("|:([a-zA-Z0-9_\->]*)|",function($found){
             $owner = $this->getActualPropertiesCollection();
             $key = $found[1];
-            return $owner->$key;
+            if (strpos($key, "->") !== false) {
+                list($field,$key) = explode("->",$key);
+                $object = $owner->$field;
+                if (empty($object)) {
+                    return "";
+                }
+                return $object->$key;
+            } else {
+                return $owner->$key;
+            }
         }, $this->build_rule);   
     }
     

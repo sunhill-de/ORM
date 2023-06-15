@@ -32,7 +32,7 @@ class TestChild extends TestParent
 		$list->arrayOfObjects('childoarray')->setAllowedClasses(['dummy'])->searchable();
 		$list->calculated('childcalc')->searchable();
 		$list->collection('childcollection')->setAllowedClasses(ComplexCollection::class)->searchable();
-		$list->keyfield('childkeyfield',':parentchar (:parentint)')->searchable();
+		$list->keyfield('childkeyfield',':childobject->dummyint (:parentint)')->searchable();
 		$list->map('childmap')->setElementType(PropertyObject::class)->setAllowedClasses(Dummy::class)->searchable();
 		$list->externalReference('child_external', 'external', 'external_string')->setInternalKey('childchar');
     }

@@ -22,6 +22,7 @@ use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 use Sunhill\ORM\Properties\Exceptions\InvalidValueException;
 use Sunhill\ORM\Properties\PropertyMap;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
 
 class PropertyValueTest extends TestCase
 {
@@ -328,6 +329,33 @@ class PropertyValueTest extends TestCase
         $test->parentchar = 'ABC';
         $test->parentint = 123;
         $this->assertEquals('ABC (123)', $test->parentkeyfield);
+    }
+    
+    public function testKeyfieldWithObject()
+    {
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(DummyChild::class);
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
+        
+        $dummy = new Dummy();
+        $dummy->dummyint = 123;
+        $test = new TestChild();
+        $test->childobject = $dummy;
+        $test->parentint = 321;
+        $this->assertEquals('123 (321)', $test->childkeyfield);
+    }
+    
+    public function testKeyfieldWithEmptyObject()
+    {
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(DummyChild::class);
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
+        
+        $test = new TestChild();
+        $test->parentint = 321;
+        $this->assertEquals(' (321)', $test->childkeyfield);
     }
     
     public function testCalcfield()
