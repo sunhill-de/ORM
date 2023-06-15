@@ -110,7 +110,7 @@ trait DateTimeCheck
         }
         $parts = explode(' ',$test);
         if (count($parts) != 2) {
-            if (strpos(':',$parts[0]) !== false) {
+            if (strpos($parts[0],':') !== false) {
                 if (!$time = self::isValidTime($parts[0], true)) {
                     return null;
                 } else {

@@ -197,6 +197,8 @@ class PropertyValidateTest extends TestCase
                 
             // =========================== Time =================================
                 [PropertyTime::class, null, '11:11:11', true],
+                [PropertyTime::class, null, '11:11', true],
+                [PropertyTime::class, null, '1:1', true],
                 
             // ========================== Varchar ===============================
                 [PropertyVarchar::class, null, 1, true],
