@@ -15,6 +15,8 @@
 
 namespace Sunhill\ORM\Properties;
 
+use Sunhill\ORM\Properties\Exceptions\WriteToReadonlyException;
+
 class PropertyKeyfield extends AtomarProperty 
 {
 	
@@ -27,5 +29,28 @@ class PropertyKeyfield extends AtomarProperty
         $this->build_rule = $rule;
         return $this;
     }
-	
+
+    /**
+     * Raises an exception when called (keyfields mustn't be written to)
+     */
+    protected function doSetValue($value)
+    {
+        throw new WriteToReadonlyException("Tried to write to a key field ".$this->getName());
+    }
+ 
+    protected function recalculate()
+    {
+        $this->value = preg_replace_callback("|:([a-zA-Z0-9]*)|",function($found){
+            $owner = $this->getActualPropertiesCollection();
+            $key = $found[1];
+            return $owner->$key;
+        }, $this->build_rule);   
+    }
+    
+    protected function initializeValue(): bool
+    {
+        $this->recalculate();
+        return true;
+    }
+    
 }
