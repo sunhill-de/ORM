@@ -17,6 +17,9 @@ use Sunhill\ORM\Interfaces\InteractsWithStorage;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\Utils\Commitable;
 use Sunhill\ORM\Properties\Utils\DefaultNull;
+use Sunhill\ORM\Properties\Exceptions\InvalidValueException;
+use Sunhill\ORM\Properties\Exceptions\WriteToReadonlyException;
+use Sunhill\ORM\Properties\Exceptions\UninitializedPropertyException;
 
 class AtomarProperty extends Property implements InteractsWithStorage, Commitable
 {
@@ -214,7 +217,7 @@ class AtomarProperty extends Property implements InteractsWithStorage, Commitabl
     protected function checkReadonly()
     {
         if ($this->read_only) {
-            throw new PropertyException("Write to a read only property.");
+            throw new WriteToReadonlyException("Write to a read only property.");
         }
     }
     
@@ -238,7 +241,7 @@ class AtomarProperty extends Property implements InteractsWithStorage, Commitabl
     {
         if (is_null($value)) {
             if (!$this->nullable) {
-                throw new PropertyException("Property is not nullable");
+                throw new InvalidValueException("Property is not nullable");
             }
         } else {
             $value = $this->validate($value);
@@ -249,7 +252,11 @@ class AtomarProperty extends Property implements InteractsWithStorage, Commitabl
     protected function validate($input)
     {
         if (!$this->isValid($input)) {
-            throw new PropertyException("The input value '$input' is invalid"); 
+            if (is_scalar($input)) {
+                throw new InvalidValueException("The input value '$input' is invalid");
+            } else {
+                throw new InvalidValueException("Invalid value for this property");                
+            }
         }
         return $this->convertValue($input);
     }
@@ -309,7 +316,7 @@ class AtomarProperty extends Property implements InteractsWithStorage, Commitabl
                 $this->initialized = true;
             } else {
                 if (!$this->initializeValue()) {
-                    throw new PropertyException(__("Read of a not initialized property: ':name'",['name'=>$this->name]));
+                    throw new UninitializedPropertyException("Read of a not initialized property: '".$this->name."'");
                 }
             }
         }
