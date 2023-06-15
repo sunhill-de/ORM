@@ -214,6 +214,17 @@ echo $object->keyfield = 'ABC DEF';
 Keyfields need a rule how they are built. This is done with this method. Every string starting with a colon and a series of alphanumeric characters is interpreted as a field of the owning collection. In the example above the buildRule references the two fields called field1 and field2. Keyfield rules can be more complex (like ":name (:year)") and can even refer to fields of object/collection fields. When an object defines the property 'object_field' that refers to another object than you can define a keyfield with "object_field->name". The keyfield then takes the name of the refered object. If the object field is empty an empty string will be replaced. 
 
 ### Calculated fields
+```php
+...
+$list->calculated('calc_property')->setCallback(function($collection) {
+	return md5($collection->name);
+});
+...
+```
+Calculated field offer the possibility to store automatically complex calculations in the storage. Calculated fields are read only by nature, any attempt to assign a value to them will raise an exception. Calculated values are stores as string in the storage and can be searched too. You should only use calculated fields when you need the searching capabilities or it's quite expensive to calculate this field. Calculated fields need a callback (see next paragraph).
+
+### setCallback()
+This method takes either a string or a closure. When a string is passed this string is assumed to be the name of a method of the owning collection that performs the calculation. This method then takes no parameter and has to return the calculated value. If the parameter is a closure, this function takes the calling propertiescollection as parameter and returns the calculated value the same way as the method.
 
 ### External reference
 ```php
