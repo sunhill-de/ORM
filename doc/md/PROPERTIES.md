@@ -59,7 +59,7 @@ Both methods take a second integer parameter that defines the maximal string len
 ```
 $list->string('string_property',10); // defines a string with maximum length of 10
 ```
-Note: If you later assign a value to this property that is longer than 10 characters, no exception will be raises. The property truncates the given string to a maximum length of 10.
+Note: If you later assign a value to this property that is longer than 10 characters, no exception will be raised. The property truncates the given string to a maximum length of 10.
 
 
 ### Float
@@ -73,6 +73,17 @@ Adds a float property to this collection/object. Any integer or float value can 
 $object->float_property = 1;
 $object->float_property = 2.3;
 ```
+
+### Text
+```php
+...
+$list->text('text_property');
+...
+```
+Adds a text field property to the collection/object. A text of any length can be assigned to a text field property.
+```php
+$object->text_property = file_get_contents('a_very_large_text.txt');
+``
 
 ### Date/Datetime/Time
 ```php
@@ -173,7 +184,7 @@ class MyObject extends ORMObject
 {
     protected static function setupProperties(PropertyList $list)
     {
-        $list->collection('object_property')->setAllowedClasses([MyCollection::class]);
+        $list->collection('object_property')->setAllowedClass(MyCollection::class);
     }
 }
 
@@ -184,8 +195,14 @@ $object->object_property->name = 'Some name';
 ...
 ```
 
-#### setAllowedClasses
-Defines what kind of objects are allowed to be assigned to this field. This method takes either an array of strings or a string as a parameter. These string(s) are the names of the collection classes that are allowed to be assigned this property.
+#### setAllowedClass
+Defines which collection is allowed to be assigned to this field. This method takes a string that is the name of the collection class that are allowed to be assigned this property.
+
+### Keyfield
+```php
+...
+$list->keyfield('keyfield_property',':field1 :field2');
+```
 
 ### External reference
 ```php
