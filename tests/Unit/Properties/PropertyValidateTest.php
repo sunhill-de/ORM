@@ -31,6 +31,8 @@ class PropertyValidateTest extends TestCase
      * @param unknown $postfix
      * @param unknown $value
      * @param unknown $expect
+     * 
+     * @tests Almost any Property type for validity and data conveersion
      */
     public function testValidate($property_class, $postfix, $value, $expect, $convert = null)
     {
@@ -210,36 +212,6 @@ class PropertyValidateTest extends TestCase
                 
                 
          ];
-    }
-    
-    /**
-     * @dataProvider ConvertValueProvider
-     */
-    public function testConvertValue($property_class, $postfix, $value, $expect)
-    {
-        Classes::registerClass(Dummy::class);
-        Classes::registerClass(DummyChild::class);
-        Classes::registerClass(TestParent::class);
-        
-        $property = new $property_class();
-        if (is_callable($postfix)) {
-            $postfix($property);
-        }
-        if (is_callable($value)) {
-            $this->assertEquals($expect, $property->convertValue($value()));
-        } else {
-            $this->assertEquals($expect, $property->convertValue($value));
-        }        
-    }
-    
-    public function ConvertValueProvider()
-    {
-        return [
-            [PropertyInteger::class, null, 1, 1],            
-            [PropertyFloat::class, null, 1.1, 1.1],
-            [PropertyVarchar::class, null, "A", "A"],
-            [PropertyVarchar::class, function($property) { $property->setMaxLen(2); }, "ABCD", "AB"],
-        ];
     }
     
 }

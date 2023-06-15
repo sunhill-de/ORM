@@ -1,7 +1,21 @@
 <?php
 
+/**
+ * @file DateTimeCheck
+ * Provides the trait DateTimeCheck
+ */
 namespace Sunhill\ORM\Properties\Utils;
 
+/**
+ * This trait is a collection of function to check, if a given time, date or datetime is valid and
+ * convert it to a database friedly format. 
+ * This code even deals with malformatted input like 2023-2-1 or 2023-2
+ * 
+ * @todo This code is ugly as hell but it works, so feel free to make it pretty without breaking the PropertyValidateTest
+ * 
+ * @author klaus
+ *
+ */
 trait DateTimeCheck
 {
     private static function guessDateParts($parts) {
