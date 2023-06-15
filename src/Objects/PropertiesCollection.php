@@ -65,7 +65,10 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
     
     protected function initializeProperties()
     {
-        $this->properties = static::getAllPropertyDefinitions();        
+        $this->properties = static::getAllPropertyDefinitions(); 
+        $this->walkProperties(function($property, $owner) { 
+            $property->setActualPropertiesCollection($owner); 
+        },$this);
     }
     
     protected $properties = [];

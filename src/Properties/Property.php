@@ -79,6 +79,19 @@ class Property extends Loggable
         return !is_null($this->owner);    
     }
     
+    protected $actual_properties_collection;
+    
+    public function setActualPropertiesCollection($collection): Property
+    {
+        $this->actual_properties_collection = $collection;
+        return $this;
+    }
+    
+    public function getActualPropertiesCollection()
+    {
+        return $this->actual_properties_collection;    
+    }
+    
     // ******************************* Name handling ********************************
     /**
      * The name of this property
