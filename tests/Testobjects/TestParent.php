@@ -37,7 +37,7 @@ class TestParent extends ORMObject
 		$list->object('parentobject')->setAllowedClasses(['dummy'])->setDefault(null)->searchable();
 		$list->array('parentsarray')->setElementType(PropertyVarchar::class)->searchable();
 		$list->array('parentoarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();
-		$list->calculated('parentcalc')->searchable();
+		$list->calculated('parentcalc')->setCallback('calculate_parentcalc')->searchable();
 		$list->collection('parentcollection')->setAllowedClasses(DummyCollection::class)->searchable();
 		$list->keyfield('parentkeyfield',':parentchar (:parentint)')->searchable();
 		$list->map('parentmap')->setElementType(PropertyVarchar::class)->searchable();
