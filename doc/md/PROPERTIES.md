@@ -201,8 +201,19 @@ Defines which collection is allowed to be assigned to this field. This method ta
 ### Keyfield
 ```php
 ...
-$list->keyfield('keyfield_property',':field1 :field2');
+$list->keyfield('keyfield_property')->setBuildRule(':field1 :field2');
 ```
+A keyfield is a virtual field that makes it possible to combine one or more other fields to a new field
+
+```php
+$object->field1 = 'ABC';
+$object->field2 = 'DEF';
+echo $object->keyfield = 'ABC DEF';
+```
+#### setBuildRule()
+Keyfields need a rule how they are built. This is done with this method. Every string starting with a colon and a series of alphanumeric characters is interpreted as a field of the owning collection. In the example above the buildRule references the two fields called field1 and field2. Keyfield rules can be more complex (like ":name (:year)") and can even refer to fields of object/collection fields. When an object defines the property 'object_field' that refers to another object than you can define a keyfield with "object_field->name". The keyfield then takes the name of the refered object. If the object field is empty an empty string will be replaced. 
+
+### Calculated fields
 
 ### External reference
 ```php
