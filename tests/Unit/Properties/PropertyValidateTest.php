@@ -32,7 +32,7 @@ class PropertyValidateTest extends TestCase
      * @param unknown $value
      * @param unknown $expect
      */
-    public function testValidate($property_class, $postfix, $value, $expect)
+    public function testValidate($property_class, $postfix, $value, $expect, $convert = null)
     {
         Classes::registerClass(Dummy::class);
         Classes::registerClass(DummyChild::class);
@@ -46,6 +46,9 @@ class PropertyValidateTest extends TestCase
             $this->assertEquals($expect, $property->isValid($value()));
         } else {
             $this->assertEquals($expect, $property->isValid($value));            
+        }
+        if ($expect && !is_null($convert)) {
+            $this->assertEquals($convert, $property->convertValue($value));
         }
     }
     
@@ -72,18 +75,18 @@ class PropertyValidateTest extends TestCase
             
             
             // ========================== Boolean ===============================
-            [PropertyBoolean::class, null, 'Y', true],
-            [PropertyBoolean::class, null, 'N', true],
-            [PropertyBoolean::class, null, '+', true],
-            [PropertyBoolean::class, null, '-', true],
-            [PropertyBoolean::class, null, 'true', true],
-            [PropertyBoolean::class, null, 'false', true],
-            [PropertyBoolean::class, null, true, true],
-            [PropertyBoolean::class, null, false, true],
-            [PropertyBoolean::class, null, 'ABC', false],
-            [PropertyBoolean::class, null, 1, true],
-            [PropertyBoolean::class, null, 0, true],
-            [PropertyBoolean::class, null, 10, true],
+            [PropertyBoolean::class, null, 'Y', true, true],
+            [PropertyBoolean::class, null, 'N', true, false],
+            [PropertyBoolean::class, null, '+', true, true],
+            [PropertyBoolean::class, null, '-', true, false],
+            [PropertyBoolean::class, null, 'true', true, true],
+            [PropertyBoolean::class, null, 'false', true, false],
+            [PropertyBoolean::class, null, true, true, true],
+            [PropertyBoolean::class, null, false, true, false],
+            [PropertyBoolean::class, null, 'ABC', false, false],
+            [PropertyBoolean::class, null, 1, true, true],
+            [PropertyBoolean::class, null, 0, true, false],
+            [PropertyBoolean::class, null, 10, true, true],
             
             // ========================= Collection =============================
             [PropertyCollection::class, function(&$property) {
@@ -98,18 +101,18 @@ class PropertyValidateTest extends TestCase
             }, false],
             
             // =========================== Date ================================
-            [PropertyDate::class, null, '01.02.2018', true],
-            [PropertyDate::class, null, '2018-02-02', true],
-            [PropertyDate::class, null, '1.2.2018', true],
-            [PropertyDate::class, null, '2018-2-1', true],
-            [PropertyDate::class, null, 23.3, true],
-            [PropertyDate::class, null, '2018-2', true],
-            [PropertyDate::class, null, '2.3.', true],
-            [PropertyDate::class, null, '2018', true],
+            [PropertyDate::class, null, '01.02.2018', true, '2018-02-01'],
+            [PropertyDate::class, null, '2018-02-02', true, '2018-02-02'],
+            [PropertyDate::class, null, '1.2.2018', true, '2018-02-01'],
+            [PropertyDate::class, null, '2018-2-1', true, '2018-02-01'],
+            [PropertyDate::class, null, 1686778521.3, true, '2023-06-14'],
+            [PropertyDate::class, null, '2018-2', true, '2018-02-00'],
+            [PropertyDate::class, null, '2.3.', true,'0000-03-02'],
+            [PropertyDate::class, null, '2018', true,'2018-00-00'],
             [PropertyDate::class, null, false, false],
             [PropertyDate::class, null, 'ABC', false],
             [PropertyDate::class, null, '', false],
-            [PropertyDate::class, null, 1686778521, true],
+            [PropertyDate::class, null, 1686778521, true, '2023-06-14'],
             
             // ========================= DateTime ===============================
             [PropertyDatetime::class, null, '2018-02-01 11:11:11', true],
@@ -124,18 +127,18 @@ class PropertyValidateTest extends TestCase
             }, 'NonExisting', false],
             
             // ========================== Float ===============================
-            [PropertyFloat::class, null, 1, true],
-            [PropertyFloat::class, null, 1.1, true],
-            [PropertyFloat::class, null, "1", true],
-            [PropertyFloat::class, null, "1.1", true],
+            [PropertyFloat::class, null, 1, true, 1.0],
+            [PropertyFloat::class, null, 1.1, true, 1.1],
+            [PropertyFloat::class, null, "1", true, 1],
+            [PropertyFloat::class, null, "1.1", true, 1.1],
             [PropertyFloat::class, null, "A", false],
             [PropertyFloat::class, null, "1.1.1", false],
             
             // ========================== Integer ===============================
-            [PropertyInteger::class, null, 1, true],
+            [PropertyInteger::class, null, 1, true, 1],
             [PropertyInteger::class, null, 1.1, false],
             [PropertyInteger::class, null, 'A', false],
-            [PropertyInteger::class, null, '1', true],
+            [PropertyInteger::class, null, '1', true, 1],
             
             // ========================== Object ===============================
             [
@@ -193,17 +196,17 @@ class PropertyValidateTest extends TestCase
                 }, false
             ],
             // =========================== Text =================================
-                [PropertyText::class, null, 'Lorem ipsum', true],
+                [PropertyText::class, null, 'Lorem ipsum', true, 'Lorem ipsum'],
                 
             // =========================== Time =================================
-                [PropertyTime::class, null, '11:11:11', true],
-                [PropertyTime::class, null, '11:11', true],
-                [PropertyTime::class, null, '1:1', true],
+                [PropertyTime::class, null, '11:11:11', true, '11:11:11'],
+                [PropertyTime::class, null, '11:11', true, '11:11:00'],
+                [PropertyTime::class, null, '1:1', true, '01:01:00'],
                 
             // ========================== Varchar ===============================
-                [PropertyVarchar::class, null, 1, true],
-                [PropertyVarchar::class, null, 1.1, true],
-                [PropertyVarchar::class, null, "1", true],
+                [PropertyVarchar::class, null, 1, true, "1"],
+                [PropertyVarchar::class, null, 1.1, true, "1.1"],
+                [PropertyVarchar::class, null, "1", true, "1"],
                 
                 
          ];

@@ -21,5 +21,11 @@ class PropertyDatetime extends AtomarProperty
     use DateTimeCheck;
     
     protected static $type = 'datetime';
-	    
+
+    
+    protected function sliceResult($input)
+    {
+        return $this->doSliceResult($input,true,true);
+    }
+    
 }

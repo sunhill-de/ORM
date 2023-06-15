@@ -24,5 +24,8 @@ class PropertyDate extends AtomarProperty
     
     protected static $type = 'date';
 	
-        
+    protected function sliceResult($input)
+    {
+        return $this->doSliceResult($input,true,false);
+    }
 }

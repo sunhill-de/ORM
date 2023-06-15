@@ -104,7 +104,7 @@ trait DateTimeCheck
     
     public function isValidDatetime($test) 
     {
-        if (is_numeric($test)) {
+        if (is_int($test) || is_float($test)) {
             $date = new \DateTime('@'.$test);
             return $date->format('Y-m-d H:i:s');
         }
@@ -142,9 +142,25 @@ trait DateTimeCheck
         return true;
     }
     
+    protected function doSliceResult($result, bool $date, bool $time)
+    {
+        $parts = explode(' ',$result);
+        if (count($parts) == 1) {
+            return $result;
+        }
+        $result = '';
+        if ($date) {
+            $result .= $parts[0];
+        }
+        if ($time) {
+            $result .= $parts[1];
+        }
+        return $result; 
+    }
+    
     public function convertValue($input)
     {
-        return $this->isValidDatetime($input);
+        return $this->sliceResult($this->isValidDatetime($input));
     }
     
 }

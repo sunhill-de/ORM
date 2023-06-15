@@ -23,5 +23,10 @@ class PropertyTime extends AtomarProperty {
     
 	protected static $type = 'time';
 
-		
+	
+	protected function sliceResult($input)
+	{
+	    return $this->doSliceResult($input,false,true);
+	}
+	
 }
