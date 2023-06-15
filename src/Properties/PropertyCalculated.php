@@ -37,16 +37,23 @@ class PropertyCalculated extends AtomarProperty
 	    throw new WriteToReadonlyException(__("Tried to write to a calculate field ".$this->getName()));
 	}
 	
+	public function setCallback($callback)
+	{
+	   $this->callback = $callback;
+	   return $this;
+	}
+	
 	protected function callCallback()
 	{
 	    $callback = $this->callback;
+	    $owner = $this->getActualPropertiesCollection();
 	    if (is_string($this->callback)) {
-	        if (empty($this->getOwner())) {
+	        if (!isset($owner)) {
 	            throw new CalculatedCallbackException("No owner for callback defined for ".$this->getName());
 	        }
-	        return $this->getOwner()->$callback();
+	        return $owner->$callback();
 	    } else if (is_callable($this->callback)) {
-	        return $callback($this->getOwner());
+	        return $callback($owner);
 	    }
 	    throw new CalculatedCallbackException("No callback defined for ".$this->getName());
 	}
