@@ -287,6 +287,9 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	           $element_property->$method($attr_value);
 	       }
 	   }
+	   if (!empty($this->allowed_classes)) {
+	       $element_property->setAllowedClasses($this->allowed_classes);
+	   }
 	   $element_property->setValue($value);
        return $element_property->getValue();    
 	}
