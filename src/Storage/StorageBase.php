@@ -14,9 +14,8 @@
 
 namespace Sunhill\ORM\Storage;
 
-use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Properties\Property;
-use Sunhill\ORM\Query\BasicQuery;
+use Illuminate\Testing\Assert as PHPUnit;
 
 /**
  * 
@@ -43,6 +42,19 @@ abstract class StorageBase
     
     protected $storage_ids = [];
     
+    public function createEntity(string $name, string $storage_id): StorageElement
+    {
+        $element = new StorageElement();
+        $element->setName($name)->setStorageID($storage_id);
+        $this->entities[$name] = $element;
+        if (isset($this->storage_ids[$storage_id])) {
+            $this->storage_ids[$storage_id] = [$name=>$element];
+        } else {
+            $this->storage_ids[$storage_id][$name] = $element;
+        }
+        return $element;
+    }
+    
     /**
      * Returns the entry with name $name or null if not defined
      */
@@ -62,34 +74,7 @@ abstract class StorageBase
      */
     public function __get(string $name) 
     {
-        return $this->getEntity($name)->value;
-    }
-    
-    /**
-     * Writes the entry with the name $name and the value $value
-     * @param string $name
-     * @param unknown $value
-     */
-    public function setEntity(string $name, $value = null, string $storage_id = '', string $type = '', $shadow = null) 
-    {
-        if (isset($this->entities[$name])) {
-            $this->entities[$name]->value = $value;
-            return $this;
-        }
-        $entry = new \StdClass();
-        $entry->name = $name;
-        $entry->storage_id = $storage_id;
-        $entry->type = $type;
-        $entry->value = $value;
-        $entry->shadow = $shadow;
-        
-        $this->entities[$name] = $entry;
-        if (isset($this->storage_ids[$storage_id])) {
-            $this->storage_ids[$storage_id][$name] = $entry;
-        } else {
-            $this->storage_ids[$storage_id] = [$name => $entry ];            
-        }
-        return $this;
+        return $this->getEntity($name)->getValue();
     }
     
     public function hasEntity(string $name): bool
@@ -104,10 +89,24 @@ abstract class StorageBase
     
     public function getEntitiesOfStorageID(string $storage_id)
     {
-        if (!isset($this->storage_ids[$storage_id])) {
-            return null;
+        $result = [];
+        foreach ($this->entities as $key => $value) {
+            if ($value->getStorageID() == $storage_id) {
+                $result[$key] = $value;
+            }
         }
-        return $this->storage_ids[$storage_id];
+        return $result;
+    }
+    
+    public function getEntitiesOfType(string $type)
+    {
+        $result = [];
+        foreach ($this->entities as $key => $value) {
+            if ($value->getType() == $type) {
+                $result[$key] = $value;
+            }
+        }
+        return $result;
     }
     
     /**
@@ -115,7 +114,7 @@ abstract class StorageBase
      */
     public function __set(string $name, $value) 
     {
-        return $this->setEntity($name,$value);
+        return $this->getEntity($name)->setValue($value);
     }    
     
     abstract protected function doLoad(int $id);
@@ -181,6 +180,21 @@ abstract class StorageBase
     public function Search()
     {
         return $this->doSearch();    
+    }
+ 
+    public function assertStorageEquals(StorageBase $test, bool $both = false): bool
+    {
+        foreach ($this->entities as $key => $value) {
+            PHPUnit::assertTrue($test->hasEntity($key),"The tested storage doesn't contain '$key'");
+            PHPUnit::assertEquals($value->getType(),$test->getEntity($key)->getType(),"In key '$key' the expected type '".$value->getType()."' doesn't equal '".$test->getEntity($key)->getType()."'");
+            PHPUnit::assertEquals($value->getStorageID(),$test->getEntity($key)->getStorageID(),"In key '$key' the expected storage ID '".$value->getStorageID()."' doesn't equal '".$test->getEntity($key)->getStorageID()."'");
+            PHPUnit::assertEquals($value->getValue(),$test->getEntity($key)->getValue(),"In key '$key' the expected value '".$value->getValue()."' doesn't equal '".$test->getEntity($key)->getValue()."'");
+            PHPUnit::assertEquals($value->getShadow(),$test->getEntity($key)->getShadow(),"In key '$key' the expected shadow '".$value->getShadow()."' doesn't equal '".$test->getEntity($key)->getShadow()."'");
+        }
+        if ($both) {
+            return $test->assertStorageEquals($this, false);
+        }
+        return true;
     }
     
 }
