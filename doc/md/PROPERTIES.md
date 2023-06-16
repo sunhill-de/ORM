@@ -2,6 +2,11 @@
 # Properties
 A property is a like a member variable of an Collection or ORMObject. They are accessed like normal members and normally you don't have to worry about there internal details. The only thing is, that you have to define them in the static setupProperties() method. This method takes a PropertyList parameter. A PropertyList is just a helper class that provides some defining methods to make it easy to define the properties (in fact it uses an similar concept like migrations of laravel). Via this PropertyList parameter you define the properties of your class. All property defining methods (like integer(), string(), etc.) take a name of the property as a parameter.
 
+## Names of properties
+The rules for property names are the same as for php variables, any alphanumeric character including "_" can be used, the name must't start with a digit. However, there are a few more restrictions for naming:
+- A name must't start with an underscore ("_") because these names are reserved internally.
+- The name must not be **tag**, **attributes** 
+
 ## Modifiers for all properties
 While defining properties you can modifiy some parameters of the property. Modifier always return the property object so it is possible to build a modifier chain. These are the modifiers that are avaiable to all properties:
 
@@ -221,7 +226,7 @@ $list->calculated('calc_property')->setCallback(function($collection) {
 });
 ...
 ```
-Calculated field offer the possibility to store automatically complex calculations in the storage. Calculated fields are read only by nature, any attempt to assign a value to them will raise an exception. Calculated values are stores as string in the storage and can be searched too. You should only use calculated fields when you need the searching capabilities or it's quite expensive to calculate this field. Calculated fields need a callback (see next paragraph).
+Calculated field offer the possibility to store automatically complex calculations in the storage. Calculated fields are read only by nature, any attempt to assign a value to them will raise an exception. Calculated values are stored as string in the storage and can be searched too. You should only use calculated fields when you need the searching capabilities or it's quite expensive to calculate this field. Calculated fields need a callback (see next paragraph).
 
 ### setCallback()
 This method takes either a string or a closure. When a string is passed this string is assumed to be the name of a method of the owning collection that performs the calculation. This method then takes no parameter and has to return the calculated value. If the parameter is a closure, this function takes the calling propertiescollection as parameter and returns the calculated value the same way as the method.

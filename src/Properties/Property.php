@@ -16,9 +16,12 @@ use Sunhill\Basic\Loggable;
 use Sunhill\ORM\Semantic\Name;
 use Sunhill\ORM\Units\None;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
+use Sunhill\ORM\Properties\Exceptions\InvalidNameException;
 
 class Property extends Loggable
 {
+    
+    const FORBIDDEN_NAMES = ['object','string','integer','float','boolean','collection'];
     
     // ============================ Owner handling =====================================
     
@@ -93,6 +96,16 @@ class Property extends Loggable
     }
     
     // ******************************* Name handling ********************************
+    protected function checkName(string $name)
+    {
+        if ($name[0] == '_') {
+            throw new InvalidNameException("The property name '$name' must not start with an underscore.");
+        }
+        if (in_array(strtolower($name), Property::FORBIDDEN_NAMES)) {
+            throw new InvalidNameException("The property name '$name' is reserved and not allowed.");
+        }
+    }
+    
     /**
      * The name of this property
      * Property->getName() reads, Property->setName() writes
@@ -109,6 +122,7 @@ class Property extends Loggable
      */
     public function setName(string $name): Property
     {
+        $this->checkName($name);
         $this->name = $name;
         return $this;
     }

@@ -6,6 +6,7 @@ use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Units\None;
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Properties\Exceptions\InvalidNameException;
 
 class PropertyTest extends TestCase
 {
@@ -36,6 +37,38 @@ class PropertyTest extends TestCase
             ['setSearchable','getSearchable',true, false],
             ['searchable','getSearchable',true, false],
         ];
+    }
+    
+    /**
+     * @dataProvider NamesProvider
+     * @param unknown $test
+     * @param bool $forbidden
+     */
+    public function testNames($name, bool $forbidden)
+    {
+        if ($forbidden) {
+            $this->expectException(InvalidNameException::class);
+        }
+        $test = new Property();
+        
+        $test->setName($name);
+        
+        $this->assertTrue(true);
+    }
+    
+    public function NamesProvider()
+    {
+        return [
+            ['_forbidden', true],
+            ['string', true],
+            ['object', true],
+            ['float', true],
+            ['integer', true],
+            ['boolean', true],
+            ['collection', true],
+            ['name_with_underscores', false],
+            ['namewith1digit', false],
+        ];    
     }
     
     public function testOwner()
