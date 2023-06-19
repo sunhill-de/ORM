@@ -33,9 +33,9 @@ class ComplexCollection extends Collection {
         $list->time('field_time')->searchable();
         $list->enum('field_enum')->setValues(['testA','testB','testC'])->searchable();
         $list->object('field_object')->setAllowedClasses(['dummy'])->setDefault(null)->searchable();
-        $list->array('field_sarray', PropertyVarchar::class)->searchable();
-        $list->array('field_oarray', PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();
-        $list->map('field_smap', PropertyVarchar::class);
+        $list->array('field_sarray')->setElementType(PropertyVarchar::class)->searchable();
+        $list->array('field_oarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();
+        $list->map('field_smap')->setElementType(PropertyVarchar::class);
         $list->calculated('field_calc')->searchable();
     }
 
