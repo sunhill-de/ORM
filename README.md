@@ -5,6 +5,12 @@ That means you can use a object hirarchy tree that is mapped to the database tab
 ## Main difference to Eloquent
 While Eloquent stores objects in a flat table there is now way to handle dependencies of objects. For example let there be two classes: The ancestor is the class 'Person' the descendant is the class 'Friend'. Every friend is a person but not every person is a friend. So there is no need to store the address to persons but it's useful for friends. Now it's easy to search for all friends with the name 'Smith' (like Friend::search()->where('lastname','Smith') ) and you can do the same for persons (Person::search()->where('lastname','Smith')) In the first example only friends with that name are returned in the second example all persons (including friends) with the name 'Smith' are returned. In Eloquent you can have a model Friend and a model Person but they are not related to each other. 
 
+## Installation
+Use composer to install sunhill/orm and its dependecies
+```
+composer require sunhill-de/orm
+```
+
 ## Basic usage
 To let an object make use of the sunhill ORM framework is has to be derrived by the ORMObject class. This basic class defines the methods commit() and rollback() that stores any changes to the fields (called properties) persistant or undoes them respectivly. The properties have to be defined via the static setup_properties() method. They have to be any descendant of Property. After that they can be access as normal class members.
 
@@ -64,6 +70,27 @@ class extendedtest extends test {
  echo $test->dummystring; // writed DEF
 }
 
+```
+
+## Registration of classes
+Classes should be registered to the class manager to gain access to them. Every class must have an unique name (there are no namespaces yet) that is defined in the setupInfo() method. With this name the classes are access inside the orm system. For the system (in this case the class manager) to find these classes, they have to be registerd via the Classes::registerClass() method. If you use Laravel this registration is best put into a ServiceProvider boot() method.
+```php
+...
+use Sunhill\ORM\Facades\Classes;
+...
+
+class SomeServiceProvider extends ServiceProvider
+{
+...
+    public function boot()
+    {
+		...
+		Classes::registerClass(test::class);
+		Classes::registerClass(externdedtest::class);
+		...
+	 }
+...
+}	 
 ```
 
 ## Core concepts
