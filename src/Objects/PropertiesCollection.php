@@ -19,6 +19,7 @@ namespace Sunhill\ORM\Objects;
 use Sunhill\ORM\Properties\NonAtomarProperty;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
+use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Storage;
 
 use Sunhill\ORM\Properties\Commitable;
@@ -33,13 +34,15 @@ use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Properties\PropertyPropertyCollection;
+use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Interfaces\InteractsWithStorage;
 
 /**
  * Basic class for all classes that have properties.
  *  
  * @author lokal
  */
-abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhill\ORM\Properties\Utils\Commitable
+abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhill\ORM\Properties\Utils\Commitable, InteractsWithStorage
 {
             
     public function __construct()
@@ -505,6 +508,52 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	    $storage = static::getStorage();
 	    static::prepareStorage($storage);
 	    $storage->drop();	    
+	}
+	
+	protected function loadArrayOrMap($property, $value)
+	{
+	    if (empty($value)) {
+	        return;
+	    }
+	    if ($property->getElementType() === PropertyObject::class) {
+	        $property->loadValue(array_map(function($element) {
+	            return Objects::load($element);
+	        }, $value));
+	    } else {
+	        $property->loadValue($value);
+	    }
+	}
+	
+	public function loadFromStorage(StorageBase $storage)
+	{
+	    foreach ($this->properties as $property) {
+	        $name = $property->getName();
+	        switch ($property::class) {
+	            case PropertyArray::class:
+	            case PropertyMap::class:
+	                $this->loadArrayOrMap($property, $storage->$name);
+	                break;
+	            case PropertyObject::class:
+	                $value = $storage->$name;
+	                if (!is_null($value)) {
+	                    $property->loadValue(Objects::load($value));
+	                }
+	                break;
+	            default:
+	                $property->loadValue($storage->$name);
+	                break;
+	        }
+	    }
+	}
+	
+	public function storeToStorage(StorageBase $storage)
+	{
+	    
+	}
+	
+	public function updateToStorage(StorageBase $storage)
+	{
+	    
 	}
 	
 }
