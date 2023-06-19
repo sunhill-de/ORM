@@ -8,9 +8,19 @@ class TestStorage extends StorageBase
 {
     public $last_action = '';
     
+    protected $values = [];
+    
+    public function setValue($key, $value)
+    {
+        $this->values[$key] = $value;    
+    }
+    
     protected function doLoad(int $id)
     {
-        $this->last_action = 'load';    
+        $this->last_action = 'load';
+        foreach ($this->values as $key => $value) {
+            $this->$key = $value;
+        }
     }
     
     protected function doStore(): int
