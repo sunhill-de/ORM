@@ -2,9 +2,8 @@
 
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
-use Sunhill\ORM\Objects\PropertyCollection;
 use Sunhill\ORM\Tests\TestCase;
-use Sunhill\ORM\Objects\PropertyCollectionException;
+use Sunhill\ORM\Objects\PropertiesCollectionException;
 
 class PropertyCollection_infoTest extends TestCase
 {
@@ -46,7 +45,7 @@ class PropertyCollection_infoTest extends TestCase
     
     public function testAccessError()
     {
-        $this->expectException(PropertyCollectionException::class);
+        $this->expectException(PropertiesCollectionException::class);
         $test = DummyPropertyCollection::getInfo('something');
     }
     

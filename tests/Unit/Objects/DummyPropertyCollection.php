@@ -2,11 +2,10 @@
 
 namespace Sunhill\ORM\Tests\Unit\Objects;
 
-use Sunhill\ORM\Objects\PropertyCollection;
-use Sunhill\ORM\Objects\PropertyCollectionException;
 use Sunhill\ORM\Objects\PropertyList;
+use Sunhill\ORM\Objects\PropertiesCollection;
 
-class DummyPropertyCollection extends PropertyCollection
+class DummyPropertyCollection extends PropertiesCollection
 {
     
     protected static function setupInfos()

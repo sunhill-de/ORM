@@ -10,6 +10,7 @@ use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 use Sunhill\ORM\Properties\PropertyMap;
+use Sunhill\ORM\Tests\Utils\TestStorage;
 
 class DeleteTest extends DatabaseTestCase
 {
@@ -20,10 +21,10 @@ class DeleteTest extends DatabaseTestCase
     public function testDummyCollectionDelete()
     {
         $test = new DummyCollection();
-        $storage = $this->mock(DummyStorage::class, function ($mock) {
+        $storage = $this->mock(TestStorage::class, function ($mock) {
            $mock->shouldReceive('delete')->once();
            $mock->shouldReceive('setType')->once();
-           $mock->shouldReceive('setEntity')->once();
+           $mock->shouldReceive('createEntity')->once();
            $mock->shouldReceive('setSourceType')->once();
         });
         $storage->setType(DummyCollection::class);
@@ -40,7 +41,7 @@ class DeleteTest extends DatabaseTestCase
     public function testComplexCollectionLoading()
     {
         $test = new ComplexCollection();
-        $storage = new DummyStorage(ComplexCollection::class);
+        $storage = new TestStorage();
         
         Storage::shouldReceive('createStorage')->once()->andReturn($storage);
         
