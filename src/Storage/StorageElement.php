@@ -21,6 +21,8 @@ class StorageElement
     
     protected $storage_id;
     
+    protected $element_type;
+    
     public function setName(string $name): StorageElement
     {
         $this->name = $name;
@@ -76,4 +78,15 @@ class StorageElement
         return $this->storage_id;
     }
         
+    public function setElementType(string $element_type): StorageElement
+    {
+        $this->element_type = $element_type;
+        return $this;
+    }
+    
+    public function getElementType(): string
+    {
+        return $this->element_type;
+    }
+    
 }
