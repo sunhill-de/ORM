@@ -3,6 +3,10 @@ namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Facades\Storage;
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyArray;
+use Sunhill\ORM\Properties\PropertyMap;
 
 trait HandlesStorage
 {
@@ -89,7 +93,10 @@ trait HandlesStorage
     {
         $properties = $class::getPropertyDefinition();
         foreach ($properties as $property) {
-            $storage->setEntity($property->getName(),null, $class::getInfo('table'), $property::class);
+            $entity = $storage->createEntity($property->getName(), $class::getInfo('table'))->setType($property::class);
+            if (in_array($property::class,[PropertyArray::class,PropertyMap::class])) {
+                $entity->setElementType($property->getElementType());
+            }
         }
     }
     
