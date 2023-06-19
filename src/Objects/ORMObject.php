@@ -338,7 +338,10 @@ class ORMObject extends PropertiesCollection
 	
 	protected static function getClassList()
 	{
-	    return static::getInheritance();
+	    $list = static::getInheritance(true);
+	    return array_map(function($entry) {
+	        return Classes::getNamespaceOfClass($entry);
+	    }, $list);
 	}
 	
 	/**
@@ -347,8 +350,8 @@ class ORMObject extends PropertiesCollection
 	protected static function setupProperties(PropertyList $list)
 	{
 	//    $list->addProperty(PropertyTags::class,'tags')->searchable();
-	    $list->timestamp('created_at');
-	    $list->timestamp('updated_at');
+	    $list->datetime('created_at');
+	    $list->datetime('updated_at');
 	    $list->varchar('uuid')->searchable()->setMaxLen(20)->default(null)->nullable();
 	    $list->integer('obj_owner')->default(0);
 	    $list->integer('obj_group')->default(0);
