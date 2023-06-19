@@ -35,4 +35,15 @@ $object->attribute_name = 10;
 
 The orm system searches for attributes whenever you try to assign a property that does not exist in the class. 
 
-###
+### Queries
+Attributes can be queries via the attributes facade. 
+```php
+Attributes::query()->get();   // Returns all attributes
+Attributes::query()->count(); // Returns the number of attributes
+Attributes::query()->where('name', 'attribute_name')->first(); // Returns the attribute with the name **attribute_name** or null if no such attribute exists.
+Attributes::query()->where('assigned')->get(); // Return all attributes that are assigned to at least one object
+Attributes::query()->where('allowed_classes','matches',SomeClass::class)->get(); // Returns all attributes that are allowed for SomeClass or one of its children
+Attributes::query()->insert([...]); // Inserts a new attribute (see above)
+Attributes::query()->where('name','attribute_name')->update(['attribute_name'=>'new_name']); // Renames the attribute **attribute_name** to **new_name**
+Attributes::query()->where('name','attribute_name')->delete(); // Deletes the attribute with the name **attribute_name**
+Attributes::query()->delete(); // **Be careful:** Deletes all attributes
