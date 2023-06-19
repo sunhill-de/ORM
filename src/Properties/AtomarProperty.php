@@ -21,7 +21,7 @@ use Sunhill\ORM\Properties\Exceptions\InvalidValueException;
 use Sunhill\ORM\Properties\Exceptions\WriteToReadonlyException;
 use Sunhill\ORM\Properties\Exceptions\UninitializedPropertyException;
 
-class AtomarProperty extends Property implements InteractsWithStorage, Commitable
+class AtomarProperty extends Property implements Commitable
 {
     
 // =============================== Class =======================================    
@@ -294,7 +294,6 @@ class AtomarProperty extends Property implements InteractsWithStorage, Commitabl
         }
         $this->handleShadow();
         $this->handleValue($value);
-        $this->initialized = true;
         return $this;
     }
     
@@ -304,7 +303,15 @@ class AtomarProperty extends Property implements InteractsWithStorage, Commitabl
      */
     protected function doSetValue($value)
     {
-        $this->value = $value;
+        $this->loadValue($value);
+    }
+    
+    public function loadValue($value)
+    {
+        $this->value  = $value;
+        $this->shadow = $value;
+        $this->dirty  = false;
+        $this->initialized = true;
     }
     
     final public function &getValue()
@@ -378,14 +385,6 @@ class AtomarProperty extends Property implements InteractsWithStorage, Commitabl
         ]);
     }
     
-    public function loadFromStorage(StorageBase $storage)
-    {
-        $name = $this->getName();
-        $this->setValue($storage->$name);
-        $this->setShadow($storage->$name);
-        $this->setDirty(false);
-    }
-
 // =============================== Commitable =====================================    
     public function commit()
     {
