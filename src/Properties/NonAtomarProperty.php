@@ -16,7 +16,7 @@ use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Interfaces\InteractsWithStorage;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
 
-abstract class NonAtomarProperty extends Property implements InteractsWithStorage
+abstract class NonAtomarProperty extends Property
 {
     
     protected function checkLoadingState()
@@ -83,32 +83,5 @@ abstract class NonAtomarProperty extends Property implements InteractsWithStorag
             throw new PropertyException(__("Unknown property ':name'",['name'=>$name]));
         }
     }
-        
-    public function storeToStorage(StorageBase $storage)
-    {
-        $this->walkProperties(function($property, $payload) {
-            $property->storeToStorage($payload);
-        }, $storage);
-        $this->walkProperties(function($property) {
-            $property->commit();
-        }, $storage);
-    }
-    
-    public function updateToStorage(StorageBase $storage)
-    {
-        $this->walkProperties(function($property, $payload) {
-            $property->updateToStorage($payload);
-        }, $storage);
-        $this->walkProperties(function($property) {
-            $property->commit();
-        }, $storage);                
-    }
-    
-    public function loadFromStorage(StorageBase $storage)
-    {
-        $this->walkProperties(function($property, $payload) {
-            $property->loadFromStorage($payload);
-        }, $storage);
-    }
-    
+            
 }
