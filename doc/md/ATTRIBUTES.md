@@ -47,3 +47,4 @@ Attributes::query()->insert([...]); // Inserts a new attribute (see above)
 Attributes::query()->where('name','attribute_name')->update(['attribute_name'=>'new_name']); // Renames the attribute **attribute_name** to **new_name**
 Attributes::query()->where('name','attribute_name')->delete(); // Deletes the attribute with the name **attribute_name**
 Attributes::query()->delete(); // **Be careful:** Deletes all attributes
+```

@@ -1,45 +1,11 @@
 # ORMObject
 
-The ORMObject is the core object of the ORM system an the ancestor of all storable objects. Every class that is derrived from ORMObject has at least to define the static function setupInfos() that gives fundamental informations about the class. Normally a derrived class also defines the setupProperties() function that defines the properties of this class.
+To map a hirarchical class relation to a database system there is the class ORMObject. Every classes that make use of this mechanism should be derrived from ORMObject. If you just need plain class to database mapping without inheritance you should consider useing a [Collection](doc/md/COLLECTION.md).
+
+Every class that is derrived from ORMObject has at least to define the static function setupInfos() that gives fundamental informations about the class. Normally a derrived class also defines the setupProperties() function that defines the properties of this class.
 
 ## Static methods
-### setupInfos()
-It is possible to assign informations to a class. This is done in the setupInfos() method via the static addInfo() method. The first parameter of this method is the key of the information the second paremeter is the value of the information. A class can define any information it likes but at least these have to or should be defined:
-
-- name = The name of this class. The name is used internally for indentification of the class and should not be confused with the php class name 
-- table = The id for the storage (usually the name of the class main table)
-- description = A short description what this class class and what's its purpose	    	    
-
-You can can add more informations as you like.
-
-## addInfo(string $key, $value)
-To set a single key, use this method. It assigns the info identified by $key with the value.
-
-## getInfo(string $key, $default)
-To retrieve the value that was set with setInfo() earlier use getInfo. The parameter $key is the same that was uses in setInfo. If the key wasn't defined earlier the method checks if there is a default value. If yes, return this value otherwise raise an exception.
-
-Example for setupInfos/getInfo/setInfo:
-```php
-class test extends ORMClass
-{
-	protected static setupInfos()
-	{
-	    static::addInfo('name', 'test');
-	    static::addInfo('table', 'tests');
-	    static::addInfo('description', 'A demonstration class.');
-		static::addInfo('foo', 'bar');
-	}
-	
-}
-
-echo test::getInfo('name'); // returns 'test'
-echo test::getInfo('foo');  // returns 'bar';
-echo test::getInfo('notexisting','default'); // returns 'default'
-echo test::getInfo('notexisting'); // raises an exception
-
-```
-
-### setupProperties(PropertyList $list)
+Collections and ORMObject share the same mechanism for defining properties and storing general class informations. For details see [Common static methods](doc/md/DEFINING.md).
 
 ## Dynamic method
 
