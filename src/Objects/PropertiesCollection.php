@@ -544,6 +544,12 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	                break;
 	        }
 	    }
+	    $this->loadAdditional($storage);
+	}
+	
+	protected function loadAdditional(StorageBase $storage)
+	{
+	    
 	}
 	
 	public function storeToStorage(StorageBase $storage)
