@@ -45,6 +45,7 @@ trait HandlesStorage
         $storage->load($this->getID());
         $this->setState('loading');
         $this->loadFromStorage($storage);
+        $this->setState('normal');
     }
  
     protected function doCommit()
