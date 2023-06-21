@@ -18,8 +18,12 @@ class TestStorage extends StorageBase
     protected function doLoad(int $id)
     {
         $this->last_action = 'load';
-        foreach ($this->values as $key => $value) {
-            $this->$key = $value;
+        foreach ($this->values as $key => $value) {            
+            if ($key == 'attributes') {
+                $this->entities['attributes'] = $value;
+            } else {
+                $this->getEntity($key)->setValue($value);
+            }
         }
     }
     
