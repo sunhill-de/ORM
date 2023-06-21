@@ -16,6 +16,7 @@ use Sunhill\ORM\Facades\Attributes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Storage;
+use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Search\QueryBuilder;
 use Sunhill\ORM\Properties\PropertyFloat;
@@ -127,6 +128,7 @@ class ORMObject extends PropertiesCollection
 	    
 	}
 	
+	
 // ============================ Storagefunctions  =======================================	
 
 	public static function search() {
@@ -173,26 +175,41 @@ class ORMObject extends PropertiesCollection
 	    }
 	}
 	
-	/**
-	 * Read the attributes from the storage
-	 */
-	protected function loadAttributes(StorageBase $storage) 
-    {
-	    if (empty($storage->getEntity('attributes'))) {
-	        return;
-	    }
-	    foreach ($storage->getEntity('attributes') as $value) {
-	        $property = $this->dynamicAddProperty($value->name, $value->type);
-	        $property->setValue($value->value);        
+	protected function loadTag(int $tag_id)
+	{
+	    $this->tags[] = Tags::loadTag($tag_id);
+	}
+	
+	protected function loadTags(StorageBase $storage)
+	{
+	    if ($storage->hasEntity('tags')) {
+	        foreach ($storage->getEntity('tags')->getValue() as $tag) {
+	            $this->loadTag($tag);
+	        }
 	    }
 	}
 	
-	public function loadFromStorage(StorageBase $storage)
+	protected function loadAttribute(\Stdclass $attribute)
 	{
-	    parent::loadFromStorage($storage);
+	    $property = $this->dynamicAddProperty($attribute->name, $attribute->type);
+	    $property->setValue($attribute->value);	    
+	}
+	
+	protected function loadAttributes(StorageBase $storage)
+	{
+	    if ($storage->hasEntity('attributes')) {
+	        foreach ($storage->getEntity('attributes') as $attribute) {
+	            $this->loadAttribute($attribute);
+	        }
+	    }
+	}
+	
+	protected function loadAdditional(StorageBase $storage)
+	{
+	    $this->loadTags($storage);
 	    $this->loadAttributes($storage);
 	}
-	
+		
 // ========================= Insert =============================	
 	/**
      * This method is called by the public method insert and 
