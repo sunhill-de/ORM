@@ -6,6 +6,7 @@ use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Storage;
+use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\Tests\Utils\TestStorage;
 
 use Sunhill\ORM\Properties\PropertyTags;
@@ -22,14 +23,18 @@ use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Tests\Unit\CommonStorage\DummyLoadStorage;
+use Sunhill\ORM\Objects\Tag;
 
 
+/**
+ * @group loadobject
+ * @group load
+ * @author klaus
+ */
 class LoadTest extends TestCase
 {
     
-    /**
-     * @group loadobject
-     */
     public function testDummyPreloading()
     {
         Classes::registerClass(Dummy::class);
@@ -53,9 +58,6 @@ class LoadTest extends TestCase
         $expected_storage->assertStorageEquals($storage);        
     }
     
-    /**
-     * @group loadobject
-     */
     public function testTestparentPreloading()
     {
         Classes::registerClass(TestParent::class);
@@ -77,29 +79,28 @@ class LoadTest extends TestCase
         $expected_storage->assertStorageEquals($storage);
     }
 
-    /**
-     * @group loadobject
-     */
     public function testDummyLoad()
     {
         Classes::registerClass(TestParent::class);
         Classes::registerClass(Dummy::class);
         
         $test = new Dummy();
-        $storage = new TestStorage();
+        $storage = new DummyLoadStorage();
         
         $storage->setValue('dummyint',123);
+        $tag = new Tag();
+        $tag->load(1);
         
         Storage::shouldReceive('createStorage')->once()->andReturn($storage);
+        Tags::shouldReceive('loadTag')->andReturn($tag);
         
         $test->load(1);
         
         $this->assertEquals(123,$test->dummyint);        
+        $this->assertEquals(444, $test->general_attribute);
+        $this->assertEquals(1, $test->tags[0]->getID());
     }
     
-    /**
-     * @group loadobject
-     */
     public function testTestparentLoad()
     {
         Classes::registerClass(TestParent::class);

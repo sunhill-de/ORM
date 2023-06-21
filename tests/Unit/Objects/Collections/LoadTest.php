@@ -20,14 +20,17 @@ use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyText;
 use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Objects\ORMObject;
-
+use Sunhill\ORM\Tests\Unit\CommonStorage\DummyCollectionLoadStorage;
+/**
+ * @group loadcollection
+ * @group load
+ * @author klaus
+ *
+ */
 
 class LoadTest extends TestCase
 {
     
-    /**
-     * @group loadcollection
-     */
     public function testDummyCollectionPreloading()
     {
         $test = new DummyCollection();
@@ -41,9 +44,6 @@ class LoadTest extends TestCase
         $expected_storage->assertStorageEquals($storage);        
     }
     
-    /**
-     * @group loadcollection
-     */
     public function testComplexCollectionPreloading()
     {
         $test = new ComplexCollection();
@@ -68,14 +68,10 @@ class LoadTest extends TestCase
         $expected_storage->assertStorageEquals($storage);
     }
     
-    /**
-     * @group loadcollection
-     */
     public function testDummyCollectionLoading()
     {
         $test = new DummyCollection();
-        $storage = new TestStorage();
-        $storage->setValue('dummyint',123);
+        $storage = new DummyCollectionLoadStorage();
         
         Storage::shouldReceive('createStorage')->once()->andReturn($storage);
         
@@ -84,9 +80,6 @@ class LoadTest extends TestCase
         $this->assertEquals(123, $test->dummyint);
     }
     
-    /**
-     * @group loadcollection
-     */
     public function testComplexCollectionLoading()
     {
         $test = new ComplexCollection();
@@ -138,9 +131,6 @@ class LoadTest extends TestCase
         $this->assertEquals('ValueB',$test->field_smap['KeyB']);        
     }
 
-    /**
-     * @group loadcollection
-     */
     public function testComplexEmptyCollectionLoading()
     {
         $test = new ComplexCollection();
