@@ -36,6 +36,7 @@ use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Properties\PropertyPropertyCollection;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Interfaces\InteractsWithStorage;
+use Sunhill\ORM\Properties\PropertyTags;
 
 /**
  * Basic class for all classes that have properties.
@@ -538,6 +539,9 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	                if (!is_null($value)) {
 	                    $property->loadValue(Objects::load($value));
 	                }
+	                break;
+	            case PropertyTags::class:
+	                // @todo Quite dirty hack, Tags are loaded by loadAdditional()
 	                break;
 	            default:
 	                $property->loadValue($storage->$name);
