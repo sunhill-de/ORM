@@ -16,17 +16,20 @@ interface HandlesProperties
     public function handlePropertyArray($property);
     public function handlePropertyBoolean($property);
     public function handlePropertyCalculated($property);
+    public function handlePropertyCollection($property);
     public function handlePropertyDate($property);
     public function handlePropertyDateTime($property);
     public function handlePropertyEnum($property);
+    public function handlePropertyExternalReference($property);
     public function handlePropertyFloat($property);
+    public function handlePropertyInformation($property);
     public function handlePropertyInteger($property);
+    public function handlePropertyKeyfield($property);
     public function handlePropertyMap($property);
     public function handlePropertyObject($property);
     public function handlePropertyTags($property);
     public function handlePropertyText($property);
     public function handlePropertyTime($property);
-    public function handlePropertyTimestamp($property);
     public function handlePropertyVarchar($property);
 }
 
