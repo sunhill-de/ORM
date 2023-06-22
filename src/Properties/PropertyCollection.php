@@ -21,15 +21,26 @@ use Sunhill\ORM\Properties\Utils\ClassCheck;
 class PropertyCollection extends AtomarProperty
 {
 	
-    use ClassCheck;
-    
 	protected static $type = 'integer';
 		
 	protected $initialized = true;
 	
+	protected $allowed_collection = '';
+	
 	public function isValid($input): bool
 	{
-	    return $this->isAllowedCollection($input);
+        return is_a($input, $this->allowed_collection);
+	}
+
+	public function setAllowedCollection(string $allowed_collection): PropertyCollection
+	{
+	   $this->allowed_collection = $allowed_collection;
+	   return $this;
+	}
+	
+	public function getAllowedCollection(): string
+	{
+	   return $this->allowed_collection;    
 	}
 	
 	public function convertValue($input)
@@ -40,23 +51,4 @@ class PropertyCollection extends AtomarProperty
 	    return $input;
 	}
 	
-	public function loadFromStorage(StorageBase $storage) 
-	{
-        $name = $this->getName();
-	    $object_id = $storage->$name;	    
-	    if (!empty($object_id)) {
-	        $this->doSetValue($this->convertValue($object_id));
-	    }
-	}
-	
-	public function insertIntoStorage(StorageBase $storage) 
-	{
-        $storage->setEntity($this->getName(), $this->value->getID());
-	}
-
-	public function updateToStorage(StorageBase $storage)
-	{
-	    if ($this->isDirty()) {
-	    }
-	}
 }
