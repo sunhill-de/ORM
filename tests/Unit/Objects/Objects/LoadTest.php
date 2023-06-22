@@ -46,14 +46,14 @@ class LoadTest extends TestCase
         
         $expected_storage = new TestStorage();
         $expected_storage->createEntity('dummyint','dummies')->setType(PropertyInteger::class);
-        $expected_storage->createEntity('uuid','objects')->setType(PropertyVarchar::class);
-        $expected_storage->createEntity('created_at','objects')->setType(PropertyDatetime::class);
-        $expected_storage->createEntity('updated_at','objects')->setType(PropertyDatetime::class);
-        $expected_storage->createEntity('obj_owner','objects')->setType(PropertyInteger::class);
-        $expected_storage->createEntity('obj_group','objects')->setType(PropertyInteger::class);
-        $expected_storage->createEntity('obj_read','objects')->setType(PropertyInteger::class);
-        $expected_storage->createEntity('obj_edit','objects')->setType(PropertyInteger::class);
-        $expected_storage->createEntity('obj_delete','objects')->setType(PropertyInteger::class);
+        $expected_storage->createEntity('_uuid','objects')->setType(PropertyVarchar::class);
+        $expected_storage->createEntity('_created_at','objects')->setType(PropertyDatetime::class);
+        $expected_storage->createEntity('_updated_at','objects')->setType(PropertyDatetime::class);
+        $expected_storage->createEntity('_owner','objects')->setType(PropertyInteger::class);
+        $expected_storage->createEntity('_group','objects')->setType(PropertyInteger::class);
+        $expected_storage->createEntity('_read','objects')->setType(PropertyInteger::class);
+        $expected_storage->createEntity('_edit','objects')->setType(PropertyInteger::class);
+        $expected_storage->createEntity('_delete','objects')->setType(PropertyInteger::class);
         
         $expected_storage->assertStorageEquals($storage);        
     }
@@ -74,7 +74,7 @@ class LoadTest extends TestCase
         $expected_storage->createEntity('parentoarray','testparents')->setType(PropertyArray::class)->setElementType(PropertyObject::class);
         
         $expected_storage->createEntity('tags','objects')->setType(PropertyTags::class);        
-        $expected_storage->createEntity('uuid','objects')->setType(PropertyVarchar::class);
+        $expected_storage->createEntity('_uuid','objects')->setType(PropertyVarchar::class);
         
         $expected_storage->assertStorageEquals($storage);
     }

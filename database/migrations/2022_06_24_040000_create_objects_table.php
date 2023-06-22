@@ -16,13 +16,14 @@ class CreateObjectsTable extends Migration
         Schema::create('objects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('classname');
-            $table->string('uuid',40);
-            $table->integer('obj_owner')->default(0);
-            $table->integer('obj_group')->default(0);
-            $table->integer('obj_read')->unsigned()->default(7);
-            $table->integer('obj_edit')->unsigned()->default(7);
-            $table->integer('obj_delete')->unsigned()->default(7);
-            $table->timestamps();            
+            $table->string('_uuid',40);
+            $table->integer('_owner')->default(0);
+            $table->integer('_group')->default(0);
+            $table->integer('_read')->unsigned()->default(7);
+            $table->integer('_edit')->unsigned()->default(7);
+            $table->integer('_delete')->unsigned()->default(7);
+            $table->datetime('_created_at')->nullable()->default(null);
+            $table->datetime('_updated_at')->nullable()->default(null);
         });
     }
 

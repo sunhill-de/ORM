@@ -61,7 +61,7 @@ class ObjectChecksTest extends CheckTestCase
     {
         return [
             ['check_EveryObjectHasAParentEntry', function() { DB::table('dummies')->where('id',5)->delete(); }],
-            ['check_ObjectExistance', function() { DB::table('objects')->insert(['id'=>1000,'uuid'=>'','classname'=>'badclass']); }],
+            ['check_ObjectExistance', function() { DB::table('objects')->insert(['id'=>1000,'_uuid'=>'','classname'=>'badclass']); }],
             ];
     }
     

@@ -367,14 +367,15 @@ class ORMObject extends PropertiesCollection
 	protected static function setupProperties(PropertyList $list)
 	{
 	//    $list->addProperty(PropertyTags::class,'tags')->searchable();
-	    $list->datetime('created_at');
-	    $list->datetime('updated_at');
-	    $list->varchar('uuid')->searchable()->setMaxLen(20)->default(null)->nullable();
-	    $list->integer('obj_owner')->default(0);
-	    $list->integer('obj_group')->default(0);
-	    $list->integer('obj_read')->default(7);
-	    $list->integer('obj_edit')->default(7);
-	    $list->integer('obj_delete')->default(7);
+	    $list->forceAddProperty(PropertyDatetime::class, '_created_at');
+	    $list->forceAddProperty(PropertyDatetime::class, '_updated_at');
+	    $list->forceAddProperty(PropertyVarchar::class, '_uuid')->setMaxLen(20)->default(null)->nullable();
+	    $list->forceAddProperty(PropertyInteger::class, '_owner')->default(0);
+	    $list->forceAddProperty(PropertyInteger::class, '_group')->default(0);
+	    $list->forceAddProperty(PropertyInteger::class, '_read')->default(7);
+	    $list->forceAddProperty(PropertyInteger::class, '_edit')->default(7);
+	    $list->forceAddProperty(PropertyInteger::class, '_delete')->default(7);
+	    
 	    $list->tags();
 	}
 

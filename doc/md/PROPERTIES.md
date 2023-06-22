@@ -5,7 +5,7 @@ A property is a like a member variable of an Collection or ORMObject. They are a
 ## Names of properties
 The rules for property names are the same as for php variables, any alphanumeric character including "_" can be used, the name must't start with a digit. However, there are a few more restrictions for naming:
 - A name must't start with an underscore ("_") because these names are reserved internally.
-- The name must not be **tag**, **attributes** 
+- The name must not be **tags**, **attributes**, **id**, **classname** 
 
 ## Modifiers for all properties
 While defining properties you can modifiy some parameters of the property. Modifier always return the property object so it is possible to build a modifier chain. These are the modifiers that are avaiable to all properties:
