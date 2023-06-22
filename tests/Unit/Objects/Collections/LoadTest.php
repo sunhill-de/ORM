@@ -21,6 +21,7 @@ use Sunhill\ORM\Properties\PropertyText;
 use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Unit\CommonStorage\DummyCollectionLoadStorage;
+use Sunhill\ORM\Tests\Unit\CommonStorage\ComplexCollectionLoadStorage;
 /**
  * @group loadcollection
  * @group load
@@ -83,22 +84,8 @@ class LoadTest extends TestCase
     public function testComplexCollectionLoading()
     {
         $test = new ComplexCollection();
-        $storage = new TestStorage(ComplexCollection::class);
-        
-        $storage->setValue('field_int',123);
-        $storage->setValue('field_char','ABC');
-        $storage->setValue('field_float',1.23);
-        $storage->setValue('field_text','Lorem ipsum');
-        $storage->setValue('field_datetime', '2023-05-10 11:43:00');
-        $storage->setValue('field_date', '2023-05-10');
-        $storage->setValue('field_time', '11:43:00');
-        $storage->setValue('field_enum', 'testC');
-        $storage->setValue('field_object', 1);
-        $storage->setValue('field_oarray', [2,3,4]);
-        $storage->setValue('field_sarray', ['AAA','BBB','CCC']);
-        $storage->setValue('field_smap', ['KeyA'=>'ValueA','KeyB'=>'ValueB']);
-        $storage->setValue('field_calc', '123A');
-        
+        $storage = new ComplexCollectionLoadStorage();
+                
         Storage::shouldReceive('createStorage')->once()->andReturn($storage);
 
         $obj1 = new ORMObject();
