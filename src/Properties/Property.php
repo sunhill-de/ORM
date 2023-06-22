@@ -21,7 +21,7 @@ use Sunhill\ORM\Properties\Exceptions\InvalidNameException;
 class Property extends Loggable
 {
     
-    const FORBIDDEN_NAMES = ['object','string','integer','float','boolean','collection'];
+    const FORBIDDEN_NAMES = ['object','string','integer','float','boolean','collection', 'id', 'classname'];
     
     // ============================ Owner handling =====================================
     
@@ -123,6 +123,17 @@ class Property extends Loggable
     public function setName(string $name): Property
     {
         $this->checkName($name);
+        $this->name = $name;
+        return $this;
+    }
+    
+    /**
+     * Skips the name checking (for system properties)
+     * @param string $name
+     * @return Proeprty
+     */
+    public function forceName(string $name): Property
+    {
         $this->name = $name;
         return $this;
     }

@@ -67,6 +67,19 @@ class PropertyList
         return $property;
     }
     
+    public function forceAddProperty(string $class, string $name)
+    {
+        $property = new $class();
+        $property->forceName($name);
+        if (!is_null($this->owner)) {
+            $property->setOwner($this->owner);
+        }
+        
+        $this->list[$name] = $property;
+        
+        return $property;        
+    }
+    
     /**
      * Adds an integer field to the property list
      * 
