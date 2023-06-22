@@ -101,7 +101,7 @@ class LoadTest extends TestCase
         $this->setProtectedProperty($obj4, 'id', 4);
         Objects::shouldReceive('load')->with(4)->andReturn($obj4);
         
-        $test->load(1);
+        $test->load(9);
         
         $this->assertEquals(123,$test->field_int);
         $this->assertEquals('ABC',$test->field_char);
