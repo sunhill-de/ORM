@@ -309,19 +309,6 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	   return $this->value[$key];
 	}
 	
-	public function loadFromStorage(StorageBase $storage)
-	{
-        $this->clear();
-        $name = $this->getName();
-        if (!$storage->hasEntity($name) || is_null($storage->$name)) {
-            return;
-        }
-            
-        foreach ($storage->$name as $key => $value) {
-            $this->setElement($key, $value);
-        }
-	}
-
 	/**
 	 * Returns
 	 * @param unknown $input

@@ -231,38 +231,7 @@ class PropertyTags extends PropertyArrayBase
 	    }
 	}
 
-// ================================ Storage management ================================	
-	public function storeToStorage(StorageBase $storage)
-	{
-	    $result = [];
-	    foreach ($this->value as $tag) {
-	        $result[] = $tag->getID();
-	    }
-	    $storage->setEntity('tags', $result);
-	}
-	
-	public function updateToStorage(StorageBase $storage)
-	{
-	    $storage->setEntity($this->getName(), [
-	        'value'=>$this->getValue(),
-	        'shadow'=>$this->getShadow()
-	    ]);
-	}
-	
-	public function loadFromStorage(StorageBase $storage)
-	{
-	    if (empty($storage->getEntity('tags'))) {
-	        return;
-	    }
-	    foreach ($storage->getEntity('tags') as $tag_id) {
-	        $tag = new Tag();
-	        $tag->load($tag_id);
-	        $this->value[] = $tag;
-	        $this->shadow[] = $tag;
-	        $this->dirty = false;	        
-	    }
-	}
-	
+// ================================ Storage management ================================		
 	protected function handleArrayValue($value)
 	{
 	    if (is_int($value)) {

@@ -94,23 +94,4 @@ class PropertyCalculated extends AtomarProperty
 	    return true;
 	}
 	
-	/**
-	 * Inserts its value into the storage. if not already initialized, do this first
-	 */
-	protected function doInsert(StorageBase $storage, string $name) 
-	{
-	    if (!$this->initialized) {
-	        $this->recalculate();
-	    }
-	    parent::doInsert($storage,$name);
-	}
-
-	public function loadFromStorage(StorageBase $storage)
-	{
-	   $name = $this->getName();
-	   $this->value = $storage->$name;
-	   $this->setDirty(false);
-	   $this->initialized = true;
-	}
-	
 }

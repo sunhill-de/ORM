@@ -371,19 +371,6 @@ class AtomarProperty extends Property implements Commitable
      */
     protected $initialized = false;
     
-// ============================ Storage interaction =================================    
-    public function storeToStorage(StorageBase $storage)
-    {
-        $storage->setEntity($this->getName(), $this->getValue());        
-    }
-    
-    public function updateToStorage(StorageBase $storage)
-    {
-        $storage->setEntity($this->getName(), [
-            'value'=>$this->getValue(), 
-            'shadow'=>$this->getShadow()
-        ]);
-    }
     
 // =============================== Commitable =====================================    
     public function commit()

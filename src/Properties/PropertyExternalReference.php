@@ -67,19 +67,4 @@ class PropertyExternalReference extends AtomarProperty
 	    return true;
 	}
 	
-	public function loadFromStorage(StorageBase $storage) 
-	{
-	   // External references do not store itself to storages
-	}
-	
-	public function insertIntoStorage(StorageBase $storage) 
-	{
-	    // External references do not store itself to storages
-	}
-
-	public function updateToStorage(StorageBase $storage)
-	{
-	    // External references do not store itself to storages
-	}
-	
 }
