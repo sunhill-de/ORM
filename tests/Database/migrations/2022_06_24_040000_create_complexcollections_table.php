@@ -24,6 +24,7 @@ class CreateComplexCollectionsTable extends Migration
             $table->time('field_time');
             $table->enum('field_enum',['testA','testB','testC']);
             $table->integer('field_object')->nullable()->default(null);
+            $table->integer('field_collection')->nullable()->default(null);
             $table->integer('nosearch')->nullable(0)->default(1);
             $table->string('field_calc');
         });

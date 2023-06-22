@@ -26,6 +26,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 		        'field_time'=>'17:45:00',
 		        'field_enum'=>'testC',
 		        'field_object'=>1,
+		        'field_collection'=>1,
 		        'field_calc'=>'111A'
 		    ],
 	        [
@@ -39,6 +40,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'17:45:00',
 	            'field_enum'=>'testB',
 		        'field_object'=>4,
+	            'field_collection'=>2,
 	            'field_calc'=>'123A'
 	        ],
 	        [
@@ -52,6 +54,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'10:10:10',
 	            'field_enum'=>'testC',
 	            'field_object'=>5,
+	            'field_collection'=>2,
 	            'field_calc'=>'222A'
 	        ],
 	        [
@@ -65,6 +68,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'01:10:00',
 	            'field_enum'=>'testA',
 	            'field_object'=>4,
+	            'field_collection'=>3,	            
 	            'field_calc'=>'123A'
 	            
 	        ],
@@ -79,6 +83,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'13:00:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>null,
+	            'field_collection'=>4,	            
 	            'field_calc'=>'234A'
 	        ],
 	        [
@@ -92,6 +97,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'04:15:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>null,
+	            'field_collection'=>4,
 	            'field_calc'=>'555A'
 	        ],
 	        [
@@ -105,6 +111,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'17:45:00',
 	            'field_enum'=>'testB',
 	            'field_object'=>null,
+	            'field_collection'=>null,	            
 	            'field_calc'=>'432A'
 	        ],
 	        [
@@ -118,6 +125,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'17:45:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>null,
+	            'field_collection'=>6,	            
 	            'field_calc'=>'700A'
 	        ],
 	        
@@ -132,6 +140,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'11:45:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>3,
+	            'field_collection'=>6,	            
 	            'field_calc'=>'123A'
 	            
 	        ],
@@ -146,6 +155,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'17:45:00',
 	            'field_enum'=>'testB',
 	            'field_object'=>4,
+	            'field_collection'=>4,	            
 	            'field_calc'=>'800A'
 	            
 	        ],
@@ -160,6 +170,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'17:45:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>5,
+	            'field_collection'=>null,	            
 	            'field_calc'=>'900A'
 	            
 	        ],
@@ -174,6 +185,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'10:45:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>2,
+	            'field_collection'=>6,	            
 	            'field_calc'=>'666A'
 	        ],
 	        [
@@ -187,6 +199,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'00:00:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>null,
+	            'field_collection'=>5,	            
 	            'field_calc'=>'580A'
 	        ],
 	        [
@@ -200,6 +213,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'00:11:00',
 	            'field_enum'=>'testB',
 	            'field_object'=>null,
+	            'field_collection'=>5,	            
 	            'field_calc'=>'432A'
 	        ],
 	        [
@@ -213,6 +227,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'00:00:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>null,
+	            'field_collection'=>3,	            
 	            'field_calc'=>'345A'
 	        ],
 	        [
@@ -226,6 +241,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'23:59:59',
 	            'field_enum'=>'testC',
 	            'field_object'=>null,
+	            'field_collection'=>6,	            
 	            'field_calc'=>'723A'
 	        ],
 	        
@@ -240,6 +256,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'17:45:00',
 	            'field_enum'=>'testC',
 	            'field_object'=>2,
+	            'field_collection'=>7,	            
 	            'field_calc'=>'999A'	            
 	        ],
 	        [
@@ -253,6 +270,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	            'field_time'=>'23:59:59',
 	            'field_enum'=>'testB',
 	            'field_object'=>null,
+	            'field_collection'=>null,	            
 	            'field_calc'=>'123A'
 	        ],
 	    ]);
