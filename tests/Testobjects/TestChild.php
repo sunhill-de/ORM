@@ -28,8 +28,8 @@ class TestChild extends TestParent
 		$list->time('childtime')->searchable();
 		$list->enum('childenum')->setValues(['testA','testB','testC'])->searchable();
 		$list->object('childobject')->setAllowedClasses(['dummy'])->setDefault(null)->searchable();
-		$list->arrayofstrings('childsarray')->searchable();
-		$list->arrayOfObjects('childoarray')->setAllowedClasses(['dummy'])->searchable();
+		$list->array('childsarray')->setElementType(PropertyVarchar::class)->searchable();
+		$list->array('childoarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();		
 		$list->calculated('childcalc')->searchable();
 		$list->collection('childcollection')->setAllowedCollection(ComplexCollection::class)->searchable();
 		$list->keyfield('childkeyfield',':childobject->dummyint (:parentint)')->searchable();

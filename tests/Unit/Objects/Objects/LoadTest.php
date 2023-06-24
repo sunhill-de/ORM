@@ -25,6 +25,10 @@ use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Unit\CommonStorage\DummyLoadStorage;
 use Sunhill\ORM\Objects\Tag;
+use Sunhill\ORM\Tests\Unit\CommonStorage\TestParentLoadStorage;
+use Sunhill\ORM\Tests\Testobjects\TestChild;
+use Sunhill\ORM\Tests\Unit\CommonStorage\TestChildtLoadStorage;
+use Sunhill\ORM\Tests\Unit\CommonStorage\TestChildLoadStorage;
 
 
 /**
@@ -85,14 +89,15 @@ class LoadTest extends TestCase
         Classes::registerClass(Dummy::class);
         
         $test = new Dummy();
-        $storage = new DummyLoadStorage();
         
-        $storage->setValue('dummyint',123);
+        // Prepare the tag
         $tag = new Tag();
         $tag->load(1);
-        
-        Storage::shouldReceive('createStorage')->once()->andReturn($storage);
         Tags::shouldReceive('loadTag')->andReturn($tag);
+        
+        // Prepare the storage
+        $storage = new DummyLoadStorage();
+        Storage::shouldReceive('createStorage')->once()->andReturn($storage);
         
         $test->load(1);
         
@@ -101,53 +106,115 @@ class LoadTest extends TestCase
         $this->assertEquals(1, $test->tags[0]->getID());
     }
     
+    protected function expectTag($id)
+    {
+        $tag = new Tag();
+        $tag->load($id);
+        Tags::shouldReceive('loadTag')->with($id)->andReturn($tag);
+    }
+    
+    protected function expectObject($id)
+    {
+        $obj = new ORMObject();
+        $this->setProtectedProperty($obj,'id',$id);
+        Objects::shouldReceive('load')->with($id)->andReturn($obj);
+    }
+    
     public function testTestparentLoad()
     {
         Classes::registerClass(TestParent::class);
         Classes::registerClass(Dummy::class);
         
-        $test = new Testparent();
-        $storage = new TestStorage();
+        $test = new TestParent();
         
-        $data_list = [
-            'parentint'=>123,
-            'parentchar'=>'ABC',
-            'parentfloat'=>1.23,
-            'parentbool'=>true,
-            'parentdate'=>'2023-02-02',
-            'parentdatetime'=>'2023-02-02 11:11:11',
-            'parenttime'=>'11:11:11',
-            'parentenum'=>'testA',
-            'parentcalc'=>'123A',
-          ];        
-        foreach ($data_list as $key => $value) {
-            $storage->setValue($key, $value);
-        }
-        $storage->setValue('parentobject',1);
-        $storage->setValue('parentoarray',[2,3,4]);
+        $storage = new TestParentLoadStorage();
+        
+        // Prepare the tag
+        $this->expectTag(3);
+        $this->expectTag(4);
+        $this->expectTag(5);
+                
+        Storage::shouldReceive('createStorage')->once()->andReturn($storage);
+
+        $this->expectObject(1);
+        $this->expectObject(2);
+        $this->expectObject(3);
+        
+        $test->load(9);
+
+        $this->assertEquals(111, $test->parentint);
+        $this->assertEquals('ABC',$test->parentchar);
+        $this->assertEquals(1.11,$test->parentfloat);
+        $this->assertEquals('Lorem ipsum',$test->parenttext);
+        $this->assertEquals('1974-09-15 17:45:00',$test->parentdatetime);        
+        $this->assertEquals('1974-09-15',$test->parentdate);        
+        $this->assertEquals('17:45:00',$test->parenttime);
+        $this->assertEquals('testC',$test->parentenum);
+        $this->assertEquals('111A',$test->parentcalc);
+        $this->assertEquals(1, $test->parentobject->getID());
+     //   $this->assertEquals(7, $test->parentcollection->getID());
+        $this->assertEquals(3, $test->tags[0]->getID());
+        $this->assertEquals('String B',$test->parentsarray[1]);
+        $this->assertEquals(2, $test->parentoarray[0]->getID());
+        $this->assertEquals('Value A',$test->parentmap['KeyA']);
+    }
+
+    public function testTestchildLoad()
+    {
+        Classes::registerClass(TestParent::class);
+        Classes::registerClass(TestChild::class);
+        Classes::registerClass(Dummy::class);
+        
+        $test = new TestChild();
+        
+        $storage = new TestChildLoadStorage();
+        
+        // Prepare the tag
+        $this->expectTag(1);
+        $this->expectTag(2);
+        $this->expectTag(4);
         
         Storage::shouldReceive('createStorage')->once()->andReturn($storage);
-        $obj1 = new ORMObject();
-        $this->setProtectedProperty($obj1, 'id', 1);
-        Objects::shouldReceive('load')->with(1)->andReturn($obj1);
-        $obj2 = new ORMObject();
-        $this->setProtectedProperty($obj2, 'id', 2);
-        Objects::shouldReceive('load')->with(2)->andReturn($obj2);
-        $obj3 = new ORMObject();
-        $this->setProtectedProperty($obj3, 'id', 3);
-        Objects::shouldReceive('load')->with(3)->andReturn($obj3);
-        $obj4 = new ORMObject();
-        $this->setProtectedProperty($obj4, 'id', 4);
-        Objects::shouldReceive('load')->with(4)->andReturn($obj4);
         
-        $storage->setValue('parentsarray',['ABC','DEF','GHI']);
+        $this->expectObject(1);
+        $this->expectObject(3);
+        $this->expectObject(4);
+        $this->expectObject(5);
         
-        $test->load(1);
-        foreach ($data_list as $key => $value) {
-            $this->assertEquals($value, $test->$key);
-        }
-        $this->assertEquals('DEF',$test->parentsarray[1]);
-        $this->assertEquals(3,$test->parentoarray[1]->getID());
+        $test->load(17);
+        
+        $this->assertEquals(123, $test->parentint);
+        $this->assertEquals('RRR',$test->parentchar);
+        $this->assertEquals(1.23,$test->parentfloat);
+        $this->assertEquals('Lorem ipsum dolo',$test->parenttext);
+        $this->assertEquals('1978-06-05 11:45:00',$test->parentdatetime);
+        $this->assertEquals('1978-06-05',$test->parentdate);
+        $this->assertEquals('11:45:00',$test->parenttime);
+        $this->assertEquals('testC',$test->parentenum);
+        $this->assertEquals('123A',$test->parentcalc);
+        $this->assertEquals(3, $test->parentobject->getID());
+        //   $this->assertEquals(4, $test->parentcollection->getID());
+        $this->assertEquals(777,$test->childint);
+        $this->assertEquals('WWW',$test->childchar);
+        $this->assertEquals(1.23,$test->childfloat);        
+        $this->assertEquals('amet. Lorem ipsum dolo',$test->childtext);        
+        $this->assertEquals('1978-06-05 11:45:00',$test->childdatetime);
+        $this->assertEquals('1978-06-05',$test->childdate);
+        $this->assertEquals('11:45:00',$test->childtime);
+        $this->assertEquals('testC',$test->childenum);
+        $this->assertEquals(3,$test->childobject->getID());
+        $this->assertEquals('777B',$test->childcalc);        
+        //$this->setValue(9, $test->childcollection->getID());
+        
+        $this->assertEquals('HIJKLMN',$test->parentsarray[1]);
+        $this->assertEquals(4, $test->parentoarray[0]->getID());
+        $this->assertEquals('DEF',$test->parentmap['KeyC']);
+        $this->assertEquals('VXYZABC',$test->childsarray[1]);
+        $this->assertEquals(3, $test->childoarray[0]->getID());
+        $this->assertEquals(4,$test->childmap['KeyC']->getID());
+        
+        $this->assertEquals(1, $test->tags[0]->getID());
     }
+    
     
 }
