@@ -382,7 +382,7 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
         }
     }
     
-    protected function dynamicAddProperty(string $name,string $type)
+    public function dynamicAddProperty(string $name,string $type)
     {
         $property = $this->createProperty($type);        
         $property->setOwner(static::class);
