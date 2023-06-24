@@ -37,6 +37,8 @@ use Sunhill\ORM\Properties\PropertyPropertyCollection;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Interfaces\InteractsWithStorage;
 use Sunhill\ORM\Properties\PropertyTags;
+use Sunhill\ORM\Objects\StorageInteraction\CollectionLoader;
+use Sunhill\ORM\Objects\StorageInteraction\StorageInteractionBase;
 
 /**
  * Basic class for all classes that have properties.
@@ -392,13 +394,13 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
         return $property;
     }
     
-    protected function getDynamicProperties()
+    public function getDynamicProperties()
     {
         return $this->dynamic_properties;
     }
     
     // ================================ Static Properties ============================================    
-    protected static function hasNoOwnProperties()
+    public static function hasNoOwnProperties()
     {
         $reflector = new \ReflectionMethod(static::class, 'setupProperties');
         return ($reflector->getDeclaringClass()->getName() !== static::class);
@@ -511,59 +513,31 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	    $storage->drop();	    
 	}
 	
-	protected function loadArrayOrMap($property, $value)
-	{
-	    if (empty($value)) {
-	        return;
-	    }
-	    if ($property->getElementType() === PropertyObject::class) {
-	        $property->loadValue(array_map(function($element) {
-	            return Objects::load($element);
-	        }, $value));
-	    } else {
-	        $property->loadValue($value);
-	    }
-	}
+	abstract protected function getLoaderInteraction(): StorageInteractionBase;
 	
 	public function loadFromStorage(StorageBase $storage)
-	{
-	    foreach ($this->properties as $property) {
-	        $name = $property->getName();
-	        switch ($property::class) {
-	            case PropertyArray::class:
-	            case PropertyMap::class:
-	                $this->loadArrayOrMap($property, $storage->$name);
-	                break;
-	            case PropertyObject::class:
-	                $value = $storage->$name;
-	                if (!is_null($value)) {
-	                    $property->loadValue(Objects::load($value));
-	                }
-	                break;
-	            case PropertyTags::class:
-	                // @todo Quite dirty hack, Tags are loaded by loadAdditional()
-	                break;
-	            default:
-	                $property->loadValue($storage->$name);
-	                break;
-	        }
-	    }
-	    $this->loadAdditional($storage);
+	{	    
+	    $interactor = $this->getLoaderInteraction();
+	    $interactor->setStorage($storage)->setPropertiesCollection($this);
+	    $interactor->run();
 	}
 	
-	protected function loadAdditional(StorageBase $storage)
-	{
-	    
-	}
+	abstract protected function getStorerInteraction(): StorageInteractionBase;
 	
 	public function storeToStorage(StorageBase $storage)
 	{
-	    
+	    $interactor = $this->getStorerInteraction();
+	    $interactor->setStorage($storage)->setPropertiesCollection($this);
+	    $interactor->run();	    
 	}
+	
+	abstract protected function getUpdaterInteraction(): StorageInteractionBase;
 	
 	public function updateToStorage(StorageBase $storage)
 	{
-	    
+	    $interactor = $this->getUpdaterInteraction();
+	    $interactor->setStorage($storage)->setPropertiesCollection($this);
+	    $interactor->run();	    
 	}
 	
 }

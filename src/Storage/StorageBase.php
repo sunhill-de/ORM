@@ -109,6 +109,11 @@ abstract class StorageBase
         return $result;
     }
     
+    public function getAllEntities()
+    {
+        return $this->entities;    
+    }
+    
     /**
      * Wrapper for setEntity()
      */

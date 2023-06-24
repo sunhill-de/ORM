@@ -16,6 +16,7 @@
  */
 namespace Sunhill\ORM\Objects;
 
+use Sunhill\ORM\Objects\StorageInteraction\StorageInteractionBase;
 use Sunhill\ORM\Properties\NonAtomarProperty;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Storage\StorageBase;
@@ -31,6 +32,9 @@ use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Properties\PropertyPropertyCollection;
+use Sunhill\ORM\Objects\StorageInteraction\CollectionLoader;
+use Sunhill\ORM\Objects\StorageInteraction\CollectionStorer;
+use Sunhill\ORM\Objects\StorageInteraction\CollectionUpdater;
 
 /**
  * Basic class for all classes that have properties.
@@ -84,6 +88,21 @@ class Collection extends PropertiesCollection
 	protected static function getClassList()
 	{
 	    return [static::class];
+	}
+	
+	protected function getLoaderInteraction(): StorageInteractionBase
+	{
+	    return new CollectionLoader();
+	}
+	
+	protected function getStorerInteraction(): StorageInteractionBase
+	{
+	    return new CollectionStorer(); 
+	}
+	
+	protected function getUpdaterInteraction(): StorageInteractionBase
+	{
+        return new CollectionUpdater();	    
 	}
 	
 }

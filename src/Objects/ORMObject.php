@@ -27,6 +27,10 @@ use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Properties\PropertyBoolean;
 use Sunhill\ORM\Properties\PropertyDate;
 use Sunhill\ORM\Properties\PropertyDatetime;
+use Sunhill\ORM\Objects\StorageInteraction\StorageInteractionBase;
+use Sunhill\ORM\Objects\StorageInteraction\ObjectLoader;
+use Sunhill\ORM\Objects\StorageInteraction\ObjectStorer;
+use Sunhill\ORM\Objects\StorageInteraction\ObjectUpdater;
 
 /**
  * As the central class of the ORM system ORMObject provides the basic function for
@@ -389,5 +393,20 @@ class ORMObject extends PropertiesCollection
 	    static::addInfo('table', 'objects');
 	    static::addInfo('description', 'A base class that defines storable properties.');
 	}
-		
+
+	protected function getLoaderInteraction(): StorageInteractionBase
+	{
+	    return new ObjectLoader();
+	}
+	
+	protected function getStorerInteraction(): StorageInteractionBase
+	{
+	    return new ObjectStorer();
+	}
+	
+	protected function getUpdaterInteraction(): StorageInteractionBase
+	{
+	    return new ObjectUpdater();
+	}
+	
 }
