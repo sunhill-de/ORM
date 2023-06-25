@@ -104,7 +104,7 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	 */
 	public function current () 
 	{
-	    return $this->value[$this->pointer];
+	    return array_values($this->value)[$this->pointer];
 	}
 	
 	/**
@@ -116,7 +116,7 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	 */
 	public function key () 
 	{
-	    return $this->pointer;
+	    return array_keys($this->value)[$this->pointer];
 	}
 	
 	/**
