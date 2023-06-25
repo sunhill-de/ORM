@@ -34,6 +34,7 @@ use Sunhill\ORM\Properties\PropertyCalculated;
 use Sunhill\ORM\Properties\PropertyTags;
 use Sunhill\ORM\Properties\PropertyKeyfield;
 use Sunhill\ORM\Properties\PropertyExternalReference;
+use Sunhill\ORM\Properties\PropertyInformation;
 
 /**
  * Basic class for all classes that have properties.
@@ -204,6 +205,11 @@ class PropertyList
     public function tags(): PropertyTags
     {
         return $this->addProperty(PropertyTags::class, 'tags');        
+    }
+    
+    public function information(string $name)
+    {
+        return $this->addProperty(PropertyInformation::class, $name);    
     }
     
     public function toArray(): array
