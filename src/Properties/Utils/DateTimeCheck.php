@@ -167,7 +167,7 @@ trait DateTimeCheck
             $result .= $parts[0];
         }
         if ($time) {
-            $result .= $parts[1];
+            $result .= ($date)?" ".$parts[1]:$parts[1];
         }
         return $result; 
     }
