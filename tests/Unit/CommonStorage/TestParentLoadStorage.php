@@ -38,6 +38,7 @@ class TestParentLoadStorage extends TestStorage
         $this->setValue('parentsarray',['String A','String B']);
         $this->setValue('parentoarray',[2,3]);
         $this->setValue('parentmap',['KeyA'=>'Value A','KeyB'=>'Value B']);        
+        $this->setValue('parentinformation','test.path');
         
         $entry1 = new \StdClass();
         $entry1->allowed_classes = '|testparent|';

@@ -33,7 +33,9 @@ class TestChildLoadStorage extends TestStorage
         $this->setValue('parentenum','testC');
         $this->setValue('parentobject',3);
         $this->setValue('parentcalc','123A');
-        $this->setValue('parentcollection',4);        
+        $this->setValue('parentcollection',4);   
+        $this->setValue('parentinformation','parent.path');
+        
         $this->setValue('childint',777);
         $this->setValue('childchar','WWW');
         $this->setValue('childfloat',1.23);
@@ -45,6 +47,8 @@ class TestChildLoadStorage extends TestStorage
         $this->setValue('childobject',3);
         $this->setValue('childcalc','777B');
         $this->setValue('childcollection',9);                
+        $this->setValue('childinformation','child.path');
+        
         $this->setValue('tags',[1,2,4]);        
         $this->setValue('parentsarray',['ABCDEFG','HIJKLMN']);
         $this->setValue('parentoarray',[4,5]);        

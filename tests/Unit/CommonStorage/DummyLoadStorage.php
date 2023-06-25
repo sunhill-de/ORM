@@ -25,13 +25,7 @@ class DummyLoadStorage extends TestStorage
         
         $this->setValue('dummyint', 123);
         $this->setValue('tags',[1,2,4]);
-        $entry = new \StdClass();
-        $entry->allowed_classes = '|objects|';
-        $entry->name = 'general_attribute';
-        $entry->attribute_id = 4;
-        $entry->type = 'integer';
-        $entry->value = 444;
-        $this->setValue('attributes',[$entry]);
+        $this->setValue('attributes',[$this->createAttribute('general_attribute', 4, 'integer', 444, '|objects|')]);
     }
     
 }
