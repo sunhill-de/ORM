@@ -18,6 +18,7 @@ use Sunhill\ORM\Checks\ObjectChecks;
 use Sunhill\ORM\Facades\Tags;
 
 use Sunhill\ORM\Managers\OperatorManager;
+use Sunhill\ORM\Managers\CollectionManager;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -35,6 +36,8 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->alias(OperatorManager::class,'operators');
         $this->app->singleton(StorageManager::class, function () { return new StorageManager(); } );
         $this->app->alias(StorageManager::class,'storage');
+        $this->app->singleton(CollectionManager::class, function () { return new CollectionManager(); } );
+        $this->app->alias(CollectionManager::class,'collections');
     }
     
     public function boot()
