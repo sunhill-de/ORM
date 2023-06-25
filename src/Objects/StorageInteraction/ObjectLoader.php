@@ -37,6 +37,11 @@ class ObjectLoader extends CollectionLoader
         }
     }
     
+    public function handlePropertyInformation($property)
+    {
+        $property->setPath($this->getEntityValue($property));
+    }
+    
     protected function additionalRun()
     {
         if (!$this->storage->hasEntity('attributes')) {
