@@ -34,6 +34,7 @@ class TestParent extends ORMObject
 		$list->time('parenttime')->searchable();
 		$list->enum('parentenum')->setValues(['testA','testB','testC'])->searchable();
 		$list->boolean('parentbool');
+		$list->information('parentinformation');
 		$list->object('parentobject')->setAllowedClasses(['dummy'])->setDefault(null)->searchable();
 		$list->array('parentsarray')->setElementType(PropertyVarchar::class)->searchable();
 		$list->array('parentoarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();

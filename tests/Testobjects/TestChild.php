@@ -27,6 +27,7 @@ class TestChild extends TestParent
 	    $list->date('childdate')->searchable();
 		$list->time('childtime')->searchable();
 		$list->enum('childenum')->setValues(['testA','testB','testC'])->searchable();
+		$list->information('childinformation');
 		$list->object('childobject')->setAllowedClasses(['dummy'])->setDefault(null)->searchable();
 		$list->array('childsarray')->setElementType(PropertyVarchar::class)->searchable();
 		$list->array('childoarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();		
