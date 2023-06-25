@@ -23,7 +23,7 @@ class CollectionManager
     
     public function loadCollection(string $class, int $id)
     {
-        if (!clas_exists($class)) {
+        if (!class_exists($class)) {
             throw new CollectionClassDoesntExistException("The given class '$class' doesn't exists.");
         }
         if (!is_a($class, Collection::class, true)) {
@@ -31,6 +31,8 @@ class CollectionManager
         }
         $object = new $class();
         $object->load($id);
+        
+        return $object;
     }
     
 }
