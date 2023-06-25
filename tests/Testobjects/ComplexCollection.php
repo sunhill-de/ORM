@@ -37,7 +37,7 @@ class ComplexCollection extends Collection {
         $list->array('field_sarray')->setElementType(PropertyVarchar::class)->searchable();
         $list->array('field_oarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();
         $list->map('field_smap')->setElementType(PropertyVarchar::class);
-        $list->calculated('field_calc')->searchable();
+        $list->calculated('field_calc')->setCallback(function($object) { return $object->field_int.'A'; })->searchable();
     }
 
 	protected static function setupInfos()
