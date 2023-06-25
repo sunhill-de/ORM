@@ -36,18 +36,18 @@ trait Cachable
     
     public function setMaximumAge(int $maximum_age)
     {
-        $this->maximum_age = $maximum_age;
+        $this->max_age = $maximum_age;
         return $this;
     }
     
     public function getMaximumAge(): int
     {
-        return $this->maximum_age;
+        return $this->max_age;
     }
     
     protected function isCacheValid(): bool
     {
-        return (time() - $this->last_update) < $this->maximum_age;
+        return (time() - $this->last_update) < $this->max_age;
     }
     
     public function invalidateCache()
