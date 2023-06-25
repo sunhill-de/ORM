@@ -24,6 +24,9 @@ use Doctrine\Common\Lexer\Token;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Storage;
 use Sunhill\ORM\Query\BasicQuery;
+use Sunhill\ORM\Managers\Exceptions\ClassNotAccessibleException;
+use Sunhill\ORM\Managers\Exceptions\ClassNotORMException;
+use Sunhill\ORM\Managers\Exceptions\ClassNameForbiddenException;
 
  /**
   * Wrapper class for handling of objectclasses. It provides some public static methods to get informations about
