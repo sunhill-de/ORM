@@ -52,13 +52,11 @@ trait HandlesStorage
     {
         $storage = Storage::createStorage($this);
         if (empty($this->getID())) {
-            $this->preCreation($storage);
-            $this->createObject($storage);
-            $this->postCreation($storage);
+            $this->storeToStorage($storage);
+            $this->setID($storage->store());
         } else {
-            $this->preUpdate($storage);
-            $this->updateObject($storage);
-            $this->postUpdate($storage);
+            $this->updateToStorage($storage);
+            $storage->update($this->getID());
         }
     }
     
