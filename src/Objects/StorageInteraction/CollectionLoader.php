@@ -19,6 +19,8 @@ namespace Sunhill\ORM\Objects\StorageInteraction;
 
 use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Facades\Collections;
+use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
 
 class CollectionLoader extends StorageInteractionBase
 {
@@ -65,7 +67,14 @@ class CollectionLoader extends StorageInteractionBase
     
     public function handlePropertyCollection($property)
     {
-        
+        if (empty($property->getAllowedCollection())) {
+            throw new InvalidParameterException("The collection parameter is missing the allowed collection parameter.");
+        }
+        $id = $this->getEntityValue($property);
+        if ($id) {
+            $collection = Collections::loadCollection($property->getAllowedCollection(), $id);
+            $property->loadValue($collection);
+        }
     }
     
     public function handlePropertyDate($property)
