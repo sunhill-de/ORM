@@ -33,6 +33,10 @@ class PropertyExternalReference extends AtomarProperty
 	
 	protected $internal_key = '';
 	
+	protected $query_modifier;
+	
+	protected $list = false;
+	
 	public function setExternalTable(string $table): PropertyExternalReference
 	{
 	    $this->table = $table;
@@ -51,11 +55,31 @@ class PropertyExternalReference extends AtomarProperty
 	    return $this;
 	}
 		
+	public function queryModifier($modifier_callback): PropertyExternalReference
+	{
+	    $this->query_modifier = $modifier_callback;
+	    return $this;
+	}
+	
+	public function setList(bool $list = true): PropertyExternalReference
+	{
+	   $this->list = $list;  
+	   return $this;
+	}
+	
 	public function fetchReference()
 	{
         $internal_key_name = $this->internal_key;
         $internal_key_value = $this->getOwner()->$internal_key_name;
-	    $this->setValue(DB::table($this->table)->where($this->external_key,$internal_key_value)->first());
+        $query = DB::table($this->table)->where($this->external_key,$internal_key_value);
+        if (!is_callable($this->query_modifier)) {
+            $query = $this->query_modifier($query);
+        }
+        if ($this->list) {
+            $this->setValue($query->get());            
+        } else {
+            $this->setValue($query->first());
+        }
 	}
 	
 	/**

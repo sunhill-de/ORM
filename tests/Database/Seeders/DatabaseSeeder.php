@@ -54,5 +54,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ComplexCollectionsFieldSMapTableSeeder::class);
         
         $this->call(ExternalTableSeeder::class);
+        $this->call(AnotherExternalTableSeeder::class);
     }
 }

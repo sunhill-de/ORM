@@ -34,7 +34,7 @@ class TestChild extends TestParent
 		$list->collection('childcollection')->setAllowedCollection(ComplexCollection::class)->searchable();
 		$list->keyfield('childkeyfield',':childobject->dummyint (:parentint)')->searchable();
 		$list->map('childmap')->setElementType(PropertyObject::class)->setAllowedClasses(Dummy::class)->searchable();
-		$list->externalReference('child_external', 'external', 'external_string')->setInternalKey('childchar');
+		$list->externalReference('child_external', 'anotherexternal', 'id_field')->setInternalKey('childchar')->queryModifier(function($query) {return $query->orderBy('external_int'); })->setList();
     }
 
 	public function calculate_childcalc() 
