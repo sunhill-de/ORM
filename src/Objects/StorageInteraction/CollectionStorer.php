@@ -129,12 +129,6 @@ class CollectionStorer extends StorageInteractionBase
     
     public function handlePropertyTags($property)
     {
-        $values = [];
-        foreach ($this->tags as $tag) {
-            $values[] = $tag->getID();
-        }
-        $this->storage->createEntity($property->getName(), $this->collection->getInfo('table'))
-        ->setValue($value);
     }
     
     public function handlePropertyText($property)
