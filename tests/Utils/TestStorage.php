@@ -29,7 +29,8 @@ class TestStorage extends StorageBase
     
     protected function doStore(): int
     {
-        $this->last_action = 'store';        
+        $this->last_action = 'store';
+        return 100;
     }
         
     protected function doUpdate(int $id)
