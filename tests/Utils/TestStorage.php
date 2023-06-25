@@ -67,5 +67,16 @@ class TestStorage extends StorageBase
         $this->last_action = 'drop';        
     }
     
-    
+    public function createAttribute($name, $id, $type, $value, $allowed)
+    {
+        $entry = new \StdClass();
+        $entry->allowed_classes = $allowed;
+        $entry->name = $name;
+        $entry->attribute_id = $id;
+        $entry->type = $type;
+        $entry->value = $value;
+        
+        return $entry;
+    }
+        
 }
