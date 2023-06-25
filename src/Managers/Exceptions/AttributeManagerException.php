@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @file AttributeInvalidTypeException.php
- * Defines the exceptions that is raised when someone tries to assign a invalid datatype to an attribute
+ * @file AttributeManagerException.php
+ * Defines the basic class for exceptions that are raised inside the attribute manager facade
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -12,6 +12,6 @@
  * Tests: none
  * Coverage: none
  */
-namespace Sunhill\ORM\Managers;
+namespace Sunhill\ORM\Managers\Exceptions;
 
-class AttributeInvalidTypeException extends AttributeManagerException {}
+class AttributeManagerException extends ORMManagerException {}

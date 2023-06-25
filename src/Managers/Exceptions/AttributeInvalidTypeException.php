@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @file AttributeInvalidColumnException.php
- * Defines the exceptions that is raised when someone tries access a non defined column of an attribute
+ * @file AttributeInvalidTypeException.php
+ * Defines the exceptions that is raised when someone tries to assign a invalid datatype to an attribute
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -12,6 +12,6 @@
  * Tests: none
  * Coverage: none
  */
-namespace Sunhill\ORM\Managers;
+namespace Sunhill\ORM\Managers\Exceptions;
 
-class AttributeInvalidColumnException extends AttributeManagerException {}
+class AttributeInvalidTypeException extends AttributeManagerException {}

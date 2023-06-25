@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @file ClassNotORMException.php
- * This exception is raised when a class to register has a name that is now allowed
+ * @file ORMManagerException.php
+ * Defines the basic class for exceptions that are raised inside on of ORMs manager facades
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -12,6 +12,6 @@
  * Tests: none
  * Coverage: none
  */
-namespace Sunhill\ORM\Managers;
+namespace Sunhill\ORM\Managers\Exceptions;
 
-class ClassNameForbiddenException extends ClassManagerException {}
+class ORMManagerException extends \Exception {}

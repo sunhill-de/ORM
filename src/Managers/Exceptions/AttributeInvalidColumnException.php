@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @file AttributeManagerException.php
- * Defines the basic class for exceptions that are raised inside the attribute manager facade
+ * @file AttributeInvalidColumnException.php
+ * Defines the exceptions that is raised when someone tries access a non defined column of an attribute
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -12,6 +12,6 @@
  * Tests: none
  * Coverage: none
  */
-namespace Sunhill\ORM\Managers;
+namespace Sunhill\ORM\Managers\Exceptions;
 
-class AttributeManagerException extends ORMManagerException {}
+class AttributeInvalidColumnException extends AttributeManagerException {}

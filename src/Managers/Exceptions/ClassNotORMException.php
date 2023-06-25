@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @file ClassNotAccessibleException.php
- * This exception is raised when a class to register is not accessible
+ * @file ClassNotORMException.php
+ * This exception is raised when a class to register is not a descendant of ORMObject
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
@@ -12,6 +12,6 @@
  * Tests: none
  * Coverage: none
  */
-namespace Sunhill\ORM\Managers;
+namespace Sunhill\ORM\Managers\Exceptions;
 
-class ClassNotAccessibleException extends ClassManagerException {}
+class ClassNotORMException extends ClassManagerException {}
