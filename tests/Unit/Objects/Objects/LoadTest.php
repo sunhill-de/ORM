@@ -152,7 +152,7 @@ class LoadTest extends TestCase
         $this->assertEquals('testC',$test->parentenum);
         $this->assertEquals('111A',$test->parentcalc);
         $this->assertEquals(1, $test->parentobject->getID());
-     //   $this->assertEquals(7, $test->parentcollection->getID());
+        $this->assertEquals(7, $test->parentcollection->getID());
         $this->assertEquals(3, $test->tags[0]->getID());
         $this->assertEquals('String B',$test->parentsarray[1]);
         $this->assertEquals(2, $test->parentoarray[0]->getID());
@@ -193,7 +193,7 @@ class LoadTest extends TestCase
         $this->assertEquals('testC',$test->parentenum);
         $this->assertEquals('123A',$test->parentcalc);
         $this->assertEquals(3, $test->parentobject->getID());
-        //   $this->assertEquals(4, $test->parentcollection->getID());
+        $this->assertEquals(4, $test->parentcollection->getID());
         $this->assertEquals(777,$test->childint);
         $this->assertEquals('WWW',$test->childchar);
         $this->assertEquals(1.23,$test->childfloat);        
@@ -204,7 +204,7 @@ class LoadTest extends TestCase
         $this->assertEquals('testC',$test->childenum);
         $this->assertEquals(3,$test->childobject->getID());
         $this->assertEquals('777B',$test->childcalc);        
-        //$this->setValue(9, $test->childcollection->getID());
+        $this->assertEquals(9, $test->childcollection->getID());
         
         $this->assertEquals('HIJKLMN',$test->parentsarray[1]);
         $this->assertEquals(4, $test->parentoarray[0]->getID());
