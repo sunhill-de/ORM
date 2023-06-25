@@ -193,7 +193,11 @@ abstract class StorageBase
             PHPUnit::assertTrue($test->hasEntity($key),"The tested storage doesn't contain '$key'");
             PHPUnit::assertEquals($value->getType(),$test->getEntity($key)->getType(),"In key '$key' the expected type '".$value->getType()."' doesn't equal '".$test->getEntity($key)->getType()."'");
             PHPUnit::assertEquals($value->getStorageID(),$test->getEntity($key)->getStorageID(),"In key '$key' the expected storage ID '".$value->getStorageID()."' doesn't equal '".$test->getEntity($key)->getStorageID()."'");
-            PHPUnit::assertEquals($value->getValue(),$test->getEntity($key)->getValue(),"In key '$key' the expected value '".$value->getValue()."' doesn't equal '".$test->getEntity($key)->getValue()."'");
+            if (is_array($value->getValue())) {
+                PHPUnit::assertEquals($value->getValue(),$test->getEntity($key)->getValue(),"In key '$key' the expected values doesn't equal.");
+            } else {
+                PHPUnit::assertEquals($value->getValue(),$test->getEntity($key)->getValue(),"In key '$key' the expected value '".$value->getValue()."' doesn't equal '".$test->getEntity($key)->getValue()."'");                
+            }
             PHPUnit::assertEquals($value->getShadow(),$test->getEntity($key)->getShadow(),"In key '$key' the expected shadow '".$value->getShadow()."' doesn't equal '".$test->getEntity($key)->getShadow()."'");
         }
         if ($both) {
