@@ -16,6 +16,7 @@ namespace Sunhill\ORM\Properties;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Properties\Exceptions\WriteToReadonlyException;
 use Sunhill\ORM\Properties\Exceptions\CalculatedCallbackException;
+use Sunhill\ORM\Properties\Utils\Cachable;
 
 /**
  * The property class for information fields
@@ -23,29 +24,12 @@ use Sunhill\ORM\Properties\Exceptions\CalculatedCallbackException;
 class PropertyInformation extends AtomarProperty 
 {
 	
+    use Cachable;
+    
 	protected static $type = 'calculated';
 	
 	protected $info_path = '';
-	
-	protected $last_update = 0;
-	
-	/**
-	 * A information field is always initialized
-	 */
-	protected function initializeValue(): bool 
-	{
-	    return true;
-	}
-	
-	/**
-	 * Calls the information market to retrieve the value
-	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\Properties\AtomarProperty::doGetValue()
-	 */
-	protected function &doGetValue()
-	{
-	}
-	
+			
 	public function setPath(string $path): PropertyInformation
 	{
 	    $this->info_path = $path;
@@ -56,4 +40,13 @@ class PropertyInformation extends AtomarProperty
 	{
 	    return $this->info_path;
 	}
+	
+	/**
+	 * Get the value from the info market
+	 */
+	protected function retrieveValue()
+	{
+	
+	}
+	
 }

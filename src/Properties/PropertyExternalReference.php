@@ -17,10 +17,13 @@ namespace Sunhill\ORM\Properties;
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Properties\Utils\Cachable;
 
 class PropertyExternalReference extends AtomarProperty
 {
-	
+
+    use Cachable;
+    
 	protected static $type = 'string';
 		
 	protected $initialized = true;
@@ -67,7 +70,7 @@ class PropertyExternalReference extends AtomarProperty
 	   return $this;
 	}
 	
-	public function fetchReference()
+	protected function retrieveValue()
 	{
         $internal_key_name = $this->internal_key;
         $internal_key_value = $this->getOwner()->$internal_key_name;
@@ -81,14 +84,5 @@ class PropertyExternalReference extends AtomarProperty
             $this->setValue($query->first());
         }
 	}
-	
-	/**
-	 * A calculated field is never uninitialized, if it is marked a so, do recalculate
-	 */
-	protected function initializeValue(): bool
-	{
-	    $this->fetchReference();
-	    return true;
-	}
-	
+		
 }
