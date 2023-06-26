@@ -14,6 +14,4 @@
  */
 namespace Sunhill\ORM\Managers\Exceptions;
 
-use Sunhill\ORM\Managers\ORMManagerException;
-
 class CollectionClassDoesntExistException extends CollectionManagerException {}

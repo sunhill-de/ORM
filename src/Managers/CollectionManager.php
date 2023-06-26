@@ -9,7 +9,7 @@
  * Reviewstatus: 2023-06-25
  * Localization: not necessary
  * Documentation: complete
- * Tests: 
+ * Tests: tests/Unit/Managers/CollectionManagerTest.php 
  * Coverage: unknown
  */
 namespace Sunhill\ORM\Managers;
