@@ -106,6 +106,29 @@ class DummyObjectHandler extends ObjectHandler
     {
         $this->output .= 'Float:'.$property->getName();        
     }
+  
+    public function handlePropertyCollection($property)
+    {
+        $this->output .= 'Collection'.$property->getName();
+    }
+    
+    public function handlePropertyExternalReference($property)
+    {
+        $this->output .= 'External'.$property->getName();
+        
+    }
+    
+    public function handlePropertyInformation($property)
+    {
+        $this->output .= 'Information'.$property->getName();
+        
+    }
+    
+    public function handlePropertyKeyfield($property)
+    {
+        $this->output .= 'Keyfield'.$property->getName();
+        
+    }
     
 }
 

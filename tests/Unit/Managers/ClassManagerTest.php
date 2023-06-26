@@ -14,10 +14,10 @@ use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
-use Sunhill\ORM\Managers\ClassNotORMException;
-use Sunhill\ORM\Managers\ClassNotAccessibleException;
+use Sunhill\ORM\Managers\Exceptions\ClassNotORMException;
+use Sunhill\ORM\Managers\Exceptions\ClassNotAccessibleException;
 use Sunhill\ORM\Objects\ORMObject;
-use Sunhill\ORM\Managers\ClassNameForbiddenException;
+use Sunhill\ORM\Managers\Exceptions\ClassNameForbiddenException;
 
 class BadClass1 extends ORMObject
 {

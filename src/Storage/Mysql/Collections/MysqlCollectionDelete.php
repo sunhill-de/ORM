@@ -53,4 +53,24 @@ class MysqlCollectionDelete extends CollectionHandler
         
     }
     
+    public function handlePropertyInformation($property)
+    {
+        
+    }
+    
+    public function handlePropertyExternalReference($property)
+    {
+        
+    }
+    
+    public function handlePropertyCollection($property)
+    {
+        
+    }
+    
+    public function handlePropertyKeyfield($property)
+    {
+        
+    }
+    
 }

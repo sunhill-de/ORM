@@ -4,6 +4,7 @@ namespace Sunhill\ORM\Tests\Unit\Objects;
 
 use Sunhill\ORM\Objects\PropertyList;
 use Sunhill\ORM\Objects\PropertiesCollection;
+use Sunhill\ORM\Objects\StorageInteraction\StorageInteractionBase;
 
 class DummyPropertyCollection extends PropertiesCollection
 {
@@ -40,4 +41,18 @@ class DummyPropertyCollection extends PropertiesCollection
         
     }
     
+    protected function getUpdaterInteraction(): StorageInteractionBase
+    {
+        
+    }
+    
+    protected function getStorerInteraction(): StorageInteractionBase
+    {
+        
+    }
+    
+    protected function getLoaderInteraction(): StorageInteractionBase
+    {
+        
+    }
  }

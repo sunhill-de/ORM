@@ -50,5 +50,26 @@ class MysqlCollectionDrop extends CollectionHandler
     public function handlePropertyObject($property)
     {
         
-    }    
+    }   
+    
+    public function handlePropertyInformation($property)
+    {
+        
+    }
+    
+    public function handlePropertyExternalReference($property)
+    {
+        
+    }
+    
+    public function handlePropertyCollection($property)
+    {
+        
+    }
+    
+    public function handlePropertyKeyfield($property)
+    {
+        
+    }
+    
 }
