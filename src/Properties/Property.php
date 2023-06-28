@@ -98,6 +98,9 @@ class Property extends Loggable
     // ******************************* Name handling ********************************
     protected function checkName(string $name)
     {
+        if (empty($name)) {
+            throw new InvalidNameException("The property name '$name' must not be empty.");            
+        }
         if ($name[0] == '_') {
             throw new InvalidNameException("The property name '$name' must not start with an underscore.");
         }
