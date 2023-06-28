@@ -13,7 +13,9 @@
 
 namespace Sunhill\ORM\PropertyQuery;
 
-class PropertyQuery
+use Sunhill\ORM\Query\BasicQuery;
+
+class PropertyQuery extends BasicQuery
 {
     
     protected $current;
