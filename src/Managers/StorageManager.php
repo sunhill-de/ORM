@@ -58,7 +58,7 @@ class StorageManager
     {
         switch (env('ORM_STORAGE_TYPE', 'mysql')) {
             case 'mysql':
-                $storage_support = new MysqlStorageSupport();
+                $storage_support = new MysqlStorage();
                 break;
         }
         return $storage_support->dispatch('attributes');

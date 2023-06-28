@@ -37,7 +37,7 @@ class AttributeManager
         
     public function query(): BasicQuery
     {
-        return Storage::AttributeQuery();
+        return Storage::attributeQuery();
     }
 }
  
