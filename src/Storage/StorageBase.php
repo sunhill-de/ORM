@@ -34,7 +34,7 @@ abstract class StorageBase
         $this->collection = $collection;    
     }
     
-    public function getCollection(): PropertiesCollection
+    public function getCollection(): ?PropertiesCollection
     {
         return $this->collection;    
     }
@@ -47,7 +47,9 @@ abstract class StorageBase
             throw new ActionNotFoundException("The action '$storage_action' is not found.");
         }
         $action = new $storage_action();
-        $action->setCollection($this->collection);
+        if ($this->collection) {
+            $action->setCollection($this->collection);
+        }
         return $action->run();
     }
     
