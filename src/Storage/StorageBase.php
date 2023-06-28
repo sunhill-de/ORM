@@ -16,6 +16,7 @@ namespace Sunhill\ORM\Storage;
 
 use Sunhill\ORM\Properties\Property;
 use Illuminate\Testing\Assert as PHPUnit;
+use Sunhill\ORM\Objects\PropertiesCollection;
 
 /**
  * 
@@ -25,102 +26,10 @@ use Illuminate\Testing\Assert as PHPUnit;
 abstract class StorageBase  
 {
     
-    protected $source_type = 'collection';
-    
-    public function setSourceType(string $type)
+    public function setCollection(PropertiesCollection $collection)
     {
-        $this->source_type = $type;
-        return $this;
+        $this->collection = $collection;    
     }
-    
-    public function getSourceType(): string
-    {
-        return $this->source_type;    
-    }
-    
-    protected $entities = [];
-    
-    protected $storage_ids = [];
-    
-    public function createEntity(string $name, string $storage_id): StorageElement
-    {
-        $element = new StorageElement();
-        $element->setName($name)->setStorageID($storage_id);
-        $this->entities[$name] = $element;
-        if (isset($this->storage_ids[$storage_id])) {
-            $this->storage_ids[$storage_id] = [$name=>$element];
-        } else {
-            $this->storage_ids[$storage_id][$name] = $element;
-        }
-        return $element;
-    }
-    
-    /**
-     * Returns the entry with name $name or null if not defined
-     */
-    public function getEntity(string $name) 
-    {
-        if (!isset($this->entities[$name])) {
-            return null;
-        } else {
-            return $this->entities[$name];
-        }
-    }
-    
-    /**
-     * Wrapper for getEntity()
-     * @param string $name
-     * @return unknown
-     */
-    public function __get(string $name) 
-    {
-        return $this->getEntity($name)->getValue();
-    }
-    
-    public function hasEntity(string $name): bool
-    {
-        return isset($this->entities[$name]);    
-    }
-    
-    public function getStorageIDs()
-    {
-        return array_keys($this->storage_ids);    
-    }
-    
-    public function getEntitiesOfStorageID(string $storage_id)
-    {
-        $result = [];
-        foreach ($this->entities as $key => $value) {
-            if ($value->getStorageID() == $storage_id) {
-                $result[$key] = $value;
-            }
-        }
-        return $result;
-    }
-    
-    public function getEntitiesOfType(string $type)
-    {
-        $result = [];
-        foreach ($this->entities as $key => $value) {
-            if ($value->getType() == $type) {
-                $result[$key] = $value;
-            }
-        }
-        return $result;
-    }
-    
-    public function getAllEntities()
-    {
-        return $this->entities;    
-    }
-    
-    /**
-     * Wrapper for setEntity()
-     */
-    public function __set(string $name, $value) 
-    {
-        return $this->getEntity($name)->setValue($value);
-    }    
     
     abstract protected function doLoad(int $id);
     abstract protected function doStore(): int;

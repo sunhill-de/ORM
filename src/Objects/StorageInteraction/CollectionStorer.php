@@ -37,7 +37,7 @@ class CollectionStorer extends StorageInteractionBase
         
     protected function copyValue($property, $value)
     {
-        return $this->storage->createEntity($property->getName(), $this->collection->getInfo('table'))
+        return $this->storage->createEntity($property->getName(), $property->owner::getInfo('table'))
             ->setValue($value);        
     }
 

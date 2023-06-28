@@ -47,6 +47,7 @@ abstract class StorageInteractionBase implements HandlesProperties
     
     protected function runCollection()
     {
+        $this->preRun();
         $properties = $this->collection->getAllProperties();
         $dynamic = $this->collection->getDynamicProperties();
         
@@ -60,6 +61,11 @@ abstract class StorageInteractionBase implements HandlesProperties
             }
         }
         $this->additionalRun();
+    }
+    
+    protected function preRun()
+    {
+        
     }
     
     abstract protected function additionalRun();
