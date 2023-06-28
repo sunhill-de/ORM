@@ -323,7 +323,7 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
     
     public function propertyQuery(): PropertyQuery
     {
-        return new PropertyQuery($this->properties);
+        return new PropertyQuery($this->properties, true);
     }
     
     public static function staticPropertyQuery(): PropertyQuery
