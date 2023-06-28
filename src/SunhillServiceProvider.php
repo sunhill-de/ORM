@@ -19,6 +19,7 @@ use Sunhill\ORM\Facades\Tags;
 
 use Sunhill\ORM\Managers\OperatorManager;
 use Sunhill\ORM\Managers\CollectionManager;
+use Sunhill\ORM\Managers\ObjectDataGenerator;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -38,6 +39,8 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->alias(StorageManager::class,'storage');
         $this->app->singleton(CollectionManager::class, function () { return new CollectionManager(); } );
         $this->app->alias(CollectionManager::class,'collections');
+        $this->app->singleton(ObjectDataGenerator::class, function () { return new ObjectDataGenerator(); } );
+        $this->app->alias(ObjectDataGenerator::class,'objectdata');
     }
     
     public function boot()
