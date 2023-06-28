@@ -10,6 +10,7 @@ use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Properties\PropertyDate;
+use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 
 class PropertyCollection_queryTest extends TestCase
 {
@@ -35,12 +36,21 @@ class PropertyCollection_queryTest extends TestCase
             [DummyCollection::class, function($query) { return $query->count(); }, 1],
             [ComplexCollection::class, function($query) { return $query->count(); }, 14],
             [Dummy::class, function ($query) { return $query->count(); }, 10],
-            [TestParent::class, function($query) { return $query->count(); }, 27],
-            [TestChild::class, function($query) { return $query->count(); }, 44],
-            [Dummy::class, function ($query) { return $query->where('class', Dummy::class)->count(); }, 1],
+            [TestParent::class, function($query) { return $query->count(); }, 28],
+            [TestChild::class, function($query) { return $query->count(); }, 45],
+            [Dummy::class, function ($query) { return $query->where('owner', Dummy::class)->count(); }, 1],
             [TestParent::class, function($query) { return $query->where('type', PropertyDate::class)->count(); }, 1],
-            [TestParent::class, function($query) { return $query->where('type', PropertyDate::class)->first(); }, function($result) { return $result->getName() == 'parentdate'; }],
+            [TestParent::class, function($query) { return $query->where('type', PropertyDate::class)->first(); }, function($result) { return $result->name == 'parentdate'; }],
+            [TestSimpleChild::class, function($query) { return $query->count(); }, 28],
             ];    
+    }
+
+    public function testValue()
+    {
+        $test = new Dummy();
+        $test->dummyint = 123;
+        $result = $test->propertyQuery()->where('name','dummyint')->first();
+        $this->assertEquals(123, $result->value);
     }
     
     /**
@@ -60,7 +70,15 @@ class PropertyCollection_queryTest extends TestCase
     public function StaticPropertiesProvider()
     {
         return [
-            
+            [DummyCollection::class, function($query) { return $query->count(); }, 1],
+            [ComplexCollection::class, function($query) { return $query->count(); }, 14],
+            [Dummy::class, function ($query) { return $query->count(); }, 10],
+            [TestParent::class, function($query) { return $query->count(); }, 28],
+            [TestChild::class, function($query) { return $query->count(); }, 45],
+            [Dummy::class, function ($query) { return $query->where('owner', Dummy::class)->count(); }, 1],
+            [TestParent::class, function($query) { return $query->where('type', PropertyDate::class)->count(); }, 1],
+            [TestParent::class, function($query) { return $query->where('type', PropertyDate::class)->first(); }, function($result) { return $result->name == 'parentdate'; }],
+            [TestSimpleChild::class, function($query) { return $query->count(); }, 28]            
         ];
     }
 }
