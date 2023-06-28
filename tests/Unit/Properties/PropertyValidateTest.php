@@ -92,12 +92,12 @@ class PropertyValidateTest extends TestCase
             
             // ========================= Collection =============================
             [PropertyCollection::class, function(&$property) {
-                $property->setAllowedClass(DummyCollection::class);                
+                $property->setAllowedCollection(DummyCollection::class);                
             }, function() {
                 return new DummyCollection();
             }, true],
             [PropertyCollection::class, function(&$property) {
-                $property->setAllowedClass(DummyCollection::class);
+                $property->setAllowedCollection(DummyCollection::class);
             }, function() {
                 return new ComplexCollection();
             }, false],

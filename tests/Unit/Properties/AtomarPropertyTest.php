@@ -6,6 +6,8 @@ use Sunhill\ORM\Properties\Utils\DefaultNull;
 use Sunhill\ORM\Properties\AtomarProperty;
 use Sunhill\ORM\Properties\PropertyException;
 use Sunhill\ORM\Units\None;
+use Sunhill\ORM\Properties\Exceptions\WriteToReadonlyException;
+use Sunhill\ORM\Properties\Exceptions\InvalidValueException;
 
 class AtomarPropertyTest extends TestCase
 {
@@ -56,7 +58,7 @@ class AtomarPropertyTest extends TestCase
     
     public function testWriteReadonly()
     {
-        $this->expectException(PropertyException::class);
+        $this->expectException(WriteToReadonlyException::class);
         
         $test = new AtomarProperty();
         $test->readonly();
@@ -76,7 +78,7 @@ class AtomarPropertyTest extends TestCase
     
     public function testSetNullNotAllowed()
     {
-        $this->expectException(PropertyException::class);
+        $this->expectException(InvalidValueException::class);
         $test = new AtomarProperty();
         $test->notNullable();
         $test->setValue(null);

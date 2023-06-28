@@ -224,6 +224,7 @@ class PropertyValueTest extends TestCase
         Classes::registerClass(TestParent::class);
         
         $property = new $property_class();
+        $property->setName('test');
         if (is_callable($postfix)) {
             $postfix($property);
         }
@@ -279,6 +280,8 @@ class PropertyValueTest extends TestCase
         Classes::registerClass(TestParent::class);
         
         $property = new PropertyMap();
+        $property->setName('test');
+        
         if (is_callable($postfix)) {
             $postfix($property);
         }
