@@ -1,5 +1,5 @@
 <?php
-namespace Sunhill\ORM\Tests\Unit\Objects;
+namespace Sunhill\ORM\Tests\Unit\Objects\TestCollections;
 
 use Sunhill\ORM\Objects\PropertyList;
 

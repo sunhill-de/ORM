@@ -17,6 +17,13 @@ namespace Sunhill\ORM\Storage\Mysql;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Objects\Collection;
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionLoad;
+use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionStore;
+use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionUpdate;
+use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectLoad;
+use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectStore;
+use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectUpdate;
+use Sunhill\ORM\Storage\Exceptions\ActionNotFoundException;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -26,72 +33,59 @@ use Sunhill\ORM\Objects\ORMObject;
 class MysqlStorage extends StorageBase 
 {
     
-    protected function callAppropriateModule(string $method, $payload = null)
+    protected function dispatch(string $action)
     {
-        $call_gate = 'do'.$method;
-        if ('object' == $this->source_type) {
-            $module = '\\Sunhill\\ORM\\Storage\\Mysql\\Objects\\MysqlObject'.$method;
-        } else if ('collection' == $this->source_type) {
-            $module = '\\Sunhill\\ORM\\Storage\\Mysql\\Collections\\MysqlCollection'.$method;
-        } else {
-            throw new \Exception('Unhandled storage type: '.$this->source_type);
+        if (is_a($this->getCollection(), ORMObject::class)) {
+            return $this->dispatchObject($action);
         }
-        $storage_helper = new $module($this);
-        return $storage_helper->$call_gate($payload);
+        if (is_a($this->getCollection(), Collection::class)) {
+            return $this->dispatchCollection($action);
+        }
+        return $this->dispatchOther($action);
     }
     
-    /**
-     * Loads the property with the given id from the storage
-     * {@inheritDoc}
-     * @see \Sunhill\ORM\Storage\StorageBase::doLoad()
-     */
-    protected function doLoad(int $id)
+    protected function dispatchCollection(string $action)
     {
-        $this->callAppropriateModule('Load', $id);
+        switch ($action) {
+            case 'load':
+                return $this->dispatchToAction(MysqlCollectionLoad::class);
+                break;
+            case 'store':
+                return $this->dispatchToAction(MysqlCollectionStore::class);
+                break;
+            case 'update':
+                return $this->dispatchToAction(MysqlCollectionUpdate::class);
+                break;
+        }
     }
     
-    protected function doStore(): int
+    protected function dispatchObject(string $action)
     {
-        return $this->callAppropriateModule('Store');
+        switch ($action) {
+            case 'load':
+                return $this->dispatchToAction(MysqlObjectLoad::class);
+                break;
+            case 'store':
+                return $this->dispatchToAction(MysqlObjectStore::class);
+                break;
+            case 'update':
+                return $this->dispatchToAction(MysqlObjectUpdate::class);
+                break;
+        }        
+    }
+
+    protected function dispatchOther(string $action)
+    {
+        switch ($action) {
+            case 'tags':
+                return $this->dispatchToAction(MysqlTagQuery::class);
+                break;
+            case 'attributes':
+                return $this->dispatchToAction(MysqlAttributeQuery::class);
+                break;
+            default:
+                throw new ActionNotFoundException("The action '$action' is unhandled.");
+        }
     }
     
-    protected function doUpdate(int $id)
-    {
-        $this->callAppropriateModule('Update', $id);
-    }
-    
-    protected function doDelete(int $id)
-    {
-        $this->callAppropriateModule('Delete', $id);
-    }
-    
-    protected function doMigrate()
-    {
-        $this->callAppropriateModule('Migrate');
-    }
-    
-    protected function doPromote()
-    {
-        // Collections can't be promoted
-        $storage_helper = new MysqlObjectPromote($this);
-        return $storage_helper->doPromote();        
-    }
-    
-    protected function doDegrade()
-    {
-        // Collections can't be degraded
-        $storage_helper = new MysqlObjectDegrade($this);
-        return $storage_helper->doDegrade();        
-    }
-    
-    protected function doSearch()
-    {
-        $this->callAppropriateModule('Search');
-    }
- 
-    protected function doDrop()
-    {
-        $this->callAppropriateModule('Drop');
-    }
-       
 }

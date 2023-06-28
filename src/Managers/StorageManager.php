@@ -48,10 +48,10 @@ class StorageManager
     {
         switch (env('ORM_STORAGE_TYPE', 'mysql')) {
             case 'mysql':
-                $storage_support = new MysqlStorageSupport();
+                $storage_support = new MysqlStorage();
                 break;
         }
-        return $storage_support->tagQuery();
+        return $storage_support->dispatch('tags');
     }
     
     public function attributeQuery(): BasicQuery
@@ -61,7 +61,8 @@ class StorageManager
                 $storage_support = new MysqlStorageSupport();
                 break;
         }
-        return $storage_support->attributeQuery();
+        return $storage_support->dispatch('attributes');
     }
+    
 }
  

@@ -22,7 +22,16 @@ trait HandlesStorage
         $this->setState('preloaded');
         $this->setID($id);
     }
-        
+
+    /**
+     * Forces the collection to load itself from the storage without accessing a property first
+     * Mostly for debugging
+     */
+    public function forceLoading()
+    {
+        $this->checkLoadingState();    
+    }
+    
     /**
      * Implements the lazy loading mechanism, that a collection is only loaded if accessed
      *
@@ -40,23 +49,23 @@ trait HandlesStorage
      */
     protected function finallyLoad()
     {
-        $storage = Storage::createStorage($this);
-        $this->prepareStorage($storage);
-        $storage->load($this->getID());
+        $storage = Storage::createStorage();
+        $storage->setCollection($this);
+        
         $this->setState('loading');
-        $this->loadFromStorage($storage);
+        $storage->dispatch('load');
         $this->setState('normal');
     }
  
     protected function doCommit()
     {
-        $storage = Storage::createStorage($this);
+        $storage = Storage::createStorage();
+        $storage->setCollection($this);
+        
         if (empty($this->getID())) {
-            $this->storeToStorage($storage);
-            $this->setID($storage->store());
+            $storage->dispatch('store');
         } else {
-            $this->updateToStorage($storage);
-            $storage->update($this->getID());
+            $storage->dispatch('update');
         }
     }
     

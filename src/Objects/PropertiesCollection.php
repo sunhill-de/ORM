@@ -180,7 +180,7 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
     /**
      * returns the Information named $key
      * @param string $key
-     * @throws PropertyCollectionException
+     * @throws PropertiesCollectionException
      * @return string|array|NULL|unknown
      * Test: /Unit/Objects/PropertyCollection_infoTest
      */
@@ -189,7 +189,7 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
         static::initializeInfos();
         if (!isset(static::$infos[$key])) {
             if (is_null($default)) {
-                throw new PropertyCollectionException("The key '$key' is not defined.");
+                throw new PropertiesCollectionException("The key '$key' is not defined.");
             } else {
                 return $default;
             }

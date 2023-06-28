@@ -3,81 +3,22 @@
 namespace Sunhill\ORM\Tests\Utils;
 
 use Sunhill\ORM\Storage\StorageBase;
+use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Objects\Collection;
 
 class TestStorage extends StorageBase
 {
-    public $last_action = '';
     
-    protected $values = [];
+    public $last_action;
     
-    public function setValue($key, $value)
+    public function dispatch(string $action)
     {
-        $this->values[$key] = $value;    
-    }
-    
-    protected function doLoad(int $id)
-    {
-        $this->last_action = 'load';
-        foreach ($this->values as $key => $value) {            
-            if ($key == 'attributes') {
-                $this->entities['attributes'] = $value;
-            } else {
-                $this->getEntity($key)->setValue($value);
-            }
+        if (is_a($this->getCollection(), ORMObject::class)) {
+            $this->last_action = 'object_';
+        } else if (is_a($this->getCollection(), Collection::class)) {
+            $this->last_action = 'collection_';
         }
+            
+        $this->last_action .= $action;
     }
-    
-    protected function doStore(): int
-    {
-        $this->last_action = 'store';
-        return 100;
-    }
-        
-    protected function doUpdate(int $id)
-    {
-        $this->last_action = 'update';        
-    }
-        
-    protected function doDelete(int $id)
-    {
-        $this->last_action = 'delete';        
-    }
-        
-    protected function doMigrate()
-    {
-        $this->last_action = 'migrate';        
-    }
-        
-    protected function doPromote()
-    {
-        $this->last_action = 'promote';        
-    }
-        
-    protected function doDegrade()
-    {
-        $this->last_action = 'degrade';        
-    }
-        
-    protected function doSearch()
-    {
-        $this->last_action = 'search';        
-    }
-        
-    protected function doDrop()
-    {
-        $this->last_action = 'drop';        
-    }
-    
-    public function createAttribute($name, $id, $type, $value, $allowed)
-    {
-        $entry = new \StdClass();
-        $entry->allowed_classes = $allowed;
-        $entry->name = $name;
-        $entry->attribute_id = $id;
-        $entry->type = $type;
-        $entry->value = $value;
-        
-        return $entry;
-    }
-        
 }

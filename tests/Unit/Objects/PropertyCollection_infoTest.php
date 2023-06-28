@@ -4,6 +4,8 @@ namespace Sunhill\ORM\Tests\Unit\Objects;
 
 use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\Objects\PropertiesCollectionException;
+use Sunhill\ORM\Tests\Unit\Objects\TestCollections\DummyPropertyCollection;
+use Sunhill\ORM\Tests\Unit\Objects\TestCollections\AnotherDummyPropertyCollection;
 
 class PropertyCollection_infoTest extends TestCase
 {
