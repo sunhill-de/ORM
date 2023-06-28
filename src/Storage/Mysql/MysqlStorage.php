@@ -33,7 +33,7 @@ use Sunhill\ORM\Storage\Exceptions\ActionNotFoundException;
 class MysqlStorage extends StorageBase 
 {
     
-    protected function dispatch(string $action)
+    public function dispatch(string $action)
     {
         if (is_a($this->getCollection(), ORMObject::class)) {
             return $this->dispatchObject($action);
@@ -81,7 +81,7 @@ class MysqlStorage extends StorageBase
                 return $this->dispatchToAction(MysqlTagQuery::class);
                 break;
             case 'attributes':
-                return $this->dispatchToAction(MysqlAttributeQuery::class);
+                return $this->dispatchToAction(MysqlAttributeAction::class);
                 break;
             default:
                 throw new ActionNotFoundException("The action '$action' is unhandled.");
