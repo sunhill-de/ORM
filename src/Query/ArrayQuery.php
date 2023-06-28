@@ -20,7 +20,7 @@ abstract class ArrayQuery extends BasicQuery
     
     abstract protected function getRawData();
 
-    protected function matches(\StdClass $entry): bool
+    protected function matches($entry): bool
     {
         return $this->condition_builder->testValue($entry);
     }
@@ -67,11 +67,15 @@ abstract class ArrayQuery extends BasicQuery
     protected function executeQuery()
     {
         $list = $this->arrayToCollection(array_values(array_map(function($element) {
-            $result = new \StdClass();
-            foreach ($element as $key => $value) {
-                $result->$key = $value;
+            if (is_array($element)) {
+                $result = new \StdClass();
+                foreach ($element as $key => $value) {
+                    $result->$key = $value;
+                }
+                return $result;
+            } else {
+                return $element;
             }
-            return $result;
         },$this->getRawData())));
             $list = $this->filterList($list);
             $list = $this->orderList($list);
