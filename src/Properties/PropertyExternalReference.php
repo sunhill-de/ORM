@@ -73,10 +73,11 @@ class PropertyExternalReference extends AtomarProperty
 	protected function retrieveValue()
 	{
         $internal_key_name = $this->internal_key;
-        $internal_key_value = $this->getOwner()->$internal_key_name;
+        $internal_key_value = $this->getActualPropertiesCollection()->$internal_key_name;
         $query = DB::table($this->table)->where($this->external_key,$internal_key_value);
-        if (!is_callable($this->query_modifier)) {
-            $query = $this->query_modifier($query);
+        $modifier = $this->query_modifier;
+        if (is_callable($modifier)) {
+            $query = $modifier($query);
         }
         if ($this->list) {
             $this->setValue($query->get());            
