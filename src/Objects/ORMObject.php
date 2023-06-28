@@ -15,7 +15,6 @@ namespace Sunhill\ORM\Objects;
 use Sunhill\ORM\Facades\Attributes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
-use Sunhill\ORM\Facades\Storage;
 use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Search\QueryBuilder;
@@ -344,7 +343,7 @@ class ORMObject extends PropertiesCollection
         $attribute_obj->setValue($value);
         return true;
 	}
-		
+	
 	// ********************** Static methods  ***************************	
 	
 	/**
