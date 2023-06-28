@@ -303,7 +303,8 @@ class AtomarProperty extends Property implements Commitable
      */
     protected function doSetValue($value)
     {
-        $this->loadValue($value);
+        $this->value = $value;
+        $this->initialized = true;
     }
     
     public function loadValue($value)
