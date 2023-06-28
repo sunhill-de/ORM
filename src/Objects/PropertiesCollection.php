@@ -39,6 +39,7 @@ use Sunhill\ORM\Interfaces\InteractsWithStorage;
 use Sunhill\ORM\Properties\PropertyTags;
 use Sunhill\ORM\Objects\StorageInteraction\CollectionLoader;
 use Sunhill\ORM\Objects\StorageInteraction\StorageInteractionBase;
+use Sunhill\ORM\PropertyQuery\PropertyQuery;
 
 /**
  * Basic class for all classes that have properties.
@@ -318,6 +319,16 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
     public function getAllProperties(): array
     {
         return $this->properties;        
+    }
+    
+    public function propertyQuery(): PropertyQuery
+    {
+        return new PropertyQuery($this->properties);
+    }
+    
+    public static function staticPropertyQuery(): PropertyQuery
+    {
+        return new PropertyQuery(static::getAllPropertyDefinitions()); 
     }
     
     // ================================ Inheritance ===========================================
