@@ -38,6 +38,11 @@ abstract class NonAtomarProperty extends Property
         $this->checkLoadingState();
         if ($this->hasProperty($name)) {
             return $this->getProperty($name)->getValue();
+        } else {
+            if ($name == 'id') {
+                $id = $this->getID();
+                return $id;
+            }
         }
         throw new PropertyException("The property '$name' does not exist.");
     }
