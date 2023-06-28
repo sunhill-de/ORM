@@ -56,7 +56,7 @@ class ConditionBuilder
         return $this;
     }
     
-    protected function matchCallbackCondition(\StdClass $entry, \StdClass $condition): bool
+    protected function matchCallbackCondition($entry, $condition): bool
     {
         return $condition->callback->testValue($entry);
     }
@@ -81,7 +81,7 @@ class ConditionBuilder
         }
     }
     
-    protected function matchCondition(\StdClass $entry, \StdClass $condition): bool
+    protected function matchCondition($entry, $condition): bool
     {
         if (isset($condition->callback)) {
             return $this->matchCallbackCondition($entry, $condition);
@@ -92,7 +92,7 @@ class ConditionBuilder
         return $this->matchSimpleCondition($key, $condition->relation, $value);
     }
     
-    public function testValue(\StdClass $entry): bool
+    public function testValue($entry): bool
     {
         $result = null;
         foreach ($this->conditions as $condition) {
