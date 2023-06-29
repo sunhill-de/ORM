@@ -22,6 +22,7 @@ class TestParentsTableSeeder extends Seeder {
 		        'parentobject'=>1,
 		        'parentcalc'=>'111A',
 		        'parentcollection'=>7,
+		        'parentinformation'=>'some.path.to9',
 		    ],
 	        [
 	            'id'=>10,
@@ -36,6 +37,7 @@ class TestParentsTableSeeder extends Seeder {
 		        'parentobject'=>4,
 	            'parentcalc'=>'123A',
 	            'parentcollection'=>5,
+	            'parentinformation'=>'some.path.to10',
 	        ],
 	        [
 	            'id'=>11,
@@ -50,6 +52,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>5,
 	            'parentcalc'=>'222A',
 	            'parentcollection'=>null,
+	            'parentinformation'=>'some.path.to11',
 	        ],
 	        [
 	            'id'=>12,
@@ -64,7 +67,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>4,
 	            'parentcalc'=>'123A',
 	            'parentcollection'=>6,
-	            
+	            'parentinformation'=>null,	            
 	        ],
 	        [
 	            'id'=>13,
@@ -79,6 +82,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'234A',
 	            'parentcollection'=>5,
+	            'parentinformation'=>'some.path.to13',	            
 	        ],
 	        [
 	            'id'=>14,
@@ -93,6 +97,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'555A',
 	            'parentcollection'=>3,
+	            'parentinformation'=>'some.path.to14',
+	            
 	        ],
 	        [
 	            'id'=>15,
@@ -107,6 +113,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'432A',
 	            'parentcollection'=>2,
+	            'parentinformation'=>'some.path.to15',
+	            
 	        ],
 	        [
 	            'id'=>16,
@@ -121,6 +129,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'700A',
 	            'parentcollection'=>7,
+	            'parentinformation'=>null,
+	            
 	        ],
 	        
 	        [
@@ -136,6 +146,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>3,
 	            'parentcalc'=>'123A',
 	            'parentcollection'=>4,
+	            'parentinformation'=>'some.path.to17',
 	            
 	        ],
 	        [
@@ -151,6 +162,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>4,
 	            'parentcalc'=>'800A',
 	            'parentcollection'=>3,
+	            'parentinformation'=>null,
 	            
 	        ],
 	        [
@@ -166,6 +178,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>5,
 	            'parentcalc'=>'900A',
 	            'parentcollection'=>6,
+	            'parentinformation'=>'some.path.to19',
 	            
 	        ],
 	        [
@@ -181,6 +194,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>2,
 	            'parentcalc'=>'666A',
 	            'parentcollection'=>3,
+	            'parentinformation'=>'some.path.to20',	            
 	        ],
 	        [
 	            'id'=>21,
@@ -195,6 +209,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'580A',
 	            'parentcollection'=>1,
+	            'parentinformation'=>'some.path.to21',
+	            
 	        ],
 	        [
 	            'id'=>22,
@@ -209,6 +225,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'432A',
 	            'parentcollection'=>2,
+	            'parentinformation'=>null,
+	            
 	        ],
 	        [
 	            'id'=>23,
@@ -223,6 +241,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'345A',
 	            'parentcollection'=>3,
+	            'parentinformation'=>'some.path.to10',
+	            
 	        ],
 	        [
 	            'id'=>24,
@@ -237,6 +257,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'723A',
 	            'parentcollection'=>1,
+	            'parentinformation'=>'some.path.to24',
 	        ],
 	        
 	        [
@@ -252,6 +273,8 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>2,
 	            'parentcalc'=>'999A',
 	            'parentcollection'=>null,
+	            'parentinformation'=>'some.path.to25',
+	            
 	        ],
 	        [
 	            'id'=>26,
@@ -266,6 +289,7 @@ class TestParentsTableSeeder extends Seeder {
 	            'parentobject'=>null,
 	            'parentcalc'=>'123A',
 	            'parentcollection'=>2,
+	            'parentinformation'=>'some.path.to26',	            
 	        ],
 	    ]);
 	}

@@ -22,6 +22,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childobject'=>3,
 	            'childcalc'=>'777B',
 	            'childcollection'=>9,
+	            'childinformation'=>'path.to.child17',
 	        ],
 	        [
 	            'id'=>18,
@@ -36,6 +37,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childobject'=>4,
 	            'childcalc'=>'801B',
 	            'childcollection'=>11,
+	            'childinformation'=>'path.to.child18',
 	        ],
 	        [
 	            'id'=>19,
@@ -50,6 +52,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childobject'=>3,
 	            'childcalc'=>'900B',
 	            'childcollection'=>19,
+	            'childinformation'=>null,
 	        ],
 	        [
 	            'id'=>20,
@@ -64,6 +67,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childobject'=>null,
 	            'childcalc'=>'666B',
 	            'childcollection'=>10,
+	            'childinformation'=>null,
 	        ],
 	        [
 	            'id'=>21,
@@ -78,6 +82,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childobject'=>null,
 	            'childcalc'=>'112B',
 	            'childcollection'=>10,
+	            'childinformation'=>'path.to.child21',
 	        ],
 	        [
 	            'id'=>22,
@@ -92,6 +97,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childobject'=>null,
 	            'childcalc'=>'321B',
 	            'childcollection'=>14,
+	            'childinformation'=>'path.to.child22',
 	        ],
 	        [
 	            'id'=>23,
@@ -106,6 +112,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childobject'=>null,
 	            'childcalc'=>'345B',
 	            'childcollection'=>9,
+	            'childinformation'=>null,
 	        ],
 	        [
 	            'id'=>24,
@@ -120,6 +127,7 @@ class TestChildrenTableSeeder extends Seeder {
 	            'childobject'=>null,
 	            'childcalc'=>'777B',
 	            'childcollection'=>15,
+	            'childinformation'=>'path.to.child24',
 	        ]    
 	    ]);
 	}
