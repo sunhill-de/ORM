@@ -12,6 +12,7 @@ use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Properties\PropertyDate;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyInformation;
 
 class PropertyCollection_queryTest extends TestCase
 {
@@ -41,6 +42,13 @@ class PropertyCollection_queryTest extends TestCase
             [TestChild::class, function($query) { return $query->count(); }, 45],
             [Dummy::class, function ($query) { return $query->where('owner', Dummy::class)->count(); }, 1],
             [TestParent::class, function($query) { return $query->where('type', PropertyDate::class)->count(); }, 1],
+            [TestParent::class, function($query)
+            {
+                return $query->where('name', 'parentchar')->first();
+            }, function($result)
+            {
+                return $result->max_len == 255;
+            }],            
             [TestParent::class, function($query) 
             {
                 return $query->where('name', 'parentcollection')->first(); 
@@ -81,6 +89,21 @@ class PropertyCollection_queryTest extends TestCase
             ];    
     }
 
+    public function testInformation()
+    {
+        $object = new TestParent();
+        $object->getProperty('parentinformation')->setPath('some.path');
+        $query = $object->propertyQuery()->where('name','parentinformation')->first();
+        $this->assertEquals('some.path', $query->path);
+    }
+    
+    public function testKeyfield()
+    {
+        $object = new TestParent();
+        $query = $object->propertyQuery()->where('name','parentkeyfield')->first();
+        $this->assertEquals(':parentchar (:parentint)', $query->build_rule);
+    }
+    
     public function testValue()
     {
         $test = new Dummy();

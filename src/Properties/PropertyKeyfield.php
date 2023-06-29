@@ -30,6 +30,11 @@ class PropertyKeyfield extends AtomarProperty
         return $this;
     }
 
+    public function getBuildRule(): string
+    {
+        return $this->build_rule;
+    }
+    
     /**
      * Raises an exception when called (keyfields mustn't be written to)
      */

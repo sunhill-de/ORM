@@ -20,6 +20,9 @@ use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyCollection;
+use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Properties\PropertyInformation;
+use Sunhill\ORM\Properties\PropertyKeyfield;
 
 class PropertyQuery extends ArrayQuery
 {
@@ -67,6 +70,15 @@ class PropertyQuery extends ArrayQuery
                     break;
                 case PropertyEnum::class:
                     $entry->enum_values = $value->getEnumValues();
+                    break;
+                case PropertyVarchar::class:
+                    $entry->max_len = $value->getMaxLen();
+                    break;
+                case PropertyInformation::class:
+                    $entry->path = $value->getPath();
+                    break;
+                case PropertyKeyfield::class:
+                    $entry->build_rule = $value->getBuildRule();
                     break;
             }
             $entry->dirty = $value->getDirty();
