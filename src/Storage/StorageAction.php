@@ -73,4 +73,18 @@ abstract class StorageAction
         $property->setShadow($value);
     }
     
+    protected function mapProperty($property)
+    {
+        $type_parts = explode('\\',$property->type);
+        $type = 'handle'.array_pop($type_parts);
+        $this->$type($property);
+    }
+    
+    protected function runProperties()
+    {
+        $properties = $this->collection->propertyQuery()->get();
+        foreach ($properties as $property) {
+            $this->mapProperty($property);
+        }
+    }
 }

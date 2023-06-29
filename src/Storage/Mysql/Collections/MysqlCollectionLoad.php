@@ -8,71 +8,75 @@ use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Storage\CollectionHandler;
 use Sunhill\ORM\Storage\Mysql\Utils\IgnoreSimple;
+use Sunhill\ORM\Storage\StorageAction;
+use Sunhill\ORM\Interfaces\HandlesProperties;
+use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Storage\Mysql\MysqlAction;
+use Sunhill\ORM\Properties\PropertyCollection;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Facades\Collections;
 
 /**
  * Helper class to load an object out of the database
  * @author klaus
  *
  */
-class MysqlCollectionLoad extends CollectionHandler
+class MysqlCollectionLoad extends MysqlAction implements HandlesProperties
 {
     
-    use IgnoreSimple;
+    use PropertyHelpers;
     
-    protected $id = 0;
+    protected $data;
     
-    protected function prepareRun()
+    protected function getSimpleData($list)
     {
-        
-    }
-    
-    protected function finishRun()
-    {
-        
-    }
-    
-    public function doLoad(int $id)
-    {
-        $this->id = $id;
-        return $this->run();
-    }
-    
-    protected function handleClass(string $storage_id)
-    {        
-        $query = DB::table($storage_id)->where('id',$this->id)->first();
-        foreach ($query as $key => $value) {
-            $this->storage->setEntity($key, $value);
+        $first = array_shift($list);
+        $query = DB::table($first::getInfo('table'));
+        foreach ($list as $class) {
+            $query->join($class::getInfo('table'),'id','=','id');
         }
+        $this->data = $query->where('id',$this->collection->getID())->first();        
+    }
+    
+    public function run()
+    {
+        $list = $this->collectClasses();
+        $this->getSimpleData($list);
+        $this->runProperties();
+    }
+  
+    protected function handleArrayOrMap($property)
+    {
+        $query = DB::table($this->getSpecialTableName($property))->where('id',$this->collection->getID())->get();
+        $name = $property->name;
+        foreach ($query as $entry) {
+            switch ($property->element_type) {
+                case PropertyObject::class:
+                    $this->collection->$name[$entry->index] = Objects::load($entry->value);
+                    break;
+                case PropertyCollection::class:
+                    $this->collection->$name[$entry->index] = Collections::loadCollection($entry->value);
+                    break;
+                default:
+                    $this->collection->$name[$entry->index] = $entry->value;                    
+            }
+        }        
     }
     
     public function handlePropertyArray($property)
     {
-        $query = DB::table($this->getExtraTableName($property))->where('id',$this->id)->get();
-        $result = [];
-        foreach ($query as $entry) {
-            $result[$entry->index] = $entry->value;
-        }
-        $this->storage->setEntity($property->name, $result);
+        $this->handleArrayOrMap($property);
     }
     
-    public function handlePropertyMap($property)
+    public function handlePropertyBoolean($property)
     {
-        $this->handlePropertyArray($property);        
+        $this->loadValue($property);        
     }
     
-    public function handlePropertyObject($property)
+    public function handlePropertyCalculated($property)
     {
-        
-    }
-    
-    public function handlePropertyInformation($property)
-    {
-        
-    }
-    
-    public function handlePropertyExternalReference($property)
-    {
-        
+        $this->loadValue($property);        
     }
     
     public function handlePropertyCollection($property)
@@ -80,9 +84,76 @@ class MysqlCollectionLoad extends CollectionHandler
         
     }
     
+    public function handlePropertyDate($property)
+    {        
+        $this->loadValue($property);        
+    }
+    
+    public function handlePropertyDateTime($property)
+    {
+        $this->loadValue($property);        
+    }
+    
+    public function handlePropertyEnum($property)
+    {
+        $this->loadValue($property);        
+    }
+    
+    public function handlePropertyExternalReference($property)
+    {
+        
+    }
+    
+    public function handlePropertyFloat($property)
+    {
+        $this->loadValue($property);        
+    }
+    
+    public function handlePropertyInformation($property)
+    {
+        
+    }
+    
+    public function handlePropertyInteger($property)
+    {
+         $this->loadValue($property);   
+    }
+    
     public function handlePropertyKeyfield($property)
     {
         
+    }
+    
+    public function handlePropertyMap($property)
+    {
+        $this->handleArrayOrMap($property);        
+    }
+    
+    public function handlePropertyObject($property)
+    {
+        $name = $property->name;
+        $id = $this->data->$name;
+        $this->setValue($property, Objects::load($id));
+    }
+    
+    public function handlePropertyTags($property)
+    {
+        
+    }
+    
+    public function handlePropertyText($property)
+    {
+        $this->loadValue($property);        
+    }
+    
+    public function handlePropertyTime($property)
+    {
+        $this->loadValue($property);        
+    }
+    
+    public function handlePropertyVarchar($property)
+    {
+        $this->loadValue($property);        
     }
     
 }
