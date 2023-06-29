@@ -11,6 +11,7 @@ use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Properties\PropertyDate;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
+use Sunhill\ORM\Properties\PropertyObject;
 
 class PropertyCollection_queryTest extends TestCase
 {
@@ -40,6 +41,41 @@ class PropertyCollection_queryTest extends TestCase
             [TestChild::class, function($query) { return $query->count(); }, 45],
             [Dummy::class, function ($query) { return $query->where('owner', Dummy::class)->count(); }, 1],
             [TestParent::class, function($query) { return $query->where('type', PropertyDate::class)->count(); }, 1],
+            [TestParent::class, function($query) 
+            {
+                return $query->where('name', 'parentcollection')->first(); 
+            }, function($result)
+            {
+                return $result->allowed_collection == DummyCollection::class;
+            }],
+            [TestParent::class, function($query)
+            {
+                return $query->where('name', 'parentoarray')->first();
+            }, function($result)
+            {
+                return $result->element_type == PropertyObject::class;
+            }],
+            [TestParent::class, function($query)
+            {
+                return $query->where('name', 'parentoarray')->first();
+            }, function($result)
+            {
+                return $result->allowed_classes == ['dummy'];
+            }],
+            [TestParent::class, function($query)
+            {
+                return $query->where('name', 'parentenum')->first();
+            }, function($result)
+            {
+                return $result->enum_values == ['testA','testB','testC'];
+            }],
+            [TestParent::class, function($query)
+            {
+                return $query->where('name', 'parentobject')->first();
+            }, function($result)
+            {
+                return $result->allowed_classes == ['dummy'];
+            }],
             [TestParent::class, function($query) { return $query->where('type', PropertyDate::class)->first(); }, function($result) { return $result->name == 'parentdate'; }],
             [TestSimpleChild::class, function($query) { return $query->count(); }, 28],
             ];    

@@ -15,6 +15,11 @@ namespace Sunhill\ORM\PropertyQuery;
 
 use Sunhill\ORM\Query\ArrayQuery;
 use Sunhill\ORM\Properties\PropertyExternalReference;
+use Sunhill\ORM\Properties\PropertyEnum;
+use Sunhill\ORM\Properties\PropertyMap;
+use Sunhill\ORM\Properties\PropertyArray;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyCollection;
 
 class PropertyQuery extends ArrayQuery
 {
@@ -43,6 +48,27 @@ class PropertyQuery extends ArrayQuery
             $entry->name = $key;
             $entry->owner = $value->getOwner();
             $entry->type = $value::class;
+            switch ($value::class) {
+                case PropertyArray::class:
+                case PropertyMap::class:
+                    $entry->element_type = $value->getElementType();
+                    if ($value->getElementType() == PropertyObject::class) {
+                        $entry->allowed_classes = $value->getAllowedClasses();
+                    }
+                    if ($value->getElementType() == PropertyCollection::class) {
+                        $entry->allowed_collection = $value->getAllowedCollection();
+                    }
+                    break;
+                case PropertyObject::class:    
+                    $entry->allowed_classes = $value->getAllowedClasses();
+                    break;
+                case PropertyCollection::class:
+                    $entry->allowed_collection = $value->getAllowedCollection();
+                    break;
+                case PropertyEnum::class:
+                    $entry->enum_values = $value->getEnumValues();
+                    break;
+            }
             $entry->dirty = $value->getDirty();
             $entry->readonly = $value->getReadonly();
             $entry->unit = $value->getUnit();
