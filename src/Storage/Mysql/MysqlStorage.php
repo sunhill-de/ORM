@@ -38,12 +38,12 @@ class MysqlStorage extends StorageBase
     public function dispatch(string $action, $additional = null)
     {
         if (is_a($this->getCollection(), ORMObject::class)) {
-            return $this->dispatchObject($action);
+            return $this->dispatchObject($action, $additional);
         }
         if (is_a($this->getCollection(), Collection::class)) {
-            return $this->dispatchCollection($action);
+            return $this->dispatchCollection($action, $additional);
         }
-        return $this->dispatchOther($action);
+        return $this->dispatchOther($action, $additional);
     }
     
     protected function dispatchCollection(string $action, $additional = null)
