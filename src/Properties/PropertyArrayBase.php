@@ -329,4 +329,9 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	    return $test->isValid($input);
 	}
 	
+	public function loadIndexedValue($index, $value)
+	{
+	    $this->value[$index] = $value;
+	}
+	
 }
