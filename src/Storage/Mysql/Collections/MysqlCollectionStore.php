@@ -18,80 +18,58 @@ use Sunhill\ORM\Properties\PropertyEnum;
 use Sunhill\ORM\Properties\PropertyText;
 use Sunhill\ORM\Properties\PropertyCalculated;
 
+use Sunhill\ORM\Storage\Mysql\MysqlAction;
+use Sunhill\ORM\Interfaces\HandlesProperties;
+use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
 
-class MysqlCollectionStore extends CollectionHandler
+class MysqlCollectionStore extends MysqlAction implements HandlesProperties
 {
     
-    use IgnoreSimple;
+    use PropertyHelpers;
     
-    protected $id = 0;
+    public function run()
+    {
+        $list = $this->collectClasses();
+        $this->deleteClassTables($list);
+        $this->runProperties();
+    }
     
-    protected $storage_id;
-    
-    protected function prepareRun()
+    protected function deleteClassTables($list)
     {
         
     }
     
-    protected function finishRun()
+    protected function handleArrayOrMap($property)
     {
     }
     
-    public function doStore(): int
-    {
-        $this->run();
-        return $this->id;
-    }
-    
-    protected function handleClass(string $storage_id)
-    {
-        $this->storage_id = $storage_id;
-        
-        $data = [];
-        foreach ($this->storage->getEntitiesOfStorageID($storage_id) as $key => $value) {
-            switch ($value->type) {
-                case PropertyVarchar::class:
-                case PropertyInteger::class:
-                case PropertyBoolean::class:
-                case PropertyObject::class:
-                case PropertyDate::class:
-                case PropertyTime::class:
-                case PropertyDatetime::class:
-                case PropertyFloat::class:
-                case PropertyEnum::class:
-                case PropertyText::class:
-                case PropertyCalculated::class:                    
-                    $data[$key] = $value->value;
-                    break;
-            }
-        }
-        $this->id = DB::table($storage_id)->insertGetId($data);
-    }
-        
     public function handlePropertyArray($property)
     {
-        $i=0;
-        $data = [];
-        foreach ($property->value as $key => $value) {
-            $entry = ['id'=>$this->id,'index'=>$key,'value'=>$value];
-            $data[] = $entry;
-        }
-        DB::table($this->getExtraTableName($property))->insert($data);
+        $this->handleArrayOrMap($property);
     }
     
-    public function handlePropertyMap($property)
+    public function handlePropertyBoolean($property)
     {
-        $this->handlePropertyArray($property);
     }
     
-    public function handlePropertyObject($property)
+    public function handlePropertyCalculated($property)
     {
-        
     }
     
-    public function handlePropertyInformation($property)
+    public function handlePropertyCollection($property)
     {
-        
+    }
+    
+    public function handlePropertyDate($property)
+    {
+    }
+    
+    public function handlePropertyDateTime($property)
+    {
+    }
+    
+    public function handlePropertyEnum($property)
+    {
     }
     
     public function handlePropertyExternalReference($property)
@@ -99,9 +77,17 @@ class MysqlCollectionStore extends CollectionHandler
         
     }
     
-    public function handlePropertyCollection($property)
+    public function handlePropertyFloat($property)
+    {
+    }
+    
+    public function handlePropertyInformation($property)
     {
         
+    }
+    
+    public function handlePropertyInteger($property)
+    {
     }
     
     public function handlePropertyKeyfield($property)
@@ -109,4 +95,28 @@ class MysqlCollectionStore extends CollectionHandler
         
     }
     
+    public function handlePropertyMap($property)
+    {
+        $this->handleArrayOrMap($property);
+    }
+    
+    public function handlePropertyObject($property)
+    {
+    }
+    
+    public function handlePropertyTags($property)
+    {
+    }
+    
+    public function handlePropertyText($property)
+    {
+    }
+    
+    public function handlePropertyTime($property)
+    {
+    }
+    
+    public function handlePropertyVarchar($property)
+    {
+    }
 }

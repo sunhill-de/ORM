@@ -2,60 +2,58 @@
 
 namespace Sunhill\ORM\Storage\Mysql\Collections;
 
-use Illuminate\Support\Facades\DB;
-use Sunhill\ORM\Properties\Property;
-use Sunhill\ORM\Storage\CollectionHandler;
-use Sunhill\ORM\Storage\Mysql\Utils\IgnoreSimple;
+use Sunhill\ORM\Storage\Mysql\MysqlAction;
+use Sunhill\ORM\Interfaces\HandlesProperties;
+use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
 
-
-class MysqlCollectionDelete extends CollectionHandler
+class MysqlCollectionDelete extends MysqlAction implements HandlesProperties
 {
     
-    use IgnoreSimple;
+    use PropertyHelpers;
     
-    protected $id = 0;
-    
-    public function doDelete(int $id)
+    public function run()
     {
-        $this->id = $id;
-        $this->run();
+        $list = $this->collectClasses();
+        $this->deleteClassTables($list);
+        $this->runProperties();
     }
     
-    protected function handleClass(string $class)
-    {
-        parent::handleClass($class);
-        DB::table($class)->where('id',$this->id)->delete();
-    }
-    
-    protected function prepareRun()
+    protected function deleteClassTables($list)
     {
         
     }
     
-    protected function finishRun()
+    protected function handleArrayOrMap($property)
     {
-        
     }
     
     public function handlePropertyArray($property)
     {
-        $table = $this->getExtraTableName($property);
-        DB::table($table)->where('id',$this->id)->delete();
+        $this->handleArrayOrMap($property);
     }
     
-    public function handlePropertyMap($property)
+    public function handlePropertyBoolean($property)
     {
-        $this->handlePropertyArray($property);
     }
     
-    public function handlePropertyObject($property)
+    public function handlePropertyCalculated($property)
     {
-        
     }
     
-    public function handlePropertyInformation($property)
+    public function handlePropertyCollection($property)
     {
-        
+    }
+    
+    public function handlePropertyDate($property)
+    {
+    }
+    
+    public function handlePropertyDateTime($property)
+    {
+    }
+    
+    public function handlePropertyEnum($property)
+    {
     }
     
     public function handlePropertyExternalReference($property)
@@ -63,9 +61,17 @@ class MysqlCollectionDelete extends CollectionHandler
         
     }
     
-    public function handlePropertyCollection($property)
+    public function handlePropertyFloat($property)
+    {
+    }
+    
+    public function handlePropertyInformation($property)
     {
         
+    }
+    
+    public function handlePropertyInteger($property)
+    {
     }
     
     public function handlePropertyKeyfield($property)
@@ -73,4 +79,28 @@ class MysqlCollectionDelete extends CollectionHandler
         
     }
     
+    public function handlePropertyMap($property)
+    {
+        $this->handleArrayOrMap($property);
+    }
+    
+    public function handlePropertyObject($property)
+    {
+    }
+    
+    public function handlePropertyTags($property)
+    {
+    }
+    
+    public function handlePropertyText($property)
+    {
+    }
+    
+    public function handlePropertyTime($property)
+    {
+    }
+    
+    public function handlePropertyVarchar($property)
+    {
+    }
 }

@@ -2,103 +2,58 @@
 
 namespace Sunhill\ORM\Storage\Mysql\Collections;
 
-use Sunhill\ORM\Properties\Property;
-use Sunhill\ORM\Storage\CollectionHandler;
+use Sunhill\ORM\Storage\Mysql\MysqlAction;
+use Sunhill\ORM\Interfaces\HandlesProperties;
+use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
 
-
-class MysqlCollectionUpdate extends CollectionHandler
+class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
 {
-        
-    protected $id = 0;
     
-    protected function prepareRun()
+    use PropertyHelpers;
+    
+    public function run()
+    {
+        $list = $this->collectClasses();
+        $this->deleteClassTables($list);
+        $this->runProperties();
+    }
+    
+    protected function deleteClassTables($list)
     {
         
     }
     
-    protected function finishRun()
+    protected function handleArrayOrMap($property)
     {
-        
     }
     
     public function handlePropertyArray($property)
     {
-        
+        $this->handleArrayOrMap($property);
     }
     
     public function handlePropertyBoolean($property)
     {
-        
     }
     
     public function handlePropertyCalculated($property)
     {
-        
+    }
+    
+    public function handlePropertyCollection($property)
+    {
     }
     
     public function handlePropertyDate($property)
     {
-        
     }
     
     public function handlePropertyDateTime($property)
     {
-        
     }
     
     public function handlePropertyEnum($property)
     {
-        
-    }
-    
-    public function handlePropertyFloat($property)
-    {
-        
-    }
-    
-    public function handlePropertyInteger($property)
-    {
-        
-    }
-    
-    public function handlePropertyMap($property)
-    {
-        
-    }
-    
-    public function handlePropertyObject($property)
-    {
-        
-    }
-    
-    public function handlePropertyTags($property)
-    {
-        
-    }
-    
-    public function handlePropertyText($property)
-    {
-        
-    }
-    
-    public function handlePropertyTime($property)
-    {
-        
-    }
-    
-    public function handlePropertyTimestamp($property)
-    {
-        
-    }
-    
-    public function handlePropertyVarchar($property)
-    {
-        
-    }
-    
-    public function handlePropertyInformation($property)
-    {
-        
     }
     
     public function handlePropertyExternalReference($property)
@@ -106,9 +61,17 @@ class MysqlCollectionUpdate extends CollectionHandler
         
     }
     
-    public function handlePropertyCollection($property)
+    public function handlePropertyFloat($property)
+    {
+    }
+    
+    public function handlePropertyInformation($property)
     {
         
+    }
+    
+    public function handlePropertyInteger($property)
+    {
     }
     
     public function handlePropertyKeyfield($property)
@@ -116,4 +79,28 @@ class MysqlCollectionUpdate extends CollectionHandler
         
     }
     
+    public function handlePropertyMap($property)
+    {
+        $this->handleArrayOrMap($property);
+    }
+    
+    public function handlePropertyObject($property)
+    {
+    }
+    
+    public function handlePropertyTags($property)
+    {
+    }
+    
+    public function handlePropertyText($property)
+    {
+    }
+    
+    public function handlePropertyTime($property)
+    {
+    }
+    
+    public function handlePropertyVarchar($property)
+    {
+    }
 }

@@ -24,6 +24,8 @@ use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectLoad;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectStore;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectUpdate;
 use Sunhill\ORM\Storage\Exceptions\ActionNotFoundException;
+use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionDelete;
+use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDelete;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -56,6 +58,9 @@ class MysqlStorage extends StorageBase
             case 'update':
                 return $this->dispatchToAction(MysqlCollectionUpdate::class);
                 break;
+            case 'delete':    
+                return $this->dispatchToAction(MysqlCollectionDelete::class);
+                break;
         }
     }
     
@@ -70,6 +75,9 @@ class MysqlStorage extends StorageBase
                 break;
             case 'update':
                 return $this->dispatchToAction(MysqlObjectUpdate::class);
+                break;
+            case 'delete':    
+                return $this->dispatchToAction(MysqlObjectDelete::class);
                 break;
         }        
     }

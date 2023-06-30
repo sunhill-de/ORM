@@ -31,12 +31,13 @@ class MysqlCollectionLoad extends MysqlAction implements HandlesProperties
     
     protected function getSimpleData($list)
     {
-        $first = array_shift($list);
-        $query = DB::table($first::getInfo('table'));
+        $first = array_shift($list)::getInfo('table');
+        $query = DB::table($first);
         foreach ($list as $class) {
-            $query->join($class::getInfo('table'),'id','=','id');
+            $class_table = $class::getInfo('table');
+            $query->join($class_table,$first.'.id','=',$class_table.'.id');
         }
-        $this->data = $query->where('id',$this->collection->getID())->first();        
+        $this->data = $query->where($first.'.id',$this->collection->getID())->first();        
     }
     
     public function run()
@@ -46,6 +47,22 @@ class MysqlCollectionLoad extends MysqlAction implements HandlesProperties
         $this->runProperties();
     }
   
+    protected function loadObject($id)
+    {
+        if (empty($id)) {
+            return;
+        }
+        return Objects::load($id);
+    }
+    
+    protected function loadCollection($collection, $id)
+    {
+        if (empty($id)) {
+            return;
+        }
+        return Collections::loadCollection($collection, $id);        
+    }
+
     protected function handleArrayOrMap($property)
     {
         $query = DB::table($this->getSpecialTableName($property))->where('id',$this->collection->getID())->get();
@@ -53,13 +70,13 @@ class MysqlCollectionLoad extends MysqlAction implements HandlesProperties
         foreach ($query as $entry) {
             switch ($property->element_type) {
                 case PropertyObject::class:
-                    $this->collection->$name[$entry->index] = Objects::load($entry->value);
+                    $this->collection->getProperty($name)->loadIndexedValue($entry->index, $this->loadObject($entry->value));
                     break;
                 case PropertyCollection::class:
-                    $this->collection->$name[$entry->index] = Collections::loadCollection($entry->value);
+                    $this->collection->getProperty($name)->loadIndexedValue($entry->index, $this->loadCollection($entry->value));
                     break;
                 default:
-                    $this->collection->$name[$entry->index] = $entry->value;                    
+                    $this->collection->getProperty($name)->loadIndexedValue($entry->index, $entry->value);
             }
         }        
     }
@@ -81,7 +98,9 @@ class MysqlCollectionLoad extends MysqlAction implements HandlesProperties
     
     public function handlePropertyCollection($property)
     {
-        
+        $name = $property->name;
+        $object = $this->loadCollection($property->allowed_collection, $this->data->$name);
+        $this->setValue($property, $object);        
     }
     
     public function handlePropertyDate($property)
@@ -132,8 +151,8 @@ class MysqlCollectionLoad extends MysqlAction implements HandlesProperties
     public function handlePropertyObject($property)
     {
         $name = $property->name;
-        $id = $this->data->$name;
-        $this->setValue($property, Objects::load($id));
+        $object = $this->loadObject($this->data->$name);
+        $this->setValue($property, $object);
     }
     
     public function handlePropertyTags($property)
