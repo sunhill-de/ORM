@@ -7,8 +7,9 @@ use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Traits\PropertyUtils;
 use Sunhill\ORM\Storage\Mysql\Utils\ClassTables;
 use Sunhill\ORM\Storage\Mysql\Utils\ColumnInfo;
+use Sunhill\ORM\Storage\Mysql\MysqlAction;
 
-class MysqlObjectMigrateAlter
+class MysqlObjectMigrateAlter extends MysqlAction
 {
     
     use ClassTables, ColumnInfo, PropertyUtils;
