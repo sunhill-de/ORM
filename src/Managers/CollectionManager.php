@@ -35,4 +35,8 @@ class CollectionManager
         return $object;
     }
     
+    public function deleteCollection(string $class, int $id)
+    {
+        
+    }
 }
