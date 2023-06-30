@@ -15,7 +15,8 @@ class DeleteTest extends DatabaseTestCase
     public function testDummy()
     {
         $object = new Dummy();
-        $test = new MysqlStorage($object);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
         $this->assertDatabaseHas('objects', ['id'=>1]);
         $this->assertDatabaseHas('dummies', ['id'=>1]);
@@ -23,7 +24,7 @@ class DeleteTest extends DatabaseTestCase
         $this->assertDatabaseHas('attributeobjectassigns', ['object_id'=>1]);
         $this->assertDatabaseHas('attr_general_attribute', ['object_id'=>1]);
         
-        $test->delete(1);
+        $test->dispatch('delete', 1);
         
         $this->assertDatabaseMissing('objects', ['id'=>1]);
         $this->assertDatabaseMissing('dummies', ['id'=>1]);
@@ -35,9 +36,11 @@ class DeleteTest extends DatabaseTestCase
     public function testDummyChildLittleMoreComplexDelete()
     {
         $object = new DummyChild();
-        $test = new MysqlStorage($object);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->delete(8);
+        $test->dispatch('delete', 8);
+        
         $this->assertDatabaseMissing('dummychildren', ['id'=>8]);
         $this->assertDatabaseMissing('dummies', ['id'=>8]);
         $this->assertDatabaseMissing('objects', ['id'=>8]);
@@ -47,8 +50,9 @@ class DeleteTest extends DatabaseTestCase
     {
         $object = new TestParent();
         $test = new MysqlStorage($object);
+        $test->setCollection($object);
         
-        $test->delete(9);
+        $test->dispatch('delete',9);
         
         $this->assertDatabaseMissing('testparents',['id'=>9]);
         $this->assertDatabaseMissing('testparents_parentoarray', ['id'=>9]);
@@ -59,8 +63,9 @@ class DeleteTest extends DatabaseTestCase
     {
         $object = new TestChild();
         $test = new MysqlStorage($object);
+        $test->setCollection($object);
         
-        $test->delete(18);
+        $test->dispatch('delete',18);
 
         $this->assertDatabaseMissing('testparents',['id'=>18]);
         $this->assertDatabaseMissing('testparents_parentoarray', ['id'=>18]);
