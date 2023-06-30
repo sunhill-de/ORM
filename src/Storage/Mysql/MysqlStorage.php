@@ -35,7 +35,7 @@ use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDelete;
 class MysqlStorage extends StorageBase 
 {
     
-    public function dispatch(string $action)
+    public function dispatch(string $action, $additional = null)
     {
         if (is_a($this->getCollection(), ORMObject::class)) {
             return $this->dispatchObject($action);
@@ -46,43 +46,43 @@ class MysqlStorage extends StorageBase
         return $this->dispatchOther($action);
     }
     
-    protected function dispatchCollection(string $action)
+    protected function dispatchCollection(string $action, $additional = null)
     {
         switch ($action) {
             case 'load':
-                return $this->dispatchToAction(MysqlCollectionLoad::class);
+                return $this->dispatchToAction(MysqlCollectionLoad::class, $additional);
                 break;
             case 'store':
-                return $this->dispatchToAction(MysqlCollectionStore::class);
+                return $this->dispatchToAction(MysqlCollectionStore::class, $additional);
                 break;
             case 'update':
-                return $this->dispatchToAction(MysqlCollectionUpdate::class);
+                return $this->dispatchToAction(MysqlCollectionUpdate::class, $additional);
                 break;
             case 'delete':    
-                return $this->dispatchToAction(MysqlCollectionDelete::class);
+                return $this->dispatchToAction(MysqlCollectionDelete::class, $additional);
                 break;
         }
     }
     
-    protected function dispatchObject(string $action)
+    protected function dispatchObject(string $action, $additional = null)
     {
         switch ($action) {
             case 'load':
-                return $this->dispatchToAction(MysqlObjectLoad::class);
+                return $this->dispatchToAction(MysqlObjectLoad::class, $additional);
                 break;
             case 'store':
-                return $this->dispatchToAction(MysqlObjectStore::class);
+                return $this->dispatchToAction(MysqlObjectStore::class, $additional);
                 break;
             case 'update':
-                return $this->dispatchToAction(MysqlObjectUpdate::class);
+                return $this->dispatchToAction(MysqlObjectUpdate::class, $additional);
                 break;
             case 'delete':    
-                return $this->dispatchToAction(MysqlObjectDelete::class);
+                return $this->dispatchToAction(MysqlObjectDelete::class, $additional);
                 break;
         }        
     }
 
-    protected function dispatchOther(string $action)
+    protected function dispatchOther(string $action, $additional = null)
     {
         switch ($action) {
             case 'tags':

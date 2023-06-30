@@ -9,6 +9,7 @@ use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 
 class DegradeTest extends DatabaseTestCase
 {
@@ -34,21 +35,23 @@ class DegradeTest extends DatabaseTestCase
     
     public function testThirdLevelChild()
     {
-        $collection = new TestChild();
-        $collection->load(17);
+        $collection = new ThirdLevelChild();
+        $collection->load(33);
         
         $test = new MysqlStorage();
         $test->setCollection($collection);
         
-        $this->assertDatabaseHas('testchildren',['id'=>17]);
-        $this->assertDatabaseHas('objects',['id'=>17,'classname'=>'testchild']);
-        $this->assertDatabaseHasTable('testchildren_childsarray');
+        $this->assertDatabaseHas('thirdlevelchildren',['id'=>33]);
+        $this->assertDatabaseHas('objects',['id'=>33,'classname'=>'thirdlevelchild']);
+        $this->assertDatabaseHasTable('thirdlevelchildren_thirdlevelsarray');
+        $this->assertDatabaseHas('secondlevelchildren',['id'=>33]);
         
-        $test->dispatch('degrade',TestParent::class);
+        $test->dispatch('degrade',ReferenceOnly::class);
         
-        $this->assertDatabaseMissing('testchildren',['id'=>17]);
-        $this->assertDatabaseHas('objects',['id'=>17,'classname'=>'testparent']);
-        $this->assertDatabaseMissingTable('testchildren_childsarray');        
+        $this->assertDatabaseMissing('thirdlevelchildren',['id'=>33]);
+        $this->assertDatabaseHas('objects',['id'=>33,'classname'=>'referenceonly']);
+        $this->assertDatabaseMissingTable('thirdlevelchildren_thirdlevelsarray');
+        $this->assertDatabaseMissing('secondlevelchildren',['id'=>33]);
     }
     
 }
