@@ -29,6 +29,8 @@ abstract class StorageAction
     
     protected $collection;
     
+    protected $additional;
+        
     public function setCollection(PropertiesCollection $collection)
     {
         $this->collection = $collection;    
@@ -39,6 +41,12 @@ abstract class StorageAction
         return $this->collection;    
     }
 
+    public function setAdditional($additional)
+    {
+        $this->additional = $additional;
+        return $this;
+    }
+    
     abstract public function run();
 
     protected function checkAndGetProperty(string $name)

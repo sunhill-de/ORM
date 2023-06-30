@@ -47,6 +47,9 @@ abstract class StorageBase
             throw new ActionNotFoundException("The action '$storage_action' is not found.");
         }
         $action = new $storage_action();
+        if (!is_null($additional)) {
+            $action->setAdditional($additional);
+        }
         if ($this->collection) {
             $action->setCollection($this->collection);
         }
