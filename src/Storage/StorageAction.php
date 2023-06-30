@@ -83,7 +83,11 @@ abstract class StorageAction
     
     protected function mapProperty($property)
     {
-        $type_parts = explode('\\',$property->type);
+        if (is_a($property,Property::class)) {
+            $type_parts = explode('\\',$property::class);            
+        } else {
+            $type_parts = explode('\\',$property->type);
+        }
         $type = 'handle'.array_pop($type_parts);
         $this->$type($property);
     }

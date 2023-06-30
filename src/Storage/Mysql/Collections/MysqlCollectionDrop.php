@@ -2,9 +2,12 @@
 
 namespace Sunhill\ORM\Storage\Mysql\Collections;
 
+use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Storage\Mysql\MysqlAction;
+use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Interfaces\HandlesProperties;
 use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
+use Illuminate\Support\Facades\Schema;
 
 class MysqlCollectionDrop extends MysqlAction implements HandlesProperties
 {
@@ -13,18 +16,40 @@ class MysqlCollectionDrop extends MysqlAction implements HandlesProperties
         
     public function run()
     {
-        $list = $this->collectClasses();
-        $this->deleteClassTables($list);
-        $this->runProperties();
+        $this->deleteFromParentTables($this->collectClasses());
+        $this->dropChildTables();
     }
     
-    protected function deleteClassTables($list)
+    protected function dropCollection($class)
     {
-        
+        $properties = $class::getPropertyDefinition();
+        foreach ($properties as $property) {
+            $this->mapProperty($property);
+        }            
+        Schema::drop($class::getInfo('table'));    
+    }
+    
+    protected function dropChildTables()
+    {
+        $this->dropCollection($this->collection::class);
+    }
+    
+    protected function deleteFromParent($parent, $target)
+    {
+        DB::table($parent::class)->whereIn('id', DB::table($target::getInfo('table'))->get())->delete();    
+    }
+    
+    protected function deleteFromParentTables($list)
+    {
+        $target = array_shift($list);
+        foreach ($list as $parent) {
+            $this->deleteFromParent($parent, $target);
+        }
     }
     
     protected function handleArrayOrMap($property)
     {
+        Schema::drop($this->getSpecialTableName($property));
     }
     
     public function handlePropertyArray($property)
