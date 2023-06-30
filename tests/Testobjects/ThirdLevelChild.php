@@ -12,6 +12,7 @@
 namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\PropertyList;
+use Sunhill\ORM\Properties\PropertyVarchar;
 
 class ThirdLevelChild extends SecondLevelChild 
 {
@@ -20,8 +21,8 @@ class ThirdLevelChild extends SecondLevelChild
     {
 		$list->integer('childchildint');
 		$list->varchar('childchildchar');
-		$list->object('thirdlevelobject');
-		$list->arrayofstrings('thirdlevelsarray');
+		$list->object('thirdlevelobject')->setAllowedClasses([Dummy::class]);
+		$list->array('thirdlevelsarray')->setElementType(PropertyVarchar::class);
 	}
 	
 	public function postPromotion($from) 

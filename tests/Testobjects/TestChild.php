@@ -13,6 +13,7 @@ namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\PropertyList;
 use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyVarchar;
 
 class TestChild extends TestParent 
 {

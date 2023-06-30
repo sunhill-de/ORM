@@ -13,14 +13,16 @@ namespace Sunhill\ORM\Tests\Testobjects;
 
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Objects\PropertyList;
+use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Properties\PropertyObject;
 
 class ReferenceOnly extends ORMObject 
 {
     
     protected static function setupProperties(PropertyList $list)
     {
-        $list->arrayOfStrings('testsarray');
-		$list->arrayOfObjects('testoarray')->setAllowedClasses(['dummy','referenceonly']);
+        $list->array('testsarray')->setElementType(PropertyVarchar::class);
+        $list->array('testoarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy','referenceonly']);
 	}
 
 	protected static function setupInfos()
