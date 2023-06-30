@@ -28,25 +28,25 @@ class MigrateTest extends DatabaseTestCase
     public function testComplexCollectionFresh()
     {
         Schema::drop('complexcollections');
-        Schema::drop('complexcollections_sarray');
-        Schema::drop('complexcollections_orray');
-        Schema::drop('complexcollections_smap');
+        Schema::drop('complexcollections_field_sarray');
+        Schema::drop('complexcollections_field_oarray');
+        Schema::drop('complexcollections_field_smap');
         
         $collection = new DummyCollection();
         $test = new MysqlStorage();
         $test->setCollection($collection);
         
         $this->assertDatabaseMissingTable('complexcollections');
-        $this->assertDatabaseMissingTable('complexcollections_sarray');
-        $this->assertDatabaseMissingTable('complexcollections_oarray');
-        $this->assertDatabaseMissingTable('complexcollections_smap');
+        $this->assertDatabaseMissingTable('complexcollections_field_sarray');
+        $this->assertDatabaseMissingTable('complexcollections_field_oarray');
+        $this->assertDatabaseMissingTable('complexcollections_field_smap');
         
         $test->dispatch('migrate');
         
         $this->assertDatabaseHasTable('complexcollections');
-        $this->assertDatabaseHasTable('complexcollections_sarray');
-        $this->assertDatabaseHasTable('complexcollections_oarray');
-        $this->assertDatabaseHasTable('complexcollections_smap');
+        $this->assertDatabaseHasTable('complexcollections_field_sarray');
+        $this->assertDatabaseHasTable('complexcollections_field_oarray');
+        $this->assertDatabaseHasTable('complexcollections_field_smap');
     }
     
 }
