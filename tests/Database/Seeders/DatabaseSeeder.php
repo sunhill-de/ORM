@@ -45,6 +45,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ReferenceOnliesTestSArrayTableSeeder::class);
         
         $this->call(SecondLevelChildrenTableSeeder::class);
+        $this->call(ThirdLevelChildrenTableSeeder::class);
+        $this->call(ThirdLevelChildrenThirdLevelSArrayTableSeeder::class);
         $this->call(CalcClassSeeder::class);
 
         $this->call(DummyCollectionsTableSeeder::class);

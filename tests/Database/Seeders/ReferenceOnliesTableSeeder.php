@@ -13,6 +13,8 @@ class ReferenceOnliesTableSeeder extends Seeder {
 	        ['id'=>28],
 	        ['id'=>29],
 	        ['id'=>30],	        
+	        ['id'=>32],
+	        ['id'=>33],
 	    ]);
 	}
 }

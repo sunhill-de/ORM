@@ -17,6 +17,7 @@ class CreateTestParentsTable extends Migration
             $table->integer('id');
             $table->integer('parentint');
             $table->char('parentchar',10)->nullable();
+            $table->boolean('parentbool');
             $table->float('parentfloat');
             $table->text('parenttext');
             $table->datetime('parentdatetime');

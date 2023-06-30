@@ -9,8 +9,8 @@ class SecondLevelChildrenTableSeeder extends Seeder {
 	public function run() {
 	    DB::table('secondlevelchildren')->truncate();
 	    DB::table('secondlevelchildren')->insert([
-	        ['id'=>29,'childint'=>1],
-	        ['id'=>30,'childint'=>55],	        
+	        ['id'=>32,'childint'=>1],
+	        ['id'=>33,'childint'=>55],	        
 	    ]);
 	}
 }

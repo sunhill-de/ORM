@@ -17,6 +17,7 @@ class CreateThirdlevelChildrenTable extends Migration
             $table->integer('id');
             $table->integer('childchildint');
             $table->char('childchildchar')->nullable();
+            $table->integer('thirdlevelobject')->nullable()->setDefault(null);
         });
     }
 

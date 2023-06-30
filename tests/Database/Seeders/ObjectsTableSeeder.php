@@ -46,6 +46,11 @@ class ObjectsTableSeeder extends Seeder {
 	        ['id'=>30,'classname'=>"referenceonly",'_uuid'=>'ee123','_created_at'=>'2019-05-15 10:00:00','_updated_at'=>'2019-05-15 10:00:00'],
 	        
 	        ['id'=>31,'classname'=>'calcclass','_uuid'=>'ff123','_created_at'=>'2019-05-15 10:00:00','_updated_at'=>'2019-05-15 10:00:00'],
+
+	        ['id'=>32,'classname'=>'secondlevelchild','_uuid'=>'gg123','_created_at'=>'2019-05-15 10:00:00','_updated_at'=>'2019-05-15 10:00:00'],
+	        ['id'=>33,'classname'=>'thirdlevelchild','_uuid'=>'ff123','_created_at'=>'2019-05-15 10:00:00','_updated_at'=>'2019-05-15 10:00:00'],
+	        
+	        
 	    ]);
 	}
 }
