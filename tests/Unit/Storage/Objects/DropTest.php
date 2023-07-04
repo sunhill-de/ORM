@@ -15,9 +15,11 @@ class DropTest extends DatabaseTestCase
     public function testDummyChildDelete()
     {
         $object = new DummyChild();
-        $test = new MysqlStorage($object);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->drop();
+        $test->dispatch('drop');
+        
         $this->assertDatabaseHasNotTable('dummychildren');
         $this->assertDatabaseHasTable('dummies');
         $this->assertDatabaseMissing('objects', ['class'=>'dummychild']);
@@ -26,9 +28,10 @@ class DropTest extends DatabaseTestCase
     public function testDummy()
     {
         $object = new Dummy();
-        $test = new MysqlStorage($object);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->drop();
+        $test->dispatch('drop');
         
         $this->assertDatabaseMissing('tagobjectassigns', ['container_id'=>1]);
         $this->assertDatabaseMissing('attributeobjectassigns', ['object_id'=>1]);
@@ -41,10 +44,11 @@ class DropTest extends DatabaseTestCase
     public function testTestChild()
     {
         $object = new TestChild();
-        $test = new MysqlStorage($object);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+                
+        $test->dispatch('drop');
         
-        $test->drop();
-
         $this->assertDatabaseHasNotTable('testchildren');        
         $this->assertDatabaseMissing('testparents',['id'=>18]);
         $this->assertDatabaseHasNotTable('testchildren_array_childsarray');
@@ -55,9 +59,11 @@ class DropTest extends DatabaseTestCase
     public function testTestParent()
     {
         $object = new TestParent();
-        $test = new MysqlStorage($object);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->drop();
+        $test->dispatch('drop');
+        
         
         $this->assertDatabaseHasNotTable('testchildren');
         $this->assertDatabaseHasNotTable('testparents');
