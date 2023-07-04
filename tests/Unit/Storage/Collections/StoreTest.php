@@ -2,11 +2,13 @@
 
 namespace Sunhill\ORM\Tests\Unit\Storage\Collections;
 
+use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
+use Sunhill\ORM\Tests\Testobjects\Dummy;
 
 class StoreTest extends DatabaseTestCase
 {
@@ -23,8 +25,21 @@ class StoreTest extends DatabaseTestCase
         
         $test->commit();
         $id = $test->getID();
-
         $this->assertDatabaseHas('dummycollections',['id'=>$id,'dummyint'=>707]);
+    }
+    
+    protected function getObject($id)
+    {
+        $test = new Dummy();
+        $test->setID($id);
+        return $test;
+    }
+    
+    protected function getCollection($id)
+    {
+        $test = new DummyCollection();
+        $test->setID($id);
+        return $test;
     }
     
     public function testStoreComplexCollection()
@@ -39,17 +54,23 @@ class StoreTest extends DatabaseTestCase
         $test->field_time = '11:11:11';
         $test->field_enum = 'testC';
         $test->field_text = 'Lorem ipsum';
-        $test->field_calc = '939A';
-        $test->field_object = 1;
-        $test->field_oarray = [1,2,3];
-        $test->field_sarray = ['ValA','ValB','ValC'];
-        $test->field_smap = ['KeyA'=>'ValA','KeyB'=>'ValB','KeyC'=>'ValC'];
+        $test->field_object = $this->getObject(1);
+        $test->field_collection = $this->getCollection(1);
+        $test->field_oarray[] = $this->getObject(2);
+        $test->field_oarray[] = $this->getObject(3);
+        $test->field_oarray[] = $this->getObject(4);
+        $test->field_sarray[] = 'ValA';
+        $test->field_sarray[] = 'ValB';
+        $test->field_sarray[] = 'ValC';
+        $test->field_smap['KeyA']='ValA';
+        $test->field_smap['KeyB']='ValB';
+        $test->field_smap['KeyC']='ValC';
         
         $test->commit();
         $id = $test->getID();
         
         $this->assertDatabaseHas('complexcollections',['id'=>$id,'field_int'=>939,'field_object'=>1]);
-        $this->assertDatabaseHas('complexcollections_field_oarray',['id'=>$id,'index'=>0,'value'=>1]);
+        $this->assertDatabaseHas('complexcollections_field_oarray',['id'=>$id,'index'=>0,'value'=>2]);
         $this->assertDatabaseHas('complexcollections_field_sarray',['id'=>$id,'index'=>1,'value'=>'ValB']);
         $this->assertDatabaseHas('complexcollections_field_smap',['id'=>$id,'index'=>'KeyC','value'=>'ValC']);        
     }
