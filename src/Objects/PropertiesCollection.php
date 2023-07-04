@@ -62,7 +62,7 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
         return $this->id;     
     }
     
-    protected function setID($id)
+    public function setID($id)
     {
         $this->id = $id;
     }
