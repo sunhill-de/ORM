@@ -2,50 +2,41 @@
 
 namespace Sunhill\ORM\Tests\Unit\Storage\Collections;
 
-use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DatabaseTestCase;
-use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
-use Sunhill\ORM\Tests\Testobjects\Dummy;
+use Sunhill\ORM\Tests\Unit\Storage\Utils\CollectionsAndObjects;
 
 class StoreTest extends DatabaseTestCase
 {
     
+    use CollectionsAndObjects;
     /**
      * @group storecollection
      */
     public function testDummyCollection()
     {
         $test = new DummyCollection();
+        $storage = new MysqlStorage();
+        $storage->setCollection($test);
+        
         $test->dummyint = 707;
         
         $this->assertDatabaseMissing('dummycollections',['dummyint'=>707]);
         
-        $test->commit();
+        $storage->dispatch('store');
+        
         $id = $test->getID();
         $this->assertDatabaseHas('dummycollections',['id'=>$id,'dummyint'=>707]);
-    }
-    
-    protected function getObject($id)
-    {
-        $test = new Dummy();
-        $test->setID($id);
-        return $test;
-    }
-    
-    protected function getCollection($id)
-    {
-        $test = new DummyCollection();
-        $test->setID($id);
-        return $test;
     }
     
     public function testStoreComplexCollection()
     {
         $test = new ComplexCollection();
-
+        $storage = new MysqlStorage();
+        $storage->setCollection($test);
+        
         $test->field_int = 939;
         $test->field_char = 'ABCD';
         $test->field_float = 9.39;
@@ -66,7 +57,8 @@ class StoreTest extends DatabaseTestCase
         $test->field_smap['KeyB']='ValB';
         $test->field_smap['KeyC']='ValC';
         
-        $test->commit();
+        $storage->dispatch('store');
+
         $id = $test->getID();
         
         $this->assertDatabaseHas('complexcollections',['id'=>$id,'field_int'=>939,'field_object'=>1]);
