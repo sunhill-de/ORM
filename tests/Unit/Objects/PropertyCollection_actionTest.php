@@ -11,6 +11,7 @@ use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\ObjectData;
 
 class PropertyCollection_actionTest extends TestCase
 {
@@ -102,4 +103,40 @@ class PropertyCollection_actionTest extends TestCase
             
          ];
     }
+    
+    public function testObjectFields_insert()
+    {
+        Classes::registerClass(Dummy::class);
+        $object = new Dummy();
+        
+        $storage = new TestStorage();
+        Storage::shouldReceive('createStorage')->andReturn($storage);
+        ObjectData::shouldReceive('getDBTime')->andReturn('2023-07-07 10:05:00');
+        ObjectData::shouldReceive('getUUID')->andReturn('abcd-deef');
+        
+        $object->dummyint = 123;
+        $object->commit();
+        
+        $this->assertEquals('2023-07-07 10:05:00', $object->_created_at);
+        $this->assertEquals('2023-07-07 10:05:00', $object->_updated_at);
+        $this->assertEquals('abcd-deef', $object->_uuid);
+    }
+    
+    public function testObjectFields_update()
+    {
+        Classes::registerClass(Dummy::class);
+        $object = new Dummy();
+        
+        $storage = new TestStorage();
+        Storage::shouldReceive('createStorage')->andReturn($storage);
+        ObjectData::shouldReceive('getDBTime')->andReturn('2023-07-07 10:05:00');
+        ObjectData::shouldReceive('getUUID')->andReturn('abcd-deef');
+        
+        $this->setProtectedProperty($object, 'id', 1);
+        $object->dummyint = 123;
+        $object->commit();
+        
+        $this->assertEquals('2023-07-07 10:05:00', $object->_updated_at);
+    }
+    
 }

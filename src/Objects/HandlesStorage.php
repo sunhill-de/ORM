@@ -1,6 +1,7 @@
 <?php
 namespace Sunhill\ORM\Objects;
 
+use Sunhill\ORM\Facades\ObjectData;
 use Sunhill\ORM\Facades\Storage;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Facades\Objects;
@@ -63,10 +64,20 @@ trait HandlesStorage
         $storage->setCollection($this);
         
         if (empty($this->getID())) {
+            $this->prepareStore();
             $storage->dispatch('store');
         } else {
+            $this->prepareUpdate();
             $storage->dispatch('update');
         }
+    }
+    
+    protected function prepareStore()
+    {
+    }
+    
+    protected function prepareUpdate()
+    {
     }
     
     protected function createObject($store)

@@ -13,6 +13,7 @@
 namespace Sunhill\ORM\Objects;
 
 use Sunhill\ORM\Facades\Attributes;
+use Sunhill\ORM\Facades\ObjectData;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Tags;
@@ -163,56 +164,19 @@ class ORMObject extends PropertiesCollection
 	    Objects::insertCache($id,$this);	    
 	}
 	
-	/**
-	 * Loads the object from the storage
-	 * {@inheritDoc}
-	 * @see \Sunhill\ORM\PropertyCollection::doLoad()
-	 */
-	protected function doLoad(StorageBase $storage) 
-    {
-	    if (!$this->isLoading()) {
-	        $this->state = 'loading';
-            $this->walkProperties('loadFromStorage',$storage);
-            $this->loadAttributes($storage);
-            $this->state = 'normal';
-	    }
+	protected function prepareStore()
+	{
+	    $this->_uuid  = ObjectData::getUUID();
+	    $this->_created_at = ObjectData::getDBTime();
+	    $this->_updated_at = ObjectData::getDBTime();
 	}
 	
-	protected function loadTag(int $tag_id)
+	protected function prepareUpdate()
 	{
-	    $this->tags[] = Tags::loadTag($tag_id);
+	    $this->_updated_at = ObjectData::getDBTime();
 	}
 	
-	protected function loadTags(StorageBase $storage)
-	{
-	    if ($storage->hasEntity('tags')) {
-	        foreach ($storage->getEntity('tags')->getValue() as $tag) {
-	            $this->loadTag($tag);
-	        }
-	    }
-	}
 	
-	protected function loadAttribute(\Stdclass $attribute)
-	{
-	    $property = $this->dynamicAddProperty($attribute->name, $attribute->type);
-	    $property->setValue($attribute->value);	    
-	}
-	
-	protected function loadAttributes(StorageBase $storage)
-	{
-	    if ($storage->hasEntity('attributes')) {
-	        foreach ($storage->getEntity('attributes') as $attribute) {
-	            $this->loadAttribute($attribute);
-	        }
-	    }
-	}
-	
-	protected function loadAdditional(StorageBase $storage)
-	{
-	    $this->loadTags($storage);
-	    $this->loadAttributes($storage);
-	}
-		
 // ========================= Insert =============================	
 	/**
      * This method is called by the public method insert and 
