@@ -22,15 +22,12 @@ use Sunhill\ORM\Storage\Mysql\MysqlAction;
 use Sunhill\ORM\Interfaces\HandlesProperties;
 use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
 use Sunhill\ORM\Properties\PropertyCollection;
+use Sunhill\ORM\Storage\Mysql\Utils\TableManagement;
 
 class MysqlCollectionStore extends MysqlAction implements HandlesProperties
 {
     
-    use PropertyHelpers;
-
-    protected $tables = [];
-    
-    protected $id;
+    use PropertyHelpers, TableManagement;
     
     public function run()
     {
@@ -39,11 +36,6 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
         $this->storeOtherTables();
     }
 
-    protected function storeTable($table, $fields)
-    {
-        DB::table($table)->insert($fields);    
-    }
-    
     protected function storeMainTable()
     {
         $this->storeTable($this->collection::getInfo('table'), $this->tables[$this->collection::getInfo('table')]);        
@@ -62,43 +54,9 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
     protected function storeOtherTables()
     {
         foreach ($this->tables as $table => $fields) {
-            switch ($table) {
-                case 'tagobjectassigns':
-                    $this->addIDToAllRecords($fields, 'container_id');
-                    break;
-                case 'attributeobjectassigns':
-                    $this->addIDToAllRecords($fields, 'object_id');
-                    break;
-                default:
-                    if (substr($table,0,5) == 'attr_') {
-                        $fields['object_id'] = $this->id;
-                    } else if (isset($fields[0]) && is_array($fields[0])) {
-                        $this->addIDToAllRecords($fields, 'id');
-                    } else {
-                        $fields['id'] = $this->id;
-                    }
-                    break;
-            }
+            $this->appendID($table, $fields);
             $this->storeTable($table, $fields);
         }
-    }
-    
-    protected function addEntry(string $table, string $key, $value)
-    {
-        if (isset($this->tables[$table])) {
-            $this->tables[$table][$key] = $value;
-        } else {
-            $this->tables[$table] = [$key => $value];
-        }
-    }
-    
-    protected function addEntryRecord(string $table, array $data)
-    {
-        if (isset($this->tables[$table])) {
-            $this->tables[$table][] = $data;
-        } else {
-            $this->tables[$table] = [$data];
-        }        
     }
     
     protected function handleLinearField($property, $value)

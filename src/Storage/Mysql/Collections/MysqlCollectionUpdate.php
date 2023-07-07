@@ -2,20 +2,31 @@
 
 namespace Sunhill\ORM\Storage\Mysql\Collections;
 
+use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Storage\Mysql\MysqlAction;
 use Sunhill\ORM\Interfaces\HandlesProperties;
 use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
+use Sunhill\ORM\Storage\Mysql\Utils\TableManagement;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyCollection;
 
 class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
 {
     
-    use PropertyHelpers;
+    use PropertyHelpers, TableManagement;
     
     public function run()
     {
-        $list = $this->collectClasses();
-        $this->deleteClassTables($list);
+        $this->id = $this->additional;
         $this->runProperties();
+        $this->updateTables();
+    }
+
+    protected function updateTables()
+    {
+        foreach ($this->tables as $table => $fields) {
+            $this->updateTable($table, $fields, $this->getIDField($table));
+        }
     }
     
     protected function deleteClassTables($list)
@@ -25,6 +36,42 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
     
     protected function handleArrayOrMap($property)
     {
+        $entries = [];
+        DB::table($this->getSpecialTableName($property))->where('id',$this->id)->delete();
+        foreach ($property->value as $key => $value) {
+            if (($property->element_type == PropertyObject::class) ||
+                ($property->element_type == PropertyCollection::class)) {
+                    $entries[] = ['id'=>$this->id,'index'=>$key,'value'=>$value->getID()];
+                } else {
+                    $entries[] = ['id'=>$this->id,'index'=>$key,'value'=>$value];
+                }
+        }
+        DB::table($this->getSpecialTableName($property))->insert($entries);
+    }
+    
+    protected function handleLinearField($property, $value)
+    {
+        if ($property->dirty) {
+            $table = $property->owner::getInfo('table');
+            $this->addEntry($table, $property->name, $value);
+        }
+    }
+    
+    protected function handleSimpleField($property)
+    {
+        if ($property->dirty) {
+            $this->handleLinearField($property, $property->value);
+        }
+    }
+    
+    protected function handleInternalReference($property)
+    {
+        $value = $property->value;
+        if (!is_null($value)) {
+            $this->handleLinearField($property, $value->getID());
+        } else {
+            $this->handleLinearField($property, null);
+        }
     }
     
     public function handlePropertyArray($property)
@@ -34,26 +81,35 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
     
     public function handlePropertyBoolean($property)
     {
+        $this->handleSimpleField($property);
     }
     
     public function handlePropertyCalculated($property)
     {
+        $property_obj = $this->collection->getProperty($property->name);
+        $property_obj->recalculate();
+        $property->dirty = true;
+        $this->handleLinearField($property, $property_obj->getValue());
     }
     
     public function handlePropertyCollection($property)
     {
+        $this->handleInternalReference($property);
     }
     
     public function handlePropertyDate($property)
     {
+        $this->handleSimpleField($property);
     }
     
     public function handlePropertyDateTime($property)
     {
+        $this->handleSimpleField($property);
     }
     
     public function handlePropertyEnum($property)
     {
+        $this->handleSimpleField($property);
     }
     
     public function handlePropertyExternalReference($property)
@@ -63,6 +119,7 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
     
     public function handlePropertyFloat($property)
     {
+        $this->handleSimpleField($property);
     }
     
     public function handlePropertyInformation($property)
@@ -72,6 +129,7 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
     
     public function handlePropertyInteger($property)
     {
+        $this->handleSimpleField($property);
     }
     
     public function handlePropertyKeyfield($property)
@@ -86,6 +144,7 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
     
     public function handlePropertyObject($property)
     {
+        $this->handleInternalReference($property);
     }
     
     public function handlePropertyTags($property)
@@ -94,13 +153,16 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
     
     public function handlePropertyText($property)
     {
+        $this->handleSimpleField($property);
     }
     
     public function handlePropertyTime($property)
     {
+        $this->handleSimpleField($property);
     }
     
     public function handlePropertyVarchar($property)
     {
+        $this->handleSimpleField($property);
     }
 }
