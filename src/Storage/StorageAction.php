@@ -81,8 +81,17 @@ abstract class StorageAction
         $property->setShadow($value);
     }
     
+    protected function isDynamicProperty($property): bool
+    {
+        return $this->collection->isDynamicProperty($property->name);
+    }
+    
     protected function mapProperty($property)
     {
+        if ($this->isDynamicProperty($property)) {
+            $this->handleAttribute($property);
+            return;
+        }
         if (is_a($property,Property::class)) {
             $type_parts = explode('\\',$property::class);            
         } else {
