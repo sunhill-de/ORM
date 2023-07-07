@@ -46,7 +46,7 @@ use Sunhill\ORM\PropertyQuery\PropertyQuery;
  *  
  * @author lokal
  */
-abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhill\ORM\Properties\Utils\Commitable, InteractsWithStorage
+abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhill\ORM\Properties\Utils\Commitable
 {
             
     public function __construct()
@@ -398,6 +398,7 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
         $property = $this->createProperty($type);        
         $property->setOwner(static::class);
         $property->setName($name);
+        $property->setActualPropertiesCollection($this);
         
         $this->properties[$name] = $property;
         $this->dynamic_properties[$name] = $property;
@@ -408,6 +409,11 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
     public function getDynamicProperties()
     {
         return $this->dynamic_properties;
+    }
+    
+    public function isDynamicProperty(string $name)
+    {
+        return isset($this->dynamic_properties[$name]);    
     }
     
     // ================================ Static Properties ============================================    
@@ -523,32 +529,5 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	    static::prepareStorage($storage);
 	    $storage->drop();	    
 	}
-	
-	abstract protected function getLoaderInteraction(): StorageInteractionBase;
-	
-	public function loadFromStorage(StorageBase $storage)
-	{	    
-	    $interactor = $this->getLoaderInteraction();
-	    $interactor->setStorage($storage)->setPropertiesCollection($this);
-	    $interactor->run();
-	}
-	
-	abstract protected function getStorerInteraction(): StorageInteractionBase;
-	
-	public function storeToStorage(StorageBase $storage)
-	{
-	    $interactor = $this->getStorerInteraction();
-	    $interactor->setStorage($storage)->setPropertiesCollection($this);
-	    $interactor->run();	    
-	}
-	
-	abstract protected function getUpdaterInteraction(): StorageInteractionBase;
-	
-	public function updateToStorage(StorageBase $storage)
-	{
-	    $interactor = $this->getUpdaterInteraction();
-	    $interactor->setStorage($storage)->setPropertiesCollection($this);
-	    $interactor->run();	    
-	}
-	
+		
 }
