@@ -66,4 +66,29 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('complexcollections_field_sarray',['id'=>$id,'index'=>1,'value'=>'ValB']);
         $this->assertDatabaseHas('complexcollections_field_smap',['id'=>$id,'index'=>'KeyC','value'=>'ValC']);        
     }
+    
+    public function testStoreComplexCollection_withoutArray()
+    {
+        $test = new ComplexCollection();
+        $storage = new MysqlStorage();
+        $storage->setCollection($test);
+        
+        $test->field_int = 939;
+        $test->field_char = 'ABCD';
+        $test->field_float = 9.39;
+        $test->field_date = '2023-06-13';
+        $test->field_datetime = '2023-06-13 11:11:11';
+        $test->field_time = '11:11:11';
+        $test->field_enum = 'testC';
+        $test->field_text = 'Lorem ipsum';
+        
+        $storage->dispatch('store');
+        
+        $id = $test->getID();
+        
+        $this->assertDatabaseHas('complexcollections',['id'=>$id,'field_int'=>939,'field_object'=>null]);
+        $this->assertDatabaseMissing('complexcollections_field_oarray',['id'=>$id]);
+        $this->assertDatabaseMissing('complexcollections_field_sarray',['id'=>$id]);
+        $this->assertDatabaseMissing('complexcollections_field_smap',['id'=>$id]);        
+    }
 }
