@@ -51,6 +51,9 @@ class PropertyQuery extends ArrayQuery
             $entry->name = $key;
             $entry->owner = $value->getOwner();
             $entry->type = $value::class;
+            if ($entry->dynamic = $value->getActualPropertiesCollection()->isDynamicProperty($key)) {
+                $entry->attribute_id = $value->getAttributeID();   
+            }
             switch ($value::class) {
                 case PropertyArray::class:
                 case PropertyMap::class:
