@@ -144,4 +144,4 @@ The ORM package defines an artisan console command called 'sunhill:migrate' that
 All entitis of the ORM framework (like attributes, tags, classes, objects) should be able to be queried in a form laravel performs a database query (via QueryBuilder). Therefore all facaces define a query() method that returns a query class to be used in a QueryBuilder like chain. For more informations see [Queries](doc/md/QUERIES.md)
 
 ## See also
-[Internal details](doc/md/INTERNAL.md)
+[Developer Resources](doc/md/INTERNAL.md)

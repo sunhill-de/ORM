@@ -26,6 +26,11 @@ class MysqlObjectStore extends MysqlCollectionStore
         return $result;
     }
     
+    /**
+     * The prerun is necessary for all those tables, that define no own "simple" fields.
+     * This method foreces the creation of a table for each class of the inheritance. The
+     * table is later filled with an id.
+     */
     protected function prerunTables()
     {
         $list = $this->getClassList($this->collection); 
@@ -34,12 +39,23 @@ class MysqlObjectStore extends MysqlCollectionStore
         }
     }
     
+    /**
+     * When storing a class the attribute is already assigned so it is found when
+     * traversing the properties (and therefore handles with this method)
+     * @param unknown $property
+     */
     protected function handleAttribute($property)
     {
         $this->addEntry('attr_'.$property->name,'value',$property->value);
         $this->addEntryRecord('attributeobjectassigns', ['attribute_id'=>$property->attribute_id]);
     }
     
+    /**
+     * The main table (the one that creates an id) is the objects table. This has to be created
+     * first, because all other tables need the id. 
+     * {@inheritDoc}
+     * @see \Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionStore::storeMainTable()
+     */
     protected function storeMainTable()
     {
         $this->tables['objects']['classname'] = $this->collection::getInfo('name');
