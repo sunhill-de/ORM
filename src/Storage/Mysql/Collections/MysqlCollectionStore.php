@@ -72,8 +72,8 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
                 default:
                     if (substr($table,0,5) == 'attr_') {
                         $fields['object_id'] = $this->id;
-                    } else if (is_array($fields)) {
-                        $this->addIDToAllRecords($fields, 'id');    
+                    } else if (isset($fields[0]) && is_array($fields[0])) {
+                        $this->addIDToAllRecords($fields, 'id');
                     } else {
                         $fields['id'] = $this->id;
                     }
