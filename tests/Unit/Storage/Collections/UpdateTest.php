@@ -13,6 +13,11 @@ class UpdateTest extends DatabaseTestCase
    
     use CollectionsAndObjects;
     
+    /**
+     * @group updatecollection
+     * @group collection
+     * @group update
+     */
     public function testDummyCollection()
     {
         $test = new DummyCollection();
@@ -22,13 +27,18 @@ class UpdateTest extends DatabaseTestCase
         $test->setID(1);
         $test->dummyint = 707;
         
-        $this->assertDatabaseHas('dummycollections',['id'=>1,'dummyint'=>707]);
+        $this->assertDatabaseMissing('dummycollections',['id'=>1,'dummyint'=>707]);
         
         $storage->dispatch('update', 1);
         
         $this->assertDatabaseHas('dummycollections',['id'=>1,'dummyint'=>707]);        
     }
     
+    /**
+     * @group updatecollection
+     * @group collection
+     * @group update
+     */
     public function testComplexCollection_changeAll()
     {
         $test = new ComplexCollection();
@@ -46,7 +56,11 @@ class UpdateTest extends DatabaseTestCase
         $test->field_enum = 'testB';        
         $test->field_object = $this->getObject(2);
         $test->field_collection = $this->getCollection(2);
+        $test->field_sarray[] = 'ABC';
+        $test->field_sarray[] = 'DEF';
         $test->field_sarray[] = 'ROF';
+        $test->field_oarray[] = $this->getObject(1);
+        $test->field_oarray[] = $this->getObject(2);
         $test->field_oarray[] = $this->getObject(7);
         $test->field_smap['NewKey'] = 'NewValue';
         
@@ -69,6 +83,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('complexcollections_field_smap',['id'=>9,'index'=>'NewKey','value'=>'NewValue']);
     }
     
+    /**
+     * @group updatecollection
+     * @group collection
+     * @group update
+     */
     public function testComplexCollection_changeSome()
     {
         $test = new ComplexCollection();
@@ -85,16 +104,23 @@ class UpdateTest extends DatabaseTestCase
             'id'=>9,
             'field_int'=>232,
             'field_char'=>'ZYX',
-            'field_float'=>1.23,
+            'field_float'=>1.11,
             'field_text'=>'Lorem ipsum',
             'field_datetime'=>'1974-09-15 17:45:00',
             'field_date'=>'1974-09-15',
             'field_time'=>'17:45:00',
             'field_enum'=>'testC',
             'field_object'=>1,
-            'field_collection'=>1]);        
+            'field_collection'=>1,
+            'field_calc'=>'232A'
+        ]);        
     }
     
+    /**
+     * @group updatecollection
+     * @group collection
+     * @group update
+     */
     public function testComplexCollection_changeArrayOnly()
     {
         $test = new ComplexCollection();
@@ -102,6 +128,10 @@ class UpdateTest extends DatabaseTestCase
         $storage->setCollection($test);
         
         $test->setID(9);
+        $property = $test->getProperty('field_int');
+        $property->loadValue(111);
+        $property = $test->getproperty('field_sarray');
+        $property->loadValue(['String A','String B']);
         $test->field_sarray[] = 'ROF';
         
         $storage->dispatch('update',9);
@@ -117,16 +147,26 @@ class UpdateTest extends DatabaseTestCase
             'field_time'=>'17:45:00',
             'field_enum'=>'testC',
             'field_object'=>1,
+            'field_calc'=>'111A',
             'field_collection'=>1]);
         $this->assertDatabaseHas('complexcollections_field_sarray',['id'=>9,'index'=>2,'value'=>'ROF']);        
     }
     
+    /**
+     * @group updatecollection
+     * @group collection
+     * @group update
+     */
     public function testComplexCollection_clearArray()
     {
         $test = new ComplexCollection();
         $storage = new MysqlStorage();
         $storage->setCollection($test);
         
+        $property = $test->getProperty('field_int');
+        $property->loadValue(111);
+        $property = $test->getproperty('field_sarray');
+        $property->loadValue(['String A','String B']);
         $test->setID(9);
         $test->field_sarray->clear();
         
@@ -135,12 +175,21 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseMissing('complexcollections_field_sarray',['id'=>9]);
     }
 
+    /**
+     * @group updatecollection
+     * @group collection
+     * @group update
+     */
     public function testComplexCollection_clearArrayEntry()
     {
         $test = new ComplexCollection();
         $storage = new MysqlStorage();
         $storage->setCollection($test);
         
+        $property = $test->getProperty('field_int');
+        $property->loadValue(111);
+        $property = $test->getproperty('field_sarray');
+        $property->loadValue(['String A','String B']);
         $test->setID(9);
         unset($test->field_sarray[1]);
         
@@ -150,12 +199,21 @@ class UpdateTest extends DatabaseTestCase
         
     }
     
+    /**
+     * @group updatecollection
+     * @group collection
+     * @group update
+     */
     public function testComplexCollection_clearArrayEntryReindex()
     {
         $test = new ComplexCollection();
         $storage = new MysqlStorage();
         $storage->setCollection($test);
         
+        $property = $test->getProperty('field_int');
+        $property->loadValue(111);
+        $property = $test->getproperty('field_sarray');
+        $property->loadValue(['String A','String B']);
         $test->setID(9);
         unset($test->field_sarray[0]);
         
@@ -166,12 +224,21 @@ class UpdateTest extends DatabaseTestCase
         
     }
     
+    /**
+     * @group updatecollection
+     * @group collection
+     * @group update
+     */
     public function testComplexCollection_changeArrayEntry()
     {
         $test = new ComplexCollection();
         $storage = new MysqlStorage();
         $storage->setCollection($test);
         
+        $property = $test->getProperty('field_int');
+        $property->loadValue(111);
+        $property = $test->getproperty('field_sarray');
+        $property->loadValue(['String A','String B']);
         $test->setID(9);
         $test->field_sarray[1] = 'Another';
         

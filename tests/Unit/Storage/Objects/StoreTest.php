@@ -34,6 +34,11 @@ class StoreTest extends DatabaseTestCase
         $object->_delete = 7;
     }
     
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testDummy()
     {
         $object = new Dummy();
@@ -49,6 +54,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('dummies',['id'=>$id,'dummyint'=>5]);        
     }
 
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testDummyWithTags()
     {
         $object = new Dummy();
@@ -66,6 +76,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>$id,'tag_id'=>3]);
     }
     
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testDummyWithAttributes()
     {
         $object = new Dummy();
@@ -90,6 +105,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('attr_char_attribute',['object_id'=>$id,'value'=>'LOREM']);
     }
         
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testTestParent()
     {
         $object = new TestParent();
@@ -147,6 +167,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('testparents_parentmap',['id'=>$id, 'value'=>'ValueB', 'index'=>'KeyB']);
     }
     
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testTestChild()
     {
         $object = new TestChild();
@@ -240,6 +265,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('testchildren_childmap',['id'=>$id,'index'=>'Key0B','value'=>2]);
     }
     
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testReferenceOnly()
     {
         $object = new ReferenceOnly();
@@ -262,6 +292,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>$id,'index'=>1,'value'=>2]);
     }
 
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testReferenceOnly_noreferences()
     {
         $object = new ReferenceOnly();
@@ -277,6 +312,11 @@ class StoreTest extends DatabaseTestCase
         
     }
     
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testSecondLevelChild()
     {
         $object = new SecondLevelChild();
@@ -293,6 +333,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('secondlevelchildren',['id'=>$id,'childint'=>123]);        
     }
     
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testThirdLevelChild()
     {
         $object = new ThirdLevelChild();
@@ -322,6 +367,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('thirdlevelchildren_thirdlevelsarray',['id'=>$id,'index'=>1,'value'=>'CD']);
     }
     
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
     public function testSimpleChild()
     {
         $object = new TestSimpleChild();

@@ -12,6 +12,11 @@ use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 class DeleteTest extends DatabaseTestCase
 {
     
+    /**
+     * @group deleteobject
+     * @group object
+     * @group delete
+     */
     public function testDummy()
     {
         $object = new Dummy();
@@ -33,6 +38,11 @@ class DeleteTest extends DatabaseTestCase
         $this->assertDatabaseMissing('attr_general_attribute', ['object_id'=>1]);
     }
 
+    /**
+     * @group deleteobject
+     * @group object
+     * @group delete
+     */
     public function testDummyChildLittleMoreComplexDelete()
     {
         $object = new DummyChild();
@@ -46,6 +56,11 @@ class DeleteTest extends DatabaseTestCase
         $this->assertDatabaseMissing('objects', ['id'=>8]);
     }
     
+    /**
+     * @group deleteobject
+     * @group object
+     * @group delete
+     */
     public function testTestParent()
     {
         $object = new TestParent();
@@ -59,6 +74,11 @@ class DeleteTest extends DatabaseTestCase
         $this->assertDatabaseMissing('testparents_parentsarray', ['id'=>9]);
     }
     
+    /**
+     * @group deleteobject
+     * @group object
+     * @group delete
+     */
     public function testTestChild()
     {
         $object = new TestChild();

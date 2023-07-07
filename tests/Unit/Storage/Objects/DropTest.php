@@ -12,6 +12,11 @@ use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 class DropTest extends DatabaseTestCase
 {
     
+    /**
+     * @group dropobject
+     * @group object
+     * @group drop
+     */
     public function testDummyChildDelete()
     {
         $object = new DummyChild();
@@ -25,6 +30,11 @@ class DropTest extends DatabaseTestCase
         $this->assertDatabaseMissing('objects', ['class'=>'dummychild']);
     }
     
+    /**
+     * @group dropobject
+     * @group object
+     * @group drop
+     */
     public function testDummy()
     {
         $object = new Dummy();
@@ -41,6 +51,11 @@ class DropTest extends DatabaseTestCase
         $this->assertDatabaseHasNotTable('dummies');
     }
 
+    /**
+     * @group dropobject
+     * @group object
+     * @group drop
+     */
     public function testTestChild()
     {
         $object = new TestChild();
@@ -56,6 +71,11 @@ class DropTest extends DatabaseTestCase
         $this->assertDatabaseHasNotTable('testchildren_calc_childcalc');        
     }
 
+    /**
+     * @group dropobject
+     * @group object
+     * @group drop
+     */
     public function testTestParent()
     {
         $object = new TestParent();

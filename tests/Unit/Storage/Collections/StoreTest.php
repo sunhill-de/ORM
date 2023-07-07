@@ -14,6 +14,8 @@ class StoreTest extends DatabaseTestCase
     use CollectionsAndObjects;
     /**
      * @group storecollection
+     * @group collection
+     * @group store
      */
     public function testDummyCollection()
     {
@@ -31,6 +33,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('dummycollections',['id'=>$id,'dummyint'=>707]);
     }
     
+    /**
+     * @group storecollection
+     * @group collection
+     * @group store
+     */
     public function testStoreComplexCollection()
     {
         $test = new ComplexCollection();
@@ -67,6 +74,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('complexcollections_field_smap',['id'=>$id,'index'=>'KeyC','value'=>'ValC']);        
     }
     
+    /**
+     * @group storecollection
+     * @group collection
+     * @group store
+     */
     public function testStoreComplexCollection_withoutArray()
     {
         $test = new ComplexCollection();

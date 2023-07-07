@@ -12,6 +12,8 @@ class DropTest extends DatabaseTestCase
     
     /**
      * @group dropcollection
+     * @group collection
+     * @group drop
      */
     public function testDropDummyCollection()
     {
@@ -29,6 +31,8 @@ class DropTest extends DatabaseTestCase
     
     /**
      * @group dropcollection
+     * @group collection
+     * @group drop
      */
     public function testDropComplexCollection()
     {

@@ -14,6 +14,11 @@ use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
 class LoadTest extends DatabaseTestCase
 {
     
+    /**
+     * @group loadobject
+     * @group object
+     * @group load
+     */
     public function testDummy()
     {
         $test = new Dummy();
@@ -28,6 +33,11 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals(4,$test->tags[2]->getID());
     }
 
+    /**
+     * @group loadobject
+     * @group object
+     * @group load
+     */
     public function testTestParent()
     {
         $test = new TestParent();
@@ -54,6 +64,11 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals('some.path.to9',$test->getProperty('parentinformation')->getPath());
     }
     
+    /**
+     * @group loadobject
+     * @group object
+     * @group load
+     */
     public function testTestChild()
     {
         $test = new TestChild();
@@ -92,6 +107,11 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals(543,$test->attribute2);
     }
     
+    /**
+     * @group loadobject
+     * @group object
+     * @group load
+     */
     public function testSimpleChild()
     {
         $test = new TestSimpleChild();
@@ -101,6 +121,11 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals(999, $test->parentint);
     }
 
+    /**
+     * @group loadobject
+     * @group object
+     * @group load
+     */
     public function testReferenceOnly()
     {
         $test = new ReferenceOnly();

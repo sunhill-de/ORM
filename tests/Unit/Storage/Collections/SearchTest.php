@@ -14,6 +14,9 @@ class SearchTest extends DatabaseTestCase
      * @param unknown $class
      * @param unknown $modifier
      * @param unknown $expect
+     * @group searchcollection
+     * @group search
+     * @group collection
      */
     
     public function testCollectionSearch($class, $modifier, $expect)

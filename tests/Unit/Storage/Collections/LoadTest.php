@@ -14,6 +14,8 @@ class LoadTest extends DatabaseTestCase
     
     /**
      * @group loadcollection
+     * @group collection
+     * @group load
      */
     public function testLoadDummyCollection()
     {
@@ -40,6 +42,8 @@ class LoadTest extends DatabaseTestCase
     
     /**
      * @group loadcollection
+     * @group collection
+     * @group load
      */
     public function testLoadComplexCollection()
     {
@@ -71,6 +75,8 @@ class LoadTest extends DatabaseTestCase
 
     /**
      * @group loadcollection
+     * @group collection
+     * @group load
      */
     public function testLoadComplexCollectionWithEmptyObjects()
     {

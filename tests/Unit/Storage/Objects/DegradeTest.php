@@ -14,6 +14,9 @@ use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 class DegradeTest extends DatabaseTestCase
 {
     
+    /**
+     * @group object
+     */
     public function testTestChild()
     {
         $collection = new TestChild();
@@ -33,6 +36,9 @@ class DegradeTest extends DatabaseTestCase
         $this->assertDatabaseMissingTable('testchildren_childsarray');
     }
     
+    /**
+     * @group object
+     */
     public function testThirdLevelChild()
     {
         $collection = new ThirdLevelChild();

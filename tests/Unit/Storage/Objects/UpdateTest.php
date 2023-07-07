@@ -23,6 +23,11 @@ class UpdateTest extends DatabaseTestCase
         return $result;
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testDummy()
     {
         $object = new Dummy();
@@ -37,6 +42,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseMissing('objects',['id'=>1,'updated_at'=>'2019-05-15 10:00:00']);
     }
 
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testTagUntagged()
     {
         $object = new Dummy();
@@ -50,6 +60,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>2,'tag_id'=>1]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testRemoveTags()
     {
         $object = new Dummy();
@@ -63,6 +78,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseMissing('tagobjectassigns',['container_id'=>1]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testAddTags()
     {
         $object = new Dummy();
@@ -77,6 +97,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>1,'tag_id'=>3]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testDeleteTags()
     {
         $object = new Dummy();
@@ -91,6 +116,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseMissing('tagobjectassigns',['container_id'=>1,'tag_id'=>4]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testChangeAllAttributes()
     {
         $object = new TestParent();
@@ -117,6 +147,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('attr_attribute2',['object_id'=>9,'value'=>333]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testChangeOneAttributes()
     {
         $object = new TestParent();
@@ -137,6 +172,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('attr_attribute2',['object_id'=>9,'value'=>222]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testAddAttributes()
     {
         $object = new TestParent();
@@ -155,6 +195,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('attr_char_attribute',['object_id'=>1,'value'=>'DEF']);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testRemoveAttributes()
     {
         $object = new TestParent();
@@ -175,6 +220,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('attr_attribute2',['object_id'=>9,'value'=>222]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testDummyChild()
     {
         $object = new DummyChild();
@@ -188,6 +238,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('dummychildren',['id'=>8,'dummychildint'=>888]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testTestParent()
     {
         $object = new TestParent();
@@ -226,6 +281,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('testparents_parentoarray',['id'=>9,'value'=>4]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testTestChild()
     {
         $object = new TestChild();
@@ -292,6 +352,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('testchildren_childoarray',['id'=>18,'value'=>8]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testArrayClear()
     {
         $object = new ReferenceOnly();
@@ -309,6 +374,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseMissing('referenceonlies_testoarray',['id'=>27]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testArrayNew()
     {
         $object = new ReferenceOnly();
@@ -328,6 +398,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>29,'value'=>2,'index'=>1]);
     }
     
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testArrayEntryRemovedAndReindexed()
     {
         $object = new ReferenceOnly();
@@ -342,6 +417,11 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27,'value'=>3,'index'=>0]);        
     }
         
+    /**
+     * @group updateobject
+     * @group object
+     * @group update
+     */
     public function testArrayEntryAddedAndReindexed()
     {
         $object = new ReferenceOnly();

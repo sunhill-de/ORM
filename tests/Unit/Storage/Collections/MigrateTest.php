@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Schema;
 class MigrateTest extends DatabaseTestCase
 {
     
+    /**
+     * @group migratecollection
+     * @group collection
+     * @group migrate
+     */
     public function testDummyCollectionFresh()
     {
         Schema::drop('dummycollections');
@@ -25,6 +30,11 @@ class MigrateTest extends DatabaseTestCase
         $this->assertDatabaseHasTable('dummycollections');        
     }
     
+    /**
+     * @group migratecollection
+     * @group collection
+     * @group migrate
+     */
     public function testComplexCollectionFresh()
     {
         Schema::drop('complexcollections');
