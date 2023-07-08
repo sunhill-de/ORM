@@ -23,14 +23,15 @@ use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionUpdate;
 class MysqlObjectUpdate extends MysqlCollectionUpdate
 {
     
-    protected function updateAttributes()
+    public function handleAttribute($property)
     {
-    }
-    
-    public function run()
-    {
-        parent::run();
-        $this->updateAttributes();
+        if (is_null($property->value)) {
+            DB::table('attributeobjectassigns')->where('object_id',$this->id)->where('attribute_id',$property->attribute_id)->delete();
+            DB::table('attr_'.$property->name)->where('object_id', $this->id)->delete();
+        } else  {
+            DB::table('attributeobjectassigns')->insertOrIgnore(['object_id'=>$this->id,'attribute_id'=>$property->attribute_id]);   
+            DB::table('attr_'.$property->name)->upsert(['object_id'=>$this->id,'value'=>$property->value],['object_id'],['value']);
+        }
     }
     
     public function handlePropertyInformation($property)
@@ -39,6 +40,12 @@ class MysqlObjectUpdate extends MysqlCollectionUpdate
     
     public function handlePropertyTags($property)
     {
+        DB::table('tagobjectassigns')->where('container_id', $this->id)->delete();
+        $data = [];
+        foreach ($property->value as $tag) {
+            $data[] = ['container_id'=>$this->id, 'tag_id'=>$tag->getID()];
+        }
+        DB::table('tagobjectassigns')->insert($data);
     }
     
 }

@@ -2,6 +2,7 @@
 
 namespace Sunhill\ORM\Tests\Unit\Storage\Objects;
 
+use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\DummyChild;
@@ -9,18 +10,56 @@ use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Objects\Tag;
+use Sunhill\ORM\Tests\Testobjects\DummyCollection;
+use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 
 class UpdateTest extends DatabaseTestCase
 {
     
-    protected function makeChange($old, $new): \StdClass
+    protected function getTag($id)
     {
-        $result = new \StdClass();
+        $tag = new Tag();
+        $tag->load($id);
+        return $tag;
+    }
+    
+    protected function getObject($id)
+    {
+        $object = new Dummy();
+        $object->load($id);
+        return $object;
+    }
+    
+    protected function getCollection($id, $class = DummyCollection::class)
+    {
+        $object = new $class();
+        $object->load($id);
+        return $object;
+    }
+
+    protected function getDummy1()
+    {
+        $object = new Dummy();
+        $object->setID(1);
         
-        $result->value = $new;
-        $result->shadow = $old;
+        $property = $object->getProperty('dummyint');
+        $property->loadValue(123);
+        $property = $object->getProperty('tags');
+        $property->loadValue([$this->getTag(1),$this->getTag(2),$this->getTag(4)]);
         
-        return $result;
+        return $object;
+    }
+    
+    protected function getDummy2()
+    {
+        $object = new Dummy();
+        $object->setID(2);
+        
+        $property = $object->getProperty('dummyint');
+        $property->loadValue(234);
+        
+        return $object;
     }
     
     /**
@@ -30,16 +69,15 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testDummy()
     {
-        $object = new Dummy();
-        $test = new MysqlStorage($object);
+        $object = $this->getDummy1();
+        $test = new MysqlStorage();
+        $test->setCollection($object);        
+
+        $object->dummyint = 321;
         
-        $test->setEntity('dummyint', $this->makeChange(123,321));
-        $this->assertDatabaseHas('objects',['id'=>1,'updated_at'=>'2019-05-15 10:00:00']);
-        
-        $test->update(1);
+        $test->dispatch('update',1);        
         
         $this->assertDatabaseHas('dummies',['id'=>1,'dummyint'=>321]);
-        $this->assertDatabaseMissing('objects',['id'=>1,'updated_at'=>'2019-05-15 10:00:00']);
     }
 
     /**
@@ -49,13 +87,15 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testTagUntagged()
     {
-        $object = new Dummy();
-        $test = new MysqlStorage($object);
+        $object = $this->getDummy2();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+
+        $object->tags[] = $this->getTag(1);
         
-        $test->setEntity('tags', $this->makeChange([],[1,2]));
         $this->assertDatabaseMissing('tagobjectassigns',['container_id'=>2,'tag_id'=>1]);
         
-        $test->update(2);
+        $test->dispatch('update',2);
 
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>2,'tag_id'=>1]);
     }
@@ -67,13 +107,14 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testRemoveTags()
     {
-        $object = new Dummy();
-        $test = new MysqlStorage($object);
+        $object = $this->getDummy1();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->setEntity('tags', $this->makeChange([1,2,4],[]));
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>1,'tag_id'=>1]);
+        $object->tags->clear();        
         
-        $test->update(1);
+        $test->dispatch('update',1);
         
         $this->assertDatabaseMissing('tagobjectassigns',['container_id'=>1]);
     }
@@ -85,15 +126,17 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testAddTags()
     {
-        $object = new Dummy();
-        $test = new MysqlStorage($object);
+        $object = $this->getDummy1();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->setEntity('tags', $this->makeChange([1,2,4],[1,2,3,4]));
         $this->assertDatabaseMissing('tagobjectassigns',['container_id'=>1,'tag_id'=>3]);
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>1,'tag_id'=>4]);
         
-        $test->update(1);
+        $object->tags[] = $this->getTag(3);
+        $test->dispatch('update',1);
         
+        $this->assertDatabaseHas('tagobjectassigns',['container_id'=>1,'tag_id'=>3]);
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>1,'tag_id'=>3]);
     }
     
@@ -104,16 +147,56 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testDeleteTags()
     {
-        $object = new Dummy();
-        $test = new MysqlStorage($object);
+        $object = $this->getDummy1();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->setEntity('tags', $this->makeChange([1,2,4],[1,2]));
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>1,'tag_id'=>4]);
         
-        $test->update(1);
+        unset($object->tags[2]);
+        $test->dispatch('update',1);
         
         $this->assertDatabaseHas('tagobjectassigns',['container_id'=>1,'tag_id'=>1]);
         $this->assertDatabaseMissing('tagobjectassigns',['container_id'=>1,'tag_id'=>4]);
+    }
+    
+    protected function setProperty($object,string $name, $value)
+    {
+        $property = $object->getProperty($name);
+        $property->loadValue($value);
+    }
+    
+    protected function getTestParent9()
+    {
+        $object = new TestParent();
+        $object->setID(9);
+        $this->setProperty($object, 'parentint', 111);
+        $this->setProperty($object, 'parentchar','ABC');
+        $this->setProperty($object, 'parentbool',true);
+        $this->setProperty($object, 'parentfloat',1.11);
+        $this->setProperty($object, 'parenttext','Lorem ipsum');
+        $this->setProperty($object, 'parentdatetime','1974-09-15 17:45:00');
+        $this->setProperty($object, 'parentdate','1974-09-15');
+        $this->setProperty($object, 'parenttime','17:45:00');
+        $this->setProperty($object, 'parentenum','testC');
+        $this->setProperty($object, 'parentobject',$this->getObject(1));
+        $this->setProperty($object, 'parentcalc','111A');
+        $this->setProperty($object, 'parentcollection',$this->getCollection(7));
+        $this->setProperty($object, 'parentinformation','some.path.to9');        
+        $this->setProperty($object, 'tags', [$this->getTag(3),$this->getTag(4),$this->getTag(5)]);
+        $this->setProperty($object, 'parentsarray', ['String A','String B']);
+        $this->setProperty($object, 'parentoarray', [$this->getObject(2),$this->getObject(3)]);
+        $this->setProperty($object, 'parentmap', ['KeyA'=>'ValueA','KeyB'=>'ValueB']);
+        
+        $attr = $object->dynamicAddProperty('attribute1', 'integer');
+        $attr->setAttributeID(2);
+        $attr->loadValue(123);
+        
+        $attr = $object->dynamicAddProperty('attribute2', 'integer');
+        $attr->setAttributeID(3);
+        $attr->loadValue(222);
+        
+        return $object;        
     }
     
     /**
@@ -123,23 +206,14 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testChangeAllAttributes()
     {
-        $object = new TestParent();
-        $test = new MysqlStorage($object);
-        $attribute1 = new \StdClass();
-        $attribute1->name = 'attribute1';
-        $attribute1->attribute_id = 2;
-        $attribute1->type = 'integer';
-        $attribute1->value = 234;
-        $attribute1->shadow = 123;
-        $attribute2 = new \StdClass();
-        $attribute2->name = 'attribute2';
-        $attribute2->attribute_id = 3;
-        $attribute2->type = 'integer';
-        $attribute2->value = 333;
-        $attribute2->shadow = 222;
-        $test->setEntity('attributes',[$attribute1,$attribute2]);
+        $object = $this->getTestParent9();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->update(9);
+        $object->attribute1 = 234;
+        $object->attribute2 = 333;
+        
+        $test->dispatch('update', 9);
         
         $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>2,'object_id'=>9]);
         $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>3,'object_id'=>9]);
@@ -154,17 +228,13 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testChangeOneAttributes()
     {
-        $object = new TestParent();
-        $test = new MysqlStorage($object);
-        $attribute1 = new \StdClass();
-        $attribute1->name = 'attribute1';
-        $attribute1->attribute_id = 2;
-        $attribute1->type = 'integer';
-        $attribute1->value = 234;
-        $attribute1->shadow = 123;
-        $test->setEntity('attributes',[$attribute1]);
+        $object = $this->getTestParent9();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->update(9);
+        $object->attribute1 = 234;
+        
+        $test->dispatch('update', 9);
         
         $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>2,'object_id'=>9]);
         $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>3,'object_id'=>9]);
@@ -179,20 +249,18 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testAddAttributes()
     {
-        $object = new TestParent();
-        $test = new MysqlStorage($object);
-        $attribute1 = new \StdClass();
-        $attribute1->attribute_id = 5;
-        $attribute1->name = 'char_attribute';
-        $attribute1->type = 'string';
-        $attribute1->value = 'DEF';
-        $attribute1->shadow = null;
-        $test->setEntity('attributes',[$attribute1]);
+        $object = $this->getTestParent9();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->update(1);
+        $attr = $object->dynamicAddProperty('general_attribute', 'integer');
+        $attr->setAttributeID(4);
+        $attr->loadValue(222);
         
-        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>5,'object_id'=>1]);
-        $this->assertDatabaseHas('attr_char_attribute',['object_id'=>1,'value'=>'DEF']);
+        $test->dispatch('update', 9);
+        
+        $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>4,'object_id'=>9]);
+        $this->assertDatabaseHas('attr_general_attribute',['object_id'=>9,'value'=>222]);
     }
     
     /**
@@ -202,17 +270,12 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testRemoveAttributes()
     {
-        $object = new TestParent();
-        $test = new MysqlStorage($object);
-        $attribute1 = new \StdClass();
-        $attribute1->name = 'attribute1';
-        $attribute1->attribute_id = 2;
-        $attribute1->type = 'integer';
-        $attribute1->value = null;
-        $attribute1->shadow = 123;
-        $test->setEntity('attributes',[$attribute1]);
+        $object = $this->getTestParent9();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->update(9);
+        $object->attribute1 = null;
+        $test->dispatch('update', 9);
         
         $this->assertDatabaseMissing('attributeobjectassigns',['attribute_id'=>2,'object_id'=>9]);
         $this->assertDatabaseHas('attributeobjectassigns',['attribute_id'=>3,'object_id'=>9]);
@@ -228,11 +291,17 @@ class UpdateTest extends DatabaseTestCase
     public function testDummyChild()
     {
         $object = new DummyChild();
-        $test = new MysqlStorage($object);
-        $test->setEntity('dummyint',$this->makeChange(789,321));
-        $test->setEntity('dummychildint',$this->makeChange(999,888));
+        $object->setID(8);
+        $this->setProperty($object, 'dummyint', 789);
+        $this->setProperty($object, 'dummychildint', 999);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->update(8);
+        $object->dummyint = 321;
+        $object->dummychildint = 888;
+        
+        
+        $test->dispatch('update', 8);
         
         $this->assertDatabaseHas('dummies',['id'=>8,'dummyint'=>321]);
         $this->assertDatabaseHas('dummychildren',['id'=>8,'dummychildint'=>888]);
@@ -245,23 +314,24 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testTestParent()
     {
-        $object = new TestParent();
-        $test = new MysqlStorage($object);
+        $object = $this->getTestParent9();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+
+        $object->parentint = 222;
+        $object->parentchar = 'DEF';
+        $object->parentfloat = 2.22;
+        $object->parenttext = 'All that we are';        
+        $object->parentdatetime = '1989-11-09 20:00:00';
+        $object->parentdate = '1989-11-09';
+        $object->parenttime = '20:00:00';        
+        $object->parentenum = 'testA';
+        $object->parentobject = $this->getObject(2);
+        $object->parentcollection = $this->getCollection(2);
+        $object->parentsarray[] = 'String C';
+        $object->parentoarray[] = $this->getObject(4);
         
-        $test->setEntity('parentint',$this->makeChange(111,222));
-        $test->setEntity('parentchar',$this->makeChange('ABC','DEF'));
-        $test->setEntity('parentfloat',$this->makeChange(1.11,2.22));
-        $test->setEntity('parenttext',$this->makeChange('Lorem ipsum','All that we are'));
-        $test->setEntity('parentdatetime',$this->makeChange('1974-09-15 17:45:00','1989-11-09 20:00:00'));
-        $test->setEntity('parentdate',$this->makeChange('1974-09-15','1989-11-09'));
-        $test->setEntity('parenttime',$this->makeChange('17:45:00','20:00:00'));
-        $test->setEntity('parentenum',$this->makeChange('testC','testA'));
-        $test->setEntity('parentobject',$this->makeChange(1,2));
-        $test->setEntity('parentsarray',$this->makeChange(['String A','String B'],['String B','String C']));
-        $test->setEntity('parentoarray',$this->makeChange([2,3],[3,4]));
-        $test->setEntity('parentcalc',$this->makeChange('111A','222A'));
-        
-        $test->update(9);
+        $test->dispatch('update', 9);
         
         $this->assertDatabaseHas('testparents',[
             'id'=>9,
@@ -289,36 +359,65 @@ class UpdateTest extends DatabaseTestCase
     public function testTestChild()
     {
         $object = new TestChild();
-        $test = new MysqlStorage($object);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+        $this->setProperty($object, 'parentint', 800);
         
-        $test->setEntity('parentint',$this->makeChange(800,222));
-        $test->setEntity('parentchar',$this->makeChange('DEF','DEF'));
-        $test->setEntity('parentfloat',$this->makeChange(8,2.22));
-        $test->setEntity('parenttext',$this->makeChange('no sea takimata sanctus','All that we are'));
-        $test->setEntity('parentdatetime',$this->makeChange('1974-09-15 17:45:00','1989-11-09 20:00:00'));
-        $test->setEntity('parentdate',$this->makeChange('1974-09-15','1989-11-09'));
-        $test->setEntity('parenttime',$this->makeChange('17:45:00','20:00:00'));
-        $test->setEntity('parentenum',$this->makeChange('testB','testA'));
-        $test->setEntity('parentobject',$this->makeChange(4,2));
-        $test->setEntity('parentsarray',$this->makeChange(['Something','Something else','Another something'],['String B','String C']));
-        $test->setEntity('parentoarray',$this->makeChange([3,2,1],[3,4]));
-        $test->setEntity('parentcalc',$this->makeChange('800A','222A'));
+        $this->setProperty($object,'parentchar','DEF');
+        $this->setProperty($object,'parentfloat',8);
+        $this->setProperty($object,'parenttext','no sea takimata sanctus');
+        $this->setProperty($object,'parentdatetime','1974-09-15 17:45:00');
+        $this->setProperty($object,'parentdate','1974-09-15');
+        $this->setProperty($object,'parenttime','17:45:00');
+        $this->setProperty($object,'parentenum','testB');
         
-        $test->setEntity('childint',$this->makeChange(801,333));
-        $test->setEntity('childchar',$this->makeChange('DEF','REF'));
-        $test->setEntity('childfloat',$this->makeChange(8,3.33));
-        $test->setEntity('childtext',$this->makeChange('no sea takimata sanctus','Panic attack'));
-        $test->setEntity('childdatetime',$this->makeChange('1974-09-15 17:45:00','1990-11-09 20:00:00'));
-        $test->setEntity('childdate',$this->makeChange('1974-09-15','1990-11-09'));
-        $test->setEntity('childtime',$this->makeChange('17:45:00','20:00:10'));
-        $test->setEntity('childenum',$this->makeChange('testB','testC'));
-        $test->setEntity('childobject',$this->makeChange(4,3));
-        $test->setEntity('childsarray',$this->makeChange(['Yea','Yupp'],['Yea','Yupp','YO']));
-        $test->setEntity('childoarray',$this->makeChange([5,6,7],[5,6,8]));
-        $test->setEntity('childcalc',$this->makeChange('801B','333B'));
+        $this->setProperty($object,'parentobject',$this->getObject(4));        
+        $this->setProperty($object,'parentsarray',['Something','Something else','Another something'],['String B','String C']);
+        $this->setProperty($object,'parentoarray',[$this->getObject(3),$this->getObject(2),$this->getObject(1)]);
         
-        $test->update(18);
-
+        $this->setProperty($object,'childint',801);
+        $this->setProperty($object,'childchar','DEF');
+        $this->setProperty($object,'childfloat',8);
+        $this->setProperty($object,'childtext','no sea takimata sanctus');
+        $this->setProperty($object,'childdatetime','1974-09-15 17:45:00');
+        $this->setProperty($object,'childdate','1974-09-15');
+        $this->setProperty($object,'childtime','17:45:00');
+        $this->setProperty($object,'childenum','testB');
+        
+        $this->setProperty($object,'childobject',$this->getObject(4));
+        $this->setProperty($object,'childcollection',$this->getCollection(9,ComplexCollection::class));
+        $this->setProperty($object,'childsarray',['Yea','Yupp']);
+        $this->setProperty($object,'childoarray',[$this->getObject(5),$this->getObject(6),$this->getObject(7)]);
+        
+        
+        $object->parentint = 222;
+        $object->parentchar = 'DEF';
+        $object->parentfloat = 2.22;
+        $object->parenttext = 'All that we are';
+        $object->parentdatetime = '1989-11-09 20:00:00';
+        $object->parentdate = '1989-11-09';
+        $object->parenttime = '20:00:00';
+        $object->parentenum = 'testA';
+        $object->parentobject = $this->getObject(2);
+        $object->parentcollection = $this->getCollection(3);        
+        $object->parentsarray[] = 'Another something';
+        unset($object->parentoarray[2]);
+        
+        $object->childint = 333;
+        $object->childchar = 'REF';
+        $object->childfloat = 3.33;
+        $object->childtext = 'Panic attack';
+        $object->childdatetime = '1990-11-09 20:00:00';
+        $object->childdate = '1990-11-09';
+        $object->childtime = '20:00:10';
+        $object->childenum = 'testC';
+        $object->childobject = $this->getObject(5);
+        $object->childcollection = $this->getCollection(10, ComplexCollection::class);
+        $object->childsarray[] = 'YO';
+        $object->childoarray[2] = $this->getObject(8);
+        
+        $test->dispatch('update', 18);
+        
         $this->assertDatabaseHas('testparents',[
             'id'=>18,
             'parentint'=>222,
@@ -332,8 +431,9 @@ class UpdateTest extends DatabaseTestCase
             'parentobject'=>2,
             'parentcalc'=>'222A'            
         ]);
-        $this->assertDatabaseHas('testparents_parentsarray',['id'=>18,'value'=>'String C']);
-        $this->assertDatabaseHas('testparents_parentoarray',['id'=>18,'value'=>4]);
+        $this->assertDatabaseHas('testparents_parentsarray',['id'=>18,'value'=>'Another something']);
+        $this->assertDatabaseHas('testparents_parentoarray',['id'=>18,'value'=>2]);
+        $this->assertDatabaseMissing('testparents_parentoarray',['id'=>18,'value'=>1]);
         
         $this->assertDatabaseHas('testchildren',[
             'id'=>18,
@@ -345,7 +445,7 @@ class UpdateTest extends DatabaseTestCase
             'childdate'=>'1990-11-09',
             'childtime'=>'20:00:10',
             'childenum'=>'testC',
-            'childobject'=>3,
+            'childobject'=>5,
             'childcalc'=>'333B'            
         ]);
         $this->assertDatabaseHas('testchildren_childsarray',['id'=>18,'value'=>'YO']);
@@ -359,19 +459,29 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testArrayClear()
     {
-        $object = new ReferenceOnly();
-        $test = new MysqlStorage($object);
+        $object = $this->getReferenceOnly27();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->setEntity('testsarray',$this->makeChange(['Test A','Test B'],[]));
-        $test->setEntity('testoarray',$this->makeChange([2,3],[]));
+        $object->testsarray->clear();
+        $object->testoarray->clear();
         
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>27]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27]);
         
-        $test->update(27);
+        $test->dispatch('update', 27);
         
         $this->assertDatabaseMissing('referenceonlies_testsarray',['id'=>27]);
         $this->assertDatabaseMissing('referenceonlies_testoarray',['id'=>27]);
+    }
+    
+    protected function getReferenceOnly27()
+    {
+        $object = new ReferenceOnly();
+        $object->setID(27);
+        $this->setProperty($object,'testsarray',['Test A','Test B']);
+        $this->setProperty($object,'testoarray',[$this->getObject(2),$this->getObject(3)]);
+        return $object;
     }
     
     /**
@@ -382,15 +492,19 @@ class UpdateTest extends DatabaseTestCase
     public function testArrayNew()
     {
         $object = new ReferenceOnly();
-        $test = new MysqlStorage($object);
-        
-        $test->setEntity('testsarray',$this->makeChange([],['New A','New B']));
-        $test->setEntity('testoarray',$this->makeChange([],[1,2]));
-        
+        $object->setID(29);
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+                
         $this->assertDatabaseMissing('referenceonlies_testsarray',['id'=>29]);
         $this->assertDatabaseMissing('referenceonlies_testoarray',['id'=>29]);
         
-        $test->update(29);
+        $object->testsarray[] = 'New A';
+        $object->testsarray[] = 'New B';
+        $object->testoarray[] = $this->getObject(1);
+        $object->testoarray[] = $this->getObject(2);
+        
+        $test->dispatch('update', 29);
         
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>29,'value'=>'New A','index'=>0]);
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>29,'value'=>'New B','index'=>1]);
@@ -405,14 +519,18 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testArrayEntryRemovedAndReindexed()
     {
-        $object = new ReferenceOnly();
-        $test = new MysqlStorage($object);
+        $object = $this->getReferenceOnly27();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
-        $test->setEntity('testsarray',$this->makeChange(['Test A','Test B'],['Test B']));
-        $test->setEntity('testoarray',$this->makeChange([2,3],[3]));
+        unset($object->testsarray[0]);
+        unset($object->testoarray[0]);
         
-        $test->update(27);
-
+        $entries = DB::table('referenceonlies_testsarray')->get();
+        
+        $test->dispatch('update', 27);
+        
+        $entries = DB::table('referenceonlies_testsarray')->get();
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>27,'value'=>'Test B','index'=>0]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27,'value'=>3,'index'=>0]);        
     }
@@ -424,13 +542,19 @@ class UpdateTest extends DatabaseTestCase
      */
     public function testArrayEntryAddedAndReindexed()
     {
-        $object = new ReferenceOnly();
-        $test = new MysqlStorage($object);
+        $object = $this->getReferenceOnly27();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+
+        unset($object->testsarray[1]);
+        $object->testsarray[] = 'Test C'; 
+        $object->testsarray[] = 'Test B';
+
+        unset($object->testoarray[1]);
+        $object->testoarray[] = $this->getObject(1);
+        $object->testoarray[] = $this->getObject(3);
         
-        $test->setEntity('testsarray',$this->makeChange(['Test A','Test B'],['Test A','Test C','Test B']));
-        $test->setEntity('testoarray',$this->makeChange([2,3],[2,1,3]));
-        
-        $test->update(27);
+        $test->dispatch('update', 27);
         
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>27,'value'=>'Test A','index'=>0]);
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>27,'value'=>'Test C','index'=>1]);
@@ -440,6 +564,5 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27,'value'=>1,'index'=>1]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27,'value'=>3,'index'=>2]);
     }
-    
-    
+        
 }
