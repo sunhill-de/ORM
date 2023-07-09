@@ -67,6 +67,9 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
     
     protected function handleSimpleField($property)
     {
+        if (!isset($property->value)) {
+            throw new \Exception("The value for '".$property->name."' is not set.");
+        }
         $this->handleLinearField($property, $property->value);
     }
     
