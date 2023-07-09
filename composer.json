@@ -15,7 +15,8 @@
 	},
         "require-dev" : {
                 "phpunit/phpunit" : "^10.0",
-                "orchestra/testbench" : "^8.5"
+                "orchestra/testbench" : "^8.5",
+		"brianium/paratest": "7.x-dev"
         },
 	"autoload" : {
 		"psr-4" : {
