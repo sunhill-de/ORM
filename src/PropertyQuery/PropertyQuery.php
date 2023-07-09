@@ -23,6 +23,7 @@ use Sunhill\ORM\Properties\PropertyCollection;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Properties\PropertyInformation;
 use Sunhill\ORM\Properties\PropertyKeyfield;
+use Sunhill\ORM\Properties\Utils\DefaultNull;
 
 class PropertyQuery extends ArrayQuery
 {
@@ -89,10 +90,20 @@ class PropertyQuery extends ArrayQuery
             $entry->unit = $value->getUnit();
             $entry->semantic = $value->getSemantic();
             $entry->searchable = $value->getSearchable();
+    
             if ($value->getInitialized() && $this->include_values && !is_a($value, PropertyExternalReference::class) && ($value::class !== PropertyInformation::class)) {
                 $entry->value = $value->getValue();
                 $entry->shadow = $value->getShadow();
-            } 
+            } else {
+                $default = $value->getDefault();
+                if ($default == DefaultNull::class) {
+                    $entry->value = null;
+                    $entry->shadow = null;
+                } else if (isset($default)) {
+                    $entry->value = $default;
+                    $entry->shadow = $default;
+                }
+            }
             $result[] = $entry;
         }
         return $result;
