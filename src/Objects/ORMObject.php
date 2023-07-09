@@ -298,13 +298,25 @@ class ORMObject extends PropertiesCollection
 	    }
 	}
 	
-		
+    protected function searchAttribute($name)
+    {
+        $attributes = Attributes::getAvaiableAttributesForClass(static::class);
+        foreach ($attributes as $attribute) {
+            if ($attribute->name == $name) {
+                return $attribute;
+            }
+        }
+        return false;
+    }
+    
 	protected function handleUnknownProperty($name,$value) 
     {
-        $attribute = Attributes::getAttributeForClass(static::class, $name);
+        if (!($attribute = $this->searchAttribute($name))) {
+            return false;
+        }
         $attribute_obj = $this->dynamicAddProperty($attribute->name, $attribute->type);
         $attribute_obj->setAttributeID($attribute->id);
-        $attribute_obj->setValue($value);
+        $attribute_obj->loadValue($value);
         return true;
 	}
 	
