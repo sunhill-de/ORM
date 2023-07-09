@@ -28,6 +28,7 @@ use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionDelete;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDelete;
 use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionDrop;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDrop;
+use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionSearch;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -65,6 +66,9 @@ class MysqlStorage extends StorageBase
                 break;
             case 'drop':
                 return $this->dispatchToAction(MysqlCollectionDrop::class);
+                break;
+            case 'search':
+                return $this->dispatchToAction(MysqlCollectionSearch::class);
                 break;
         }
     }
