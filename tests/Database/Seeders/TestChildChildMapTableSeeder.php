@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 class TestChildChildMapTableSeeder extends Seeder {
 	
     public function run() {
-        DB::table('testchildren_childoarray')->truncate();
-        DB::table('testchildren_childoarray')->insert([
+        DB::table('testchildren_childmap')->truncate();
+        DB::table('testchildren_childmap')->insert([
             ['id'=>17,'value'=>3,'index'=>'KeyA'],
             ['id'=>17,'value'=>4,'index'=>'KeyB'],
             ['id'=>17,'value'=>5,'index'=>'KeyC'],            
