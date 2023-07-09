@@ -102,6 +102,7 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals('path.to.child17',$test->getProperty('childinformation')->getPath());
         $this->assertEquals('HIJKLMN',$test->parentsarray[1]);
         $this->assertEquals(5,$test->parentoarray[1]->getID());
+        $this->assertEquals(4,$test->childoarray[1]->getID());
         $this->assertEquals('DEF',$test->parentmap['KeyC']);
         $this->assertEquals(2,$test->tags[1]->getID());
         $this->assertEquals(543,$test->attribute2);
