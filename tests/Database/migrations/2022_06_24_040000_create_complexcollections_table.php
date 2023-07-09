@@ -16,6 +16,7 @@ class CreateComplexCollectionsTable extends Migration
         Schema::create('complexcollections', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->integer('field_int');
+            $table->boolean('field_bool');
             $table->char('field_char',10)->nullable();
             $table->float('field_float');
             $table->text('field_text');

@@ -25,6 +25,7 @@ class ComplexCollection extends Collection {
     protected static function setupProperties(PropertyList $list)
     {
         $list->integer('field_int')->searchable();
+        $list->boolean('field_bool')->searchable();
         $list->varchar('field_char')->searchable()->setDefault(null);
         $list->float('field_float')->searchable();
         $list->text('field_text')->searchable();

@@ -18,6 +18,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 		    [
 		        'id'=>9,
 		        'field_int'=>111,
+		        'field_bool'=>false,
 		        'field_char'=>'ABC',
 		        'field_float'=>1.11,
 		        'field_text'=>'Lorem ipsum',
@@ -32,6 +33,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>10,
 	            'field_int'=>123,
+	            'field_bool'=>true,
 	            'field_char'=>'DEF',
 	            'field_float'=>1.23,
 	            'field_text'=>'consetetur sadipscing elitr',
@@ -46,6 +48,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>11,
 	            'field_int'=>222,
+	            'field_bool'=>true,
 	            'field_char'=>'GHI',
 	            'field_float'=>2.22,
 	            'field_text'=>'sed diam nonumy',
@@ -60,6 +63,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>12,
 	            'field_int'=>123,
+	            'field_bool'=>false,
 	            'field_char'=>'EEE',
 	            'field_float'=>1.23,
 	            'field_text'=>'eirmod tempor invidunt ut labore',
@@ -75,6 +79,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>13,
 	            'field_int'=>234,
+	            'field_bool'=>true,
 	            'field_char'=>'DEF',
 	            'field_float'=>2.34,
 	            'field_text'=>'Lorem ipsum dolor sit amet',
@@ -89,6 +94,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>14,
 	            'field_int'=>555,
+	            'field_bool'=>true,
 	            'field_char'=>'TTT',
 	            'field_float'=>5.55,
 	            'field_text'=>'dolor sit amet',
@@ -103,6 +109,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>15,
 	            'field_int'=>432,
+	            'field_bool'=>false,
 	            'field_char'=>'XZT',
 	            'field_float'=>4.32,
 	            'field_text'=>'sed diam voluptua. At vero',
@@ -117,6 +124,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>16,
 	            'field_int'=>700,
+	            'field_bool'=>true,
 	            'field_char'=>null,
 	            'field_float'=>7.0,
 	            'field_text'=>'consetetur sadipscing elitr',
@@ -132,6 +140,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>17,
 	            'field_int'=>123,
+	            'field_bool'=>true,
 	            'field_char'=>'RRR',
 	            'field_float'=>1.23,
 	            'field_text'=>'amet. Lorem ipsum dolo',
@@ -147,6 +156,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>18,
 	            'field_int'=>800,
+	            'field_bool'=>false,
 	            'field_char'=>'DEF',
 	            'field_float'=>8,
 	            'field_text'=>'no sea takimata sanctus',
@@ -162,6 +172,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>19,
 	            'field_int'=>900,
+	            'field_bool'=>true,
 	            'field_char'=>'ZZZ',
 	            'field_float'=>9,
 	            'field_text'=>'At vero eos et accusam',
@@ -177,6 +188,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>20,
 	            'field_int'=>666,
+	            'field_bool'=>true,
 	            'field_char'=>'ZOO',
 	            'field_float'=>6.66,
 	            'field_text'=>'sanctus est Lorem ipsum',
@@ -191,6 +203,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>21,
 	            'field_int'=>580,
+	            'field_bool'=>false,
 	            'field_char'=>'DEF',
 	            'field_float'=>5.8,
 	            'field_text'=>'clita kasd gubergren',
@@ -205,6 +218,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>22,
 	            'field_int'=>432,
+	            'field_bool'=>true,
 	            'field_char'=>'RED',
 	            'field_float'=>4.32,
 	            'field_text'=>'no sea takimata sanctus est Lorem',
@@ -219,6 +233,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>23,
 	            'field_int'=>345,
+	            'field_bool'=>true,
 	            'field_char'=>'ARG',
 	            'field_float'=>3.45,
 	            'field_text'=>'dolore magna aliquyam erat',
@@ -233,6 +248,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>24,
 	            'field_int'=>723,
+	            'field_bool'=>false,
 	            'field_char'=>null,
 	            'field_float'=>7.23,
 	            'field_text'=>'At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren',
@@ -248,6 +264,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>25,
 	            'field_int'=>999,
+	            'field_bool'=>true,
 	            'field_char'=>'DEF',
 	            'field_float'=>9.99,
 	            'field_text'=>'sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum',
@@ -262,6 +279,7 @@ class ComplexCollectionsTableSeeder extends Seeder {
 	        [
 	            'id'=>26,
 	            'field_int'=>123,
+	            'field_bool'=>true,
 	            'field_char'=>null,
 	            'field_float'=>1.23,
 	            'field_text'=>'Lorem ipsum dolor sit amet, consetetur sadipscing',
