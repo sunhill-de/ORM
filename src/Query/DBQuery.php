@@ -178,6 +178,90 @@ abstract class DBQuery extends BasicQuery
         return $this;
     }
     
+    public function whereIn($key, $values): BasicQuery
+    {
+        $this->handleWhere('where',$key,'in',$values);
+        return $this;
+    }
+    
+    public function whereNotIn($key, $values): BasicQuery
+    {
+        $this->handleWhere('whereNot',$key,'in',$values);
+        return $this;
+    }
+    
+    public function orWhereIn($key, $values): BasicQuery
+    {
+        $this->handleWhere('orWhere',$key,'in',$values);
+        return $this;
+    }
+    
+    public function orWhereNotIn($key, $values): BasicQuery
+    {
+        $this->handleWhere('orWhereNot',$key,'in',$values);
+        return $this;
+    }
+
+    // ============ whereNull/whereNotNull/orWhereNull/orNotWhereNull ======= 
+    public function whereNull($key): BasicQuery
+    {
+        $this->handleWhere('where',$key,'=',null);
+        return $this;
+    }
+    
+    public function whereNotNull($key): BasicQuery
+    {
+        $this->handleWhere('whereNot',$key,'=',null);
+        return $this;
+    }
+    
+    public function orWhereNull($key): BasicQuery
+    {
+        $this->handleWhere('orWhere',$key,'=',null);
+        return $this;
+    }
+    
+    public function orWhereNotNull($key): BasicQuery
+    {
+        $this->handleWhere('orWhereNot',$key,'=',null);
+        return $this;
+    }
+    
+    // ============ whereDate =======
+    public function whereDate($key, $value): BasicQuery
+    {
+        $this->handleWhere('where',$key,'date',$value);
+        return $this;
+    }
+    
+    // ============ whereTime =======
+    public function whereTime($key, $value): BasicQuery
+    {
+        $this->handleWhere('where',$key,'time',$value);
+        return $this;
+    }
+    
+    // ============ whereDay =======
+    public function whereDay($key, $value): BasicQuery
+    {
+        $this->handleWhere('where',$key,'day',$value);
+        return $this;
+    }
+    
+    // ============ whereMonth =======
+    public function whereMonth($key, $value): BasicQuery
+    {
+        $this->handleWhere('where',$key,'month',$value);
+        return $this;
+    }
+    
+    // ============ whereYear =======
+    public function whereYear($key, $value): BasicQuery
+    {
+        $this->handleWhere('where',$key,'year',$value);
+        return $this;
+    }
+    
     protected function execute()
     {
         switch ($this->target) {
