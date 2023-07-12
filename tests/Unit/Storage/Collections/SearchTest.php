@@ -8,6 +8,7 @@ use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Illuminate\Database\Eloquent\Collection;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
+use Sunhill\ORM\Tests\Testobjects\TestParent;
 
 class SearchTest extends DatabaseTestCase
 {
@@ -44,7 +45,7 @@ class SearchTest extends DatabaseTestCase
     public static function CollectionSearchProvider()
     {
         return [
-          /*  [DummyCollection::class, function($query) { return $query->count(); }, 8],
+            [DummyCollection::class, function($query) { return $query->count(); }, 8],
             [DummyCollection::class, function($query) { return $query->get(); }, [1,2,3,4,5,6,7,8]],
             [DummyCollection::class, function($query) { return $query->first(); }, 1],
             [DummyCollection::class, function($query) { return $query->where('dummyint',123)->get(); }, [1,3,5]],
@@ -117,12 +118,49 @@ class SearchTest extends DatabaseTestCase
             }, [11,19]],
             [ComplexCollection::class, function($query) { return $query->where('field_object','=',null)->get(); }, [13,14,15,16,21,22,23,24,26]],
             [ComplexCollection::class, function($query) { return $query->whereNull('field_object')->get(); }, [13,14,15,16,21,22,23,24,26]],
-            */            
+                        
             [ComplexCollection::class, function($query) { return $query->where('field_sarray','=',['DEFG'])->get(); }, [14]],
-            [ComplexCollection::class, function($query) { return $query->where('field_sarray','contains',['DEFG'])->get(); }, [10,14]],
+            [ComplexCollection::class, function($query) { return $query->where('field_sarray','contains','DEFG')->get(); }, [10,14]],
             [ComplexCollection::class, function($query) { return $query->where('field_sarray','all of',['ABCD','DEFG'])->get(); }, [10]],
             [ComplexCollection::class, function($query) { return $query->where('field_sarray','any of',['HALLO','DEFG'])->get(); }, [10,14,19]],
-            [ComplexCollection::class, function($query) { return $query->where('field_sarray','none of',['HALLO','DEFG'])->get(); }, [9,11,12,13,15,16,17,18,20,21,22,23,24,25]],
+            [ComplexCollection::class, function($query) { return $query->where('field_sarray','none of',['HALLO','DEFG'])->get(); }, [9,11,12,13,15,16,17,18,20,21,22,23,24,25,26]],
+            [ComplexCollection::class, function($query) { return $query->where('field_sarray','empty')->get(); }, [12,15,16,20,21,23,24,25,26]],
+            
+            [ComplexCollection::class, function($query) { return $query->where('field_calc','=',"123A")->get(); },[10,12,17,26]],
+            [ComplexCollection::class, function($query) { return $query->where('field_calc','=',"111A")->get(); },[9]],
+            [ComplexCollection::class, function($query) { return $query->where('field_calc','=',"5A")->get(); },[]],
+            [ComplexCollection::class, function($query) { return $query->where('field_calc','<',"300A")->get(); },[9,10,11,12,13,17,26]],
+            [ComplexCollection::class, function($query) { return $query->where('field_calc','>',"800A")->get(); },[19,25]],
+            [ComplexCollection::class, function($query) { return $query->where('field_calc','<=',"123A")->get(); },[9,10,12,17,26]],
+            [ComplexCollection::class, function($query) { return $query->where('field_calc','>=',"800A")->get(); },[18,19,25]],
+            [ComplexCollection::class, function($query) { return $query->where("field_calc", "<>", "123A")->get(); }, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
+            [ComplexCollection::class, function($query) { return $query->where("field_calc", "!=", "123A")->get(); }, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
+            [ComplexCollection::class, function($query) { return $query->where("field_calc", "in", ["111A","123A"])->get(); },[9,10,12,17,26]],
+            [ComplexCollection::class, function($query) { return $query->where("field_calc", "begins with", "2")->get(); },[11,13]],
+            [ComplexCollection::class, function($query) { return $query->where("field_calc", "ends with", "3A")->get(); },[10,12,17,24,26]],
+            [ComplexCollection::class, function($query) { return $query->where("field_calc", "contains", "5")->get(); },[14,21,23]],
+  
+            [ComplexCollection::class, function($query) { return $query->where("field_oarray","any of",[3])->get(); },[9,10,13,18]],
+            [ComplexCollection::class, function($query) { return $query->where("field_oarray","any of",8)->get(); },[]],
+            [ComplexCollection::class, function($query) { return $query->where("field_oarray","any of",7)->get(); },[11,19]],
+            [ComplexCollection::class, function($query) { return $query->where("field_oarray","all of",[1,2])->get(); },[10,13,18]],
+            [ComplexCollection::class, function($query) { return $query->where("field_oarray","all of",[1,7])->get(); },[]],
+            [ComplexCollection::class, function($query) { return $query->where("field_oarray","none of",[1,2])->get(); },[10,13,18]],
+            [ComplexCollection::class, function($query) { return $query->where("field_oarray","none of",[1,7])->get(); },[]],
+            [ComplexCollection::class, function($query) { return $query->where("field_oarray","empty")->get(); },[12,15,16,20,21,23,24,25,26]],
+            
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","any of",['ABCD','CC'])->get(); },[10,11,13]],
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","any of",['ZYC'])->get(); },[]],
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","all of",['ABCD','XYZA'])->get(); },[10,13,18]],
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","all of",['ABCD','HOLA'])->get(); },[]],
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","none of",['ABCD','AA'])->get(); },[9,12,14,15,16,17,18,19,20,21,22,23,24,25,26]],
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","empty")->get(); },[12,15,16,20,21,23,24,25,26]],            
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","any key of",['KeyA','KeyC'])->get(); },[9,10,11,14,17,18,19,22]],
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","all keys of",['KeyA','KeyB','KeyC'])->get(); },[10,11,13,18,19,22]],
+            [ComplexCollection::class, function($query) { return $query->where("field_smap","none key of",['KeyB','KeyC'])->get(); },[14]],
+            
+            [TestParent::class, function($query) { return $query->where('parentint','=',123)->get(); },[10,12,17,26]],
+            
             ];
     }
 }
