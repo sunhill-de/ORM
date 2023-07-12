@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Storage\Mysql\Collections;
+namespace Sunhill\ORM\Storage\Mysql;
 
 use Illuminate\Support\Facades\DB;
 use Sunhill\ORM\Interfaces\HandlesProperties;
@@ -11,8 +11,12 @@ use Sunhill\ORM\Query\NotAllowedRelationException;
 use Sunhill\ORM\Query\NoUnaryConditionException;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Query\WrongTypeException;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyCollection;
+use Sunhill\ORM\Objects\Collection;
+use Sunhill\ORM\Objects\PropertiesCollection;
 
-class MysqlCollectionQuery extends DBQuery implements HandlesProperties
+class MysqlQuery extends DBQuery implements HandlesProperties
 {
     protected $collection;
     
@@ -63,10 +67,11 @@ class MysqlCollectionQuery extends DBQuery implements HandlesProperties
     
     protected function handleWhere(string $connection, $key, $relation, $value)
     {
+        $reserved_relations = ['empty','='];
         if (is_null($value)) {
-            if (is_null($relation) || ($relation = '=')) {
+            if (is_null($relation) || ($relation == '=')) {
                 $relation = 'unary';   
-            } else {
+            } if (!in_array($relation,$reserved_relations)) {
                 $value = $relation;
                 $relation = '=';
             }
@@ -165,14 +170,158 @@ class MysqlCollectionQuery extends DBQuery implements HandlesProperties
         }        
     }
     
+    protected function invertCondition($connection, $subquery)
+    {
+        switch ($connection) {
+            case 'where':
+                $this->query->whereNotIn('id',$subquery);
+                break;
+            case 'whereNot':
+                $this->query->whereIn('id',$subquery);
+                break;
+            case 'orWhere':
+                $this->query->orWhereNotIn('id',$subquery);
+                break;
+            case 'orWhereNot':
+                $this->query->orWhereIn('id',$subquery);
+        }        
+    }
+    
+    protected function handleMapOrArrayGeneral($package)
+    {
+        $connection = $package->connection.'In';
+        $table = $this->collection::getInfo('table').'_'.$package->key;
+        switch ($package->relation) {
+            case '=':
+            case '==':
+                break;
+            case '<>':
+            case '!=':
+                break;
+            case 'contains':
+                $this->query->$connection('id', 
+                 DB::table($table)->select('id')->where('value', $package->value)
+                );
+                break;
+            case 'empty':
+            case 'unary':    
+                $subquery = DB::table($table)->select('id');
+                $this->invertCondition($package->connection, $subquery);
+                break;
+            case 'any of':
+                $subquery = DB::table($table)->select('id')->where('value',array_pop($package->value));
+                foreach ($package->value as $value) {
+                    $subquery->orWhere('value',$value);
+                }
+                $this->query->$connection('id',
+                 $subquery
+                );
+                break;
+            case 'all of':
+                $letter = 'a';
+                $subquery = DB::table($table.' as '.$letter++)->select('a.id')->where('a.value',array_pop($package->value));
+                foreach ($package->value as $value) {
+                    $subquery->join($table.' as '.$letter,$letter.'.id','=','a.id')->where($letter++.'.value',$value);
+                }
+                $this->query->$connection('id',
+                    $subquery
+                    );
+                break;
+            case 'none of':
+                $subquery = DB::table($table)->select('id')->where('value',array_pop($package->value));
+                foreach ($package->value as $value) {
+                    $subquery->orWhere('value',$value);
+                }
+                $this->invertCondition($package->connection, $subquery);
+                break;
+        }
+    }
+    
+    protected function convertPropertiesCollectionValues($value)
+    {
+        if (is_a($value, PropertiesCollection::class)) {
+            return $value->getID();
+        } else if (is_int($value)) {
+            return $value;
+        } else if (is_array($value)) {
+            $result = [];
+            foreach ($value as $entry) {
+                $result[] = $this->convertPropertiesCollectionValues($entry);
+            }
+            return $result;
+        }
+    }
+    
+    protected function handleMapOrArrayOfObjects($package)
+    {
+        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of','any of class','all of class','none of class','unary']);
+        $package->value = $this->convertPropertiesCollectionValues($package->value);
+        switch ($package->relation) {
+            case 'any of class':
+                break;                
+            case 'all of class':
+                break;                
+            case 'none of class':
+                break;
+            default:
+                $this->handleMapOrArrayCommon($package);
+        }
+    }
+    
+    protected function handleMapOrArrayOfCollections($package)
+    {
+        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of']);
+        $package->value = $this->convertPropertiesCollectionValues($package->value);
+        $this->handleMapOrArrayCommon($package);
+    }
+    
+    protected function handleMapOrArrayOfOther($package)
+    {
+        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of']);
+        $this->handleMapOrArrayGeneral($package);
+    }
+    
+    protected function handleMapOrArray($package)
+    {
+        $property = $this->collection->getProperty($package->key);
+        if ($property->type == PropertyObject::class) {
+            return $this->handleMapOrArrayOfObjects($package);
+        }
+        if ($property->type  == PropertyCollection::class) {
+            return $this->handleMapOrArrayOfCollections($package);
+        }
+        $this->handleMapOrArrayOfOther($package);
+    }
+    
+    protected function handleCharacterField($package)
+    {
+        $connection = $package->connection;
+        switch ($package->relation) {
+            case 'in':
+                $this->handleInStatement($connection, $package->key, $package->value);
+                break;
+            case 'begins with':
+                $this->query->$connection($package->key, 'like', $package->value.'%');
+                break;
+            case 'ends with':
+                $this->query->$connection($package->key, 'like', '%'.$package->value);
+                break;
+            case 'contains':
+                $this->query->$connection($package->key, 'like', '%'.$package->value.'%');
+                break;
+            default:
+                $this->handleSimpleConditions($connection, $package->key, $package->relation, $package->value);
+        }        
+    }
+    
     public function handleAttribute($package)
     {
         
     }
     
-    public function handlePropertyArray($property)
+    public function handlePropertyArray($package)
     {
-        
+        $this->handleMapOrArray($package);
     }
     
     public function handlePropertyBoolean($package)
@@ -186,13 +335,16 @@ class MysqlCollectionQuery extends DBQuery implements HandlesProperties
         }        
     }
     
-    public function handlePropertyCalculated($property)
+    public function handlePropertyCalculated($package)
     {
-        
+        $this->checkRelation($package,['=','<>','!=','<','>','<=','>=','in','begins with','contains','ends with','unary']);
+        $this->handleCharacterField($package);
     }
     
-    public function handlePropertyCollection($property)
+    public function handlePropertyCollection($package)
     {
+        $this->checkRelation($package,['=','<>','!=','in','unary']);
+        $package->value = $this->convertPropertiesCollectionValues($package->value);
         
     }
 
@@ -297,37 +449,26 @@ class MysqlCollectionQuery extends DBQuery implements HandlesProperties
     
     public function handlePropertyMap($property)
     {
-        
+        $this->handleMapOrArray($package);        
     }
     
     public function handlePropertyObject($package)
     {
         $this->checkRelation($package,['=','<>','!=','in','unary']);
+        $package->value = $this->convertPropertiesCollectionValues($package->value);
+                
         $connection = $package->connection;
-        if ($package->relation == 'unary') {
-            $this->handleNullCondition($connection, $package->key);
-            return;
+        switch ($package->relation) {
+            case 'unary':
+                $this->handleNullCondition($connection, $package->key);
+                break;
+            case 'in':
+                $this->handleInStatement($connection, $package->key, $package->value);
+                break;
+            default:
+                $this->handleSimpleConditions($connection, $package->key, $package->relation, $package->value);
+                break;
         }
-        if (is_a($package->value, ORMObject::class)) {
-            $package->value = $package->value->getID();
-            $this->handleSimpleConditions($connection, $package->key, $package->relation, $package->value);
-            return;
-        } 
-        
-        if ($package->relation == 'in') {
-            for($i=0;$i<count($package->value);$i++) {
-                if (is_a($package->value[$i], ORMObject::class)) {
-                    $package->value[$i] = $package->value[$i]->getID();
-                }
-            }
-            $this->handleInStatement($connection, $package->key, $package->value);
-            return;
-        }
-        if (is_numeric($package->value)) {
-            $this->handleSimpleConditions($connection, $package->key, $package->relation, $package->value);
-            return;
-        }
-        throw new WrongTypeException("The given parameter can not be solved to an object.");
     }
     
     public function handlePropertyTags($property)
@@ -337,24 +478,8 @@ class MysqlCollectionQuery extends DBQuery implements HandlesProperties
     
     public function handlePropertyText($package)
     {
-        $this->checkRelation($package,['=','<>','!=','<','>','<=','>=','in','begins with','contains','ends with','unary']);
-        $connection = $package->connection;
-        switch ($package->relation) {
-            case 'in':
-                $this->handleInStatement($connection, $package->key, $package->value);
-                break;
-            case 'begins with':
-                $this->query->$connection($package->key, 'like', $package->value.'%');
-                break;
-            case 'ends with':
-                $this->query->$connection($package->key, 'like', '%'.$package->value);
-                break;
-            case 'contains':
-                $this->query->$connection($package->key, 'like', '%'.$package->value.'%');
-                break;
-            default:
-                $this->handleSimpleConditions($connection, $package->key, $package->relation, $package->value);
-        }        
+        $this->checkRelation($package,['=','<>','!=','begins with','contains','ends with','unary']);
+        $this->handleCharacterField($package);
     }
     
     public function handlePropertyTime($package)
@@ -370,18 +495,8 @@ class MysqlCollectionQuery extends DBQuery implements HandlesProperties
 
     public function handlePropertyVarchar($package)
     {
-        $this->checkRelation($package,['=','<>','!=','<','>','<=','>=','in','contains','unary']);
-        $connection = $package->connection;
-        switch ($package->relation) {
-            case 'in':
-                $this->handleInStatement($connection, $package->key, $package->value);
-                break;
-            case 'contains':
-                $this->query->$connection($package->key, 'like', '%'.$package->value.'%');
-                break;
-            default:
-                $this->handleSimpleConditions($connection, $package->key, $package->relation, $package->value);
-        }
+        $this->checkRelation($package,['=','<>','!=','<','>','<=','>=','in','begins with','contains','ends with','unary']);
+        $this->handleCharacterField($package);
     }
     
 }

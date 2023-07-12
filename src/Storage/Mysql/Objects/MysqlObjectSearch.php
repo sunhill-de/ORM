@@ -16,26 +16,10 @@ use Sunhill\ORM\Properties\PropertyText;
 use Sunhill\ORM\Properties\PropertyTime;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionSearch;
+use Sunhill\ORM\Storage\Mysql\Collections\MysqlQuery;
 
 class MysqlObjectSearch extends MysqlCollectionSearch
 {
     
-    protected function updateAttributes()
-    {
-    }
-    
-    public function run()
-    {
-        parent::run();
-        $this->updateAttributes();
-    }
-    
-    public function handlePropertyInformation($property)
-    {
-    }
-    
-    public function handlePropertyTags($property)
-    {
-    }
     
 }
