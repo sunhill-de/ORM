@@ -71,7 +71,7 @@ class MysqlQuery extends DBQuery implements HandlesProperties
         if (is_null($value)) {
             if (is_null($relation) || ($relation == '=')) {
                 $relation = 'unary';   
-            } if (!in_array($relation,$reserved_relations)) {
+            } else if (!in_array($relation,$reserved_relations)) {
                 $value = $relation;
                 $relation = '=';
             }
@@ -194,6 +194,13 @@ class MysqlQuery extends DBQuery implements HandlesProperties
         switch ($package->relation) {
             case '=':
             case '==':
+                $letter = 'a';
+                $subquery2 = DB::table($table)->select('id')->whereNotIn('value',$package->value);
+                $subquery1 = DB::table($table.' as '.$letter++)->select('a.id')->where('a.value',array_pop($package->value));
+                foreach ($package->value as $value) {
+                    $subquery1->join($table.' as '.$letter,$letter.'.id','=','a.id')->where($letter++.'.value',$value);
+                }
+                $this->query->$connection('id',$subquery1->whereNotIn('id',$subquery2));
                 break;
             case '<>':
             case '!=':
@@ -234,6 +241,32 @@ class MysqlQuery extends DBQuery implements HandlesProperties
                 }
                 $this->invertCondition($package->connection, $subquery);
                 break;
+            case 'any key of':
+                $subquery = DB::table($table)->select('id')->where('index',array_pop($package->value));
+                foreach ($package->value as $value) {
+                    $subquery->orWhere('index',$value);
+                }
+                $this->query->$connection('id',
+                    $subquery
+                    );
+                break;
+            case 'all keys of':
+                $letter = 'a';
+                $subquery = DB::table($table.' as '.$letter++)->select('a.id')->where('a.index',array_pop($package->value));
+                foreach ($package->value as $value) {
+                    $subquery->join($table.' as '.$letter,$letter.'.id','=','a.id')->where($letter++.'.index',$value);
+                }
+                $this->query->$connection('id',
+                    $subquery
+                    );
+                break;
+            case 'none key of':
+                $subquery = DB::table($table)->select('id')->where('index',array_pop($package->value));
+                foreach ($package->value as $value) {
+                    $subquery->orWhere('index',$value);
+                }
+                $this->invertCondition($package->connection, $subquery);
+                break;
         }
     }
     
@@ -254,7 +287,7 @@ class MysqlQuery extends DBQuery implements HandlesProperties
     
     protected function handleMapOrArrayOfObjects($package)
     {
-        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of','any of class','all of class','none of class','unary']);
+        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of','any of class','all of class','none of class','unary','any key of','all keys of','none key of']);
         $package->value = $this->convertPropertiesCollectionValues($package->value);
         switch ($package->relation) {
             case 'any of class':
@@ -270,14 +303,14 @@ class MysqlQuery extends DBQuery implements HandlesProperties
     
     protected function handleMapOrArrayOfCollections($package)
     {
-        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of']);
+        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of','any key of','all keys of','none key of']);
         $package->value = $this->convertPropertiesCollectionValues($package->value);
         $this->handleMapOrArrayCommon($package);
     }
     
     protected function handleMapOrArrayOfOther($package)
     {
-        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of']);
+        $this->checkRelation($package,['=','==','<>','!=','contains','empty','any of','all of','none of','any key of','all keys of','none key of']);
         $this->handleMapOrArrayGeneral($package);
     }
     
@@ -328,7 +361,7 @@ class MysqlQuery extends DBQuery implements HandlesProperties
     {
         $this->checkRelation($package, ['=','==','<>','!=','unary']);
         $connection = $package->connection;
-        if ($package->relation == 'unary') {
+        if (($package->relation == 'unary') ) {
             $this->query->$connection($package->key,'=',true);
         } else {
             $this->query->$connection($package->key,$package->relation,$package->value);
@@ -447,7 +480,7 @@ class MysqlQuery extends DBQuery implements HandlesProperties
         
     }
     
-    public function handlePropertyMap($property)
+    public function handlePropertyMap($package)
     {
         $this->handleMapOrArray($package);        
     }
