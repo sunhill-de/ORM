@@ -15,9 +15,41 @@ use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyCollection;
 use Sunhill\ORM\Objects\Collection;
 use Sunhill\ORM\Objects\PropertiesCollection;
+use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
+use Sunhill\ORM\Objects\Tag;
 
 class MysqlQuery extends DBQuery implements HandlesProperties
 {
+    use PropertyHelpers;
+    
+    protected $tranlate_relation = [
+        '=='=>'=',
+        '!='=>'<>',
+        'has'=>'contains'
+    ];
+    
+    protected $relations = [
+        '='=>['arguments'=>'binary','type'=>['scalar','array','map']],
+        '<>'=>['arguments'=>'binary','type'=>['scalar','array','map']],
+        '<'=>['arguments'=>'binary','type'=>['scalar']],
+        '>'=>['arguments'=>'binary','type'=>['scalar','array','map']],
+        '<='=>['arguments'=>'binary','type'=>['scalar','array','map']],
+        '>='=>['arguments'=>'binary','type'=>['scalar','array','map']],
+        'contains'=>['arguments'=>'binary','type'=>['string','array','map','tags']],
+        'begins with'=>['arguments'=>'binary','type'=>['string']],
+        'ends with'=>['arguments'=>'binary','type'=>['string']],
+        'all of'=>['arguments'=>'binary','type'=>['array','map','tag']],
+        'any of'=>['arguments'=>'binary','type'=>['array','map','tag']],
+        'none of'=>['arguments'=>'binary','type'=>['array','map','tag']],
+        'all keys of'=>['arguments'=>'binary','type'=>['array','map','tag']],
+        'any key of'=>['arguments'=>'binary','type'=>['map']],
+        'none key of'=>['arguments'=>'binary','type'=>['map']],
+        'has associations'=>['arguments'=>'none'],
+        'is associated'=>['arguments'=>'none'],
+        'has attributes'=>['arguments'=>'none'],
+        'has tags'=>['arguments'=>'none']
+    ];
+    
     protected $collection;
     
     public function __construct($collection)
@@ -62,12 +94,34 @@ class MysqlQuery extends DBQuery implements HandlesProperties
     
     protected function getBasicTable()
     {
-        return DB::table($this->collection::getInfo('table'));
+        $list = $this->collectClasses();
+        $first = array_pop($list)::getInfo('table');
+        $query = DB::table($first);
+        foreach ($list as $table) {
+            $query->join($table::getInfo('table'),$table::getInfo('table').'.id','=',$first.'.id');
+        }
+        return $query;
+    }
+    
+    protected function mapRelation($connection, $key, $relation, $value)
+    {
+        
+    }
+    
+    protected function prepareValue($value, $relation_descriptor)
+    {
+        
     }
     
     protected function handleWhere(string $connection, $key, $relation, $value)
     {
-        $reserved_relations = ['empty','='];
+ /*       if (isset($this->relations[$key]) && ($this->relations[$key]['arguments'])) {
+            return $this->mapRelation($connection, null, $key, null);
+        }
+        if (isset($this->relations[$relation])) {
+            return $this->mapRelation($connection, $key, $relation, $this->prepareValue($value, $this->relations[$key]));
+        }
+   */     $reserved_relations = ['empty','='];
         if (is_null($value)) {
             if (is_null($relation) || ($relation == '=')) {
                 $relation = 'unary';   
@@ -504,9 +558,46 @@ class MysqlQuery extends DBQuery implements HandlesProperties
         }
     }
     
-    public function handlePropertyTags($property)
+    protected function convertTags($package)
     {
+        if (is_a($package->value,Tag::class)) {
+            $package->value = $package->value->getID();
+        } else if (is_array($package->value)) {
+            $result = [];
+            foreach ($package->value as $entry) {
+                if (is_a($entry,Tag::class)) {
+                    $result[] = $entry->getID();
+                } else {
+                    $result[] = $entry;
+                }                
+            }
+            return $result;
+        } else {
+            return $package->value;
+        }        
+    }
+    
+    public function handlePropertyTags($package)
+    {        
+        $this->checkRelation($package,['contains','has','any of','all of','none of','empty']);
+        $package->value = $this->convertTags($package);
         
+        $connection = $package->connection;
+        switch ($package->relation) {
+            case 'contains':
+            case 'has':
+                $connection .= 'In';
+          //      $query->$connection('cont');
+                break;
+            case 'any of':
+                break;
+            case 'all of':
+                break;
+            case 'none of':
+                break;
+            case 'empty':
+                break;                
+        }
     }
     
     public function handlePropertyText($package)
