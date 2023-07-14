@@ -321,12 +321,12 @@ class SearchTest extends DatabaseTestCase
             [TestParent::class, function($query) { return $query->where('tags','contains','TagA')->get(); },[12,17,22]],
             [TestParent::class, function($query) { return $query->where('tags','has','TagB.TagC')->get(); },[9,12,19,22]],
             [TestParent::class, function($query) { return $query->where('tags','has','TagZ')->get(); },[]],
-            [TestParent::class, function($query) { return $query->where('tags','has not','TagB.TagC')->get(); },[10,11,13,14,15,16,17,18,20,21,23,24,25,26]],
-            [TestParent::class, function($query) { return $query->where('tags','one of',['TagE','TagF'])->get(); },[9,10,11,12,19,20,21,22]],
+            [TestParent::class, function($query) { return $query->whereNot('tags','has','TagB.TagC')->get(); },[10,11,13,14,15,16,17,18,20,21,23,24,25,26]],
+            [TestParent::class, function($query) { return $query->where('tags','any of',['TagE','TagF'])->get(); },[9,10,11,12,19,20,21,22]],
             [TestParent::class, function($query) { return $query->where('tags','none of',['TagF','TagE'])->get(); },[13,14,15,16,17,18,23,24,25,26]],
             [TestParent::class, function($query) { return $query->where('tags','all of',['TagA','TagB'])->get(); },[17]],
             [TestChild::class, function($query) { return $query->where('tags','has','TagD')->get(); },[17,19]],
-            [TestChild::class, function($query) { return $query->where('tags','one of',['TagE','TagF'])->get(); },[19,20,21,22]],
+            [TestChild::class, function($query) { return $query->where('tags','any of',['TagE','TagF'])->get(); },[19,20,21,22]],
             [TestChild::class, function($query) { return $query->where('tags','none of',['TagF','TagE'])->get(); },[17,18,23,24]],
             [TestChild::class, function($query) { return $query->where('tags','all of',['TagA','TagB'])->get(); },[17]],
             
@@ -395,6 +395,16 @@ class SearchTest extends DatabaseTestCase
             [TestChild::class, function($query) { return $query->where( "childoarray","all of",[1,7])->get(); },[]],
             //@todo no expected result        [TestChild::class, function($query) { return $query->where( "childoarray","none of")->get(); },[1,2,3])->get(); },[17,18,19,21,22,23,25]],
             [TestChild::class, function($query) { return $query->where( "childoarray","empty",null)->get(); },[19,21,22,23]],
+ 
+            [TestParent::class,function($query) { return $query->where('parentint','<',200)->where('parentint', '<>','123'); },[9]],
+            [TestParent::class,function($query) { return $query->where('parentint','=',123)->where('parentchar','=', 'DEF'); },[10]],
+            [TestChild::class, function($query) { return $query->where('parentint','>',300)->where('childint',  '=', '777'); },[24]],
+            [TestParent::class,function($query) { return $query->where('tags','has','TagD')->where('parentint','<',200); },[9,17]],
+            [TestParent::class,function($query) { return $query->where('tags','has','TagA')->where('tags','has','TagB'); },[17]],
+            [TestParent::class,function($query) { return $query->where('parentcalc','=','123A')->where('tags','has','TagF.TagG.TagE'); },[10,12]],
+            [TestParent::class,function($query) { return $query->where('parentobject','=',2)->where('parentint','<','700'); },[20]],
+            [TestChild::class,function($query) { return $query->where("childoarray","empty",null)->where('parentsarray','has not','ABCD'); },[19,21,22,23]],
+            [TestParent::class,function($query) { return $query->where('parentsarray','has','HALLO')->where('parentsarray','has','HELLO'); },[19]],
             
             ];
     }

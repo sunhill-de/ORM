@@ -587,9 +587,22 @@ class MysqlQuery extends DBQuery implements HandlesProperties
             case 'contains':
             case 'has':
                 $connection .= 'In';
-          //      $query->$connection('cont');
+                $subquery = DB::table('tagobjectassigns')->select('container_id');
+                if (is_string($package->value)) {
+                    $subquery->join('tagcache','tagobjectassigns.tag_id','=','tagcache.tag_id')->where('path_name',$package->value);
+                } else {
+                    $subquery->where('tag_id',$package->value);
+                }
+                $this->query->$connection('objects.id',$subquery);
                 break;
             case 'any of':
+                $subquery = DB::table($table)->select('id')->where('value',array_pop($package->value));
+                foreach ($package->value as $value) {
+                    $subquery->orWhere('value',$value);
+                }
+                $this->query->$connection('id',
+                    $subquery
+                    );
                 break;
             case 'all of':
                 break;
