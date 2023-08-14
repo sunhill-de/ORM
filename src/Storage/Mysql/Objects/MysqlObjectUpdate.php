@@ -23,6 +23,15 @@ use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionUpdate;
 class MysqlObjectUpdate extends MysqlCollectionUpdate
 {
     
+    protected $target_objects = [];
+    
+    protected function objectAssigned(int $id)
+    {
+        if (!in_array($id,$this->target_objects)) {
+            $this->target_objects[] = $id;
+        }
+    }
+    
     public function handleAttribute($property)
     {
         if (is_null($property->value)) {
@@ -48,4 +57,19 @@ class MysqlObjectUpdate extends MysqlCollectionUpdate
         DB::table('tagobjectassigns')->insert($data);
     }
     
+    protected function storeObjectAssigns()
+    {
+        $data = [];
+        DB::table('objectobjectassigns')->where('container_id',$this->id)->delete();
+        foreach ($this->target_objects as $object) {
+            $data[] = ['container_id'=>$this->id,'target_id'=>$object];
+        }
+        DB::table('objectobjectassigns')->insert($data);
+    }
+    
+    protected function updateTables()
+    {
+        parent::updateTables();
+        $this->storeObjectAssigns();
+    }
 }

@@ -344,11 +344,11 @@ class UpdateTest extends DatabaseTestCase
             'parenttime'=>'20:00:00',
             'parentenum'=>'testA',
             'parentobject'=>2,
-            'parentobject'=>2,
             'parentcalc'=>'222A'
         ]);
         $this->assertDatabaseHas('testparents_parentsarray',['id'=>9,'value'=>'String C']);
         $this->assertDatabaseHas('testparents_parentoarray',['id'=>9,'value'=>4]);
+        $this->assertDatabaseHas('objectobjectassigns',['container_id'=>9,'target_id'=>4]);
     }
     
     /**
@@ -468,11 +468,13 @@ class UpdateTest extends DatabaseTestCase
         
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>27]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27]);
+        $this->assertDatabaseHas('objectobjectassigns',['container_id'=>27]);
         
         $test->dispatch('update', 27);
         
         $this->assertDatabaseMissing('referenceonlies_testsarray',['id'=>27]);
         $this->assertDatabaseMissing('referenceonlies_testoarray',['id'=>27]);
+        $this->assertDatabaseMissing('objectobjectassigns',['container_id'=>27]);
     }
     
     protected function getReferenceOnly27()
@@ -498,6 +500,7 @@ class UpdateTest extends DatabaseTestCase
                 
         $this->assertDatabaseMissing('referenceonlies_testsarray',['id'=>29]);
         $this->assertDatabaseMissing('referenceonlies_testoarray',['id'=>29]);
+        $this->assertDatabaseMissing('objectobjectassigns',['container_id'=>29]);
         
         $object->testsarray[] = 'New A';
         $object->testsarray[] = 'New B';
@@ -510,6 +513,8 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>29,'value'=>'New B','index'=>1]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>29,'value'=>1,'index'=>0]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>29,'value'=>2,'index'=>1]);
+        $this->assertDatabaseHas('objectobjectassigns',['container_id'=>29,'target_id'=>1]);
+        $this->assertDatabaseHas('objectobjectassigns',['container_id'=>29,'target_id'=>2]);
     }
     
     /**
@@ -533,6 +538,7 @@ class UpdateTest extends DatabaseTestCase
         $entries = DB::table('referenceonlies_testsarray')->get();
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>27,'value'=>'Test B','index'=>0]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27,'value'=>3,'index'=>0]);        
+        $this->assertDatabaseHas('objectobjectassigns',['container_id'=>27,'target_id'=>3]);
     }
         
     /**

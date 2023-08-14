@@ -15,6 +15,11 @@ class MysqlObjectStore extends MysqlCollectionStore
         parent::run();
     }
     
+    protected function objectAssigned(int $object_id)
+    {
+        $this->addEntryRecord('objectobjectassigns', ['target_id'=>$object_id]);        
+    }
+    
     protected function getClassList($target)
     {
         $result = [];

@@ -165,6 +165,11 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('testparents_parentsarray',['id'=>$id, 'value'=>'GHI', 'index'=>2]);        
         $this->assertDatabaseHas('testparents_parentmap',['id'=>$id, 'value'=>'ValueA', 'index'=>'KeyA']);
         $this->assertDatabaseHas('testparents_parentmap',['id'=>$id, 'value'=>'ValueB', 'index'=>'KeyB']);
+        
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>1]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>2]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>3]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>4]);
     }
     
     /**
@@ -263,6 +268,12 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('testchildren_childsarray',['id'=>$id,'index'=>2,'value'=>'PQR']);
         $this->assertDatabaseHas('testchildren_childmap',['id'=>$id,'index'=>'Key0A','value'=>1]);
         $this->assertDatabaseHas('testchildren_childmap',['id'=>$id,'index'=>'Key0B','value'=>2]);
+
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>1]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>2]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>3]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>4]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>5]);
     }
     
     /**
@@ -290,6 +301,8 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>$id,'index'=>1,'value'=>'DEF']);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>$id,'index'=>0,'value'=>1]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>$id,'index'=>1,'value'=>2]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>1]);
+        $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>2]);
     }
 
     /**
@@ -309,6 +322,7 @@ class StoreTest extends DatabaseTestCase
         $id = $object->getID();
         
         $this->assertDatabaseHas('referenceonlies',['id'=>$id]);
+        $this->assertDatabaseMissing('objectobjectassigns', ['container_id'=>$id]);
         
     }
     

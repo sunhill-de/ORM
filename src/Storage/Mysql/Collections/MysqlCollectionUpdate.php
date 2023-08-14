@@ -34,17 +34,28 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
         
     }
     
+    protected function objectAssigned(int $id)
+    {
+        
+    }
+    
     protected function handleArrayOrMap($property)
     {
         $entries = [];
         DB::table($this->getSpecialTableName($property))->where('id',$this->id)->delete();
         foreach ($property->value as $key => $value) {
-            if (($property->element_type == PropertyObject::class) ||
-                ($property->element_type == PropertyCollection::class)) {
+            switch ($property->element_type) {
+                case PropertyObject::class:
                     $entries[] = ['id'=>$this->id,'index'=>$key,'value'=>$value->getID()];
-                } else {
+                    $this->objectAssigned($value->getID());
+                    break;
+                case PropertyCollection::class:
+                    $entries[] = ['id'=>$this->id,'index'=>$key,'value'=>$value->getID()];
+                    break;
+                default:
                     $entries[] = ['id'=>$this->id,'index'=>$key,'value'=>$value];
-                }
+                    break;
+            }
         }
         DB::table($this->getSpecialTableName($property))->insert($entries);
     }

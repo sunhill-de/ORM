@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AttributesTableSeeder::class);
         $this->call(AttributeObjectAssignsTableSeeder::class);        
         $this->call(TagObjectAssignsTableSeeder::class);
+        $this->call(ObjectObjectAssignsTableSeeder::class);
         
         $this->call(AttrAttribute1TableSeeder::class);
         $this->call(AttrAttribute2TableSeeder::class);

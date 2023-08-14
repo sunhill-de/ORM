@@ -31,7 +31,7 @@ trait TableManagement
      */
     protected function storeTable(string $table, array $fields)
     {
-        DB::table($table)->insert($fields);
+        DB::table($table)->insertOrIgnore($fields);
     }
     
     /**
@@ -67,6 +67,7 @@ trait TableManagement
     {
         switch ($table) {
             case 'tagobjectassigns':
+            case 'objectobjectassigns':
                 return 'container_id';
             case 'attributeobjectassigns':
                 return 'object_id';

@@ -73,15 +73,26 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
         $this->handleLinearField($property, $property->value);
     }
     
+    protected function objectAssigned(int $object_id)
+    {
+        
+    }
+    
     protected function handleArrayOrMap($property)
     {
         foreach ($property->value as $key => $value) {
-            if (($property->element_type == PropertyObject::class) ||
-                ($property->element_type == PropertyCollection::class)) {
-                    $this->addEntryRecord($this->getSpecialTableName($property), ['index'=>$key,'value'=>$value->getID()]);                    
-                } else {
-                    $this->addEntryRecord($this->getSpecialTableName($property), ['index'=>$key,'value'=>$value]);                    
-                }
+            switch ($property->element_type) {
+                case PropertyObject::class:
+                    $this->addEntryRecord($this->getSpecialTableName($property), ['index'=>$key,'value'=>$value->getID()]);
+                    $this->objectAssigned($value->getID());
+                    break;
+                case PropertyCollection::class:
+                    $this->addEntryRecord($this->getSpecialTableName($property), ['index'=>$key,'value'=>$value->getID()]);
+                    break;
+                default:
+                    $this->addEntryRecord($this->getSpecialTableName($property), ['index'=>$key,'value'=>$value]);
+                    break;
+            }
         }        
     }
     
@@ -90,6 +101,7 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
         $value = $property->value;
         if (!is_null($value)) {
             $this->handleLinearField($property, $value->getID());
+            $this->objectAssigned($value->getID());
         } else {
             $this->handleLinearField($property, null);
         }        
