@@ -406,6 +406,10 @@ class SearchTest extends DatabaseTestCase
             [TestChild::class,function($query) { return $query->where("childoarray","empty",null)->where('parentsarray','has not','ABCD'); },[19,21,22,23]],
             [TestParent::class,function($query) { return $query->where('parentsarray','has','HALLO')->where('parentsarray','has','HELLO'); },[19]],
             
+            [TestParent::class, function($query) { return $query->where('has associations')->get(); },[]],
+            [Dummy::class, function($query) { return $query->where('is associated')->get(); },[]],
+            [Dummy::class, function($query) { return $query->where('has tags')->get(); },[]],
+            [Dummy::class, function($query) { return $query->where('has attributes')->get(); },[]],
             ];
     }
 }
