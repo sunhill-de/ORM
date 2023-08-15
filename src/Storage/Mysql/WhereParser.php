@@ -38,6 +38,9 @@ use Sunhill\ORM\Properties\PropertyText;
 use Sunhill\ORM\Properties\PropertyTime;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Query\NotAllowedRelationException;
+use Sunhill\ORM\Objects\Collection;
+use Sunhill\ORM\Objects\PropertiesCollection;
+use Sunhill\ORM\Objects\PropertiesCollectionException;
 
 class WhereParser
 {
@@ -51,20 +54,20 @@ class WhereParser
     protected $relations = [
         '='=>[
             'arguments'=>'binary',
-            'type'=>['scalar','string','primitive','array','map','object','collection'],
+            'type'=>['scalar','string','boolean','date','time','datetime','primitive','array','map','object','collection'],
             'value'=>'native',
             'function'=>'handleWhereSimple'
         ],
         '<>'=>[
             'arguments'=>'binary',
-            'type'=>['scalar','string','primitive','array','map','object','collection'],
+            'type'=>['scalar','string','boolean','primitive','array','map','object','collection'],
             'value'=>'native'
         ],
         
-        '<'=>['arguments'=>'binary','type'=>['scalar','string'],'value'=>'native'],
-        '>'=>['arguments'=>'binary','type'=>['scalar','string'],'value'=>'native'],
-        '<='=>['arguments'=>'binary','type'=>['scalar','string'],'value'=>'native'],
-        '>='=>['arguments'=>'binary','type'=>['scalar','string'],'value'=>'native'],
+        '<'=>['arguments'=>'binary','type'=>['scalar','string','date','time','datetime'],'value'=>'native'],
+        '>'=>['arguments'=>'binary','type'=>['scalar','string','date','time','datetime'],'value'=>'native'],
+        '<='=>['arguments'=>'binary','type'=>['scalar','string','date','time','datetime'],'value'=>'native'],
+        '>='=>['arguments'=>'binary','type'=>['scalar','string','date','time','datetime'],'value'=>'native'],
         
         'in'=>[
             'arguments'=>'binary',
@@ -73,7 +76,7 @@ class WhereParser
         ],
         'null'=>[
             'arguments'=>'unary',
-            'type'=>['scalar','string','primitive','object','collection'],
+            'type'=>['scalar','string','boolean','primitive','object','collection'],
             'value'=>'none'
         ],
         
@@ -91,7 +94,13 @@ class WhereParser
         'has associations'=>['arguments'=>'none'],
         'is associated'=>['arguments'=>'none'],
         'has attributes'=>['arguments'=>'none'],
-        'has tags'=>['arguments'=>'none']
+        'has tags'=>['arguments'=>'none'],
+        
+        'date'=>['arguments'=>'binary','type'=>['date','datetime'],'value'=>'native'],
+        'time'=>['arguments'=>'binary','type'=>['time','datetime'],'value'=>'native'],
+        'month'=>['arguments'=>'binary','type'=>['date','datetime'],'value'=>'native'],
+        'day'=>['arguments'=>'binary','type'=>['date','datetime'],'value'=>'native'],
+        'year'=>['arguments'=>'binary','type'=>['date','datetime'],'value'=>'native'],
     ];
     
     protected $class;
@@ -184,9 +193,8 @@ class WhereParser
     
     protected function tryToTranslateRelation()
     {
-        $this->relation = strtolower($this->relation);
-        if (isset($this->tranlate_relation[$this->relation])) {
-            $this->relation = $this->tranlate_relation[$this->relation];
+        if (isset($this->tranlate_relation[strtolower($this->relation)])) {
+            $this->relation = $this->tranlate_relation[strtolower($this->relation)];
         }
     }
     
@@ -236,6 +244,7 @@ class WhereParser
             case PropertyArray::class:
                 return 'array';
             case PropertyBoolean::class:
+                return 'boolean';
             case PropertyEnum::class:
                 return 'primitive';
             case PropertyCalculated::class:
@@ -316,6 +325,9 @@ class WhereParser
     
     protected function dispatchArray()
     {
+        if (!is_array($this->value)) {
+            $this->value = [$this->value];
+        }
         switch ($this->relation) {
             case '=':
                 return ['handleWhereArrayEquals', $this->connection, $this->key, $this->value];
@@ -325,6 +337,7 @@ class WhereParser
                 return ['handleWhereArrayEquals', $this->connection, $this->key, $this->value];
                 break;
             case 'all of':
+            case 'contains':    
                 return ['handleWhereAllOf', $this->connection, $this->key, $this->value];
             case 'any of':
                 return ['handleWhereAnyOf', $this->connection, $this->key, $this->value];
@@ -352,8 +365,54 @@ class WhereParser
                 return ['handleWhereLike', $this->connection, $this->key, '%'.$this->value];
             case 'contains':
                 return ['handleWhereLike', $this->connection, $this->key, '%'.$this->value.'%'];
+            case 'date':
+            case 'time':
+            case 'day':
+            case 'month':
+            case 'year':
+                return ['handleWhereDateTime', $this->connection, $this->key, $this->relation, $this->value];
             default:
                 return ['handleWhereSimple', $this->connection, $this->key, $this->relation, $this->value];
+        }
+    }
+    
+    protected function dispatchBoolean()
+    {
+        return ['handleWhereBoolean', $this->connection, $this->key, $this->relation, $this->value];    
+    }
+    
+    protected function convertCollectionToID($input)
+    {
+        if (is_null($input)) {
+            return null;
+        }
+        if (is_a($input, PropertiesCollection::class)) {
+            return $input->getID();
+        }
+        if (is_numeric($input) && !is_float($input)) {
+            return $input;
+        }
+        if (is_scalar($input)) {
+            throw new WrongTypeException("The given input value '$input' could not be interpreted as a collection or object.");            
+        } else {
+            throw new WrongTypeException("The given input value could not be interpreted as a collection or object.");
+        }
+    }
+    
+    protected function dispatchCollection()
+    {
+        if (is_array($this->value)) {
+            for($i=0;$i<count($this->value);$i++) {
+                $this->value[$i] = $this->convertCollectionToID($this->value[$i]);
+            }
+        } else {
+            $this->value = $this->convertCollectionToID($this->value);
+        }
+
+        if ($this->relation == 'in') {
+            return ['handleWhereIn', $this->connection, $this->key, $this->value];            
+        } else {
+            return ['handleWhereSimple', $this->connection, $this->key, $this->relation, $this->value];
         }
     }
     
@@ -363,6 +422,8 @@ class WhereParser
             case 'array':
             case 'map':
                 return $this->dispatchArray();
+            case 'boolean':
+                return $this->dispatchBoolean();
             case 'primitive':
             case 'string':
             case 'scalar':
@@ -371,12 +432,47 @@ class WhereParser
             case 'time':
                 return $this->dispatchScalar();
             case 'collection':
+            case 'object':
+                return $this->dispatchCollection();
             case 'external':
             case 'information':
-            case 'object':
             case 'tags':
         }
             
+    }
+
+    /**
+     * Check if a statement like where('boolfield') or where('boolfield',true) instead of where('boolfield','=',true) was passed
+     * @param unknown $key
+     */
+    protected function checkUnaryBoolean($key)
+    {
+        if (!is_a($key, PropertyBoolean::class)) {
+            return;
+        }
+        if (is_bool($this->relation) && is_null($this->value)) {
+            $this->value = $this->relation;
+            $this->relation = '=';
+        } else if (is_null($this->relation) && is_null($this->value)) {
+            $this->value = true;
+            $this->relation = '=';            
+        }
+    }
+    
+    /**
+     * Check if a statement like where('somefield','somevalue') was passed instead of were('somefield','=','somevalue')
+     * @throws NotAllowedRelationException
+     */
+    protected function checkDefaultRelation()
+    {
+        if (!isset($this->relations[strtolower($this->relation)])) {
+            if (is_null($this->value)) {
+                $this->value = $this->relation;
+                $this->relation = '=';
+            } else {
+                throw new NotAllowedRelationException("The relation '".$this->relation."' is not implemented.");
+            }
+        }        
     }
     
     public function parseWhere(): array
@@ -394,15 +490,11 @@ class WhereParser
             throw new UnknownFieldException();
         }
         $type = $this->getPropertyType($key);
+        $this->checkUnaryBoolean($key);
         $this->tryToTranslateRelation();
-        if (!isset($this->relations[$this->relation])) {
-            if (is_null($this->value)) {
-                $this->value    = $this->relation;
-                $this->relation = '=';
-            } else {
-                throw new NotAllowedRelationException("The relation '".$this->relation."' is not implemented.");
-            }
-        }
+        $this->checkDefaultRelation();
+        $this->relation = strtolower($this->relation);
+        
         $relation = $this->relations[$this->relation];
         if (!in_array($type, $relation['type'])) {
             throw new NotAllowedRelationException("The relation '".$this->relation."' is not allowed for the type '$type'");
