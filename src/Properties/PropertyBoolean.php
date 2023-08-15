@@ -25,7 +25,7 @@ class PropertyBoolean extends AtomarProperty
         if (!is_string($input)) {
             return !empty($input);
         }
-        return in_array(strtolower($input),['y','true','+']);
+        return in_array(strtolower($input),[1,'1','y','true','+']);
     }
     
     public function isValid($input): bool
@@ -33,7 +33,7 @@ class PropertyBoolean extends AtomarProperty
         if (!is_string($input)) {
             return true;
         }
-        return in_array(strtolower($input),['y','n','true','false','+','-']);
+        return in_array(strtolower($input),[0,1,'0','1','y','n','true','false','+','-']);
     }
     
 }
