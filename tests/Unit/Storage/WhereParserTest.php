@@ -27,6 +27,8 @@ class WhereParserTest extends TestCase
      */
     public function testInput($class, $connection, $key, $relation, $value, $expect)
     {
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(TestParent::class);
         $attribute = new \StdClass();
         $attribute->name = 'int_attribute';
         $attribute->type = 'integer';
@@ -74,6 +76,9 @@ class WhereParserTest extends TestCase
             [Dummy::class, 'where', 'has tags', null, null, ['handleWhereHasTags', 'where']],
             [Dummy::class, 'where', 'has attributes', null, null, ['handleWhereHasAttributes', 'where']],
 
+            // Special case for booleans
+            [TestParent::class, 'where', 'parentbool', null, null, ['handleWhereBoolean', 'where', 'parentbool', '=', true]],
+            
             // String handling
             [TestParent::class, 'where', 'parentchar', 'contains', 'A', ['handleWhereLike', 'where', 'parentchar', '%A%']],
             [TestParent::class, 'where', 'parentchar', 'begins with', 'A', ['handleWhereLike', 'where', 'parentchar', 'A%']],
@@ -105,6 +110,7 @@ class WhereParserTest extends TestCase
             [Dummy::class, 'where', 'has associations', 'A', null, TooManyWhereParametersException::class],
             [Dummy::class, 'where', 'int_attribute', 'all of', 3, NotAllowedRelationException::class],
             [Dummy::class, 'where', 'int_attribute', 'in', 3, WrongTypeException::class],
+            [TestParent::class, 'where', 'parentobject', '=', 3.3, WrongTypeException::class],
         ];
     }
 }
