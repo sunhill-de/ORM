@@ -143,6 +143,7 @@ class MysqlQuery extends DBQuery
     {
         $connection .= 'In';
         $table = $this->collection::getInfo('table').'_'.$key;
+        
         $letter = 'a';
         $subquery2 = DB::table($table.' as zz')->select('zz.id')->whereNotIn('zz.value',$value);
         $subquery1 = DB::table($table.' as '.$letter++)->select('a.id')->where('a.value',array_pop($value));
@@ -156,6 +157,7 @@ class MysqlQuery extends DBQuery
     {
         $connection .= 'In';
         $table = $this->collection::getInfo('table').'_'.$key;
+        
         $letter = 'a';
         $subquery = DB::table($table.' as '.$letter++)->select('a.id')->where('a.value',array_pop($value));
         foreach ($value as $singlevalue) {
@@ -166,4 +168,87 @@ class MysqlQuery extends DBQuery
             );        
     }
     
+    protected function handleWhereAnyOf(string $connection, $key, $value)
+    {
+        $connection .= 'In';
+        $table = $this->collection::getInfo('table').'_'.$key;
+        
+        $subquery = DB::table($table)->select('id')->where('value',array_pop($value));
+        foreach ($value as $singlevalue) {
+            $subquery->orWhere('value',$singlevalue);
+        }
+        $this->query->$connection( 'id', $subquery );        
+    }
+    
+    protected function invertCondition($connection, $subquery)
+    {
+        switch ($connection) {
+            case 'where':
+                $this->query->whereNotIn('id',$subquery);
+                break;
+            case 'whereNot':
+                $this->query->whereIn('id',$subquery);
+                break;
+            case 'orWhere':
+                $this->query->orWhereNotIn('id',$subquery);
+                break;
+            case 'orWhereNot':
+                $this->query->orWhereIn('id',$subquery);
+        }
+    }
+    
+    protected function handleWhereNoneOf(string $connection, $key, $value)
+    {
+         $table = $this->collection::getInfo('table').'_'.$key;
+        
+        $subquery = DB::table($table)->select('id')->where('value',array_pop($value));
+        foreach ($value as $singlevalue) {
+            $subquery->orWhere('value', $singlevalue);
+        }
+        $this->invertCondition($connection, $subquery);       
+    }
+    
+    protected function handleWhereEmpty(string $connection, $key)
+    {
+        $table = $this->collection::getInfo('table').'_'.$key;
+        
+        $subquery = DB::table($table)->select('id');
+        $this->invertCondition($connection, $subquery);        
+    }
+    
+    protected function handleWhereAnyKeyOf(string $connection, $key, $value)
+    {
+        $table = $this->collection::getInfo('table').'_'.$key;
+        $connection .= 'In';
+        
+        $subquery = DB::table($table)->select('id')->where('index',array_pop($value));
+        foreach ($value as $singlevalue) {
+            $subquery->orWhere('index',$singlevalue);
+        }
+        $this->query->$connection( 'id', $subquery );
+    }
+    
+    protected function handleWhereAllKeysOf(string $connection, $key, $value)
+    {
+        $table = $this->collection::getInfo('table').'_'.$key;
+        $connection .= 'In';
+        
+        $letter = 'a';
+        $subquery = DB::table($table.' as '.$letter++)->select('a.id')->where('a.index',array_pop($value));
+        foreach ($value as $singlevalue) {
+            $subquery->join($table.' as '.$letter,$letter.'.id','=','a.id')->where($letter++.'.index',$singlevalue);
+        }
+        $this->query->$connection( 'id', $subquery );
+    }
+    
+    protected function handleWhereNoneKeyOf(string $connection, $key, $value)
+    {
+        $table = $this->collection::getInfo('table').'_'.$key;
+        
+        $subquery = DB::table($table)->select('id')->where('index',array_pop($value));
+        foreach ($value as $value) {
+            $subquery->orWhere('index',$value);
+        }
+        $this->invertCondition($connection, $subquery);
+    }
 }
