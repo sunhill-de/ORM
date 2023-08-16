@@ -52,6 +52,7 @@ class StoreTest extends DatabaseTestCase
         $test->field_time = '11:11:11';
         $test->field_enum = 'testC';
         $test->field_text = 'Lorem ipsum';
+        $test->field_bool = true;
         $test->field_object = $this->getObject(1);
         $test->field_collection = $this->getCollection(1);
         $test->field_oarray[] = $this->getObject(2);
@@ -93,6 +94,7 @@ class StoreTest extends DatabaseTestCase
         $test->field_time = '11:11:11';
         $test->field_enum = 'testC';
         $test->field_text = 'Lorem ipsum';
+        $test->field_bool = true;
         
         $storage->dispatch('store');
         
