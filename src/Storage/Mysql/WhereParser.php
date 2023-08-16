@@ -80,6 +80,7 @@ class WhereParser
             'value'=>'none'
         ],
         
+        
         'contains'=>['arguments'=>'binary','type'=>['string','array','map','tags'],'value'=>'native'],
         'begins with'=>['arguments'=>'binary','type'=>['string'],'value'=>'native'],
         'ends with'=>['arguments'=>'binary','type'=>['string'],'value'=>'native'],
@@ -87,6 +88,7 @@ class WhereParser
         'all of'=>['arguments'=>'binary','type'=>['array','map','tag'],'value'=>'array'],
         'any of'=>['arguments'=>'binary','type'=>['array','map','tag'],'value'=>'array'],
         'none of'=>['arguments'=>'binary','type'=>['array','map','tag'],'value'=>'array'],
+        'empty'=>['arguments'=>'binary','type'=>['array','map','tag'],'value'=>'array'],
         'all keys of'=>['arguments'=>'binary','type'=>['array','map','tag'],'value'=>'array'],
         'any key of'=>['arguments'=>'binary','type'=>['map'],'value'=>'array'],
         'none key of'=>['arguments'=>'binary','type'=>['map'],'value'=>'array'],
@@ -336,6 +338,8 @@ class WhereParser
                 $this->invertConnection();
                 return ['handleWhereArrayEquals', $this->connection, $this->key, $this->value];
                 break;
+            case 'empty':
+                return ['handleWhereEmpty', $this->connection, $this->key];
             case 'all of':
             case 'contains':    
                 return ['handleWhereAllOf', $this->connection, $this->key, $this->value];
