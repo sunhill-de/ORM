@@ -325,8 +325,18 @@ class WhereParser
         }
     }
     
-    protected function dispatchArray()
+    protected function checkForArrayOfCollection($property)
     {
+        if (in_array($property->getElementType(),[PropertyCollection::class,PropertyObject::class])) {
+            for ($i=0;$i<count($this->value);$i++) {
+                $this->value[$i] = $this->convertCollectionToID($this->value[$i]);
+            }
+        }        
+    }
+    
+    protected function dispatchArray($property)
+    {
+        $this->checkForArrayOfCollection($property);
         if (!is_array($this->value)) {
             $this->value = [$this->value];
         }
@@ -420,12 +430,12 @@ class WhereParser
         }
     }
     
-    protected function dispatchType($type)
+    protected function dispatchType($type, $property)
     {
         switch ($type) {
             case 'array':
             case 'map':
-                return $this->dispatchArray();
+                return $this->dispatchArray($property);
             case 'boolean':
                 return $this->dispatchBoolean();
             case 'primitive':
@@ -504,7 +514,7 @@ class WhereParser
             throw new NotAllowedRelationException("The relation '".$this->relation."' is not allowed for the type '$type'");
         }
         $this->checkValidValue($key, $relation);
-        return $this->dispatchType($type);
+        return $this->dispatchType($type, $key);
     }
     
 }
