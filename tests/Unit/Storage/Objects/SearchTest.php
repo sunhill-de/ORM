@@ -9,312 +9,296 @@ use Sunhill\ORM\Tests\Testobjects\TestParent;
 use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Tests\Testobjects\CalcClass;
+use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
+use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 
 class SearchTest extends DatabaseTestCase
 {
     
-    protected function getQuery($class)
+    protected function processResult($input)
     {
-        $object = new $class();
-        $storage = new MysqlStorage();
-        $storage->setCollection($object);
-        
-        return $storage->dispatch('query');
-    }
-    
-    public function testNoCondition()
-    {
-        $query = $this->getQuery(Dummy::class)->get();
-        $this->assertEquls(8, count($query));
-        $this->assertEquals([1,2,3,4,5,6,7,8], $query->toArray());        
-    }
-    
-    public function testOffsetAndLimit()
-    {
-        $query = $this->getQuery(Dummy::class)->offset(3)->limit(3)->get();
-        $this->assertEquls(3, count($query));
-        $this->assertEquals([3,4,5], $query->toArray());        
+        if (is_a($input, \Illuminate\Support\Collection::class)) {
+            return $input->map(function($item, int $key) {
+                return $item->id;
+            })->toArray();
+        } else if (is_a($input, \StdClass::class)) {
+            return $input->id;
+        }
+        return $input;
     }
 
-    public function testFirst()
-    {
-        $query = $this->getQuery(Dummy::class)->first();
-        $this->assertEquals(1, $query);
-    }
-    
-    public function testGetObjects()
-    {
-        $query = $this->getQuery(Dummy::class)->getObjects();
-        $this->assertEquals(8, count($query));
-        $this->assertEquals(1, $query[0]->getID());
-    }
-    
-    public function testFirstObjects()
-    {
-        $query = $this->getQuery(Dummy::class)->firstObject();
-        $this->assertEquals(1, $query->getID());
-    }
-
-    public function testCount()
-    {
-        $query = $this->getQuery(Dummy::class)->count();
-        $this->assertEquals(8, $query);
-    }
-    
-    public function testOrderAsc()
-    {
-        $query = $this->getQuery(Dummy::class)->order('dummyint')->get();
-        $this->assertEquls(8, count($query));
-        $this->assertEquals([1,3,5,2,4,6,7,8], $query->toArray());        
-    }
-    
-    public function testOrderDesc()
-    {
-        $query = $this->getQuery(Dummy::class)->order('dummyint')->get();
-        $this->assertEquls(8, count($query));
-        $this->assertEquals([8,7,6,4,2,5,3,1], $query->toArray());
-    }
-    
     /**
      * @dataProvider SearchSimpleProvider
      */    
-    public function testSearchSimple($class, $field, $relation, $condition, $expect)
+    public function testCollectionSearch($class, $modifier, $expect)
     {
-        $query = $this->getQuery($class)->where($field, $relation, $condition)->get();
-        $this->assertEquals($expect, $query->toArray());
+        $collection = new $class();
+        $test = new MysqlStorage();
+        $test->setCollection($collection);
+        
+        $result = $modifier($test->dispatch('search'));
+        
+        $this->assertEquals($expect, $this->processResult($result));        
     }
     
-    public function SearchSimpleProvider()
+    public static function SearchSimpleProvider()
     {
         return [
-            [Dummy::class, 'dummyint', '=', 234, [2]],
-            [Dummy::class, 'dummyint', '=', 123, [1,3,5]],
-            [Dummy::class, 'dummyint', '=', 999, []],            
-
-            // Test of integer fields
-            [TestParent::class,'parentint','=',123,[10,12,17,26]],
-            [TestParent::class,'parentint','=',111,[9]],
-            [TestParent::class,'parentint','=',5,[]],
-            [TestParent::class,'parentint','<',234,[9,10,11,12,17,26]],
-            [TestParent::class,'parentint','<=',234,[9,10,11,12,13,17,26]],
-            [TestParent::class,'parentint','>',800,[19,25]],
-            [TestParent::class,'parentint','>=',800,[18,19,25]],
-            [TestParent::class,"parentint", "<>", 123, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
-            [TestParent::class,"parentint", "in", [111,123],[9,10,12,17,26]],
-            [TestChild::class, 'parentint','=',123,[17]],
-            [TestChild::class, 'parentint','=',5,[]],
-            [TestChild::class, 'parentint','<',400,[17,23]],
-            [TestChild::class, 'parentint','>',700,[18,19,24]],
-            [TestChild::class, "parentint", "!=", 123, [18,19,20,21,22,23,24]],
-            [TestChild::class, "parentint", "<>", 123, [18,19,20,21,22,23,24]],
-            [TestChild::class, "parentint", "in", [800,123],[17,18]],
-            [TestChild::class, 'childint','=',801,[18]],
-            [TestChild::class, 'childint','=',5,[]],
-            [TestChild::class, 'childint','<',350,[21,22,23]],
-            [TestChild::class, 'childint','>',800,[18,19]],
-            [TestChild::class, "childint", "<>", 112, [17,18,19,20,22,23,24]],
-            [TestChild::class, "childint", "in", [112,321],[21,22]],
+            [Dummy::class, function($query) { return $query->get(); }, [1,2,3,4,5,6,7,8]],
+            [Dummy::class, function($query) { return $query->offset(3)->limit(3)->get(); }, [4,5,6]],
+            [Dummy::class, function($query) { return $query->first(); }, 1],
+            [Dummy::class, function($query) { return $query->count(); }, 8],           
+            [Dummy::class, function($query) { return $query->orderBy('dummyint')->get(); }, [1,3,5,2,4,6,7,8]],
+            [Dummy::class, function($query) { return $query->orderBy('dummyint','desc')->get(); }, [8,7,6,4,2,1,3,5]],
             
+            [CalcClass::class, function($query) { return $query->get(); }, [31]],
+            [TestSimpleChild::class, function($query) { return $query->get(); }, [25,26]],
+            [ThirdLevelChild::class, function($query) { return $query->get(); }, [33]],
+            [Dummy::class, function($query) { return $query->where('dummyint','>',500)->orderBy('dummyint','desc')->get(); },[8,7,6]],
+            [Dummy::class, function($query) { return $query->orderBy('dummyint')->get(); },[1,3,5,2,4,6,7,8]],
+            [TestParent::class, function($query) { return $query->where('parentint','<',600)->where('parentchar','<','EEE')->orderBy('parentchar')->get(); },[9,23,10,13,21]],
+            [TestParent::class, function($query) { return $query->offset(2)->limit(2)->get(); },[11,12]],
+            [CalcClass::class, function($query) { return $query->count(); }, 1],
+            [TestParent::class, function($query) { return $query->where('parentchar','=','DEF')->count(); },5],
+            
+            
+            [TestParent::class, function($query) { return $query->where('parentint','=',123)->get(); },[10,12,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentint','=',111)->get(); },[9]],
+            [TestParent::class, function($query) { return $query->where('parentint','=',5)->get(); },[]],
+            [TestParent::class, function($query) { return $query->where('parentint','<',234)->get(); },[9,10,11,12,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentint','<=',234)->get(); },[9,10,11,12,13,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentint','>',800)->get(); },[19,25]],
+            [TestParent::class, function($query) { return $query->where('parentint','>=',800)->get(); },[18,19,25]],
+            [TestParent::class, function($query) { return $query->where("parentint", "<>", 123)->get(); }, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
+            [TestParent::class, function($query) { return $query->where("parentint", "in", [111,123])->get(); },[9,10,12,17,26]],
+            
+            [TestChild::class, function($query) { return $query->where( 'parentint','=',123)->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where( 'parentint','=',5)->get(); },[]],
+            [TestChild::class, function($query) { return $query->where( 'parentint','<',400)->get(); },[17,23]],
+            [TestChild::class, function($query) { return $query->where( 'parentint','>',700)->get(); },[18,19,24]],
+            [TestChild::class, function($query) { return $query->where( "parentint", "!=", 123)->get(); }, [18,19,20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "parentint", "<>", 123)->get(); }, [18,19,20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "parentint", "in", [800,123])->get(); },[17,18]],
+            [TestChild::class, function($query) { return $query->where( 'childint','=',801)->get(); },[18]],
+            [TestChild::class, function($query) { return $query->where( 'childint','=',5)->get(); },[]],
+            [TestChild::class, function($query) { return $query->where( 'childint','<',350)->get(); },[21,22,23]],
+            [TestChild::class, function($query) { return $query->where( 'childint','>',800)->get(); },[18,19]],
+            [TestChild::class, function($query) { return $query->where( "childint", "<>", 112)->get(); }, [17,18,19,20,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "childint", "in", [112,321])->get(); },[21,22]],
             // Test of float fields
-            [TestParent::class,'parentfloat','=',1.23,[10,12,17,26]],
-            [TestParent::class,'parentfloat','=',1.11,[9]],
-            [TestParent::class,'parentfloat','=',5,[]],
-            [TestParent::class,'parentfloat','<',2.34,[9,10,11,12,17,26]],
-            [TestParent::class,'parentfloat','<=',2.34,[9,10,11,12,13,17,26]],
-            [TestParent::class,'parentfloat','>',8,[19,25]],
-            [TestParent::class,'parentfloat','>=',8,[18,19,25]],
-            [TestParent::class,"parentfloat", "<>", 1.23, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
-            [TestParent::class,"parentfloat", "in", [1.11,1.23],[9,10,12,17,26]],
-            [TestChild::class, 'parentfloat','=',1.23,[17]],
-            [TestChild::class, 'parentfloat','=',5,[]],
-            [TestChild::class, 'parentfloat','<',4,[17,23]],
-            [TestChild::class, 'parentfloat','>',7,[18,19,24]],
-            [TestChild::class, "parentfloat", "<>", 1.23, [18,19,20,21,22,23,24]],
-            [TestChild::class, "parentfloat", "in", [8,1.23],[17,18]],
-            [TestChild::class, 'childfloat','=',1.23,[17]],
-            [TestChild::class, 'childfloat','=',5,[]],
-            [TestChild::class, 'childfloat','<',3.50,[17,23]],
-            [TestChild::class, 'childfloat','>',7,[18,19,24]],
-            [TestChild::class, "childfloat", "<>", 1.23, [18,19,20,21,22,23,24]],
-            [TestChild::class, "childfloat", "in", [1.23,6.66],[17,20]],
+            [TestParent::class, function($query) { return $query->where('parentfloat','=',1.23)->get(); },[10,12,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentfloat','=',1.11)->get(); },[9]],
+            [TestParent::class, function($query) { return $query->where('parentfloat','=',5)->get(); },[]],
+            [TestParent::class, function($query) { return $query->where('parentfloat','<',2.34)->get(); },[9,10,11,12,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentfloat','<=',2.34)->get(); },[9,10,11,12,13,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentfloat','>',8)->get(); },[19,25]],
+            [TestParent::class, function($query) { return $query->where('parentfloat','>=',8)->get(); },[18,19,25]],
+            [TestParent::class, function($query) { return $query->where("parentfloat", "<>", 1.23)->get(); }, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
+            [TestParent::class, function($query) { return $query->where("parentfloat", "in", [1.11,1.23])->get(); },[9,10,12,17,26]],
+            [TestChild::class, function($query) { return $query->where( 'parentfloat','=',1.23)->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where( 'parentfloat','=',5)->get(); },[]],
+            [TestChild::class, function($query) { return $query->where( 'parentfloat','<',4)->get(); },[17,23]],
+            [TestChild::class, function($query) { return $query->where( 'parentfloat','>',7)->get(); },[18,19,24]],
+            [TestChild::class, function($query) { return $query->where( "parentfloat", "<>", 1.23)->get(); }, [18,19,20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "parentfloat", "in", [8,1.23])->get(); },[17,18]],
+            [TestChild::class, function($query) { return $query->where( 'childfloat','=',1.23)->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where( 'childfloat','=',5)->get(); },[]],
+            [TestChild::class, function($query) { return $query->where( 'childfloat','<',3.50)->get(); },[17,23]],
+            [TestChild::class, function($query) { return $query->where( 'childfloat','>',7)->get(); },[18,19,24]],
+            [TestChild::class, function($query) { return $query->where( "childfloat", "<>", 1.23)->get(); }, [18,19,20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "childfloat", "in", [1.23,6.66])->get(); },[17,20]],
             // Test of varchar fields
-            [TestParent::class,'parentchar','=',"DEF",[10,13,18,21,25]],
-            [TestParent::class,'parentchar','=',"EEE",[12]],
-            [TestParent::class,'parentchar','=',"WWW",[]],
-            [TestParent::class,'parentchar','<',"DEF",[9,23]],
-            [TestParent::class,'parentchar','<=',"DEF",[9,10,13,18,21,23,25]],
-            [TestParent::class,'parentchar','>',"XZT",[19,20]],
-            [TestParent::class,'parentchar','>=',"XZT",[15,19,20]],
-            [TestParent::class,"parentchar", "<>", "DEF", [9,11,12,14,15,17,19,20,22,23]],
-            [TestParent::class,"parentchar", "!=", "DEF", [9,11,12,14,15,17,19,20,22,23]],
-            [TestParent::class,"parentchar", "in", ["DEF","ABC"],[9,10,13,18,21,25]],
-            [TestParent::class,"parentchar", "begins with", "A",[9,23]],
-            [TestParent::class,"parentchar", "begins with", "AB",[9]],
-            [TestParent::class,"parentchar", "begins with", "K",[]],
-            [TestParent::class,"parentchar", "ends with", "T",[14,15]],
-            [TestParent::class,"parentchar", "ends with", "C",[9]],
-            [TestParent::class,"parentchar", "ends with", "K",[]],
-            [TestParent::class,"parentchar", "consists", "B",[9]],
-            [TestParent::class,"parentchar", "consists", "R",[17,22,23]],
-            [TestParent::class,"parentchar", "consists", "K",[]],
-            [TestChild::class,'parentchar','=',"DEF",[18,21]],
-            [TestChild::class,'parentchar','=',"ZZZ",[19]],
-            [TestChild::class,'parentchar','=',"WWW",[]],
-            [TestChild::class,'parentchar','<',"CCC",[23]],
-            [TestChild::class,'parentchar','>',"YYY",[19,20]],
-            [TestChild::class,"parentchar", "<>", "DEF", [17,19,20,22,23]],
-            [TestChild::class,"parentchar", "in", ["DEF","ABC"],[18,21]],
-            [TestChild::class,"parentchar", "begins with", "D",[18,21]],
-            [TestChild::class,"parentchar", "begins with", "A",[23]],
-            [TestChild::class,"parentchar", "begins with", "K",[]],
-            [TestChild::class,"parentchar", "ends with", "F",[18,21]],
-            [TestChild::class,"parentchar", "ends with", "O",[20]],
-            [TestChild::class,"parentchar", "ends with", "K",[]],
-            [TestChild::class,"parentchar", "consists", "O",[20]],
-            [TestChild::class,"parentchar", "consists", "R",[17,22,23]],
-            [TestChild::class,"parentchar", "consists", "K",[]],
-            [TestChild::class,'childchar','=',"DEF",[18,21]],
-            [TestChild::class,'childchar','=',"WWW",[17]],
-            [TestChild::class,'childchar','=',"QQQ",[]],
-            [TestChild::class,'childchar','<',"EEE",[18,21]],
-            [TestChild::class,'childchar','>',"QQQ",[17,19,20,22,23]],
-            [TestChild::class,"childchar", "<>", "DEF", [17,19,20,22,23]],
-            [TestChild::class,"childchar", "in", ["DEF","WWW"],[17,18,21]],
-            [TestChild::class,"childchar", "begins with", "D",[18,21]],
-            [TestChild::class,"childchar", "begins with", "Q",[23]],
-            [TestChild::class,"childchar", "begins with", "K",[]],
-            [TestChild::class,"childchar", "ends with", "F",[18,21]],
-            [TestChild::class,"childchar", "ends with", "O",[20]],
-            [TestChild::class,"childchar", "ends with", "K",[]],
-            [TestChild::class,"childchar", "consists", "O",[20]],
-            [TestChild::class,"childchar", "consists", "W",[17,22,23]],
-            [TestChild::class,"childchar", "consists", "K",[]],
+            [TestParent::class, function($query) { return $query->where('parentchar','=',"DEF")->get(); },[10,13,18,21,25]],
+            [TestParent::class, function($query) { return $query->where('parentchar','=',"EEE")->get(); },[12]],
+            [TestParent::class, function($query) { return $query->where('parentchar','=',"WWW")->get(); },[]],
+            [TestParent::class, function($query) { return $query->where('parentchar','<',"DEF")->get(); },[9,23]],
+            [TestParent::class, function($query) { return $query->where('parentchar','<=',"DEF")->get(); },[9,10,13,18,21,23,25]],
+            [TestParent::class, function($query) { return $query->where('parentchar','>',"XZT")->get(); },[19,20]],
+            [TestParent::class, function($query) { return $query->where('parentchar','>=',"XZT")->get(); },[15,19,20]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "<>", "DEF")->get(); }, [9,11,12,14,15,17,19,20,22,23]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "!=", "DEF")->get(); }, [9,11,12,14,15,17,19,20,22,23]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "in", ["DEF","ABC"])->get(); },[9,10,13,18,21,25]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "begins with", "A")->get(); },[9,23]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "begins with", "AB")->get(); },[9]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "begins with", "K")->get(); },[]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "ends with", "T")->get(); },[14,15]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "ends with", "C")->get(); },[9]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "ends with", "K")->get(); },[]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "contains", "B")->get(); },[9]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "contains", "R")->get(); },[17,22,23]],
+            [TestParent::class, function($query) { return $query->where("parentchar", "contains", "K")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where('parentchar','=',"DEF")->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where('parentchar','=',"ZZZ")->get(); },[19]],
+            [TestChild::class, function($query) { return $query->where('parentchar','=',"WWW")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where('parentchar','<',"CCC")->get(); },[23]],
+            [TestChild::class, function($query) { return $query->where('parentchar','>',"YYY")->get(); },[19,20]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "<>", "DEF")->get(); }, [17,19,20,22,23]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "in", ["DEF","ABC"])->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "begins with", "D")->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "begins with", "A")->get(); },[23]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "begins with", "K")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "ends with", "F")->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "ends with", "O")->get(); },[20]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "ends with", "K")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "contains", "O")->get(); },[20]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "contains", "R")->get(); },[17,22,23]],
+            [TestChild::class, function($query) { return $query->where("parentchar", "contains", "K")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where('childchar','=',"DEF")->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where('childchar','=',"WWW")->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where('childchar','=',"QQQ")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where('childchar','<',"EEE")->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where('childchar','>',"QQQ")->get(); },[17,19,20,22,23]],
+            [TestChild::class, function($query) { return $query->where("childchar", "<>", "DEF")->get(); }, [17,19,20,22,23]],
+            [TestChild::class, function($query) { return $query->where("childchar", "in", ["DEF","WWW"])->get(); },[17,18,21]],
+            [TestChild::class, function($query) { return $query->where("childchar", "begins with", "D")->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where("childchar", "begins with", "Q")->get(); },[23]],
+            [TestChild::class, function($query) { return $query->where("childchar", "begins with", "K")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where("childchar", "ends with", "F")->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where("childchar", "ends with", "O")->get(); },[20]],
+            [TestChild::class, function($query) { return $query->where("childchar", "ends with", "K")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where("childchar", "contains", "O")->get(); },[20]],
+            [TestChild::class, function($query) { return $query->where("childchar", "contains", "W")->get(); },[17,22,23]],
+            [TestChild::class, function($query) { return $query->where("childchar", "contains", "K")->get(); },[]],
             // enum
-            [TestParent::class, "parentenum", "=", "testA", [12]],
-            [TestParent::class, "parentenum", "=", "testB", [10,15,18,22,26]],
-            [TestChild::class, "parentenum", "=", "testB", [18,22]],
-            [TestChild::class, "childenum", "=", "testA", []],
-            [TestChild::class, "childenum", "=", "testB", [18,22]],
+            [TestParent::class, function($query) { return $query->where( "parentenum", "=", "testA")->get(); }, [12]],
+            [TestParent::class, function($query) { return $query->where( "parentenum", "=", "testB")->get(); }, [10,15,18,22,26]],
+            [TestChild::class, function($query) { return $query->where( "parentenum", "=", "testB")->get(); }, [18,22]],
+            [TestChild::class, function($query) { return $query->where( "childenum", "=", "testA")->get(); }, []],
+            [TestChild::class, function($query) { return $query->where( "childenum", "=", "testB")->get(); }, [18,22]],
             // Calculated fields
-            [TestParent::class,'parentcalc','=',"123A",[10,12,17,26]],
-            [TestParent::class,'parentcalc','=',"111A",[9]],
-            [TestParent::class,'parentcalc','=',"5A",[]],
-            [TestParent::class,'parentcalc','<',"300A",[9,10,11,12,13,17,26]],
-            [TestParent::class,'parentcalc','>',"800A",[19,25]],
-            [TestParent::class,'parentcalc','<=',"123A",[9,10,12,17,26]],
-            [TestParent::class,'parentcalc','>=',"800A",[18,19,25]],
-            [TestParent::class,"parentcalc", "<>", "123A", [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
-            [TestParent::class,"parentcalc", "!=", "123A", [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
-            [TestParent::class,"parentcalc", "in", ["111A","123A"],[9,10,12,17,26]],
-            [TestParent::class,"parentcalc", "begins with", "2",[11,13]],
-            [TestParent::class,"parentcalc", "ends with", "3A",[10,12,17,24,26]],
-            [TestParent::class,"parentcalc", "contains", "5",[14,21,23]],
-            [TestChild::class,'parentcalc','=',"123A",[17]],
-            [TestChild::class,'parentcalc','=',"432A",[22]],
-            [TestChild::class,'parentcalc','=',"5A",[]],
-            [TestChild::class,'parentcalc','<',"300A",[17]],
-            [TestChild::class,'parentcalc','>',"800A",[19]],
-            [TestChild::class,'parentcalc','<=',"345A",[17,23]],
-            [TestChild::class,'parentcalc','>=',"800A",[18,19]],
-            [TestChild::class,"parentcalc", "<>", "123A", [18,19,20,21,22,23,24]],
-            [TestChild::class,"parentcalc", "!=", "123A", [18,19,20,21,22,23,24]],
-            [TestChild::class,"parentcalc", "in", ["800A","123A"],[17,18]],
-            [TestChild::class,"parentcalc", "begins with", "5",[21]],
-            [TestChild::class,"parentcalc", "ends with", "3A",[17,24]],
-            [TestChild::class,"parentcalc", "contains", "8",[18,21]],
-            [TestChild::class,'childcalc','=',"777B",[17,24]],
-            [TestChild::class,'childcalc','=',"900B",[19]],
-            [TestChild::class,'childcalc','=',"123A",[]],
-            [TestChild::class,'childcalc','<',"340B",[21,22]],
-            [TestChild::class,'childcalc','>',"800B",[18,19]],
-            [TestChild::class,'childcalc','<=',"321B",[21,22]],
-            [TestChild::class,'childcalc','>=',"801B",[18,19]],
-            [TestChild::class,"childcalc", "<>", "777B", [18,19,20,21,22,23]],
-            [TestChild::class,"childcalc", "!=", "777B", [18,19,20,21,22,23]],
-            [TestChild::class,"childcalc", "in", ["801B","777B"],[17,18,24]],
-            [TestChild::class,"childcalc", "begins with", "8",[18]],
-            [TestChild::class,"childcalc", "ends with", "1B",[18,22]],
-            [TestChild::class,"childcalc", "contains", "2",[21,22]],
+            [TestParent::class, function($query) { return $query->where('parentcalc','=',"123A")->get(); },[10,12,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentcalc','=',"111A")->get(); },[9]],
+            [TestParent::class, function($query) { return $query->where('parentcalc','=',"5A")->get(); },[]],
+            [TestParent::class, function($query) { return $query->where('parentcalc','<',"300A")->get(); },[9,10,11,12,13,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentcalc','>',"800A")->get(); },[19,25]],
+            [TestParent::class, function($query) { return $query->where('parentcalc','<=',"123A")->get(); },[9,10,12,17,26]],
+            [TestParent::class, function($query) { return $query->where('parentcalc','>=',"800A")->get(); },[18,19,25]],
+            [TestParent::class, function($query) { return $query->where("parentcalc", "<>", "123A")->get(); }, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
+            [TestParent::class, function($query) { return $query->where("parentcalc", "!=", "123A")->get(); }, [9,11,13,14,15,16,18,19,20,21,22,23,24,25]],
+            [TestParent::class, function($query) { return $query->where("parentcalc", "in", ["111A","123A"])->get(); },[9,10,12,17,26]],
+            [TestParent::class, function($query) { return $query->where("parentcalc", "begins with", "2")->get(); },[11,13]],
+            [TestParent::class, function($query) { return $query->where("parentcalc", "ends with", "3A")->get(); },[10,12,17,24,26]],
+            [TestParent::class, function($query) { return $query->where("parentcalc", "contains", "5")->get(); },[14,21,23]],
+            [TestChild::class, function($query) { return $query->where('parentcalc','=',"123A")->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where('parentcalc','=',"432A")->get(); },[22]],
+            [TestChild::class, function($query) { return $query->where('parentcalc','=',"5A")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where('parentcalc','<',"300A")->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where('parentcalc','>',"800A")->get(); },[19]],
+            [TestChild::class, function($query) { return $query->where('parentcalc','<=',"345A")->get(); },[17,23]],
+            [TestChild::class, function($query) { return $query->where('parentcalc','>=',"800A")->get(); },[18,19]],
+            [TestChild::class, function($query) { return $query->where("parentcalc", "<>", "123A")->get(); }, [18,19,20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where("parentcalc", "!=", "123A")->get(); }, [18,19,20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where("parentcalc", "in", ["800A","123A"])->get(); },[17,18]],
+            [TestChild::class, function($query) { return $query->where("parentcalc", "begins with", "5")->get(); },[21]],
+            [TestChild::class, function($query) { return $query->where("parentcalc", "ends with", "3A")->get(); },[17,24]],
+            [TestChild::class, function($query) { return $query->where("parentcalc", "contains", "8")->get(); },[18,21]],
+            [TestChild::class, function($query) { return $query->where('childcalc','=',"777B")->get(); },[17,24]],
+            [TestChild::class, function($query) { return $query->where('childcalc','=',"900B")->get(); },[19]],
+            [TestChild::class, function($query) { return $query->where('childcalc','=',"123A")->get(); },[]],
+            [TestChild::class, function($query) { return $query->where('childcalc','<',"340B")->get(); },[21,22]],
+            [TestChild::class, function($query) { return $query->where('childcalc','>',"800B")->get(); },[18,19]],
+            [TestChild::class, function($query) { return $query->where('childcalc','<=',"321B")->get(); },[21,22]],
+            [TestChild::class, function($query) { return $query->where('childcalc','>=',"801B")->get(); },[18,19]],
+            [TestChild::class, function($query) { return $query->where("childcalc", "<>", "777B")->get(); }, [18,19,20,21,22,23]],
+            [TestChild::class, function($query) { return $query->where("childcalc", "!=", "777B")->get(); }, [18,19,20,21,22,23]],
+            [TestChild::class, function($query) { return $query->where("childcalc", "in", ["801B","777B"])->get(); },[17,18,24]],
+            [TestChild::class, function($query) { return $query->where("childcalc", "begins with", "8")->get(); },[18]],
+            [TestChild::class, function($query) { return $query->where("childcalc", "ends with", "1B")->get(); },[18,22]],
+            [TestChild::class, function($query) { return $query->where("childcalc", "contains", "2")->get(); },[21,22]],
             // tags
-            [TestParent::class,'tags','has','TagA',[12,17,22]],
-            [TestParent::class,'tags','has','TagB.TagC',[9,12,19,22]],
-            [TestParent::class,'tags','has','TagZ',[]],
-            [TestParent::class,'tags','has not','TagB.TagC',[10,11,13,14,15,16,17,18,20,21,23,24,25,26]],
-            [TestParent::class,'tags','one of',['TagE','TagF'],[9,10,11,12,19,20,21,22]],
-            [TestParent::class,'tags','none of',['TagF','TagE'],[13,14,15,16,17,18,23,24,25,26]],
-            [TestParent::class,'tags','all of',['TagA','TagB'],[17]],
-            [TestChild::class,'tags','has','TagD',[17,19]],
-            [TestChild::class,'tags','one of',['TagE','TagF'],[19,20,21,22]],
-            [TestChild::class,'tags','none of',['TagF','TagE'],[17,18,23,24]],
-            [TestChild::class,'tags','all of',['TagA','TagB'],[17]],
+            [TestParent::class, function($query) { return $query->where('tags','contains','TagA')->get(); },[12,17,22]],
+            [TestParent::class, function($query) { return $query->where('tags','has','TagB.TagC')->get(); },[9,12,19,22]],
+            [TestParent::class, function($query) { return $query->where('tags','has','TagZ')->get(); },[]],
+            [TestParent::class, function($query) { return $query->whereNot('tags','has','TagB.TagC')->get(); },[10,11,13,14,15,16,17,18,20,21,23,24,25,26]],
+            [TestParent::class, function($query) { return $query->where('tags','any of',['TagE','TagF'])->get(); },[9,10,11,12,19,20,21,22]],
+            [TestParent::class, function($query) { return $query->where('tags','none of',['TagF','TagE'])->get(); },[13,14,15,16,17,18,23,24,25,26]],
+            [TestParent::class, function($query) { return $query->where('tags','all of',['TagA','TagB'])->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where('tags','has','TagD')->get(); },[17,19]],
+            [TestChild::class, function($query) { return $query->where('tags','any of',['TagE','TagF'])->get(); },[19,20,21,22]],
+            [TestChild::class, function($query) { return $query->where('tags','none of',['TagF','TagE'])->get(); },[17,18,23,24]],
+            [TestChild::class, function($query) { return $query->where('tags','all of',['TagA','TagB'])->get(); },[17]],
             
-            [TestParent::class, "parentsarray", "has", "DEFG", [10,14]],
-            [TestParent::class, "parentsarray", "has", "Non existing", []],
-            [TestParent::class, "parentsarray", "has", "Muse", [22]],
-            [TestParent::class, "parentsarray", "has not", "ABCD", [9,11,12,14,15,16,17,18,19,20,21,22,23,24,25,26]],
-            [TestParent::class, "parentsarray", "one of", ["ABCD", "DEFG"], [10,13,14]],
-            [TestParent::class, "parentsarray", "none of", ["ABCD", "DEFG","ZZZZ"], [9,11,12,15,16,17,18,19,20,21,23,24,25,26]],
-            [TestParent::class, "parentsarray", "all of", ["ABCD", "DEFG"], [10]],
-            [TestParent::class, "parentsarray", "empty", null, [12,15,16,20,21,23,24,25,26]],
-            [TestChild::class, "parentsarray", "has", "DEFG", []],
-            [TestChild::class, "parentsarray", "has", "Muse", [22]],
-            [TestChild::class, "parentsarray", "has not", "ABCD", [17,18,19,20,21,22,23,24]],
-            [TestChild::class, "parentsarray", "one of", ["HELLO","Iron Maiden"], [19,22]],
-            [TestChild::class, "parentsarray", "none of", ["HALLO","ZZZZ"], [17,18,20,21,23,24]],
-            [TestChild::class, "parentsarray", "all of", ["HALLO","HOLA"], [19]],
-            [TestChild::class, "parentsarray", "empty", null, [20,21,23,24]],
-            [TestChild::class, "childsarray", "has", "ABCD", [20]],
-            [TestChild::class, "childsarray", "has", "Non existing", []],
-            [TestChild::class, "childsarray", "has", "Muse", []],
-            [TestChild::class, "childsarray", "has not", "ABCD", [17,18,19,21,22,23,24]],
-            [TestChild::class, "childsarray", "one of", ["ABCD","Yea"], [18,20]],
-            [TestChild::class, "childsarray", "none of", ["ABCD","Yea","OPQRSTU"], [19,21,22,23,24]],
-            [TestChild::class, "childsarray", "all of", ["Yea","Yupp"], [18]],
-            [TestChild::class, "childsarray", "empty", null, [19,21,22,23]],
+            [TestParent::class, function($query) { return $query->where( "parentsarray", "has", "DEFG")->get(); }, [10,14]],
+            [TestParent::class, function($query) { return $query->where( "parentsarray", "has", "Non existing")->get(); }, []],
+            [TestParent::class, function($query) { return $query->where( "parentsarray", "has", "Muse")->get(); }, [22]],
+            [TestParent::class, function($query) { return $query->where( "parentsarray", "has not", "ABCD")->get(); }, [9,11,12,14,15,16,17,18,19,20,21,22,23,24,25,26]],
+            [TestParent::class, function($query) { return $query->where( "parentsarray", "one of", ["ABCD", "DEFG"])->get(); }, [10,13,14]],
+            [TestParent::class, function($query) { return $query->where( "parentsarray", "none of", ["ABCD", "DEFG","ZZZZ"])->get(); }, [9,11,12,15,16,17,18,19,20,21,23,24,25,26]],
+            [TestParent::class, function($query) { return $query->where( "parentsarray", "all of", ["ABCD", "DEFG"])->get(); }, [10]],
+            [TestParent::class, function($query) { return $query->where( "parentsarray", "empty", null)->get(); }, [12,15,16,20,21,23,24,25,26]],
+            [TestChild::class, function($query) { return $query->where( "parentsarray", "has", "DEFG")->get(); }, []],
+            [TestChild::class, function($query) { return $query->where( "parentsarray", "has", "Muse")->get(); }, [22]],
+            [TestChild::class, function($query) { return $query->where( "parentsarray", "has not", "ABCD")->get(); }, [17,18,19,20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "parentsarray", "one of", ["HELLO","Iron Maiden"])->get(); }, [19,22]],
+            [TestChild::class, function($query) { return $query->where( "parentsarray", "none of", ["HALLO","ZZZZ"])->get(); }, [17,18,20,21,23,24]],
+            [TestChild::class, function($query) { return $query->where( "parentsarray", "all of", ["HALLO","HOLA"])->get(); }, [19]],
+            [TestChild::class, function($query) { return $query->where( "parentsarray", "empty", null)->get(); }, [20,21,23,24]],
+            [TestChild::class, function($query) { return $query->where( "childsarray", "has", "ABCD")->get(); }, [20]],
+            [TestChild::class, function($query) { return $query->where( "childsarray", "has", "Non existing")->get(); }, []],
+            [TestChild::class, function($query) { return $query->where( "childsarray", "has", "Muse")->get(); }, []],
+            [TestChild::class, function($query) { return $query->where( "childsarray", "has not", "ABCD")->get(); }, [17,18,19,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "childsarray", "one of", ["ABCD","Yea"])->get(); }, [18,20]],
+            [TestChild::class, function($query) { return $query->where( "childsarray", "none of", ["ABCD","Yea","OPQRSTU"])->get(); }, [19,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "childsarray", "all of", ["Yea","Yupp"])->get(); }, [18]],
+            [TestChild::class, function($query) { return $query->where( "childsarray", "empty", null)->get(); }, [19,21,22,23]],
             // Object fields
-            [TestParent::class,'parentobject','=',1,[9]],
-            [TestParent::class,"parentobject","=",3,[17]],
-            [TestParent::class,"parentobject",'=',4,[10,12,18]],
-            [TestParent::class,"parentobject",'=',null,[13,14,15,16,21,22,23,24,26]],
-            [TestParent::class,"parentobject","!=",null,[9,10,11,12,17,18,19,20,25]],
-            [TestParent::class,"parentobject","in",[1,3,4],[9,10,12,17,18]],
-            [TestChild::class,"parentobject","=",3,[17]],
-            [TestChild::class,"parentobject",'=',4,[18]],
-            [TestChild::class,"parentobject",'=',null,[21,22,23,24]],
-            [TestChild::class,"parentobject","!=",null,[17,18,19,20]],
-            [TestChild::class,"parentobject","in",[1,3,4],[17,18]],
-            [TestChild::class,"childobject","=",3,[17,19]],
-            [TestChild::class,"childobject",'=',4,[18]],
-            [TestChild::class,"childobject",'=',null,[20,21,22,23,24]],
-            [TestChild::class,"childobject","!=",null,[17,18,19]],
-            [TestChild::class,"childobject","in",[3,4],[17,18,19]],
+            [TestParent::class, function($query) { return $query->where('parentobject','=',1)->get(); },[9]],
+            [TestParent::class, function($query) { return $query->where("parentobject","=",3)->get(); },[17]],
+            [TestParent::class, function($query) { return $query->where("parentobject",'=',4)->get(); },[10,12,18]],
+            [TestParent::class, function($query) { return $query->where("parentobject",'=',null)->get(); },[13,14,15,16,21,22,23,24,26]],
+            [TestParent::class, function($query) { return $query->where("parentobject","!=",null)->get(); },[9,10,11,12,17,18,19,20,25]],
+            [TestParent::class, function($query) { return $query->where("parentobject","in",[1,3,4])->get(); },[9,10,12,17,18]],
+            [TestChild::class, function($query) { return $query->where("parentobject","=",3)->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where("parentobject",'=',4)->get(); },[18]],
+            [TestChild::class, function($query) { return $query->where("parentobject",'=',null)->get(); },[21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where("parentobject","!=",null)->get(); },[17,18,19,20]],
+            [TestChild::class, function($query) { return $query->where("parentobject","in",[1,3,4])->get(); },[17,18]],
+            [TestChild::class, function($query) { return $query->where("childobject","=",3)->get(); },[17,19]],
+            [TestChild::class, function($query) { return $query->where("childobject",'=',4)->get(); },[18]],
+            [TestChild::class, function($query) { return $query->where("childobject",'=',null)->get(); },[20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where("childobject","!=",null)->get(); },[17,18,19]],
+            [TestChild::class, function($query) { return $query->where("childobject","in",[3,4])->get(); },[17,18,19]],
             // array of objects
-            [TestParent::class, "parentoarray","has",3,[9,10,13,18]],
-            [TestParent::class, "parentoarray","has",8,[]],
-            [TestParent::class, "parentoarray","has",7,[11,19]],
-            [TestParent::class, "parentoarray","one of",[1,2],[9,10,11,13,14,18,19]],
-            [TestParent::class, "parentoarray","all of",[1,2],[10,13,18]],
-            [TestParent::class, "parentoarray","all of",[1,7],[]],
-            [TestParent::class, "parentoarray","none of",[1,2,3],[12,15,16,17,20,21,22,23,24,25,26]],
-            [TestParent::class, "parentoarray","empty",null,     [12,15,16,20,21,23,24,25,26]],
+            [TestParent::class, function($query) { return $query->where( "parentoarray","has",3)->get(); },[9,10,13,18]],
+            [TestParent::class, function($query) { return $query->where( "parentoarray","has",8)->get(); },[]],
+            [TestParent::class, function($query) { return $query->where( "parentoarray","has",7)->get(); },[11,19]],
+            [TestParent::class, function($query) { return $query->where( "parentoarray","one of",[1,2])->get(); },[9,10,11,13,14,18,19]],
+            [TestParent::class, function($query) { return $query->where( "parentoarray","all of",[1,2])->get(); },[10,13,18]],
+            [TestParent::class, function($query) { return $query->where( "parentoarray","all of",[1,7])->get(); },[]],
+            [TestParent::class, function($query) { return $query->where( "parentoarray","none of",[1,2,3])->get(); },[12,15,16,17,20,21,22,23,24,25,26]],
+            [TestParent::class, function($query) { return $query->where( "parentoarray","empty",null)->get(); }, [12,15,16,20,21,23,24,25,26]],
             
-            [TestChild::class, "parentoarray","has",3,[18]],
-            [TestChild::class, "parentoarray","has",8,[]],
-            [TestChild::class, "parentoarray","one of",[1,2],[18,19]],
-            [TestChild::class, "parentoarray","all of",[1,2],[18]],
-            [TestChild::class, "parentoarray","all of",[1,7],[]],
-            [TestChild::class, "parentoarray","none of",[1,2,3],[17,20,21,22,23,24]],
-            [TestChild::class, "parentoarray","empty",null,     [20,21,23,24]],
+            [TestChild::class, function($query) { return $query->where( "parentoarray","has",3)->get(); },[18]],
+            [TestChild::class, function($query) { return $query->where( "parentoarray","has",8)->get(); },[]],
+            [TestChild::class, function($query) { return $query->where( "parentoarray","one of",[1,2])->get(); },[18,19]],
+            [TestChild::class, function($query) { return $query->where( "parentoarray","all of",[1,2])->get(); },[18]],
+            [TestChild::class, function($query) { return $query->where( "parentoarray","all of",[1,7])->get(); },[]],
+            [TestChild::class, function($query) { return $query->where( "parentoarray","none of",[1,2,3])->get(); },[17,20,21,22,23,24]],
+            [TestChild::class, function($query) { return $query->where( "parentoarray","empty",null)->get(); }, [20,21,23,24]],
             
-            [TestChild::class, "childoarray","has",1,[20,24]],
-            [TestChild::class, "childoarray","has",8,[]],
-            [TestChild::class, "childoarray","one of",[3,4],[17,20]],
-            [TestChild::class, "childoarray","all of",[4,5],[17]],
-            [TestChild::class, "childoarray","all of",[1,7],[]],
-            //@todo no expected result        [TestChild::class, "childoarray","none of",[1,2,3],[17,18,19,21,22,23,25]],
-            [TestChild::class, "childoarray","empty",null,     [19,21,22,23]],
+            [TestChild::class, function($query) { return $query->where( "childoarray","has",1)->get(); },[20,24]],
+            [TestChild::class, function($query) { return $query->where( "childoarray","has",8)->get(); },[]],
+            [TestChild::class, function($query) { return $query->where( "childoarray","one of",[3,4])->get(); },[17,20]],
+            [TestChild::class, function($query) { return $query->where( "childoarray","all of",[4,5])->get(); },[17]],
+            [TestChild::class, function($query) { return $query->where( "childoarray","all of",[1,7])->get(); },[]],
+            //@todo no expected result        [TestChild::class, function($query) { return $query->where( "childoarray","none of")->get(); },[1,2,3])->get(); },[17,18,19,21,22,23,25]],
+            [TestChild::class, function($query) { return $query->where( "childoarray","empty",null)->get(); },[19,21,22,23]],
             
+            [TestParent::class,function($query) { return $query->where('parentint','<',200)->where('parentint', '<>','123'); },[9]],
+            [TestParent::class,function($query) { return $query->where('parentint','=',123)->where('parentchar','=', 'DEF'); },[10]],
+            [TestChild::class, function($query) { return $query->where('parentint','>',300)->where('childint',  '=', '777'); },[24]],
+            [TestParent::class,function($query) { return $query->where('tags','has','TagD')->where('parentint','<',200); },[9,17]],
+            [TestParent::class,function($query) { return $query->where('tags','has','TagA')->where('tags','has','TagB'); },[17]],
+            [TestParent::class,function($query) { return $query->where('parentcalc','=','123A')->where('tags','has','TagF.TagG.TagE'); },[10,12]],
+            [TestParent::class,function($query) { return $query->where('parentobject','=',2)->where('parentint','<','700'); },[20]],
+            [TestChild::class,function($query) { return $query->where("childoarray","empty",null)->where('parentsarray','has not','ABCD'); },[19,21,22,23]],
+            [TestParent::class,function($query) { return $query->where('parentsarray','has','HALLO')->where('parentsarray','has','HELLO'); },[19]],
             
-        ];
+            [TestParent::class, function($query) { return $query->where('has associations')->get(); },[]],
+            [Dummy::class, function($query) { return $query->where('is associated')->get(); },[]],
+            [Dummy::class, function($query) { return $query->where('has tags')->get(); },[]],
+            [Dummy::class, function($query) { return $query->where('has attributes')->get(); },[]],
+            ];
     }
 }
