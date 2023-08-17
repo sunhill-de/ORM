@@ -187,10 +187,7 @@ class WhereParser
     protected function checkKey()
     {
         $class = $this->class;
-        if ($class::definesProperty($this->key)) {
-            return $class::getPropertyObject($this->key);
-        }
-        return false;
+        return $class::getPropertyObject($this->key);
     }
     
     protected function tryToTranslateRelation()
