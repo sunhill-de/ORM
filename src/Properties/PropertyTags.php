@@ -231,6 +231,17 @@ class PropertyTags extends PropertyArrayBase
 	    }
 	}
 
+	/**
+	 * Returns
+	 * @param unknown $input
+	 * @return bool
+	 */
+	public function isValid($input): bool
+	{
+        return (is_int($input) || is_string($input) || is_a($input, Tag::class));
+	}
+	
+	
 // ================================ Storage management ================================		
 	protected function handleArrayValue($value)
 	{
