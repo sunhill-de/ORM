@@ -8,6 +8,7 @@ namespace Sunhill\ORM\Storage\Mysql\Utils;
 use Sunhill\ORM\Facades\Classes;
 use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Objects\PropertiesCollection;
+use Sunhill\ORM\Objects\Collection;
 
 trait PropertyHelpers
 {
@@ -19,7 +20,7 @@ trait PropertyHelpers
         do {
             $result[] = $target;
             $target = get_parent_class($target);
-        } while ($target == PropertiesCollection::class);
+        } while (($target <> PropertiesCollection::class) && ($target <> Collection::class));
 
         return $result;
     }

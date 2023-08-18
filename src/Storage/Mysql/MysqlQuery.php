@@ -251,4 +251,128 @@ class MysqlQuery extends DBQuery
         }
         $this->invertCondition($connection, $subquery);
     }
+
+    protected function handleWhereTagAllOf(string $connection, $key, $value)
+    {
+        $subquery = DB::table('tagobjectassigns as a')->select('container_id');
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+        $letter = 'b';
+        foreach ($value as $tag) {
+            if (is_string($tag)) {
+                $subquery->whereExists(function ($query) use ($letter, $tag) {
+                    $first = $letter++;
+                    $second = $letter++;
+                    $query->select(DB::raw(1))->from('tagobjectassigns as '.$first)
+                    ->join('tagcache as '.$second,$first.'.tag_id','=',$second.'.tag_id')
+                    ->whereColumn('a.container_id',$first.'.container_id')
+                    ->where($second.'.path_name',$tag);
+                });
+                    
+            } else if (is_int($tag)){
+                $subquery->whereExists(function ($query) use ($letter, $tag){
+                    $query->select(DB::raw(1))->from('tagobjectassigns as '.$letter)
+                          ->whereColumn('a.container_id',$letter.'.container_id')
+                          ->where($letter++.'.tag_id',$tag);                                
+                });
+            } else if (is_a($tag, Tag::class)) {
+                $subquery->whereExists(function ($query) use ($letter, $tag){
+                    $query->select(DB::raw(1))->from('tagobjectassigns as '.$letter)
+                    ->whereColumn('a.container_id',$letter.'.container_id')
+                    ->where($letter++.'.tag_id',$tag->getID());
+                });                    
+            }
+        }
+        $connection .= 'In';
+        $this->query->$connection('objects.id',$subquery);
+    }
+    
+    protected function handleWhereTagAnyOf(string $connection, $key, $value)
+    {
+        $ids = [];
+        $names = [];
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+        foreach ($value as $tag) {
+            if (is_string($tag)) {
+                $names[] = $tag;
+            } else if (is_int($tag)) {
+                $ids[] = $tag;
+            } else if (is_a($tag, Tag::class)) {
+                $ids[] = $tag->getID();
+            }
+        }
+        if (!empty($ids) && !empty($names)) {
+            $subquery = DB::table('tagobjectassigns as a')
+            ->join('tagcache as b','a.tag_id','=','b.tag_id')
+            ->select('a.container_id')
+            ->whereIn('a.tag_id',$value)
+            ->orWhereIn('b.path_name',$names);
+            
+        } else if (empty($names)) {
+            $subquery = DB::table('tagobjectassigns')
+                        ->select('container_id')
+                        ->whereIn('tag_id',$value);
+        } else {
+            $subquery = DB::table('tagobjectassigns as a')
+                        ->join('tagcache as b','a.tag_id','=','b.tag_id')
+                        ->select('a.container_id')
+                        ->whereIn('b.path_name',$names);
+        }
+        $connection .= 'In';
+        $this->query->$connection('objects.id',$subquery);
+    }
+    
+    protected function handleWhereTagNoneOf(string $connection, $key, $value)
+    {
+        $ids = [];
+        $names = [];
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+        foreach ($value as $tag) {
+            if (is_string($tag)) {
+                $names[] = $tag;
+            } else if (is_int($tag)) {
+                $ids[] = $tag;
+            } else if (is_a($tag, Tag::class)) {
+                $ids[] = $tag->getID();
+            }
+        }
+        if (!empty($ids) && !empty($names)) {
+            $subquery = DB::table('tagobjectassigns as a')
+            ->join('tagcache as b','a.tag_id','=','b.tag_id')
+            ->select('a.container_id')
+            ->whereIn('a.tag_id',$value)
+            ->orWhereIn('b.path_name',$names);            
+        } else if (empty($names)) {
+            $subquery = DB::table('tagobjectassigns')
+            ->select('container_id')
+            ->whereIn('tag_id',$value);
+        } else {
+            $subquery = DB::table('tagobjectassigns as a')
+            ->join('tagcache as b','a.tag_id','=','b.tag_id')
+            ->select('a.container_id')
+            ->whereIn('b.path_name',$names);
+        }
+        
+        $connection .= 'In';
+        switch ($connection) {
+            case 'whereIn':
+                $this->query->whereNotIn('objects.id',$subquery);
+                break;
+            case 'whereNotIn':
+                $this->query->whereIn('objects.id',$subquery);
+                break;
+            case 'orWhereIn':
+                $this->query->orWhereNotIn('objects.id',$subquery);
+                break;
+            case 'orWhereNotIn':
+                $this->query->orWhereIn('objects.id',$subquery);
+                break;
+        }
+    }
+        
 }

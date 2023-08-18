@@ -54,13 +54,13 @@ class WhereParser
     protected $relations = [
         '='=>[
             'arguments'=>'binary',
-            'type'=>['scalar','string','boolean','date','time','datetime','primitive','array','map','object','collection'],
+            'type'=>['scalar','string','boolean','date','time','datetime','primitive','array','map','object','collection','tag'],
             'value'=>'native',
             'function'=>'handleWhereSimple'
         ],
         '<>'=>[
             'arguments'=>'binary',
-            'type'=>['scalar','string','boolean','primitive','array','map','object','collection'],
+            'type'=>['scalar','string','boolean','primitive','array','map','object','collection','tag'],
             'value'=>'native'
         ],
         
@@ -81,7 +81,7 @@ class WhereParser
         ],
         
         
-        'contains'=>['arguments'=>'binary','type'=>['string','array','map','tags'],'value'=>'native'],
+        'contains'=>['arguments'=>'binary','type'=>['string','array','map','tag'],'value'=>'native'],
         'begins with'=>['arguments'=>'binary','type'=>['string'],'value'=>'native'],
         'ends with'=>['arguments'=>'binary','type'=>['string'],'value'=>'native'],
         
@@ -266,7 +266,7 @@ class WhereParser
             case PropertyObject::class:
                 return 'object';
             case PropertyTags::class:
-                return 'tags';
+                return 'tag';
             case PropertyTime::class:
                 return 'time';
             case PropertyKeyfield::class:
@@ -427,6 +427,29 @@ class WhereParser
         }
     }
     
+    protected function dispatchTag()
+    {
+        switch ($this->relation) {
+            case '=':
+                return ['handleWhereTagsEquals', $this->connection, $this->key, $this->value];
+                break;
+            case '<>':
+                $this->invertConnection();
+                return ['handleWhereTagsEquals', $this->connection, $this->key, $this->value];
+                break;
+            case 'empty':
+                return ['handleWhereTagEmpty', $this->connection, $this->key];
+            case 'all of':
+            case 'contains':
+                return ['handleWhereTagAllOf', $this->connection, $this->key, $this->value];
+            case 'any of':
+                return ['handleWhereTagAnyOf', $this->connection, $this->key, $this->value];
+            case 'none of':
+                return ['handleWhereTagNoneOf', $this->connection, $this->key, $this->value];
+                
+        }            
+    }
+    
     protected function dispatchType($type, $property)
     {
         switch ($type) {
@@ -447,7 +470,8 @@ class WhereParser
                 return $this->dispatchCollection();
             case 'external':
             case 'information':
-            case 'tags':
+            case 'tag':
+                return $this->dispatchTag();                
         }
             
     }

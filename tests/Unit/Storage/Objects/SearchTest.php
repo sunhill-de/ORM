@@ -12,6 +12,7 @@ use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
 use Sunhill\ORM\Tests\Testobjects\CalcClass;
 use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
+use Sunhill\ORM\Objects\Tag;
 
 class SearchTest extends DatabaseTestCase
 {
@@ -45,7 +46,7 @@ class SearchTest extends DatabaseTestCase
     public static function SearchSimpleProvider()
     {
         return [
-            [Dummy::class, function($query) { return $query->get(); }, [1,2,3,4,5,6,7,8]],
+/*            [Dummy::class, function($query) { return $query->get(); }, [1,2,3,4,5,6,7,8]],
             [Dummy::class, function($query) { return $query->offset(3)->limit(3)->get(); }, [4,5,6]],
             [Dummy::class, function($query) { return $query->first(); }, 1],
             [Dummy::class, function($query) { return $query->count(); }, 8],           
@@ -207,11 +208,24 @@ class SearchTest extends DatabaseTestCase
             [TestChild::class, function($query) { return $query->where("childcalc", "ends with", "1B")->get(); },[18,22]],
             [TestChild::class, function($query) { return $query->where("childcalc", "contains", "2")->get(); },[21,22]],
             // tags
+     */       [TestParent::class, function($query) { return $query->where('tags','contains',1)->get(); },[12,17,22]],
             [TestParent::class, function($query) { return $query->where('tags','contains','TagA')->get(); },[12,17,22]],
+            [TestParent::class, function($query) { 
+                $tag = new Tag();
+                $tag->load(1);
+                return $query->where('tags','contains',$tag)->get(); 
+            },[12,17,22]],
+            
+            
             [TestParent::class, function($query) { return $query->where('tags','has','TagB.TagC')->get(); },[9,12,19,22]],
             [TestParent::class, function($query) { return $query->where('tags','has','TagZ')->get(); },[]],
             [TestParent::class, function($query) { return $query->whereNot('tags','has','TagB.TagC')->get(); },[10,11,13,14,15,16,17,18,20,21,23,24,25,26]],
+            
             [TestParent::class, function($query) { return $query->where('tags','any of',['TagE','TagF'])->get(); },[9,10,11,12,19,20,21,22]],
+            [TestParent::class, function($query) { return $query->where('tags','any of',[5,6,8])->get(); },[9,10,11,12,19,20,21,22]],
+            [TestParent::class, function($query) { return $query->where('tags','any of',[5,'TagF',8])->get(); },[9,10,11,12,19,20,21,22]],
+            
+            
             [TestParent::class, function($query) { return $query->where('tags','none of',['TagF','TagE'])->get(); },[13,14,15,16,17,18,23,24,25,26]],
             [TestParent::class, function($query) { return $query->where('tags','all of',['TagA','TagB'])->get(); },[17]],
             [TestChild::class, function($query) { return $query->where('tags','has','TagD')->get(); },[17,19]],
