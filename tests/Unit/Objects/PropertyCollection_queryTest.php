@@ -36,7 +36,7 @@ class PropertyCollection_queryTest extends TestCase
     {
         return [
             [DummyCollection::class, function($query) { return $query->count(); }, 1],
-            [ComplexCollection::class, function($query) { return $query->count(); }, 14],
+            [ComplexCollection::class, function($query) { return $query->count(); }, 15],
             [Dummy::class, function ($query) { return $query->count(); }, 10],
             [TestParent::class, function($query) { return $query->count(); }, 28],
             [TestChild::class, function($query) { return $query->count(); }, 45],
@@ -130,7 +130,7 @@ class PropertyCollection_queryTest extends TestCase
     {
         return [
             [DummyCollection::class, function($query) { return $query->count(); }, 1],
-            [ComplexCollection::class, function($query) { return $query->count(); }, 14],
+            [ComplexCollection::class, function($query) { return $query->count(); }, 15],
             [Dummy::class, function ($query) { return $query->count(); }, 10],
             [TestParent::class, function($query) { return $query->count(); }, 28],
             [TestChild::class, function($query) { return $query->count(); }, 45],
