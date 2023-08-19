@@ -19,7 +19,7 @@ class PropertyCollection_actionTest extends TestCase
     /**
      * @dataProvider ActionProvider
      */
-    public function testAction($collection, $processor, $expect)
+    public function testAction($collection, $id, $processor, $expect)
     {
         Classes::registerClass(Dummy::class);
         Classes::registerClass(TestParent::class);
@@ -30,78 +30,125 @@ class PropertyCollection_actionTest extends TestCase
         
         Storage::shouldReceive('createStorage')->andReturn($storage);
         
+        if (!is_null($id)) {
+            $this->setProtectedProperty($test, 'id', $id);
+        }
         $processor($test);
-        
+                
         $this->assertEquals($expect, $storage->last_action);        
     }
     
     public static function ActionProvider()
     {
         return [
-            [DummyCollection::class, function($object) 
+           // ************** Loading ************************
+            [DummyCollection::class, null, function($object) 
             { 
                 $object->load(1); 
                 $object->forceLoading(); 
             }, 'collection_load'],
-            [ComplexCollection::class, function($object) 
+            [ComplexCollection::class, null, function($object) 
             { 
                 $object->load(1); 
                 $object->forceLoading();
             }, 'collection_load'],
-            [Dummy::class, function($object) 
+            [Dummy::class, null, function($object) 
             { 
                 $object->load(1); 
                 $object->forceLoading();
             }, 'object_load'],
-            [TestParent::class, function($object) 
+            [TestParent::class, null, function($object) 
             { 
                 $object->load(1); 
                 $object->forceLoading();
             }, 'object_load'],
 
-            [DummyCollection::class, function($object) 
+            // ************** Creating ************************
+            [DummyCollection::class, null, function($object) 
             { 
                 $object->commit(); 
             }, 'collection_store'],
-            [ComplexCollection::class, function($object) 
+            [ComplexCollection::class, null, function($object) 
             { 
                 $object->commit(); 
             }, 'collection_store'],
-            [Dummy::class, function($object) 
+            [Dummy::class, null, function($object) 
             { 
                 $object->commit(); 
             }, 'object_store'],
-            [TestParent::class, function($object) 
+            [TestParent::class, null, function($object) 
             { 
                 $object->commit(); 
             }, 'object_store'],
             
-            [DummyCollection::class, function($object) 
+            // ************** Updating ************************
+            [DummyCollection::class, 1, function($object) 
             { 
-                $this->setProtectedProperty($object, 'id', 1);
                 $object->dummyint = 1;
                 $object->commit(); 
             }, 'collection_update'],
-            [ComplexCollection::class, function($object) 
+            [ComplexCollection::class, 1, function($object) 
             { 
-                $this->setProtectedProperty($object, 'id', 1);
                 $object->field_int = 1;
                 $object->commit();
             }, 'collection_update'],
-            [Dummy::class, function($object) 
+            [Dummy::class, 1, function($object) 
             { 
-                $this->setProtectedProperty($object, 'id', 1);
                 $object->dummyint = 1;
                 $object->commit();
             }, 'object_update'],
-            [TestParent::class, function($object) 
+            [TestParent::class, 1, function($object) 
             { 
-                $this->setProtectedProperty($object, 'id', 1);
                 $object->parentint = 1;
                 $object->commit();
             }, 'object_update'],
             
+            // ****************** Deleting ********************
+            [DummyCollection::class, null, function($object)
+            {
+                $object->delete(1);
+            }, 'collection_delete'],
+            [ComplexCollection::class, null, function($object)
+            {
+                $object->delete(9);
+            }, 'collection_delete'],
+            [Dummy::class, null, function($object)
+            {
+                $object->delete(1);
+            }, 'object_delete'],
+            [TestParent::class, null, function($object)
+            {
+                $object->delete(1);
+            }, 'object_delete'],
+            
          ];
+    }
+    
+    /**
+     * @dataProvider SearchActionProvider
+     */
+    public function testSearchAction($collection, $expect)
+    {
+        Classes::registerClass(Dummy::class);
+        Classes::registerClass(TestParent::class);
+        
+        $storage = new TestStorage();
+        
+        Storage::shouldReceive('createStorage')->andReturn($storage);
+        
+        $query = $collection::search();
+        
+        $this->assertEquals($expect, $storage->last_action);
+    }
+    
+    public static function SearchActionProvider()
+    {
+        return [
+            [DummyCollection::class,'collection_search'],
+            [ComplexCollection::class,'collection_search'],
+            [Dummy::class,'object_search'],
+            [TestParent::class,'object_search'],
+        ];    
     }
     
     public function testObjectFields_insert()
