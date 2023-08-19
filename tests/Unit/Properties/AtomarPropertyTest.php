@@ -23,7 +23,7 @@ class AtomarPropertyTest extends TestCase
         $this->assertEquals($value, $test->$getter());
     }
     
-    public function StandardGettersProvider()
+    public static function StandardGettersProvider()
     {
         return [
             ['setNullable','getNullable',false,true],

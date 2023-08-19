@@ -82,7 +82,7 @@ class MysqlAttributesTest extends DatabaseTestCase
         $this->assertEquals($expect, $modifier($test));
     }
     
-    public function SimpleQueriesProvider()
+    public static function SimpleQueriesProvider()
     {
         return [
             [function($query) { return $query->count(); }, 9],

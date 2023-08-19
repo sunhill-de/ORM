@@ -54,7 +54,7 @@ class PropertyValidateTest extends TestCase
         }
     }
     
-    public function ValidateProvider()
+    public static function ValidateProvider()
     {
         return [
             // =========================== Array ================================

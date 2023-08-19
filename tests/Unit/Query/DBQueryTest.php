@@ -79,7 +79,7 @@ class DBQueryTest extends DatabaseTestCase
             $this->assertEquals($expect, $result);            
         }
         
-        public function QueryProvider()
+        public static function QueryProvider()
         {
             return [
                 [   // Test simple count

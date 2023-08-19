@@ -35,7 +35,7 @@ class PropertyCollection_actionTest extends TestCase
         $this->assertEquals($expect, $storage->last_action);        
     }
     
-    public function ActionProvider()
+    public static function ActionProvider()
     {
         return [
             [DummyCollection::class, function($object) 

@@ -57,7 +57,7 @@ class MigrateFreshTest extends DatabaseTestCase
         }
     }
     
-    public function droppedTableProvider()
+    public static function droppedTableProvider()
     {
         return [
             [Dummy::class, ['dummies'=>['id','dummyint']]],

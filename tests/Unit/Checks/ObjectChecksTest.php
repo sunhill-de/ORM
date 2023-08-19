@@ -57,7 +57,7 @@ class ObjectChecksTest extends CheckTestCase
     /**
      * Tests: see List
      */
-    public function repairableProblemProvider()
+    public static function repairableProblemProvider()
     {
         return [
             ['check_EveryObjectHasAParentEntry', function() { DB::table('dummies')->where('id',5)->delete(); }],

@@ -53,7 +53,7 @@ class PropertyValueTest extends TestCase
         $this->assertEquals($expect, $property->getValue());
     }
         
-    public function SetValueScalarProvider()
+    public static function SetValueScalarProvider()
     {
         return [
             // ========================== Boolean ===============================
@@ -152,7 +152,7 @@ class PropertyValueTest extends TestCase
         $this->assertTrue(is_a($object, Dummy::class));
     }
     
-    public function SetValueObjectProvider()
+    public static function SetValueObjectProvider()
     {
         return [
             // ========================== Object ===============================
@@ -246,7 +246,7 @@ class PropertyValueTest extends TestCase
         }
     }
     
-    public function SetValueArrayProvider()
+    public static function SetValueArrayProvider()
     {
         return [
             // =========================== Array ================================
@@ -303,7 +303,7 @@ class PropertyValueTest extends TestCase
         }
     }
     
-    public function SetValueMapProvider()
+    public static function SetValueMapProvider()
     {
         return [
             // =========================== Array ================================

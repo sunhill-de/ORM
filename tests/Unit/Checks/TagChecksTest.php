@@ -106,7 +106,7 @@ class TagChecksTest extends CheckTestCase
     /**
      * Tests: see List
      */
-    public function repairableProblemProvider()
+    public static function repairableProblemProvider()
     {
         return [
             ['check_TagsWithNotExistingParents',function() {DB::table('tags')->where('id',7)->delete();} ],            

@@ -106,7 +106,7 @@ class MysqlTagsTest extends DatabaseTestCase
         $this->assertEquals($expect, $result);
     }
     
-    public function QueryProvider()
+    public static function QueryProvider()
     {
         return [
             [function($query) { return $query->count(); }, null, 9],

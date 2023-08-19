@@ -33,7 +33,7 @@ class MigrateAlterColumnTest extends DatabaseTestCase
             $this->assertEquals($expect,$this->getColumnType('testparents', $column));            
     }
 
-    public function ChangeAColumnProvider()
+    public static function ChangeAColumnProvider()
     {
         return [
             ['parentchar','integer','string'],

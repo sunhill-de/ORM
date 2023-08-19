@@ -87,7 +87,7 @@ class ClassManagerTest extends TestCase
         $test->registerClass($class);
     }
 
-    public function RegisterClassProvider()
+    public static function RegisterClassProvider()
     {
         return [
             [static::class, ClassNotORMException::class],
@@ -208,7 +208,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect, $test->normalizeNamespace($namespace));    
     }
     
-    public function NormalizeNamespaceProvider()
+    public static function NormalizeNamespaceProvider()
     {
         return [
             ['this\is\a\namespace','this\is\a\namespace'],
@@ -279,7 +279,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect, $this->callProtectedMethod($test, 'checkForNamespace', [$needle]));
     }
 
-    public function CheckForNamespaceProvider()
+    public static function CheckForNamespaceProvider()
     {
         return [
             [Dummy::class,'dummy'],
@@ -332,7 +332,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect, $this->callProtectedMethod($test, 'checkForString', [$needle]));
     }
     
-    public function CheckForStringProvider()
+    public static function CheckForStringProvider()
     {
         return [
             [Dummy::class,'dummy'],
@@ -382,7 +382,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,Classes::searchClass($search));
     }
     
-    public function SearchClassProvider() {
+    public static function SearchClassProvider() {
         return [
             ['dummy','dummy'],
             ['dummy',Dummy::class],
@@ -417,7 +417,7 @@ class ClassManagerTest extends TestCase
         }
     }
     
-    public function getClassNameProvider() {
+    public static function getClassNameProvider() {
         return [
             ['dummy','dummy'],
             ['dummy',Dummy::class],
@@ -454,7 +454,7 @@ class ClassManagerTest extends TestCase
         }
     }
     
-    public function CheckClassProvider()
+    public static function CheckClassProvider()
     {
         return [
             ['dummy','dummy'],
@@ -492,7 +492,7 @@ class ClassManagerTest extends TestCase
         }
     }
     
-    public function GetClassProvider() {
+    public static function GetClassProvider() {
         return [
             ['dummy', null, 'array'],
             [Dummy::class, null, 'array'],
@@ -523,7 +523,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,Classes::getTableOfClass($test_class));
     }
     
-    public function ClassTableProvider() {
+    public static function ClassTableProvider() {
         return [
             ['dummy','dummies'],
             ['testparent','testparents'],
@@ -542,7 +542,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,Classes::getParentOfClass($test_class));
     }
     
-    public function ClassParentProvider() {
+    public static function ClassParentProvider() {
         return [
             ['dummy','object'],
             ['testparent','object'],
@@ -561,7 +561,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,Classes::getInheritanceOfClass($test,$include_self));
     }
     
-    public function GetInheritanceProvider() {
+    public static function GetInheritanceProvider() {
         return [
             ['testparent',false,['object']],
             ['testparent',true,['testparent','object']],
@@ -581,7 +581,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,Classes::getChildrenOfClass($test_class,$level));    
     }
     
-    public function GetChildrenOfClassProvider() 
+    public static function GetChildrenOfClassProvider() 
     {
         return [
                 ['referenceonly',-1,['secondlevelchild'=>['thirdlevelchild'=>[]]]],
@@ -604,7 +604,7 @@ class ClassManagerTest extends TestCase
         $this->assertTrue(isset($result[$expect_property]));
     }
     
-    public function GetPropertiesOfClassProvider()
+    public static function GetPropertiesOfClassProvider()
     {
         return [
             ['dummy','dummyint'],
@@ -627,7 +627,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($result['name'],$expect_property);
     }
     
-    public function GetPropertyOfClassProvider()
+    public static function GetPropertyOfClassProvider()
     {
         return [
             ['dummy','dummyint'],
@@ -649,7 +649,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect, Classes::getNamespaceOfClass($test_class));
     }
     
-    public function GetNamespaceOfClassProvider()
+    public static function GetNamespaceOfClassProvider()
     {
         return [
             ['dummy',Dummy::class],
@@ -671,7 +671,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,$list);
     }
     
-    public function GetUsedTablesProvider()
+    public static function GetUsedTablesProvider()
     {
         return [
             ['testparent',['objects','testparents']],
@@ -713,7 +713,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,Classes::isA($test,$param));
     }
     
-    public function IsAProvider() {
+    public static function IsAProvider() {
         return [
             [TestParent::class, 'testparent', true],
             [TestParent::class, TestParent::class, true],
@@ -738,7 +738,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,Classes::isAClass($test,$param));
     }
     
-    public function IsAClassProvider() {
+    public static function IsAClassProvider() {
         return [
             [TestParent::class,'testparent',true],
             [TestParent::class,TestParent::class,true],
@@ -763,7 +763,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect,Classes::isSubclassOf($test,$param));
     }
     
-    public function IsSubclassOfProvider() {
+    public static function IsSubclassOfProvider() {
         return [
             [TestParent::class,'testparent',false],
             [TestParent::class,TestParent::class,false],
@@ -791,7 +791,7 @@ class ClassManagerTest extends TestCase
         }
     }
     
-    public function GetClassTreeProvider() {
+    public static function GetClassTreeProvider() {
         return [
             [null,
                 ['object'=>
@@ -830,7 +830,7 @@ class ClassManagerTest extends TestCase
         $this->assertEquals($expect, $result);
     }
     
-    public function QueryProvider()
+    public static function QueryProvider()
     {
         return [
             [function($query) { return $query->count(); }, null, 5],

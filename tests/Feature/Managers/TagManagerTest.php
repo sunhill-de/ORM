@@ -59,7 +59,7 @@ class TagManagerTest extends DatabaseTestCase
         $this->assertEquals($expected_id,Tags::getTag($input)->getID());
     }
     
-    public function GetTagProvider()
+    public static function GetTagProvider()
     {
         return [
             [1,1,null],

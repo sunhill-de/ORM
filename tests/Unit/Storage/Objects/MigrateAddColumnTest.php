@@ -33,7 +33,7 @@ class MigrateAddColumnTest extends DatabaseTestCase
         $this->assertDatabaseTableHasColumn('testparents', $column);
     }
 
-    public function AddASimpleColumnProvider()
+    public static function AddASimpleColumnProvider()
     {
         return [
             ['parentchar'],

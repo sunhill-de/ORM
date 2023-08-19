@@ -22,7 +22,7 @@ class PropertyTest extends TestCase
         $this->assertEquals($value, $test->$getter());
     }
     
-    public function StandardGettersProvider()
+    public static function StandardGettersProvider()
     {
         return [
             ['setName','getName','test', ''],
@@ -56,7 +56,7 @@ class PropertyTest extends TestCase
         $this->assertTrue(true);
     }
     
-    public function NamesProvider()
+    public static function NamesProvider()
     {
         return [
             ['_forbidden', true],
@@ -92,7 +92,7 @@ class PropertyTest extends TestCase
         $this->assertEquals($value, $test->$method());
     }
     
-    public function AdditionalGetterProvider()
+    public static function AdditionalGetterProvider()
     {
         return [
             ['test','TEST'],

@@ -32,7 +32,7 @@ class PropertyCollection_queryTest extends TestCase
         }
     }
     
-    public function DynamicPropertiesProvider()
+    public static function DynamicPropertiesProvider()
     {
         return [
             [DummyCollection::class, function($query) { return $query->count(); }, 1],
@@ -126,7 +126,7 @@ class PropertyCollection_queryTest extends TestCase
         }        
     }
     
-    public function StaticPropertiesProvider()
+    public static function StaticPropertiesProvider()
     {
         return [
             [DummyCollection::class, function($query) { return $query->count(); }, 1],

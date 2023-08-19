@@ -22,7 +22,7 @@ class DatabaseTestCaseTest extends DatabaseTestCase
         $this->assertTrue(Schema::hasTable($table));
     }
     
-    public function tableExistProvider()
+    public static function tableExistProvider()
     {
         return [
            // Core tables
@@ -65,7 +65,7 @@ class DatabaseTestCaseTest extends DatabaseTestCase
         $this->assertDatabaseHas($table,[$field=>$expect]);
     }
     
-    public function ValueProvider()
+    public static function ValueProvider()
     {
         return [
             ['dummies','dummyint',123],
