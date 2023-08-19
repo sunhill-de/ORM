@@ -30,6 +30,7 @@ use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionDrop;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDrop;
 use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionSearch;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectSearch;
+use Sunhill\ORM\Storage\Mysql\MysqlTagSearch;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -102,7 +103,7 @@ class MysqlStorage extends StorageBase
     {
         switch ($action) {
             case 'tags':
-                return $this->dispatchToAction(MysqlTagQuery::class);
+                return $this->dispatchToAction(MysqlTagSearch::class);
                 break;
             case 'attributes':
                 return $this->dispatchToAction(MysqlAttributeAction::class);
