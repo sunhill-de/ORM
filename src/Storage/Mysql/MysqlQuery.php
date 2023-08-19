@@ -26,6 +26,8 @@ class MysqlQuery extends DBQuery
     
     protected $collection;
     
+    protected $maintable;
+    
     public function __construct($collection)
     {
         $this->collection = $collection;
@@ -39,6 +41,7 @@ class MysqlQuery extends DBQuery
     {
         $list = $this->collectClasses();
         $first = array_pop($list)::getInfo('table');
+        $this->maintable = $first;
         $query = DB::table($first);
         foreach ($list as $table) {
             $query->join($table::getInfo('table'),$table::getInfo('table').'.id','=',$first.'.id');
@@ -139,10 +142,15 @@ class MysqlQuery extends DBQuery
         $this->query->$connection($key, $value);
     }
     
+    protected function getSubtableName($key)
+    {
+        return $this->collection::getPropertyObject($key)->owner::getInfo('table').'_'.$key;
+    }
+    
     protected function handleWhereArrayEquals(string $connection, $key, $value)
     {
         $connection .= 'In';
-        $table = $this->collection::getInfo('table').'_'.$key;
+        $table = $this->getSubtableName($key);
         
         $letter = 'a';
         $subquery2 = DB::table($table.' as zz')->select('zz.id')->whereNotIn('zz.value',$value);
@@ -150,20 +158,20 @@ class MysqlQuery extends DBQuery
         foreach ($value as $singlevalue) {
             $subquery1->join($table.' as '.$letter,$letter.'.id','=','a.id')->where($letter++.'.value',$singlevalue);
         }
-        $this->query->$connection('id',$subquery1->whereNotIn('a.id',$subquery2));        
+        $this->query->$connection($this->maintable.'.id',$subquery1->whereNotIn('a.id',$subquery2));        
     }
     
     protected function handleWhereAllOf(string $connection, $key, $value)
     {
         $connection .= 'In';
-        $table = $this->collection::getInfo('table').'_'.$key;
+        $table = $this->getSubtableName($key);
         
         $letter = 'a';
         $subquery = DB::table($table.' as '.$letter++)->select('a.id')->where('a.value',array_pop($value));
         foreach ($value as $singlevalue) {
             $subquery->join($table.' as '.$letter,$letter.'.id','=','a.id')->where($letter++.'.value',$singlevalue);
         }
-        $this->query->$connection('id',
+        $this->query->$connection($this->maintable.'.id',
             $subquery
             );        
     }
@@ -171,35 +179,35 @@ class MysqlQuery extends DBQuery
     protected function handleWhereAnyOf(string $connection, $key, $value)
     {
         $connection .= 'In';
-        $table = $this->collection::getInfo('table').'_'.$key;
+        $table = $this->getSubtableName($key);
         
         $subquery = DB::table($table)->select('id')->where('value',array_pop($value));
         foreach ($value as $singlevalue) {
             $subquery->orWhere('value',$singlevalue);
         }
-        $this->query->$connection( 'id', $subquery );        
+        $this->query->$connection($this->maintable.'.id', $subquery );        
     }
     
     protected function invertCondition($connection, $subquery)
     {
         switch ($connection) {
             case 'where':
-                $this->query->whereNotIn('id',$subquery);
+                $this->query->whereNotIn($this->maintable.'.id',$subquery);
                 break;
             case 'whereNot':
-                $this->query->whereIn('id',$subquery);
+                $this->query->whereIn($this->maintable.'.id',$subquery);
                 break;
             case 'orWhere':
-                $this->query->orWhereNotIn('id',$subquery);
+                $this->query->orWhereNotIn($this->maintable.'.id',$subquery);
                 break;
             case 'orWhereNot':
-                $this->query->orWhereIn('id',$subquery);
+                $this->query->orWhereIn($this->maintable.'.id',$subquery);
         }
     }
     
     protected function handleWhereNoneOf(string $connection, $key, $value)
     {
-         $table = $this->collection::getInfo('table').'_'.$key;
+         $table = $this->getSubtableName($key);
         
         $subquery = DB::table($table)->select('id')->where('value',array_pop($value));
         foreach ($value as $singlevalue) {
@@ -210,7 +218,7 @@ class MysqlQuery extends DBQuery
     
     protected function handleWhereEmpty(string $connection, $key)
     {
-        $table = $this->collection::getInfo('table').'_'.$key;
+        $table = $this->getSubtableName($key);
         
         $subquery = DB::table($table)->select('id');
         $this->invertCondition($connection, $subquery);        
@@ -218,19 +226,19 @@ class MysqlQuery extends DBQuery
     
     protected function handleWhereAnyKeyOf(string $connection, $key, $value)
     {
-        $table = $this->collection::getInfo('table').'_'.$key;
+        $table = $this->getSubtableName($key);
         $connection .= 'In';
         
         $subquery = DB::table($table)->select('id')->where('index',array_pop($value));
         foreach ($value as $singlevalue) {
             $subquery->orWhere('index',$singlevalue);
         }
-        $this->query->$connection( 'id', $subquery );
+        $this->query->$connection($this->maintable.'.id', $subquery );
     }
     
     protected function handleWhereAllKeysOf(string $connection, $key, $value)
     {
-        $table = $this->collection::getInfo('table').'_'.$key;
+        $table = $this->getSubtableName($key);
         $connection .= 'In';
         
         $letter = 'a';
@@ -238,12 +246,12 @@ class MysqlQuery extends DBQuery
         foreach ($value as $singlevalue) {
             $subquery->join($table.' as '.$letter,$letter.'.id','=','a.id')->where($letter++.'.index',$singlevalue);
         }
-        $this->query->$connection( 'id', $subquery );
+        $this->query->$connection($this->maintable.'.id', $subquery );
     }
     
     protected function handleWhereNoneKeyOf(string $connection, $key, $value)
     {
-        $table = $this->collection::getInfo('table').'_'.$key;
+        $table = $this->getSubtableName($key);
         
         $subquery = DB::table($table)->select('id')->where('index',array_pop($value));
         foreach ($value as $value) {
@@ -285,7 +293,7 @@ class MysqlQuery extends DBQuery
             }
         }
         $connection .= 'In';
-        $this->query->$connection('objects.id',$subquery);
+        $this->query->$connection($this->maintable.'.id',$subquery);
     }
     
     protected function handleWhereTagAnyOf(string $connection, $key, $value)
@@ -322,7 +330,7 @@ class MysqlQuery extends DBQuery
                         ->whereIn('b.path_name',$names);
         }
         $connection .= 'In';
-        $this->query->$connection('objects.id',$subquery);
+        $this->query->$connection($this->maintable.'.id',$subquery);
     }
     
     protected function handleWhereTagNoneOf(string $connection, $key, $value)
@@ -361,18 +369,44 @@ class MysqlQuery extends DBQuery
         $connection .= 'In';
         switch ($connection) {
             case 'whereIn':
-                $this->query->whereNotIn('objects.id',$subquery);
+                $this->query->whereNotIn($this->maintable.'.id',$subquery);
                 break;
             case 'whereNotIn':
-                $this->query->whereIn('objects.id',$subquery);
+                $this->query->whereIn($this->maintable.'.id',$subquery);
                 break;
             case 'orWhereIn':
-                $this->query->orWhereNotIn('objects.id',$subquery);
+                $this->query->orWhereNotIn($this->maintable.'.id',$subquery);
                 break;
             case 'orWhereNotIn':
-                $this->query->orWhereIn('objects.id',$subquery);
+                $this->query->orWhereIn($this->maintable.'.id',$subquery);
                 break;
         }
     }
+    
+    protected function handleWhereHasAssociations(string $connection)
+    {
+        $connection .= 'In';
+        $this->query->$connection($this->maintable.'.id',DB::table('objectobjectassigns')->select('container_id')->groupBy('container_id'));
+    }
+    
+    protected function handleWhereIsAssociated(string $connection)
+    {
+        $connection .= 'In';
+        $this->query->$connection($this->maintable.'.id',DB::table('objectobjectassigns')->select('target_id')->groupBy('target_id'));
+    }
+    
+    protected function handleWhereHasTags(string $connection)
+    {
+        $connection .= 'In';
+        $this->query->$connection($this->maintable.'.id',DB::table('tagobjectassigns')->select('container_id')->groupBy('container_id'));
         
+    }
+    
+    protected function handleWhereHasAttributes(string $connection)
+    {
+        $connection .= 'In';
+        $this->query->$connection($this->maintable.'.id',DB::table('attributeobjectassigns')->select('object_id')->groupBy('object_id'));
+        
+    }
+    
 }
