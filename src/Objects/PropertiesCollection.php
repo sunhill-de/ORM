@@ -485,8 +485,6 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	{	
 	}
 	
-	abstract public static function search();
-	
 	public function commit()
 	{
 	    $this->doCommit();
@@ -512,22 +510,32 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	protected static function getStorage()
 	{
 	    $storage = Storage::createStorage();
-	    $storage->setSourceType(static::$storageClass);
 	    return $storage;
 	}
 	
-	public static function delete($id)
+	public static function delete(int $id)
 	{
 	   $storage = static::getStorage();
-	   static::prepareStorage($storage);
-	   $storage->delete($id);
+	   $dummy = new static();
+	   $storage->setCollection($dummy);
+	   $storage->dispatch('delete', $id);
 	}
 	
 	public static function drop()
 	{
 	    $storage = static::getStorage();
-	    static::prepareStorage($storage);
-	    $storage->drop();	    
+	    $dummy = new static();
+	    $storage->setCollection($dummy);
+	    $storage->dispatch('drop');  
 	}
-		
+	
+	// ============================ Storagefunctions  =======================================
+	
+	public static function search() {
+	    $storage = static::getStorage();
+	    $dummy = new static();
+	    $storage->setCollection($dummy);
+	    return $storage->dispatch('search');
+	}
+	
 }

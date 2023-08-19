@@ -131,16 +131,7 @@ class ORMObject extends PropertiesCollection
 	{
 	    
 	}
-	
-	
-// ============================ Storagefunctions  =======================================	
-
-	public static function search() {
-	    $query = new QueryBuilder();
-	    $query->setCallingClass(get_called_class());
-	    return $query;
-	}
-	
+		
 // ================================ Loading ========================================	
 	/**
 	 * Checks, if the object with ID $id is in the cache. If yes, return it, othwerwise return false

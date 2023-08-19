@@ -81,10 +81,6 @@ class Collection extends PropertiesCollection
      */
     protected static $storageClass = 'collection';
     
-	public static function search() 
-	{
-	}
-	
 	protected static function getClassList()
 	{
 	    return [static::class];
