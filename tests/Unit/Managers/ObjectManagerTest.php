@@ -60,14 +60,20 @@ class ObjectManagerTest extends DatabaseTestCase
     public function testObjectListClassFilter() {
         $list = Objects::getObjectList('dummy');
         $item = $list[1];
-        $this->assertEquals(2,$list[1]->getID());
+        $this->assertEquals(2,$list[1]->id);
         $count = DB::table('dummies')->select(DB::raw('count(*) as count'))->first();
+        $this->assertEquals($count->count,count($list));
+    }
+    
+    public function testObjectListClassFilter2() {
+        $list = Objects::getObjectList('testparent');
+        $count = DB::table('testparents')->select(DB::raw('count(*) as count'))->first();
         $this->assertEquals($count->count,count($list));
     }
     
     public function testObjectListClassFilter_nochildren() {
         $list = Objects::getObjectList('testparent',true);
-        $this->assertEquals(9,$list[0]->getID());
+        $this->assertEquals(9,$list[0]->id);
         $count1 = DB::table('testparents')->select(DB::raw('count(*) as count'))->first();
         $count2 = DB::table('testchildren')->select(DB::raw('count(*) as count'))->first();
         $count3 = DB::table('testsimplechildren')->select(DB::raw('count(*) as count'))->first();

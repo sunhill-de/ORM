@@ -85,7 +85,7 @@ class ObjectManager
 
 		private function getCountForSingleClass(string $class): int 
 		{
-			return static::getObjectList(['class'=>$class],true)->count();
+			return static::getObjectList($class,true)->count();
 		}
 
 		/**
@@ -121,18 +121,23 @@ class ObjectManager
 		public function getPartialObjectList($class = 'object', string $order = 'id', int $delta = 0, int $limit = -1, bool $nochildren = false)
 		{
 		    if ($class == 'object') {
-		        $class = 'Sunhill\ORM\Objects\ORMObject';
+		        $class_path= 'Sunhill\ORM\Objects\ORMObject';
 		    } else {
-		        $class = $this->searchClassNamespace($class);
+		        $class_path = $this->searchClassNamespace($class);
 		    }
 		    
-		    $query = $class::search();
+		    $query = $class_path::search();
 		    $query = $query->orderBy($order);		    
-	        $query = $query->limit($delta,$limit);
+		    if ($delta) {
+		      $query = $query->offset($delta);
+		    }
+	        if ($limit > 0) {
+	            $query->query->limit($limit);
+	        }
 		    $objects = $query->get();
 		    if ($nochildren) {
-		        return $objects->filter(function($value, $key) use ($class) {
-		            return ($value::class == $class);
+		        return $objects->filter(function($value, $key) use ($class_path) {
+		            return ($value->classname == $class_path::getInfo('name'));
 		        });
 		     //       $objects->filter_class($class,false);
 		    }
