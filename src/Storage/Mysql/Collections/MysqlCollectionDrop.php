@@ -8,6 +8,7 @@ use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Interfaces\HandlesProperties;
 use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
 use Illuminate\Support\Facades\Schema;
+use Sunhill\ORM\Objects\ORMObject;
 
 class MysqlCollectionDrop extends MysqlAction implements HandlesProperties
 {
@@ -27,10 +28,6 @@ class MysqlCollectionDrop extends MysqlAction implements HandlesProperties
             $this->mapProperty($property);
         }            
         Schema::drop($class::getInfo('table'));    
-        $children = Classes::getChildrenOfClass($class::getInfo('name'),1);
-        foreach ($children as $child => $subs) {
-            $this->dropCollection(Classes::getNamespaceOfClass($child));
-        }
     }
     
     protected function dropChildTables()

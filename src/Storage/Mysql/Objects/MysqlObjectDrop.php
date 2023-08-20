@@ -7,6 +7,7 @@ use Sunhill\ORM\Facades\Classes;
 use Illuminate\Support\Facades\Schema;
 use Sunhill\ORM\Storage\Mysql\Utils\ClassTables;
 use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionDrop;
+use Sunhill\ORM\Objects\ORMObject;
 
 class MysqlObjectDrop extends MysqlCollectionDrop
 {
@@ -19,6 +20,15 @@ class MysqlObjectDrop extends MysqlCollectionDrop
             DB::table('attr_'.$attribute->name)->whereIn('object_id', DB::table($table)->select('id'))->delete();
         }
         DB::table('attributeobjectassigns')->whereIn('object_id', DB::table($table)->select('id'))->delete();
+    }
+    
+    protected function dropCollection($class)
+    {
+        parent::dropCollection($class);
+        $children = Classes::getChildrenOfClass($class::getInfo('name'),1);
+        foreach ($children as $child => $subs) {
+                $this->dropCollection(Classes::getNamespaceOfClass($child));
+        }        
     }
     
     public function run()
