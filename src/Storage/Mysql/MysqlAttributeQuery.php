@@ -98,12 +98,12 @@ class MysqlAttributeQuery extends DBQuery
                 case 'type':
                     $value = strtolower($value);
                     if (!in_array($value,['integer','string','float','boolean','date','datetime','time','text'])) {
-                        throw new AttributeInvalidTypeException("The type '$value' is not a valid type.");
+                        throw new \Sunhill\ORM\Managers\Exceptions\AttributeInvalidTypeException("The type '$value' is not a valid type.");
                     }
                     $result[$key] = $value;
                     break;
                 default:
-                    throw new AttributeInvalidColumnException("The column '$key' does not exist.");
+                    throw new \Sunhill\ORM\Managers\Exceptions\AttributeInvalidColumnException("The column '$key' does not exist.");
             }
         }
         

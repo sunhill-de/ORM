@@ -41,7 +41,7 @@ class MysqlAttributesTest extends DatabaseTestCase
     
     public function testUpdateAttrubuteWrongType()
     {
-        $this->expectException(AttributeInvalidTypeException::class);
+        $this->expectException(\Sunhill\ORM\Managers\Exceptions\AttributeInvalidTypeException::class);
         
         $test = new MysqlAttributeQuery();
         $test->where('id',1)->update(['type'=>'unknown']);
