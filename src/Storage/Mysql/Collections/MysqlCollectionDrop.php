@@ -27,16 +27,21 @@ class MysqlCollectionDrop extends MysqlAction implements HandlesProperties
             $this->mapProperty($property);
         }            
         Schema::drop($class::getInfo('table'));    
+        $children = Classes::getChildrenOfClass($class::getInfo('name'),1);
+        foreach ($children as $child => $subs) {
+            $this->dropCollection(Classes::getNamespaceOfClass($child));
+        }
     }
     
     protected function dropChildTables()
     {
         $this->dropCollection($this->collection::class);
+        
     }
     
     protected function deleteFromParent($parent, $target)
     {
-        DB::table($parent::class)->whereIn('id', DB::table($target::getInfo('table'))->get())->delete();    
+        DB::table($parent::getInfo('table'))->whereIn('id', DB::table($target::getInfo('table'))->select('id'))->delete();    
     }
     
     protected function deleteFromParentTables($list)

@@ -13,22 +13,28 @@ class MysqlObjectDrop extends MysqlCollectionDrop
     
     protected function deleteAttributes()
     {
+        $table = ($this->collection)::getInfo('table');
         $query = DB::table('attributes')->get();
         foreach ($query as $attribute) {
-            DB::table('attr_'.$attribute->name)->whereIn('id', DB::table($this->collection::getInfo('table'))->get())->delete();
+            DB::table('attr_'.$attribute->name)->whereIn('object_id', DB::table($table)->select('id'))->delete();
         }
-        DB::table('attributeobjectassigns')->whereIn('object_id', DB::table($this->collection::getInfo('table'))->get())->delete();
+        DB::table('attributeobjectassigns')->whereIn('object_id', DB::table($table)->select('id'))->delete();
     }
     
     public function run()
     {
         $this->deleteAttributes();
+        $this->deleteTags();
         parent::run();
+    }
+    
+    protected function deleteTags()
+    {
+        DB::table('tagobjectassigns')->whereIn('container_id', DB::table(($this->collection)::getInfo('table'))->select('id'))->delete();        
     }
     
     public function handlePropertyTags($property)
     {
-        DB::table('tagobjectassigns')->whereIn('container_id', DB::table($this->collection::getInfo('table'))->get())->delete();
     }
     
 }
