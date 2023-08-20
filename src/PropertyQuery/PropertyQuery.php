@@ -86,6 +86,8 @@ class PropertyQuery extends ArrayQuery
                     $entry->build_rule = $value->getBuildRule();
                     break;
             }
+            $entry->default = $value->getDefault();
+            $entry->nullable = $value->getNullable();
             $entry->dirty = $value->getDirty();
             $entry->readonly = $value->getReadonly();
             $entry->unit = $value->getUnit();
