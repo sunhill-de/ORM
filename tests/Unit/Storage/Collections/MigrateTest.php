@@ -6,6 +6,7 @@ use Sunhill\ORM\Tests\DatabaseTestCase;
 use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Illuminate\Support\Facades\Schema;
+use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 
 class MigrateTest extends DatabaseTestCase
 {
@@ -42,7 +43,7 @@ class MigrateTest extends DatabaseTestCase
         Schema::drop('complexcollections_field_oarray');
         Schema::drop('complexcollections_field_smap');
         
-        $collection = new DummyCollection();
+        $collection = new ComplexCollection();
         $test = new MysqlStorage();
         $test->setCollection($collection);
         
