@@ -31,6 +31,8 @@ use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDrop;
 use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionSearch;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectSearch;
 use Sunhill\ORM\Storage\Mysql\MysqlTagSearch;
+use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionMigrate;
+use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDegrade;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -72,6 +74,11 @@ class MysqlStorage extends StorageBase
             case 'search':
                 return $this->dispatchToAction(MysqlCollectionSearch::class);
                 break;
+            case 'migrate':
+                return $this->dispatchToAction(MysqlCollectionMigrate::class);
+                break;
+            default:
+                throw new ActionNotFoundException("The action '$action' is not defined for collections.");
         }
     }
     
@@ -96,6 +103,11 @@ class MysqlStorage extends StorageBase
             case 'search':
                 return $this->dispatchToAction(MysqlObjectSearch::class);
                 break;
+            case 'degrade':
+                return $this->dispatchToAction(MysqlObjectDegrade::class, $additional);
+                break;
+            default:
+                throw new ActionNotFoundException("The action '$action' is not defined for objects.");
         }        
     }
 
