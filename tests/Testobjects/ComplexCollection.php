@@ -26,7 +26,7 @@ class ComplexCollection extends Collection {
     {
         $list->integer('field_int')->searchable();
         $list->boolean('field_bool')->searchable();
-        $list->varchar('field_char')->searchable()->setDefault(null);
+        $list->varchar('field_char')->setMaxLen(20)->searchable()->setDefault(null);
         $list->float('field_float')->searchable();
         $list->text('field_text')->searchable();
         $list->datetime('field_datetime')->searchable();
@@ -39,6 +39,7 @@ class ComplexCollection extends Collection {
         $list->array('field_oarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy'])->searchable();
         $list->map('field_smap')->setElementType(PropertyVarchar::class);
         $list->calculated('field_calc')->setCallback(function($object) { return $object->field_int.'A'; })->searchable();
+        $list->integer('nosearch')->setDefault(1);
     }
 
 	protected static function setupInfos()

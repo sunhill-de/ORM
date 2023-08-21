@@ -17,7 +17,7 @@ class CreateComplexCollectionsTable extends Migration
             $table->integer('id')->autoIncrement();
             $table->integer('field_int');
             $table->boolean('field_bool');
-            $table->char('field_char',10)->nullable();
+            $table->char('field_char',20)->nullable();
             $table->float('field_float');
             $table->text('field_text');
             $table->datetime('field_datetime');
