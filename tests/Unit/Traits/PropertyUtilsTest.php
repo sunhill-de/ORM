@@ -16,7 +16,7 @@ class PropertyUtilsTest extends DatabaseTestCase
         $list = $this->getAllProperties($test);
         
         $this->assertTrue(array_key_exists('dummyint',$list));
-        $this->assertTrue(array_key_exists('uuid',$list));       
+        $this->assertTrue(array_key_exists('_uuid',$list));       
     }
     
     public function testGetPropertiesOnlyOwn()
@@ -26,6 +26,6 @@ class PropertyUtilsTest extends DatabaseTestCase
         $list = $this->getAllProperties($test, true);
         
         $this->assertTrue(array_key_exists('dummyint',$list));
-        $this->assertFalse(array_key_exists('uuid',$list));        
+        $this->assertFalse(array_key_exists('_uuid',$list));        
     }
 }
