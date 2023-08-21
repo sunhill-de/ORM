@@ -32,7 +32,8 @@ class MigrateDropColumnTest extends DatabaseTestCase
         $object = new Dummy();
         $test = new MysqlStorage($object);
             
-        $test->migrate();
+        $test->setCollection($object);
+        $test->dispatch('migrate');
         
         $this->assertDatabaseTableHasNotColumn('dummies','dropped');
     }
@@ -48,8 +49,9 @@ class MigrateDropColumnTest extends DatabaseTestCase
         $object = new Dummy();
         $test = new MysqlStorage($object);
             
-        $test->migrate();
-            
+        $test->setCollection($object);
+        $test->dispatch('migrate');
+        
         $this->assertDatabaseHasNotTable('dummies_sarray');
     }
 
@@ -64,7 +66,8 @@ class MigrateDropColumnTest extends DatabaseTestCase
             $object = new Dummy();
             $test = new MysqlStorage($object);
             
-            $test->migrate();
+            $test->setCollection($object);
+            $test->dispatch('migrate');
             
             $this->assertDatabaseHasNotTable('dummies_oarray');
     }

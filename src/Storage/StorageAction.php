@@ -101,9 +101,15 @@ abstract class StorageAction
         $this->$type($property);
     }
     
-    protected function runProperties()
+    protected function runProperties(bool $local_only = false)
     {
         $properties = $this->collection->propertyQuery()->get();
+        if ($local_only)  {
+            $local = ($this->collection)::getPropertyDefinition();
+            $properties = $properties->filter(function($value, $key) use ($local) {
+                return array_key_exists($value->name, $local);
+            });
+        } 
         foreach ($properties as $property) {
             $this->mapProperty($property);
         }

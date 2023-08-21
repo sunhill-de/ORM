@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Tests\Unit\Storage;
+namespace Sunhill\ORM\Tests\Unit\Storage\Objects;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +14,7 @@ use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
 use Sunhill\ORM\Storage\Mysql\Utils\ColumnInfo;
+use Sunhill\ORM\Tests\Unit\Storage\TableAssertions;
 
 class MigrateFreshTest extends DatabaseTestCase
 {
@@ -51,7 +52,8 @@ class MigrateFreshTest extends DatabaseTestCase
         $object = new $class();
         $test = new MysqlStorage($object);
         
-        $test->migrate();
+        $test->setCollection($object);
+        $test->dispatch('migrate');
         foreach ($tables as $table => $field) {
             $this->checkTable($table, $field);
         }
@@ -62,19 +64,21 @@ class MigrateFreshTest extends DatabaseTestCase
         return [
             [Dummy::class, ['dummies'=>['id','dummyint']]],
             [TestParent::class, [
-                'testparents'=>['id','parentint','parentchar','parentfloat',
-                'parentenum','parenttext','parentdate',
-                'parentdatetime','parenttime','parentobject',
-                'nosearch','parentcalc'],
+                'testparents'=>['id','parentint','parentchar','parentbool','parentfloat',
+                'parentenum','parenttext','parentdate','parentcollection',
+                'parentdatetime','parenttime','parentobject','parentinformation',
+                'nosearch','parentcalc','parent_external'],
                 'testparents_parentoarray'=>['id','value','index'],
                 'testparents_parentsarray'=>['id','value','index'],
+                'testparents_parentmap'=>['id','value','index'],
             ]],
             [TestChild::class, [
                 'testchildren'=>['id','childint','childchar','childfloat',
-                'childenum','childtext','childdate',
-                'childdatetime','childtime','childobject','childcalc'],
+                'childenum','childtext','childdate','childinformation','childcollection',
+                'childdatetime','childtime','childobject','childcalc','child_external'],
                 'testchildren_childoarray'=>['id','value','index'],
                 'testchildren_childsarray'=>['id','value','index'],
+                'testchildren_childmap'=>['id','value','index'],
             ]],
             [CalcClass::class,[
                 'calcclasses'=>['id','dummyint','calcfield','calcfield2'],
@@ -96,7 +100,8 @@ class MigrateFreshTest extends DatabaseTestCase
         $object = new DummyChild();
         $test = new MysqlStorage($object);
         
-        $test->migrate();
+        $test->setCollection($object);
+        $test->dispatch('migrate');
         DB::table('dummychildren')->insert(['id'=>100]);
         $query = DB::table('dummychildren')->where('id',100)->first();
         $this->assertEquals(33, $query->dummychildint);        

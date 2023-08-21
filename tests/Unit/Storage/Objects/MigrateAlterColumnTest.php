@@ -28,7 +28,8 @@ class MigrateAlterColumnTest extends DatabaseTestCase
             $object = new TestParent();
             $test = new MysqlStorage($object);
             
-            $test->migrate();
+            $test->setCollection($object);
+            $test->dispatch('migrate');
             
             $this->assertEquals($expect,$this->getColumnType('testparents', $column));            
     }
@@ -64,8 +65,9 @@ class MigrateAlterColumnTest extends DatabaseTestCase
         $object = new TestParent();
         $test = new MysqlStorage($object);
             
-        $test->migrate();
-            
+        $test->setCollection($object);
+        $test->dispatch('migrate');
+        
         $this->assertEquals(1,$this->getColumnDefault('testparents', 'nosearch'));            
     }
 
@@ -91,7 +93,8 @@ class MigrateAlterColumnTest extends DatabaseTestCase
             
             $this->assertFalse($this->getColumnDefaultsNull('testparents', 'parentchar'));
             
-            $test->migrate();
+            $test->setCollection($object);
+            $test->dispatch('migrate');
             
             $this->assertTrue($this->getColumnDefaultsNull('testparents', 'parentchar'));
     }
