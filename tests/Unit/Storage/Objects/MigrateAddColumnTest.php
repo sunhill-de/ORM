@@ -27,8 +27,8 @@ class MigrateAddColumnTest extends DatabaseTestCase
         
         $object = new TestParent();
         $test = new MysqlStorage($object);
-        
-        $test->migrate();
+        $test->setCollection($object);        
+        $test->dispatch('migrate');
         
         $this->assertDatabaseTableHasColumn('testparents', $column);
     }
@@ -55,8 +55,8 @@ class MigrateAddColumnTest extends DatabaseTestCase
             
             $object = new TestParent();
             $test = new MysqlStorage($object);
-            
-            $test->migrate();
+            $test->setCollection($object);
+            $test->dispatch('migrate');
             
             $this->assertDatabaseHasTable('testparents_parentsarray');            
     }
@@ -68,8 +68,8 @@ class MigrateAddColumnTest extends DatabaseTestCase
         
         $object = new TestParent();
         $test = new MysqlStorage($object);
-        
-        $test->migrate();
+        $test->setCollection($object);
+        $test->dispatch('migrate');
         
         $this->assertDatabaseHasTable('testparents_parentoarray');        
     }
