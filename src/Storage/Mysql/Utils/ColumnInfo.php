@@ -95,4 +95,11 @@ trait ColumnInfo
         }
         return [];        
     }
+    
+    protected function getColumnNullable(string $table, string $column): bool
+    {
+        $column = Schema::getConnection()->getDoctrineColumn($table, $column);
+        return !$column->getNotnull();
+        
+    }
 }
