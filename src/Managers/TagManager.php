@@ -89,6 +89,11 @@ class TagManager
          return null;
      }
      
+     public function deleteTag(int $id)
+     {
+        $this->query()->where('id',$id)->delete();    
+     }
+     
      /**
       * Returns the TagQuery object for searching
       * 
