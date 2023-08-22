@@ -25,8 +25,8 @@ class CalcClass extends ORMObject {
     protected static function setupProperties(PropertyList $list)
     {
         $list->integer('dummyint');
-        $list->calculated('calcfield');
-        $list->calculated('calcfield2');
+        $list->calculated('calcfield')->setCallback('calculate_calcfield');
+        $list->calculated('calcfield2')->setCallback('calculate_calcfield2');
     }
     
     public function calculate_calcfield() {
