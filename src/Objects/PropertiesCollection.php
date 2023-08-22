@@ -538,4 +538,11 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	    return $storage->dispatch('search');
 	}
 	
+	public static function migrate() 
+	{
+	    $storage = static::getStorage();
+	    $dummy = new static();
+	    $storage->setCollection($dummy);
+	    return $storage->dispatch('migrate');	    
+	}
 }
