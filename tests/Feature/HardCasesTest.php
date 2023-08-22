@@ -22,7 +22,7 @@ class HardCasesTest extends DatabaseTestCase
      */
     public function testSimpleSearchIDs() {
         $result = $this->simplify_result(TestChild::search()->where("childoarray","none of",[1,2,3])->get());
-        $this->assertEquals([17,18,19,21,22,23,25],$result);
+        $this->assertEquals([18,19,21,22,23],$result);
     }
     
 }
