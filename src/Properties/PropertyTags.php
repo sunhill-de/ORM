@@ -157,7 +157,7 @@ class PropertyTags extends PropertyArrayBase
 	            return Tags::loadTag(Tags::searchOrAddTag($tag)->id);
 	        } else {
 	            $tag_desc = Tags::searchTag($tag);
-	            return Tags::loadTag($tag_desc->id);
+	            return Tags::loadTag($tag_desc[0]->id);
 	        }
 	    }
 	    throw new TagException("Unbekannter Typ für ein Tag.");
