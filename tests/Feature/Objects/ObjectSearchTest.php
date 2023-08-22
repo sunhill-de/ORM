@@ -90,7 +90,7 @@ class ObjectSearchTest extends DatabaseTestCase
         
     }
     
-    public function ComplexProvider() {
+    public static function ComplexProvider() {
         return [
             ["TestParent",'parentint','<',200,'parentint', '<>','123',[9]],
             ["TestParent",'parentint','=',123,'parentchar','=', 'DEF',[10]],            

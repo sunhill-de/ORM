@@ -26,7 +26,7 @@ class ObjectReadTest extends DatabaseTestCase
         }
     }
     
-    public function ReadProvider() {
+    public static function ReadProvider() {
         return [
             [1,['dummyint'=>123,'_created_at'=>'2019-05-15 10:00:00','tags[0]->name'=>'TagA']],                         // Reading of a simple field
             [2,['dummyint'=>234]],                         // Reading of a simple field with higher object id

@@ -34,7 +34,7 @@ class ObjectInsertTest extends DatabaseTestCase
         $this->assertEquals($expected,$this->getField($read, $test));
     }
     
-    public function InsertProvider() {
+    public static function InsertProvider() {
         return [
             [Dummy::class,['dummyint'=>666],null,'dummyint',666],
             [Dummy::class,['dummyint'=>666],function($object){

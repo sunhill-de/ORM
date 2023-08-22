@@ -79,7 +79,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	    }
 	}
 	
-	public function SimpleFieldProvider() {
+	public static function SimpleFieldProvider() {
 	    return [ 
             [ //Einfacher Test für einfache Felder
                 TestParent::class,
@@ -295,7 +295,7 @@ class ObjectReReadTest extends DatabaseTestCase
 	    $this->assertTrue(true); // Damit nicht Risky
 	}
 	
-	public function ComplexFieldProvider() {
+	public static function ComplexFieldProvider() {
 	    return [ 
 	        [ // Einfacher Test mit Komplexen-Felder
 	            TestParent::class,

@@ -9,10 +9,10 @@ use Sunhill\ORM\Utils\ObjectList;
 class HardCasesTest extends DatabaseTestCase
 {
     
-    protected function simplify_result(ObjectList $result) {
+    protected function simplify_result($result) {
         $return = [];
         for($i=0;$i<count($result);$i++) {
-            $return[] = $result[$i]->getID($i);
+            $return[] = $result[$i]->id;
         }
         return $return;
     }

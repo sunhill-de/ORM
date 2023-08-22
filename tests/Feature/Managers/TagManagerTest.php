@@ -31,7 +31,7 @@ class TagManagerTest extends DatabaseTestCase
         }
     }
 
-    public function SearchTagProvider()
+    public static function SearchTagProvider()
     {
         return [
             ['TagA',1,false],

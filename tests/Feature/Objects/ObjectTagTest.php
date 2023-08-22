@@ -52,7 +52,7 @@ class ObjectTagTest extends DatabaseTestCase
         }
     }
 
-    public function TagProvider() {
+    public static function TagProvider() {
         return [[['TagA'],['TagA'],false],
                 [['TagB.TagC'],['TagB.TagC'],false],
                 [['NewTag'],['NewTag'],true],
@@ -103,7 +103,7 @@ class ObjectTagTest extends DatabaseTestCase
         $this->assertEquals($expect,$given_tags);
     }
     
-    public function ChangeTagProvider() {
+    public static function ChangeTagProvider() {
         return [
             [['TagA','TagD'],['TagChildA'],[],['TagA','TagD','TagChildA'],'ADD:TagChildA'],
             [['TagA','TagD'],[],['TagA'],['TagD'],'REMOVED:TagA'],

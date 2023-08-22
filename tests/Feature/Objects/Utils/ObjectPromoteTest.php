@@ -29,7 +29,7 @@ class ObjectPromoteTest extends DatabaseTestCase
         $this->assertEquals($expected,$test->getInheritance());
     }
     
-    public function InheritanceProvider(){    
+    public static function InheritanceProvider(){    
         return [
             [TestParent::class,['object']],
             [TestChild::class,['testparent','object']],

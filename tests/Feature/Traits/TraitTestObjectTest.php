@@ -45,7 +45,7 @@ class TraitTestObjectTest extends TestCase
         $this->assertEquals($expect,$class->test($test,$allowed));
     }
     
-    public function IsValidProvider() {
+    public static function IsValidProvider() {
         return [
             [function() { return new Dummy(); },'dummy',true],
             [function() { return new Dummy(); },'Sunhill\ORM\Tests\Testobjects\Dummy',true],

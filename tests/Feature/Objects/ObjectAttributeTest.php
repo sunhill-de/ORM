@@ -46,7 +46,7 @@ class ObjectAttributeTest extends DatabaseTestCase
         }
     }
     
-    public function AttributeProvider() {
+    public static function AttributeProvider() {
         return [
             ['int_attribute',1,2,false],
             ['char_attribute','ABC','DEF',false],
