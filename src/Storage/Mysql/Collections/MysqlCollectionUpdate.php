@@ -9,6 +9,7 @@ use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
 use Sunhill\ORM\Storage\Mysql\Utils\TableManagement;
 use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyCollection;
+use Sunhill\ORM\Storage\Exceptions\IDNotSetException;
 
 class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
 {
@@ -17,7 +18,14 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
     
     public function run()
     {
-        $this->id = $this->additional;
+        if (isset($this->additional)) {
+            $this->id = $this->additional;
+        } else {
+            $this->id = $this->collection->getID();
+        }
+        if (!$this->id) {
+            throw new IDNotSetException("Update called but not ID was given.");
+        }
         $this->runProperties();
         $this->updateTables();
     }
