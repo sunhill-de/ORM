@@ -127,11 +127,11 @@ class PropertyTags extends PropertyArrayBase
 	 * @param id|string|Tag $test the tag to test
 	 * @return boolean
 	 */
-	public function HasTag($test) 
+	public function hasTag($test) 
 	{
-	    $tag_desc = Tags::findTag($test);
+	    $tag_desc = Tags::getTag($test);
 	    foreach ($this->value as $listed) {
-	        if ($listed->getID() == $tag_desc->id) {
+	        if ($listed->getID() == $tag_desc->getID()) {
 	            return true;
 	        }
 	    }
