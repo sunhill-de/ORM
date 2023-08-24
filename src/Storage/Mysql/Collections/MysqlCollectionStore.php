@@ -23,6 +23,7 @@ use Sunhill\ORM\Interfaces\HandlesProperties;
 use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
 use Sunhill\ORM\Properties\PropertyCollection;
 use Sunhill\ORM\Storage\Mysql\Utils\TableManagement;
+use Sunhill\ORM\Properties\Utils\DefaultNull;
 
 class MysqlCollectionStore extends MysqlAction implements HandlesProperties
 {
@@ -68,7 +69,9 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
     protected function handleSimpleField($property)
     {
         if (!isset($property->value)) {
-            throw new \Exception("The value for '".$property->name."' is not set.");
+            if (!$property->initialized && is_null($property->default)) {
+                throw new \Exception("The value for '".$property->name."' is not set.");
+            }
         }
         $this->handleLinearField($property, $property->value);
     }
