@@ -171,6 +171,91 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>3]);
         $this->assertDatabaseHas('objectobjectassigns', ['container_id'=>$id,'target_id'=>4]);
     }
+   
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
+    public function testTestParentWithNullField()
+    {
+        $object = new TestParent();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+        
+        $this->fillObject($object);
+        $object->parentint = 101;
+        $object->parentchar = null;
+        $object->parentfloat = 1.01;
+        $object->parenttext = 'The ice is really cold;  the streetlight really old';
+        $object->parentenum = 'testA';
+        $object->parentdate = '2023-04-28';
+        $object->parenttime = '10:07:00';
+        $object->parentdatetime = '2023-04-28 10:07:00';
+        $object->parentbool = true;
+        $object->nosearch = 100;
+        
+        $test->dispatch('store');
+        $id = $object->getID();
+        
+        $this->assertDatabaseHas('testparents',['id'=>$id,'parentchar'=>null]);
+    }
+    
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
+    public function testTestParentWithNullFieldAndDefaultNull()
+    {
+        $object = new TestParent();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+        
+        $this->fillObject($object);
+        $object->parentint = 101;
+        $object->parentfloat = 1.01;
+        $object->parenttext = 'The ice is really cold;  the streetlight really old';
+        $object->parentenum = 'testA';
+        $object->parentdate = '2023-04-28';
+        $object->parenttime = '10:07:00';
+        $object->parentdatetime = '2023-04-28 10:07:00';
+        $object->parentbool = true;
+        $object->nosearch = 100;
+        
+        $test->dispatch('store');
+        $id = $object->getID();
+        
+        $this->assertDatabaseHas('testparents',['id'=>$id,'parentchar'=>null]);
+    }
+    
+    /**
+     * @group storeobject
+     * @group object
+     * @group store
+     */
+    public function testTestParentWithDefaultField()
+    {
+        $object = new TestParent();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
+        
+        $this->fillObject($object);
+        $object->parentint = 101;
+        $object->parentchar = 'ABC';
+        $object->parentfloat = 1.01;
+        $object->parenttext = 'The ice is really cold;  the streetlight really old';
+        $object->parentenum = 'testA';
+        $object->parentdate = '2023-04-28';
+        $object->parenttime = '10:07:00';
+        $object->parentdatetime = '2023-04-28 10:07:00';
+        $object->parentbool = true;
+        
+        $test->dispatch('store');
+        $id = $object->getID();
+        
+        $this->assertDatabaseHas('testparents',['id'=>$id,'nosearch'=>1]);
+    }
     
     /**
      * @group storeobject

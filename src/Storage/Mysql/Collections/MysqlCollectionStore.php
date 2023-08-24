@@ -66,13 +66,28 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
         $this->addEntry($table, $property->name, $value);        
     }
     
-    protected function handleSimpleField($property)
+    protected function checkNullValue($property)
     {
         if (!isset($property->value)) {
-            if (!$property->initialized && is_null($property->default)) {
-                throw new \Exception("The value for '".$property->name."' is not set.");
+            if ($property->initialized && $property->nullable) {
+                return; // was assigned null and is nullable, everything ok
             }
-        }
+            if (is_a($property->default,DefaultNull::class,true && $property->nullable)) {
+                return; // Has default null, everything ok
+            }
+            if (!is_null($property->default)) {
+                $property->value = $property->default;
+                // Has a default value, everything ok
+                return;
+            }
+            // In all other cases raise an exception
+            throw new \Exception("The value for '".$property->name."' is not set.");
+        }        
+    }
+    
+    protected function handleSimpleField($property)
+    {
+        $this->checkNullValue($property);
         $this->handleLinearField($property, $property->value);
     }
     
