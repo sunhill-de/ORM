@@ -26,7 +26,7 @@ class TestParent extends ORMObject
     protected static function setupProperties(PropertyList $list)
     {
 		$list->integer('parentint')->searchable();
-		$list->varchar('parentchar')->searchable()->setDefault(null);
+		$list->varchar('parentchar')->searchable()->nullable()->setDefault(null);
 		$list->float('parentfloat')->searchable();
 		$list->text('parenttext')->searchable();
 		$list->datetime('parentdatetime')->searchable();
