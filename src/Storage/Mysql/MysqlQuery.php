@@ -18,6 +18,7 @@ use Sunhill\ORM\Objects\PropertiesCollection;
 use Sunhill\ORM\Storage\Mysql\Utils\PropertyHelpers;
 use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Query\TooManyWhereParametersException;
+use Sunhill\ORM\Facades\Objects;
 
 class MysqlQuery extends DBQuery 
 {
@@ -35,6 +36,31 @@ class MysqlQuery extends DBQuery
     }
  
     // Public methods
+    public function getObjects(): \Illuminate\Support\Collection
+    {
+        $this->target = 'getObjects';
+        return $this->execute();        
+    }
+    
+    protected function returnObjects()
+    {
+        $result = $this->finalizeQuery()->get();
+        $newresult = [];
+        foreach ($result as $object_desc) {
+            $object = Objects::load($object_desc->id);
+            $newresult[] = $object;
+        }
+        return collect($newresult);
+    }
+    
+    protected function execute()
+    {
+        if ($this->target == 'getObjects') {
+            return $this->returnObjects();
+        } else {
+            return parent::execute();
+        }
+    }
     
     // Implemented abstract methods
     protected function getBasicTable()
