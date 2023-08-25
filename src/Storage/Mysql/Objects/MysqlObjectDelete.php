@@ -26,10 +26,16 @@ class MysqlObjectDelete extends MysqlCollectionDelete
         DB::table('attributeobjectassigns')->where('object_id',$this->additional)->delete();
     }
     
+    protected function deleteObjectAssigns()
+    {
+        DB::table('objectobjectassigns')->where('container_id',$this->additional)->orWhere('target_id',$this->additional)->delete();    
+    }
+    
     public function run()
     {
         parent::run();
         $this->deleteAttributes();
+        $this->deleteObjectAssigns();
     }
     
     public function handlePropertyInformation($property)
