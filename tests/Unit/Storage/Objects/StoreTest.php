@@ -303,7 +303,9 @@ class StoreTest extends DatabaseTestCase
         $object->childoarray[] = $this->getObject(4);
         $object->childoarray[] = $this->getObject(5);
         $object->childobject = $this->getObject(2);
-        $object->childcollection = $this->getComplexCollection(4);
+        $collection = $this->getComplexCollection(4);
+        $this->setProtectedProperty($collection, 'dirty', false);
+        $object->childcollection = $collection;
         $object->childmap['Key0A'] = $this->getObject(1);
         $object->childmap['Key0B'] = $this->getObject(2);
         
