@@ -101,6 +101,7 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
         foreach ($property->value as $key => $value) {
             switch ($property->element_type) {
                 case PropertyObject::class:
+                    $value->commit();
                     $this->addEntryRecord($this->getSpecialTableName($property), ['index'=>$key,'value'=>$value->getID()]);
                     $this->objectAssigned($value->getID());
                     break;
@@ -118,6 +119,7 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
     {
         $value = $property->value;
         if (!is_null($value)) {
+            $value->commit(); // For the case that the object is not commited yet
             $this->handleLinearField($property, $value->getID());
             $this->objectAssigned($value->getID());
         } else {

@@ -54,6 +54,7 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
         foreach ($property->value as $key => $value) {
             switch ($property->element_type) {
                 case PropertyObject::class:
+                    $value->commit();
                     $entries[] = ['id'=>$this->id,'index'=>$key,'value'=>$value->getID()];
                     $this->objectAssigned($value->getID());
                     break;
@@ -87,6 +88,7 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
     {
         $value = $property->value;
         if (!is_null($value)) {
+            $value->commit();
             $this->handleLinearField($property, $value->getID());
         } else {
             $this->handleLinearField($property, null);
