@@ -55,7 +55,7 @@ class TagsTest extends DatabaseTestCase
      * @depends testArrayCount
      */
     public function testArrayIndex($test) {
-        $this->assertEquals('TagB',$test[1]);
+        $this->assertEquals('TagB',$test[1]->name);
         return $test;
     }
     
