@@ -3,11 +3,11 @@
  * @file Tag.php
  * Provides the object Tag
  * Lang en
- * Reviewstatus: 2021-10-06
+ * Reviewstatus: 2023-08-25
  * Localization: unknown
  * Documentation: unknown
  * Tests: unknown
- * Coverage: unknown
+ * Coverage: 97.225 (2023-08-25)
  * PSR-State: 
  */
 namespace Sunhill\ORM\Objects;
