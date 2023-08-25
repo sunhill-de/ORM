@@ -128,11 +128,6 @@ class PropertyList
         return $this->addProperty(PropertyDate::class, $name);
     }
     
-    public function timestamp(string $name): PropertyTimestamp
-    {
-        return $this->addProperty(PropertyTimestamp::class, $name);    
-    }
-
     public function datetime(string $name): PropertyDatetime
     {
         return $this->addProperty(PropertyDatetime::class, $name);        
@@ -153,11 +148,21 @@ class PropertyList
         return $this->addProperty(PropertyArray::class, $name);        
     }
     
+    /**
+     * @deprecated use array()
+     * @param string $name
+     * @return PropertyArray
+     */
     public function arrayOfStrings(string $name): PropertyArray
     {
         return $this->array($name, PropertyVarchar::class);    
     }
         
+    /**
+     * @deprecated use array()
+     * @param string $name
+     * @return PropertyArray
+     */
     public function arrayOfObjects(string $name): PropertyArray
     {
         return $this->array($name, PropertyObject::class);
