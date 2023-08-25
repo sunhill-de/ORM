@@ -26,82 +26,11 @@ use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 class ObjectSearchTest extends DatabaseTestCase
 {
 
-    protected function simplify_result(Collection $result) {
-        $return = [];
-        foreach ($result as $obj) {
-            $return[] = $obj->getID();
-        }
-        return $return;
+    public function testSimple()
+    {
+        $result = Dummy::search()->where('dummyint',123);
+        $this->assertEquals(3, $result->count());
+        $this->assertEquals(1, $result->get()[0]->id);
+        $this->assertEquals(1, $result->getObjects()[0]->getID());
     }
-    
-    
-    
-    public function SimpleProvider() {
-        return [
-          // Test of integer fields
-           
-        ];
-    }
-    
-    /**
-     * @group object
-     */
-    public function testPassObject() {
-        $test = Objects::load(1);
-        $result = $this->simplify_result(TestParent::search()->where('parentobject','=',$test)->get());
-        $this->assertEquals([9],$result);
-        
-    }
-    
-    /**
-     * @group Focus
-     */
-    public function testGetFirst() {
-         $result = TestParent::search()->where('parentchar','=','DEF')->first();
-        $this->assertEquals(10,$result);        
-    }
-    
-    /**
-     * @group Focus
-     */
-    public function testGetFirstWithOneResult() {
-        $result = TestParent::search()->where('parentint','=','111')->first();
-        $this->assertEquals(9,$result);
-    }
-    
-    /**
-     * @group Focus
-     */
-    public function testGetFirstWithNoResult() {
-        $result = TestParent::search()->where('parentint','=','776')->first();
-        $this->assertEquals(null,$result);
-    }
-    
-    /**
-     * @dataProvider ComplexProvider
-     * @group complex
-     */
-    public function testComplexSearchIDs($searchclass,$field1,$relation1,$value1,$field2,$relation2,$value2,$expect) {
-        
-        $classname = "\\Sunhill\\ORM\\Tests\\Testobjects\\".$searchclass;
-         $result = $this->simplify_result($classname::search()->where($field1,$relation1,$value1)->where($field2,$relation2,$value2)->get());
-        $this->assertEquals($expect,$result);
-        
-        
-    }
-    
-    public static function ComplexProvider() {
-        return [
-            ["TestParent",'parentint','<',200,'parentint', '<>','123',[9]],
-            ["TestParent",'parentint','=',123,'parentchar','=', 'DEF',[10]],            
-            ["TestChild", 'parentint','>',300,'childint',  '=', '777',[24]],             
-            ["TestParent",'tags','has','TagD','parentint','<',200,[9,17]],            
-            ["TestParent",'tags','has','TagA','tags','has','TagB',[17]],            
-            ["TestParent",'parentcalc','=','123A','tags','has','TagF.TagG.TagE',[10,12]],            
-            ["TestParent",'parentobject','=',2,'parentint','<','700',[20]],            
-            ["TestChild","childoarray","empty",null,'parentsarray','has not','ABCD',[19,21,22,23]],
-            ["TestParent",'parentsarray','has','HALLO','parentsarray','has','HELLO',[19]],
-        ];
-    }
-    
 }

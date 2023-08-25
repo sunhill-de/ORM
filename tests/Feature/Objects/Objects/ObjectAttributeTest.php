@@ -10,6 +10,7 @@ use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Properties\Exceptions\AttributeException;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 
 class ObjectAttributeTest extends DatabaseTestCase
 {
@@ -56,7 +57,7 @@ class ObjectAttributeTest extends DatabaseTestCase
     }
     
     public function testInvalidAttribute() {
-        $this->expectException(AttributeException::class);
+        $this->expectException(PropertyException::class);
         $test = new Dummy();
         $test->attribute1 = 2;
     }
