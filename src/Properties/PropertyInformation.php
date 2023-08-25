@@ -30,7 +30,7 @@ class PropertyInformation extends AtomarProperty
 	
 	protected $info_path = '';
 			
-	public function setPath(string $path): PropertyInformation
+	public function setPath(?string $path): PropertyInformation
 	{
 	    $this->info_path = $path;
 	    return $this;
