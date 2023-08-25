@@ -15,7 +15,6 @@ use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyText;
 use Sunhill\ORM\Properties\PropertyTime;
 use Sunhill\ORM\Properties\PropertyVarchar;
-use Sunhill\ORM\Properties\PropertyException;
 
 class MysqlObjectAddColumn extends MysqlObjectMigrateHelper
 {
