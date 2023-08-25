@@ -145,3 +145,4 @@ All entitis of the ORM framework (like attributes, tags, classes, objects) shoul
 
 ## See also
 [Developer Resources](doc/md/INTERNAL.md)
+[Known issues](doc/med/ISSUES.md)
