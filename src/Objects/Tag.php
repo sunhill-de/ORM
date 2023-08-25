@@ -127,9 +127,9 @@ class Tag extends Loggable
         return $this->options & TO_LEAFABLE;
 	}
 	
-	public function set_Leafable(): Tag
+	public function setLeafable(): Tag
     {
-		$this->options &= TO_LEAFABLE;
+		$this->options |= TO_LEAFABLE;
         return $this;
 	}
 	

@@ -31,4 +31,21 @@ class TagTest extends DatabaseTestCase
         $test->load(8);
         $this->assertEquals('TagF.TagG.TagE',$test->getFullPath());
     }
+    
+    public function testGetterAndSetter()
+    {
+        $test = new Tag();
+        $parent = new Tag();
+        
+        $test->setParent($parent)->setName('Test')->setOptions(TO_LEAFABLE);
+        $this->assertEquals($parent,$test->getParent());
+        $this->assertEquals('Test',$test->getName());
+        $this->assertEquals(TO_LEAFABLE,$test->getOptions());
+        $this->assertTrue($test->isLeafable());
+        $test->unsetLeafable();
+        $this->assertFalse($test->isLeafable());
+        $test->setLeafable();
+        $this->assertTrue($test->isLeafable());
+        
+    }
 }
