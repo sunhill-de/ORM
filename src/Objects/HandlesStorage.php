@@ -1,13 +1,19 @@
 <?php
+/**
+ * @file HandlesStorage.php
+ * Utilities for the interaction with storages
+ * Lang en (complete)
+ * Reviewstatus: 2023-08-25
+ * Localization: unknown
+ * Documentation: unknown
+ * Tests: unknown
+ * Coverage: unknown
+ * Dependencies: Objects, ObjectException, base
+ */
+
 namespace Sunhill\ORM\Objects;
 
-use Sunhill\ORM\Facades\ObjectData;
 use Sunhill\ORM\Facades\Storage;
-use Sunhill\ORM\Storage\StorageBase;
-use Sunhill\ORM\Facades\Objects;
-use Sunhill\ORM\Properties\PropertyObject;
-use Sunhill\ORM\Properties\PropertyArray;
-use Sunhill\ORM\Properties\PropertyMap;
 
 trait HandlesStorage
 {
@@ -79,53 +85,6 @@ trait HandlesStorage
     protected function prepareUpdate()
     {
     }
-    
-    protected function createObject($store)
-    {
-        $this->walkProperties(function ($property) use ($store){
-            $property->storeToStorage($store);
-        });
-       $this->setID($store->store());
-       return $this->getID();
-    }
-    
-    protected function updateObject($store)
-    {
-        $this->walkProperties(function ($property) use ($store){
-            $property->updateToStorage($store);
-        });
-        $store->update($this->getID());
-    }
-    
-    protected function doRollback()
-    {
         
-    }
-
-    /**
-     * Fills the storage with dummy values, so the storage knows what property to expcect
-     *
-     * @param StorageBase $storage
-     * @param string $class
-     */
-    protected static function prepareStorageForClass($storage, string $class)
-    {
-        $properties = $class::getPropertyDefinition();
-        foreach ($properties as $property) {
-            $entity = $storage->createEntity($property->getName(), $class::getInfo('table'))->setType($property::class);
-            if (in_array($property::class,[PropertyArray::class,PropertyMap::class])) {
-                $entity->setElementType($property->getElementType());
-            }
-        }
-    }
-    
-    protected static function prepareStorage($storage)
-    {
-        $hirarchy = static::getClassList();
-        foreach ($hirarchy as $class) {
-            static::prepareStorageForClass($storage, $class);
-        }
-    }
-    
 }
 
