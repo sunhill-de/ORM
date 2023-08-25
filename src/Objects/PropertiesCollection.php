@@ -6,7 +6,7 @@
  * @author Klaus Dimde
  * ---------------------------------------------------------------------------------------------------------
  * Lang en
- * Reviewstatus: 2023-03-21
+ * Reviewstatus: 2023-08-25
  * Localization: none
  * Documentation: in progress
  * Tests: none
@@ -19,10 +19,8 @@ namespace Sunhill\ORM\Objects;
 use Sunhill\ORM\Properties\NonAtomarProperty;
 use Sunhill\ORM\Properties\Property;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
-use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Facades\Storage;
 
-use Sunhill\ORM\Properties\Commitable;
 use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Properties\PropertyFloat;
@@ -33,12 +31,6 @@ use Sunhill\ORM\Properties\PropertyTime;
 use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyMap;
-use Sunhill\ORM\Properties\PropertyPropertyCollection;
-use Sunhill\ORM\Storage\StorageBase;
-use Sunhill\ORM\Interfaces\InteractsWithStorage;
-use Sunhill\ORM\Properties\PropertyTags;
-use Sunhill\ORM\Objects\StorageInteraction\CollectionLoader;
-use Sunhill\ORM\Objects\StorageInteraction\StorageInteractionBase;
 use Sunhill\ORM\PropertyQuery\PropertyQuery;
 
 /**
@@ -494,7 +486,7 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	public function rollback()
 	{
         $this->doRollback();
-	    $this->walkProperties(function($property) { $property->commit(); } );
+	    $this->walkProperties(function($property) { $property->rollback(); } );
 	}
 	
 	protected function doCommit()

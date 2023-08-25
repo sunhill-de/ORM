@@ -24,6 +24,18 @@ class EditTest extends DatabaseTestCase
         $this->assertDatabaseHas('dummycollections',['id'=>1,'dummyint'=>398]);        
     }
     
+    public function testRollback()
+    {
+        $test = new DummyCollection();
+        $test->load(1);
+        $test->dummyint = 398;
+        
+        $test->rollback();
+        
+        $this->assertEquals(123, $test->dummyint);
+        $this->assertDatabaseHas('dummycollections',['id'=>1,'dummyint'=>123]);
+    }
+    
     /**
      * @group storecollection
      */
