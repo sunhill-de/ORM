@@ -7,269 +7,258 @@ use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Tests\Testobjects\Dummy;
 use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Tests\Testobjects\TestParent;
+use Sunhill\ORM\Tests\Testobjects\DummyCollection;
+use Sunhill\ORM\Tests\Testobjects\DummyChild;
+use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Tests\Testobjects\SecondLevelChild;
+use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
+use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 
 class ObjectInsertTest extends DatabaseTestCase
 {
+
+    protected function getDummy($id)
+    {
+        $dummy = new Dummy();
+        $dummy->load($id);
+        return $dummy;
+    }
     
-    /**
-     * @dataProvider InsertProvider
-     * @group insert
-     * @param unknown $class
-     * @param unknown $fields
-     * @param unknown $callback
-     * @param unknown $test
-     * @param unknown $expected
-     */
-    public function testInsertObject($class,$fields,$callback,$test,$expected) {
-        $object = new $class();
-        foreach ($fields as $field=>$value) {
-            $object->$field = $value;
-        }
-        if (!is_null($callback)) {
-            $callback($object);
-        }
-        $object->commit();
+    protected function getCollection($id)
+    {
+        $dummy = new DummyCollection();
+        $dummy->load($id);
+        return $dummy;
+    }
+    
+    protected function getComplexCollection($id)
+    {
+        $test = new ComplexCollection();
+        $test->load($id);
+        return $test;
+    }
+    
+    public function testInsertDummy()
+    {
+        $test = new Dummy();
+        $test->dummyint = 919;
+        $test->tags->stick('TagB');
+        $test->general_attribute = 3;
+        $test->commit();
         
-        $read = Objects::load($object->getID());
-        $this->assertEquals($expected,$this->getField($read, $test));
+        $load = Objects::load($test->getID());
+        $this->assertEquals(919, $load->dummyint);
+        $this->assertEquals(3, $load->general_attribute);
+        $this->assertTrue($load->tags->hasTag('TagB'));
     }
     
-    public static function InsertProvider() {
-        return [
-            [Dummy::class,['dummyint'=>666],null,'dummyint',666],
-            [Dummy::class,['dummyint'=>666],function($object){
-                $object->tags->stick('TagA');
-                $object->tags->stick('TagB');
-            },'tags[1]','TagB'],
-            [Dummy::class,['dummyint'=>666],function($object){
-                $object->int_attribute = 898;
-            },'int_attribute',898],
-            [TestParent::class,
-            [   'parentchar'=>'ABC',
-                'parentint'=>123,
-                'parentfloat'=>1.23,
-                'parenttext'=>'ABC DEF',
-                'parentdatetime'=>'2001-01-01 01:01:01',
-                'parentdate'=>'2011-01-01',
-                'parenttime'=>'11:11:11',
-                'parentenum'=>'testA',
-                'nosearch'=>1,
-            ],null,'parentchar','ABC'],
-            
-            [TestParent::class,
-            [   'parentchar'=>'ABC',
-                'parentint'=>123,
-                'parentfloat'=>1.23,
-                'parenttext'=>'ABC DEF',
-                'parentdatetime'=>'2001-01-01 01:01:01',
-                'parentdate'=>'2011-01-01',
-                'parenttime'=>'11:11:11',
-                'parentenum'=>'testA',
-                'nosearch'=>1,
-            ],function($object){
-                $dummy = new Dummy();
-                $dummy->dummyint = 333;
-                $object->parentobject = $dummy;
-            },'parentobject->dummyint',333],
-            [TestParent::class,
-                [   'parentchar'=>'ABC',
-                    'parentint'=>123,
-                    'parentfloat'=>1.23,
-                    'parenttext'=>'ABC DEF',
-                    'parentdatetime'=>'2001-01-01 01:01:01',
-                    'parentdate'=>'2011-01-01',
-                    'parenttime'=>'11:11:11',
-                    'parentenum'=>'testA',
-                    'nosearch'=>1,
-                ],function($object){
-                    $dummy1 = new Dummy();
-                    $dummy1->dummyint = 333;
-                    $dummy2 = new Dummy();
-                    $dummy2->dummyint = 444;
-                    $object->parentoarray[] = $dummy1;
-                    $object->parentoarray[] = $dummy2;
-                },'parentoarray[1]->dummyint',444],
-                [TestParent::class,
-                    [   'parentchar'=>'ABC',
-                        'parentint'=>123,
-                        'parentfloat'=>1.23,
-                        'parenttext'=>'ABC DEF',
-                        'parentdatetime'=>'2001-01-01 01:01:01',
-                        'parentdate'=>'2011-01-01',
-                        'parenttime'=>'11:11:11',
-                        'parentenum'=>'testA',
-                        'nosearch'=>1,                        
-                    ],function($object){
-                        $object->parentsarray[] = 'E1';
-                        $object->parentsarray[] = 'E2';
-                    },'parentsarray[1]','E2'],
-                   
-                    [TestChild::class,
-                    [   'parentchar'=>'ABC',
-                        'parentint'=>123,
-                        'parentfloat'=>1.23,
-                        'parenttext'=>'ABC DEF',
-                        'parentdatetime'=>'2001-01-01 01:01:01',
-                        'parentdate'=>'2011-01-01',
-                        'parenttime'=>'11:11:11',
-                        'parentenum'=>'testA',
-                        'nosearch'=>1,
-                        
-                        'childchar'=>'CCC',
-                        'childint'=>666,
-                        'childfloat'=>3.33,
-                        'childtext'=>'Lorem ipsum',
-                        'childdatetime'=>'2001-02-22 22:01:22',
-                        'childdate'=>'2011-02-02',
-                        'childtime'=>'12:12:12',
-                        'childenum'=>'testB'
-                    ],null,'childdate','2011-02-02'],
-                    
-                    [TestChild::class,
-                        [   'parentchar'=>'ABC',
-                            'parentint'=>123,
-                            'parentfloat'=>1.23,
-                            'parenttext'=>'ABC DEF',
-                            'parentdatetime'=>'2001-01-01 01:01:01',
-                            'parentdate'=>'2011-01-01',
-                            'parenttime'=>'11:11:11',
-                            'parentenum'=>'testA',
-                            'nosearch'=>1,
-                            
-                            'childchar'=>'CCC',
-                            'childint'=>666,
-                            'childfloat'=>3.33,
-                            'childtext'=>'Lorem ipsum',
-                            'childdatetime'=>'2001-02-22 22:01:22',
-                            'childdate'=>'2011-02-02',
-                            'childtime'=>'12:12:12',
-                            'childenum'=>'testB'
-                        ],function($object){
-                            $object->parentsarray[] = 'E1';
-                            $object->parentsarray[] = 'E2';
-                            $object->childsarray[] = 'CE1';
-                            $object->childsarray[] = 'CE2';
-                        },'childsarray[1]','CE2'],
-                        [TestChild::class,
-                            [   'parentchar'=>'ABC',
-                                'parentint'=>123,
-                                'parentfloat'=>1.23,
-                                'parenttext'=>'ABC DEF',
-                                'parentdatetime'=>'2001-01-01 01:01:01',
-                                'parentdate'=>'2011-01-01',
-                                'parenttime'=>'11:11:11',
-                                'parentenum'=>'testA',
-                                'nosearch'=>1,
-                                
-                                'childchar'=>'CCC',
-                                'childint'=>666,
-                                'childfloat'=>3.33,
-                                'childtext'=>'Lorem ipsum',
-                                'childdatetime'=>'2001-02-22 22:01:22',
-                                'childdate'=>'2011-02-02',
-                                'childtime'=>'12:12:12',
-                                'childenum'=>'testB'
-                            ],function($object){
-                                $object->parentsarray[] = 'E1';
-                                $object->parentsarray[] = 'E2';
-                                $object->childsarray[] = 'CE1';
-                                $object->childsarray[] = 'CE2';
-                            },'parentsarray[1]','E2'],
-                            
-                            [TestChild::class,
-                                [   'parentchar'=>'ABC',
-                                    'parentint'=>123,
-                                    'parentfloat'=>1.23,
-                                    'parenttext'=>'ABC DEF',
-                                    'parentdatetime'=>'2001-01-01 01:01:01',
-                                    'parentdate'=>'2011-01-01',
-                                    'parenttime'=>'11:11:11',
-                                    'parentenum'=>'testA',
-                                    'nosearch'=>1,
-                                    
-                                    'childchar'=>'CCC',
-                                    'childint'=>666,
-                                    'childfloat'=>3.33,
-                                    'childtext'=>'Lorem ipsum',
-                                    'childdatetime'=>'2001-02-22 22:01:22',
-                                    'childdate'=>'2011-02-02',
-                                    'childtime'=>'12:12:12',
-                                    'childenum'=>'testB'
-                                ],function($object){
-                                    $dummy1 = new Dummy();
-                                    $dummy1->dummyint = 1111;
-                                    $dummy2 = new Dummy();
-                                    $dummy2->dummyint = 2222;
-                                    $dummy3 = new Dummy();
-                                    $dummy3->dummyint = 3333;
-                                    $dummy4 = new Dummy();
-                                    $dummy4->dummyint = 4444;
-                                    $object->parentoarray[] = $dummy1;
-                                    $object->parentoarray[] = $dummy2;
-                                    $object->childoarray[] = $dummy3;
-                                    $object->childoarray[] = $dummy4;
-                                },'parentoarray[1]->dummyint',2222],
-                                
-                                [TestChild::class,
-                                    [   'parentchar'=>'ABC',
-                                        'parentint'=>123,
-                                        'parentfloat'=>1.23,
-                                        'parenttext'=>'ABC DEF',
-                                        'parentdatetime'=>'2001-01-01 01:01:01',
-                                        'parentdate'=>'2011-01-01',
-                                        'parenttime'=>'11:11:11',
-                                        'parentenum'=>'testA',
-                                        'nosearch'=>1,
-                                        
-                                        'childchar'=>'CCC',
-                                        'childint'=>666,
-                                        'childfloat'=>3.33,
-                                        'childtext'=>'Lorem ipsum',
-                                        'childdatetime'=>'2001-02-22 22:01:22',
-                                        'childdate'=>'2011-02-02',
-                                        'childtime'=>'12:12:12',
-                                        'childenum'=>'testB'
-                                    ],function($object){
-                                        $dummy1 = new Dummy();
-                                        $dummy1->dummyint = 1111;
-                                        $dummy2 = new Dummy();
-                                        $dummy2->dummyint = 2222;
-                                        $dummy3 = new Dummy();
-                                        $dummy3->dummyint = 3333;
-                                        $dummy4 = new Dummy();
-                                        $dummy4->dummyint = 4444;
-                                        $object->parentoarray[] = $dummy1;
-                                        $object->parentoarray[] = $dummy2;
-                                        $object->childoarray[] = $dummy3;
-                                        $object->childoarray[] = $dummy4;
-                                    },'childoarray[1]->dummyint',4444],
-                                    ];
-    }
-    /**
-    protected function getField($loader,$fieldname) {
-        $match = '';
-        if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]->(?P<subfield>\w+)/',$fieldname,$match)) {
-            $name = $match['name'];
-            $subfield = $match['subfield'];
-            $index = $match['index'];
-            return $loader->$name[$index]->$subfield;
-        } else if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]\[(?P<index2>\w+)\]/',$fieldname,$match)) {
-            $name = $match['name'];
-            $index2 = $match['index2'];
-            $index = $match['index'];
-            return $loader->$name[$index][$index2];
-        } else if (preg_match('/(?P<name>\w+)->(?P<subfield>\w+)/',$fieldname,$match)) {
-            $name = $match['name'];
-            $subfield = $match['subfield'];
-            return $loader->$name->$subfield;
-        } if (preg_match('/(?P<name>\w+)\[(?P<index>\w+)\]/',$fieldname,$match)){
-            $name = $match['name'];
-            $index = $match['index'];
-            return $loader->$name[$index];
-        }  else {
-            return $loader->$fieldname;
-        }
+    public function testInsertTestParent()
+    {
+        $test = new TestParent();
+        $test->parentint = 842;
+        $test->parentchar = null;
+        $test->parentbool = true;
+        $test->parentfloat = 3.14;
+        $test->parenttext = 'I needed time to think to get those memories from my mind';
+        $test->parentdatetime = '2023-08-24 12:37:30';        
+        $test->parentdate = '2023-08-24';
+        $test->parenttime = '12:37:30';
+        $test->parentenum = 'testA';
+        $test->parentobject = $this->getDummy(1);
+        $test->parentcollection = $this->getCollection(1);
+        $test->parentoarray[] = $this->getDummy(2);
+        $test->parentoarray[] = $this->getDummy(3);
+        $test->parentsarray[] = 'Iron Maiden';
+        $test->parentsarray[] = 'Def Leppard';
+        $test->parentmap['KeyA'] = 'Value A';
+        $test->parentmap['KeyC'] = 'Value C';
+        $test->attribute2 = 123;
+        $test->tags->stick('TagA');
+        $test->tags->stick('TagB');
+        $test->commit();
+
+        $load = Objects::load($test->getID());
+        $this->assertEquals(842, $load->parentint);
+        $this->assertEquals(null, $load->parentchar);
+        $this->assertEquals(1, $load->parentbool);
+        $this->assertEquals(3.14, $load->parentfloat);        
+        $this->assertEquals('I needed time to think to get those memories from my mind', $load->parenttext); 
+        $this->assertEquals('2023-08-24 12:37:30', $load->parentdatetime);
+        $this->assertEquals('2023-08-24', $load->parentdate);
+        $this->assertEquals('12:37:30', $load->parenttime);
+        $this->assertEquals(123, $load->parentobject->dummyint);
+        $this->assertEquals(123, $load->parentcollection->dummyint);
+        $this->assertEquals(234, $load->parentoarray[0]->dummyint);
+        $this->assertEquals('Def Leppard', $load->parentsarray[1]);        
+        $this->assertEquals('Value C', $load->parentmap['KeyC']);
+        $this->assertEquals(123, $load->attribute2);
+        $this->assertTrue($load->tags->hasTag('TagB'));
     }
     
-    */
+    public function testInsertTestChild()
+    {
+        $test = new TestChild();
+        $test->parentint = 842;
+        $test->parentchar = null;
+        $test->parentbool = true;
+        $test->parentfloat = 3.14;
+        $test->parenttext = 'I needed time to think to get those memories from my mind';
+        $test->parentdatetime = '2023-08-24 12:37:30';
+        $test->parentdate = '2023-08-24';
+        $test->parentenum = 'testA';
+        $test->parenttime = '12:37:30';
+        $test->parentobject = $this->getDummy(1);
+        $test->parentcollection = $this->getCollection(1);
+        $test->parentoarray[] = $this->getDummy(2);
+        $test->parentoarray[] = $this->getDummy(3);
+        $test->parentsarray[] = 'Iron Maiden';
+        $test->parentsarray[] = 'Def Leppard';
+        $test->parentmap['KeyA'] = 'Value A';
+        $test->parentmap['KeyC'] = 'Value C';
+        
+        $test->childint = 248;
+        $test->childchar = 'AAC';
+        $test->childfloat = 1.41;
+        $test->childenum = 'testC';
+        $test->childtext = 'Why so sad my valentine?';
+        $test->childdatetime = '2023-08-24 12:37:30';
+        $test->childdate = '2023-08-24';
+        $test->childtime = '12:37:30';
+        $test->childobject = $this->getDummy(2);
+        $test->childcollection = $this->getComplexCollection(9);
+        $test->childoarray[] = $this->getDummy(5);
+        $test->childoarray[] = $this->getDummy(6);
+        $test->childsarray[] = 'Muse';
+        $test->childsarray[] = 'Radiohead';
+        $test->childmap['KeyA'] = $this->getDummy(1);
+        $test->childmap['KeyC'] = $this->getDummy(2);
+        
+        $test->attribute2 = 234;
+        $test->tags->stick('TagC');
+        $test->tags->stick('TagD');
+        $test->commit();
+ 
+        $load = Objects::load($test->getID());
+        $this->assertEquals(842, $load->parentint);
+        $this->assertEquals(null, $load->parentchar);
+        $this->assertEquals(1, $load->parentbool);
+        $this->assertEquals('testA', $load->parentenum);
+        $this->assertEquals(3.14, $load->parentfloat);
+        $this->assertEquals('I needed time to think to get those memories from my mind', $load->parenttext);
+        $this->assertEquals('2023-08-24 12:37:30', $load->parentdatetime);
+        $this->assertEquals('2023-08-24', $load->parentdate);
+        $this->assertEquals('12:37:30', $load->parenttime);
+        $this->assertEquals(123, $load->parentobject->dummyint);
+        $this->assertEquals(123, $load->parentcollection->dummyint);
+        $this->assertEquals(234, $load->parentoarray[0]->dummyint);
+        $this->assertEquals('Def Leppard', $load->parentsarray[1]);
+        $this->assertEquals('Value C', $load->parentmap['KeyC']);
+        
+        $this->assertEquals(248, $load->childint);
+        $this->assertEquals('AAC', $load->childchar);
+        $this->assertEquals('testC', $load->childenum);
+        $this->assertEquals(1.41, $load->childfloat);
+        $this->assertEquals('Why so sad my valentine?', $load->childtext);
+        $this->assertEquals('2023-08-24 12:37:30', $load->childdatetime);
+        $this->assertEquals('2023-08-24', $load->childdate);
+        $this->assertEquals('12:37:30', $load->childtime);
+        $this->assertEquals(234, $load->childobject->dummyint);
+        $this->assertEquals(111, $load->childcollection->field_int);
+        $this->assertEquals(123, $load->childoarray[0]->dummyint);
+        $this->assertEquals('Muse', $load->childsarray[0]);
+        $this->assertEquals(234, $load->childmap['KeyC']->dummyint);
+        
+        $this->assertEquals(234, $load->attribute2);
+        $this->assertTrue($load->tags->hasTag('TagC'));
+        
+    }
+    
+    public function testLoadDummyChild()
+    {
+        $test = new DummyChild();
+        $test->dummyint = 1509;
+        $test->dummychildint = 2411;
+        $test->commit();
+        
+        $load = Objects::load($test->getID());
+        $this->assertEquals(1509, $load->dummyint);
+        $this->assertEquals(2411, $load->dummychildint);
+    }
+    
+    public function testLoadReferenceOnly()
+    {
+        $test = new ReferenceOnly();
+        $test->testsarray[] = 'Muzzle';
+        $test->testsarray[] = 'Bruce Springsteen';
+        $test->testoarray[] = $this->getDummy(2);
+        $test->testoarray[] = $this->getDummy(3);
+        
+        $test->commit();
+        
+        $load = Objects::load($test->getID());
+        $this->assertEquals('Bruce Springsteen', $load->testsarray[1]);
+        $this->assertEquals(234, $load->testoarray[0]->dummyint);
+    }
+    
+    public function testLoadSecondLevelChild()
+    {
+        $test = new SecondLevelChild();
+        $test->testsarray[] = 'Muzzle';
+        $test->testsarray[] = 'Bruce Springsteen';
+        $test->testoarray[] = $this->getDummy(2);
+        $test->testoarray[] = $this->getDummy(3);
+        $test->childint = 2411;
+    
+        $test->commit();
+    
+        $load = Objects::load($test->getID());
+        $this->assertEquals('Bruce Springsteen', $load->testsarray[1]);
+        $this->assertEquals(234, $load->testoarray[0]->dummyint);
+        $this->assertEquals(2411, $load->childint);
+    }
+    
+    public function testLoadSimpleChild()
+    {
+        $test = new TestSimpleChild();
+        $test->parentint = 842;
+        $test->parentchar = null;
+        $test->parentbool = true;
+        $test->parentfloat = 3.14;
+        $test->parenttext = 'I needed time to think to get those memories from my mind';
+        $test->parentdatetime = '2023-08-24 12:37:30';
+        $test->parentdate = '2023-08-24';
+        $test->parenttime = '12:37:30';
+        $test->parentenum = 'testA';
+        $test->parentobject = $this->getDummy(1);
+        $test->parentcollection = $this->getCollection(1);
+        $test->parentoarray[] = $this->getDummy(2);
+        $test->parentoarray[] = $this->getDummy(3);
+        $test->parentsarray[] = 'Iron Maiden';
+        $test->parentsarray[] = 'Def Leppard';
+        $test->parentmap['KeyA'] = 'Value A';
+        $test->parentmap['KeyC'] = 'Value C';
+        $test->attribute2 = 123;
+        $test->tags->stick('TagA');
+        $test->tags->stick('TagB');
+        $test->commit();
+        
+        $load = Objects::load($test->getID());
+        $this->assertEquals(842, $load->parentint);
+        $this->assertEquals(null, $load->parentchar);
+        $this->assertEquals(1, $load->parentbool);
+        $this->assertEquals(3.14, $load->parentfloat);
+        $this->assertEquals('I needed time to think to get those memories from my mind', $load->parenttext);
+        $this->assertEquals('2023-08-24 12:37:30', $load->parentdatetime);
+        $this->assertEquals('2023-08-24', $load->parentdate);
+        $this->assertEquals('12:37:30', $load->parenttime);
+        $this->assertEquals(123, $load->parentobject->dummyint);
+        $this->assertEquals(123, $load->parentcollection->dummyint);
+        $this->assertEquals(234, $load->parentoarray[0]->dummyint);
+        $this->assertEquals('Def Leppard', $load->parentsarray[1]);
+        $this->assertEquals('Value C', $load->parentmap['KeyC']);
+        $this->assertEquals(123, $load->attribute2);
+        $this->assertTrue($load->tags->hasTag('TagB'));
+        
+    }
+    
 }
