@@ -11,7 +11,7 @@ class TestStorage extends StorageBase
     
     public $last_action;
     
-    public function dispatch(string $action, $additonal = null)
+    public function dispatch(string $action, $additonal = null, $additional2 = null)
     {
         if (is_a($this->getCollection(), ORMObject::class)) {
             $this->last_action = 'object_';
