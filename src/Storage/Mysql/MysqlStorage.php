@@ -34,6 +34,7 @@ use Sunhill\ORM\Storage\Mysql\MysqlTagSearch;
 use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionMigrate;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDegrade;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectMigrate;
+use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectPromote;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -43,18 +44,18 @@ use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectMigrate;
 class MysqlStorage extends StorageBase 
 {
     
-    public function dispatch(string $action, $additional = null)
+    public function dispatch(string $action, $additional = null, $additional2 = null)
     {
         if (is_a($this->getCollection(), ORMObject::class)) {
-            return $this->dispatchObject($action, $additional);
+            return $this->dispatchObject($action, $additional, $additional2);
         }
         if (is_a($this->getCollection(), Collection::class)) {
-            return $this->dispatchCollection($action, $additional);
+            return $this->dispatchCollection($action, $additional, $additional2);
         }
-        return $this->dispatchOther($action, $additional);
+        return $this->dispatchOther($action, $additional, $additional2);
     }
     
-    protected function dispatchCollection(string $action, $additional = null)
+    protected function dispatchCollection(string $action, $additional = null, $additional2 = null)
     {
         switch ($action) {
             case 'load':
@@ -83,7 +84,7 @@ class MysqlStorage extends StorageBase
         }
     }
     
-    protected function dispatchObject(string $action, $additional = null)
+    protected function dispatchObject(string $action, $additional = null, $additional2 = null)
     {
         switch ($action) {
             case 'load':
@@ -107,6 +108,9 @@ class MysqlStorage extends StorageBase
             case 'degrade':
                 return $this->dispatchToAction(MysqlObjectDegrade::class, $additional);
                 break;
+            case 'promote':
+                return $this->dispatchToAction(MysqlObjectPromote::class, $additional, $additional2);
+                break;
             case 'migrate':
                 return $this->dispatchToAction(MysqlObjectMigrate::class);
                 break;
@@ -115,7 +119,7 @@ class MysqlStorage extends StorageBase
         }        
     }
 
-    protected function dispatchOther(string $action, $additional = null)
+    protected function dispatchOther(string $action, $additional = null, $additional2 = null)
     {
         switch ($action) {
             case 'tags':

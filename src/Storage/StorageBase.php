@@ -39,9 +39,9 @@ abstract class StorageBase
         return $this->collection;    
     }
 
-    abstract public function dispatch(string $action, $additional = null);
+    abstract public function dispatch(string $action, $additional = null, $additional2 = null);
      
-    protected function dispatchToAction(string $storage_action, $additional = null)
+    protected function dispatchToAction(string $storage_action, $additional = null, $additional2 = null)
     {
         if (!class_exists($storage_action, true)) {
             throw new ActionNotFoundException("The action '$storage_action' is not found.");
@@ -49,6 +49,9 @@ abstract class StorageBase
         $action = new $storage_action();
         if (!is_null($additional)) {
             $action->setAdditional($additional);
+        }
+        if (!is_null($additional2)) {
+            $action->setAdditional2($additional2);
         }
         if ($this->collection) {
             $action->setCollection($this->collection);
