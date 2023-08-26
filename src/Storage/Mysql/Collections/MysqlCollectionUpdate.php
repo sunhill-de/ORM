@@ -24,7 +24,7 @@ class MysqlCollectionUpdate extends MysqlAction implements HandlesProperties
             $this->id = $this->collection->getID();
         }
         if (!$this->id) {
-            throw new IDNotSetException("Update called but not ID was given.");
+            throw new IDNotSetException("Update called but no ID was given.");
         }
         $this->runProperties();
         $this->updateTables();
