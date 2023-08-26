@@ -1,4 +1,18 @@
 <?php
+/**
+ * @file MyswmObjectPromote.php
+ * The storage action that handles the promotion of an object
+ * @author Klaus Dimde
+ * ---------------------------------------------------------------------------------------------------------
+ * Lang en
+ * Reviewstatus: 2023-08-26
+ * Localization: none
+ * Documentation: in progress
+ * Tests: none
+ * Coverage: 88.3% (2023-08-26)
+ * PSR-State: some type hints missing
+ * Tests: tests/Unit/Storage/Objects/PromoteTest, tests/Feature/Objects/Objects/ObjectPromoteTest.php
+ */
 
 namespace Sunhill\ORM\Storage\Mysql\Objects;
 
@@ -25,11 +39,17 @@ use Sunhill\ORM\Properties\PropertyCollection;
 use Sunhill\ORM\Objects\PropertiesCollection;
 use Sunhill\ORM\Properties\PropertyInformation;
 use Sunhill\ORM\Properties\PropertyBoolean;
+use Sunhill\ORM\Properties\PropertyTags;
+use Sunhill\ORM\Properties\PropertyCalculated;
+use Sunhill\ORM\Properties\PropertyKeyfield;
+use Sunhill\ORM\Properties\PropertyExternalReference;
 
 class MysqlObjectPromote extends MysqlAction
 {
     
     use ClassTables;
+    
+    protected $dummy_object;
     
     protected function checkForSame()
     {
@@ -46,14 +66,42 @@ class MysqlObjectPromote extends MysqlAction
         }        
     }
     
+    protected function fillDummyObject()
+    {
+        $this->dummy_object = new ($this->additional)();
+        foreach ($this->collection::getAllPropertyDefinitions() as $property) {
+            $name = $property->getName();
+            switch ($property::class) {
+                case PropertyArray::class:
+                case PropertyMap::class:
+                    foreach ($this->collection->$name as $key => $value) {
+                        $this->dummy_object->$name[$key] = $value;
+                    }
+                    break;
+                case PropertyCalculated::class:
+                case PropertyTags::class:
+                case PropertyInformation::class:
+                case PropertyKeyfield::class: 
+                case PropertyExternalReference::class:    
+                    break;
+                default:
+                    $this->dummy_object->$name = $this->collection->$name;
+                    break;
+            }
+        }
+        foreach ($this->additional2 as $key => $value) {
+            $this->dummy_object->$key = $value;
+        }
+    }
+    
     protected function fillTableOf(string $target)
     {
         $properties = Classes::getNamespaceOfClass($target)::getPropertyDefinition();
         $data = ['id'=>$this->collection->getID()];
+        $object_reference = [];
         foreach ($properties as $property) {
-            if (isset($this->additional2[$property->getName()])) {
-                $value = $this->additional2[$property->getName()];
-                switch ($property::class) {
+            $name = $property->getName();
+            switch ($property::class) {
                     case PropertyInteger::class:
                     case PropertyBoolean::class:
                     case PropertyVarchar::class:
@@ -63,21 +111,48 @@ class MysqlObjectPromote extends MysqlAction
                     case PropertyFloat::class:
                     case PropertyText::class:
                     case PropertyEnum::class:
-                    case PropertyInformation::class:
-                        $data[$property->getName()] = $value;
+                    case PropertyCalculated::class:    
+                        $data[$name] = $this->dummy_object->$name;
                         break;
-                    case PropertyObject::class:
+                    case PropertyObject::class:                        
                     case PropertyCollection::class:
+                        $value = $this->dummy_object->$name;
                         if (is_a($value,PropertiesCollection::class)) {
-                            $data[$property->getName()] = $value->getID();
-                        } else if (is_int($this->additional2[$property->getName])) {
-                            $data[$property->getName()] = $value;                        
+                            $data[$name] = $value->getID();
+                        } else if (is_int($value)) {
+                            $data[$name] = $value;
+                        }
+                        $value = $this->dummy_object->$name;
+                        $value = is_a($value, PropertiesCollection::class)?$value->getID():$value;
+                        $data[$name] = $value;                        
+                        if (!is_null($value) && ($property::class == PropertyObject::class)) {
+                            $object_reference[] = ['container_id'=>$this->collection->getID(),'target_id'=>$value];                            
                         }
                         break;
-                }
+                    case PropertyArray::class:
+                    case PropertyMap::class:
+                        $array_data = [];
+                        foreach ($this->dummy_object->$name as $key => $value) {
+                            if ($property->getElementType() == PropertyObject::class) {
+                                $value = is_a($value,PropertiesCollection::class)?$value->getID():$value;
+                                $array_data[] = ['id'=>$this->collection->getID(),'index'=>$key, 'value'=>$value];
+                                $object_reference[] = ['container_id'=>$this->collection->getID(),'target_id'=>$value];
+                            } else {
+                                $array_data[] = ['id'=>$this->collection->getID(),'index'=>$key, 'value'=>$value];                                
+                            }
+                        }
+                        if (!empty($array_data)) {
+                            DB::table(Classes::getTableOfClass($target).'_'.$property->getName())->insert($array_data);
+                        }
+                        break;
+                    case PropertyInformation::class:
+                        break;
             }
         }
         DB::table(Classes::getTableOfClass($target))->insert($data);
+        if (!empty($object_reference)) {
+            DB::table('objectobjectassigns')->insert($object_reference);
+        }
     }
     
     protected function fillDescendantTables()
@@ -98,6 +173,7 @@ class MysqlObjectPromote extends MysqlAction
     {
         $this->checkForSame();
         $this->checkForNotRelative();
+        $this->fillDummyObject();
         $this->fillDescendantTables();
         $this->changeObjects();
     }

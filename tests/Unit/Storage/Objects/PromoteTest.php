@@ -11,6 +11,9 @@ use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
 use Sunhill\ORM\Storage\Exceptions\ClassNotARelativeException;
 use Sunhill\ORM\Storage\Exceptions\ClassIsSameException;
+use Sunhill\ORM\Facades\Objects;
+use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
+use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 
 class PromoteTest extends DatabaseTestCase
 {
@@ -50,9 +53,52 @@ class PromoteTest extends DatabaseTestCase
                 'childenum'=>'testA'
             ]);
         
-        $this->assertDatabaseHas('dummies',['id'=>1,'dummyint'=>123]);
-        $this->assertDatabaseHas('dummychildren',['id'=>1,'dummychildint'=>543]);
-        $this->assertDatabaseHas('objects',['id'=>1,'classname'=>'dummychild']);
+        $this->assertDatabaseHas('testchildren',['id'=>9,'childint'=>543]);
+        $this->assertDatabaseHas('testparents',['id'=>9,'parentint'=>111]);
+        $this->assertDatabaseHas('objects',['id'=>9,'classname'=>'testchild']);
+    }
+    
+    public function testUpgradeTestParentToSimpleChild()
+    {
+        $collection = new TestParent();
+        $collection->load(9);
+        
+        $test = new MysqlStorage();
+        $test->setCollection($collection);
+        
+        $test->dispatch('promote',TestSimpleChild::class,[]);
+        
+        $this->assertDatabaseHas('testsimplechildren',['id'=>9]);
+        $this->assertDatabaseHas('testparents',['id'=>9,'parentint'=>111]);
+        $this->assertDatabaseHas('objects',['id'=>9,'classname'=>'testsimplechild']);
+    }
+    
+    public function testUgradeReferenceOnlyToThirdLevelChild()
+    {
+        $collection = new ReferenceOnly();
+        $collection->load(27);
+
+        $test = new MysqlStorage();
+        $test->setCollection($collection);
+        
+        $test->dispatch('promote',ThirdLevelChild::class,['childint'=>111,'childchildint'=>222,'childchildchar'=>'AAC','thirdlevelsarray'=>['AB','CD']]);
+
+        $this->assertDatabaseHas('thirdlevelchildren_thirdlevelsarray',['id'=>27,'index'=>0,'value'=>'AB']);        
+    }
+    
+    public function testUgradeReferenceOnlyToThirdLevelChildWithArray()
+    {
+        $collection = new ReferenceOnly();
+        $collection->load(27);
+        
+        $test = new MysqlStorage();
+        $test->setCollection($collection);
+        
+        $test->dispatch('promote',ThirdLevelChild::class,['childint'=>111,'childchildint'=>222,'childchildchar'=>'AAC']);
+        
+        $this->assertDatabaseHas('referenceonlies',['id'=>27]);
+        $this->assertDatabaseHas('secondlevelchildren',['id'=>27,'childint'=>111]);
+        $this->assertDatabaseHas('thirdlevelchildren',['id'=>27,'childchildint'=>222,'childchildchar'=>'AAC']);
     }
     
     public function testDegradeToSelfException()
