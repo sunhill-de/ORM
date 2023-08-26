@@ -9,7 +9,7 @@
  * Localization: none
  * Documentation: in progress
  * Tests: none
- * Coverage: unknown
+ * Coverage: 90% (2023-08-26)
  * PSR-State: some type hints missing
  * Tests: PropertyCollection_infoTest
  */
