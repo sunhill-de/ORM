@@ -3,11 +3,11 @@
  * @file ORMObject.php
  * Provides the core object of the orm system named ORMObject
  * Lang en (complete)
- * Reviewstatus: 2023-08-25
+ * Reviewstatus: 2023-08-26
  * Localization: unknown
  * Documentation: unknown
  * Tests: unknown
- * Coverage: unknown
+ * Coverage: 71.435 (2023-08-26)
  * Dependencies: Objects, ObjectException, base
  */
 namespace Sunhill\ORM\Objects;
@@ -103,6 +103,33 @@ class ORMObject extends PropertiesCollection
         $attribute_obj->setAttributeID($attribute->id);
         $attribute_obj->loadValue($value);
         return true;
+	}
+	
+	/**
+	 * Makes this object to an object of a descendant class
+	 * @param string $to_class The class that must be a direct or indirect descendant of the current class
+	 * @param array $params additional params that are added to the new class
+	 * @throws ClassIsSaneException is raised whenn $to_class is the current class
+	 * @throws ClassNotARelativeException is raisen when $to_class is not a descendant of the current class
+	 */
+	public function promote(string $to_class, array $params)
+	{
+	    $storage = static::getStorage();
+	    $storage->setCollection($this);
+	    $storage->dispatch('promote', $to_class, $params);	    
+	}
+	
+	/**
+	 * Makes this object to an object of a ancestor class
+	 * @param string $to_class The class that must be a direct or indirect ancestor of the current class
+	 * @throws ClassIsSaneException is raised whenn $to_class is the current class
+	 * @throws ClassNotARelativeException is raisen when $to_class is not an ancestor of the current class
+	 */
+	public function degrade(string $to_class)
+	{
+	    $storage = static::getStorage();
+	    $storage->setCollection($this);
+	    $storage->dispatch('degrade', $to_class);	    
 	}
 	
 	// ********************** Static methods  ***************************	
