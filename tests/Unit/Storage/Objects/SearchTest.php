@@ -296,7 +296,7 @@ class SearchTest extends DatabaseTestCase
             [TestChild::class, function($query) { return $query->where( "childoarray","any of",[3,4])->get(); },[17,20]],
             [TestChild::class, function($query) { return $query->where( "childoarray","all of",[4,5])->get(); },[17]],
             [TestChild::class, function($query) { return $query->where( "childoarray","all of",[1,7])->get(); },[]],
-            //@todo no expected result        [TestChild::class, function($query) { return $query->where( "childoarray","none of")->get(); },[1,2,3])->get(); },[17,18,19,21,22,23,25]],
+            [TestChild::class, function($query) { return $query->where( "childoarray","none of",[1,2,3])->get(); },[18,19,21,22,23]],
             [TestChild::class, function($query) { return $query->where( "childoarray","empty",null)->get(); },[19,21,22,23]],
             
             [TestParent::class,function($query) { return $query->where('parentint','<',200)->where('parentint', '<>','123')->get(); },[9]],
@@ -313,6 +313,18 @@ class SearchTest extends DatabaseTestCase
             [Dummy::class, function($query) { return $query->where('is associated')->get(); },[1,2,3,4,5,6,7]],
             [Dummy::class, function($query) { return $query->where('has tags')->get(); },[1]],
             [Dummy::class, function($query) { return $query->where('has attributes')->get(); },[1,4,5,8]],
+            
+            [TestParent::class, function($query) {
+                return $query->where('parentint',111)->orWhere(function($query) { 
+                    $query->where('parentchar','DEF')->where('parentint',123);
+                })->get(); 
+            }, [9,10,] ],                
+            
+            [TestParent::class, function($query) {
+                return $query->where('parentint',111)->orWhere(function($query) {
+                    $query->where('parentsarray','has','ABCD')->where('parentsarray','has','DEFG');
+                })->get();
+            }, [9,10] ],
             ];
     }
 }

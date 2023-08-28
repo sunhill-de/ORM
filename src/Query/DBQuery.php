@@ -55,6 +55,7 @@ abstract class DBQuery extends BasicQuery
         $this->handleOrder();
         $this->handleOffset();
         $this->handleLimit();
+        $hilf = $this->query->toSql();
         return $this->query;
     }
     
@@ -136,10 +137,15 @@ abstract class DBQuery extends BasicQuery
         }
     }
     
+    protected function handleClosure(string $connection, $key)
+    {
+        $this->query->$connection($key);        
+    }
+    
     protected function handleWhere(string $connection, $key, $relation, $value)
     {
         if ($key instanceof \Closure) {
-            $this->query->$connection($key);
+            $this->handleClosure($connection, $key);
             return;
         }
         $method = $this->findWhereMethod($key);
@@ -262,6 +268,18 @@ abstract class DBQuery extends BasicQuery
         return $this;
     }
     
+    public function getQuery()
+    {
+        $this->target = 'getquery';    
+        return $this->execute();
+    }
+    
+    public function appendToSubquery($subquery, $callback)
+    {
+       $this->query = $subquery;
+       $callback($this);
+    }
+    
     protected function execute()
     {
         switch ($this->target) {
@@ -271,6 +289,8 @@ abstract class DBQuery extends BasicQuery
                 return $this->finalizeQuery()->first();
             case 'get':
                 return $this->finalizeQuery()->get();
+            case 'getquery':
+                return $this->finalizeQuery();                
             default:
                 throw new InvalidTargetException("'".$this->target."' is not a valid target");
         }

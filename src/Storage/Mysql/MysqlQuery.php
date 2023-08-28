@@ -94,10 +94,18 @@ class MysqlQuery extends DBQuery
         return $parser->parseWhere();        
     }
     
+    protected function handleClosure($connection, $key)
+    {
+        $this->query->$connection(function($query) use ($key) {
+            $subquery = new MysqlQuery($this->collection);
+            $subquery->appendToSubquery($query, $key);            
+        });
+    }
+    
     protected function handleWhere(string $connection, $key, $relation, $value)
     {
         if ($key instanceof \Closure) {
-            $this->query->$connection($key);
+            $this->handleClosure($connection, $key);
             return;
         }
         $params = $this->parseWhereStatement($connection, $key, $relation, $value);
