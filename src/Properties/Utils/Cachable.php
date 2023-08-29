@@ -60,16 +60,17 @@ trait Cachable
         $this->last_update = time();
     }
     
-    protected function updateCache()
+    protected function &updateCache()
     {
         $this->loadValue($this->retrieveValue());
-        $this->cacheUpdated();    
+        $this->cacheUpdated(); 
+        return $this->value;
     }
     
-    protected function getValueFromCache()
+    protected function &getValueFromCache()
     {
         if (!$this->isCacheValid()) {
-            $this->updateCache();
+            return $this->updateCache();
         }
         return $this->getValue();
     }
