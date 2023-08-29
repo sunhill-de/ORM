@@ -190,7 +190,7 @@ class PropertyList
     
     public function externalReference(string $name, string $table_name, string $key_field = 'id'): PropertyExternalReference
     {
-        return $this->addProperty(PropertyExternalReference::class, $name);
+        return $this->addProperty(PropertyExternalReference::class, $name)->setExternalTable($table_name)->setExternalKey($key_field);
     }
     
     public function enum(string $name, array $allowed_keys = []): PropertyEnum
