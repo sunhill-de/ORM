@@ -62,6 +62,8 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals(2,count($test->parentmap));
         $this->assertEquals(3,count($test->tags));        
         $this->assertEquals('some.path.to9',$test->getProperty('parentinformation')->getPath());
+        $this->assertEquals(211,$test->parent_external->external_int);
+        $this->assertEquals('ODE',$test->parent_external->external_string);
     }
     
     /**

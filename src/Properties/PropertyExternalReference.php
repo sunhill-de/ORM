@@ -75,15 +75,17 @@ class PropertyExternalReference extends AtomarProperty
         $internal_key_name = $this->internal_key;
         $internal_key_value = $this->getActualPropertiesCollection()->$internal_key_name;
         $query = DB::table($this->table)->where($this->external_key,$internal_key_value);
+        $hilf = $query->toSql();
         $modifier = $this->query_modifier;
         if (is_callable($modifier)) {
             $query = $modifier($query);
         }
         if ($this->list) {
-            $this->setValue($query->get());            
+            $result = $query->get();
         } else {
-            $this->setValue($query->first());
+            $result =  $query->first();
         }
+        return $result;
 	}
 		
 }
