@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 class AnotherExternalTableSeeder extends Seeder {
 	
 	public function run() {
-	    DB::table('external')->truncate();
-	    DB::table('external')->insert([
+	    DB::table('anotherexternal')->truncate();
+	    DB::table('anotherexternal')->insert([
 		    ['id_field'=>'WWW','external_int'=>111,'external_string'=>'AAA'],
 	        ['id_field'=>'ZZZ','external_int'=>222,'external_string'=>'AAB'],
 	        ['id_field'=>'DEF','external_int'=>333,'external_string'=>'BBB'],
