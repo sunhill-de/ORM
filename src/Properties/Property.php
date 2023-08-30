@@ -491,4 +491,43 @@ class Property extends Loggable
         return static::$type;
     }
     
+    /**
+     * Some atomar properties could have pseudo child elements (like count for arrays)
+     * @param string $name
+     * @return NULL
+     */
+    protected function requestTerminalItem(string $name)
+    {
+        return null;    
+    }
+    
+    /**
+     * Try to pass the request to a child element. If none is found return null
+     * @param string $name
+     * @param array $path
+     * @return NULL
+     */
+    protected function passItemRequest(string $name, array $path)
+    {
+        return null;    
+    }
+
+    /**
+     * When no path elements are left return $this, if only one is left check for 
+     * terminal item (pseudo child, see requestTerminalItem. Otherwise try to pass
+     * The request to a child.
+     * @param array $path
+     * @return \Sunhill\ORM\Properties\Property|NULL
+     */
+    public function requestItem(array $path)
+    {
+        if (empty($path)) {
+            return $this;
+        }
+        $next = array_shift($path);
+        if (empty($path) && ($result = $this->requestTerminalItem($next))) {
+            return $result;
+        }
+        return $this->passItemRequest($next, $path);
+    }
 }

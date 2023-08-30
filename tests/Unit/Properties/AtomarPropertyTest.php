@@ -9,6 +9,27 @@ use Sunhill\ORM\Units\None;
 use Sunhill\ORM\Properties\Exceptions\WriteToReadonlyException;
 use Sunhill\ORM\Properties\Exceptions\InvalidValueException;
 
+class DummyAtomarProperty extends AtomarProperty
+{
+    
+    public $child;
+    
+    protected function requestTerminalItem(string $name)
+    {
+        if ($name == 'terminal') {
+            return 'terminal';
+        }
+    }
+    
+    protected function passItemRequest(string $name, array $path)
+    {
+        if ($name == 'child') {
+            return $this->child->requestItem($path);
+        }
+    }
+    
+}
+
 class AtomarPropertyTest extends TestCase
 {
  
@@ -130,4 +151,40 @@ class AtomarPropertyTest extends TestCase
         $this->assertFalse($test->getDirty());
     }
     
+    public function testRequestItem()
+    {
+        $test = new AtomarProperty();
+        $test->setName('test');
+        
+        $this->assertEquals($test, $test->requestItem([]));
+    }
+    
+    public function testRequestItemNotEmpty()
+    {
+        $test = new AtomarProperty();
+        $test->setName('test');
+        
+        $this->assertNull($test->requestItem(['something']));        
+    }
+    
+    public function testRequestTerminal()
+    {
+        $test = new DummyAtomarProperty();
+        $test->setName('test');
+        
+        $this->assertEquals('terminal', $test->requestItem(['terminal']));
+    }
+    
+    public function testRequestChild()
+    {
+        $child = new DummyAtomarProperty();
+        $child->setName('child');
+        
+        $test = new DummyAtomarProperty();
+        $test->setName('test');        
+        $test->child = $child;
+        
+        $this->assertEquals($child, $test->requestItem(['child']));
+        $this->assertEquals('terminal', $test->requestItem(['child','terminal']));
+    }
 }
