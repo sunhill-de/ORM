@@ -20,6 +20,7 @@ use Sunhill\ORM\Facades\Tags;
 use Sunhill\ORM\Managers\OperatorManager;
 use Sunhill\ORM\Managers\CollectionManager;
 use Sunhill\ORM\Managers\ObjectDataGenerator;
+use Sunhill\ORM\Facades\InfoMarket;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -41,6 +42,8 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->alias(CollectionManager::class,'collections');
         $this->app->singleton(ObjectDataGenerator::class, function () { return new ObjectDataGenerator(); } );
         $this->app->alias(ObjectDataGenerator::class,'objectdata');
+        $this->app->singleton(InfoMarket::class, function () { return new InfoMarket(); } );
+        $this->app->alias(InfoMarket::class,'infomarket');
     }
     
     public function boot()
