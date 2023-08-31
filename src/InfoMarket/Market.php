@@ -2,19 +2,11 @@
 
 namespace Sunhill\ORM\InfoMarket;
 
-use Sunhill\ORM\Properties\NonAtomarProperty;
-use Sunhill\ORM\InfoMarket\Exceptions\CantProcessMarketeerException;
 use Sunhill\ORM\Properties\Property;
 
-class Market extends NonAtomarProperty
+class Market extends Marketeer
 {
-    
-    /**
-     * Stores the marketeers
-     * @var array
-     */
-    protected $marketeers = [];
-        
+            
     public function hasProperty(string $name): bool
     {
         
@@ -35,9 +27,9 @@ class Market extends NonAtomarProperty
         
     }
 
-    public function installMarketeer(string $marketeer)
+    public function installMarketeer(string $name, string $marketeer)
     {
-        
+        $this->addEntry($name, $marketeer);  
     }
     
     /**
