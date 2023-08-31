@@ -88,5 +88,21 @@ abstract class NonAtomarProperty extends Property
             throw new PropertyException(__("Unknown property ':name'",['name'=>$name]));
         }
     }
-            
+    
+    /**
+     * 
+     * {@inheritDoc}
+     * @see \Sunhill\ORM\Properties\Property::passItemRequest()
+     */
+    protected function passItemRequest(string $name, array $path)
+    {
+        if (!$this->hasProperty($name)) {
+            return false;
+        }
+        $this->checkLoadingState();
+        $property = $this->getProperty($name);
+        
+        return $property->requestItem($path);
+    }
+        
 }
