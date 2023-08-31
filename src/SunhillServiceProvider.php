@@ -21,6 +21,7 @@ use Sunhill\ORM\Managers\OperatorManager;
 use Sunhill\ORM\Managers\CollectionManager;
 use Sunhill\ORM\Managers\ObjectDataGenerator;
 use Sunhill\ORM\Facades\InfoMarket;
+use Sunhill\ORM\InfoMarket\Market;
 
 class SunhillServiceProvider extends ServiceProvider
 {
@@ -42,8 +43,8 @@ class SunhillServiceProvider extends ServiceProvider
         $this->app->alias(CollectionManager::class,'collections');
         $this->app->singleton(ObjectDataGenerator::class, function () { return new ObjectDataGenerator(); } );
         $this->app->alias(ObjectDataGenerator::class,'objectdata');
-        $this->app->singleton(InfoMarket::class, function () { return new InfoMarket(); } );
-        $this->app->alias(InfoMarket::class,'infomarket');
+        $this->app->singleton(Market::class, function () { return new Market(); } );
+        $this->app->alias(Market::class,'infomarket');
     }
     
     public function boot()
