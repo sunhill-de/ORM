@@ -33,6 +33,31 @@ class Item3 extends SimpleInfoMarketItem
     
 }
 
+class Item4 extends SimpleInfoMarketItem
+{
+    protected static $item_semantic = 'Temperature';
+    
+    protected static $item_unit = 'Degreecelsius';
+    
+    protected static $item_readable = true;
+    
+    protected static $item_writeable = true;
+    
+    protected $value = 4;
+    
+    protected function readItem()
+    {
+        return $this->value;
+    }
+    
+    protected function writeItem($value)
+    {
+        $this->value = $value;
+        return $this;
+    }
+    
+}
+
 class DummyMarketeer extends Marketeer
 {
     
@@ -43,6 +68,7 @@ class DummyMarketeer extends Marketeer
         $this->addEntry('item1', Item1::class);
         $this->addEntry('item2', Item2::class);
         $this->addEntry('item3', Item3::class);
+        $this->addEntry('item4', Item4::class);
     }
     
 }

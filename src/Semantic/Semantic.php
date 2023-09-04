@@ -50,9 +50,9 @@ class Semantic
      * @param unknown $input
      * @return string
      */
-    public static function processHumanReadableValue($input): string
+    public static function processHumanReadableValue($input, string $unit): string
     {
-        return $input; // By default do nothing
+        return empty($unit)?$input:$input.' '.$unit; // By default just append unit (if any)
     }
     
     protected static function translate(string $input): string
