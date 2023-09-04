@@ -18,7 +18,7 @@ class Semantic
 {
     protected static $name = 'Semantic';
     
-    protected static $unit = None::class;
+    protected static $unit = 'None';
     
     /**
      * Getter for the name property
@@ -38,6 +38,11 @@ class Semantic
         return static::$unit;
     }
     
+    public static function processValue($input)
+    {
+        return $input;    
+    }
+    
     /**
      * Semantic classes can process a value to make it human readable. For example the semantic 
      * length can add the unit to the value so the value reads "5 m". 
@@ -50,5 +55,9 @@ class Semantic
         return $input; // By default do nothing
     }
     
+    protected static function translate(string $input): string
+    {
+        return $input;
+    }
 }
  
