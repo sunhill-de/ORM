@@ -6,22 +6,24 @@ use Sunhill\ORM\Tests\TestCase;
 use Sunhill\ORM\InfoMarket\Market;
 use Sunhill\ORM\InfoMarket\Marketeer;
 
-class TestMarketeer extends Marketeer
-{
-    
-}
-
 class MarketTest extends TestCase
 {
     
-    public function testProvidesMarketeer()
-    {
-        $marketeer = new TestMarketeer();
-        $marketeer->name = 'test';
-        
+    public function testRequestItem()
+    {        
         $test = new Market();
-        $test->installMarketeer($marketeer);
+        $test->installMarketeer('dummy',DummyMarketeer::class);
         
-        $this->assertEquals($marketeer, $test->getProperty('test'));
+        $item = $test->requestItem(['dummy','item1']);
+        $this->assertEquals('This is item 1', $item->getValue());
+    }
+    
+    public function testGetItem()
+    {
+        $test = new Market();
+        $test->installMarketeer('dummy',DummyMarketeer::class);
+        
+        $info = $test->getItem('dummy.item1','anybody','stdclass');
+        $this->assertEquals('This is item 1',$info->value);
     }
 }
