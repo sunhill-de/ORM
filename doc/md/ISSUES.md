@@ -1,16 +1,29 @@
 # Issues
 
-Known bugs
-- [ ] Migration of collections/objects can't change the maximum string length because there is no way to reliable retrieve the current string length in the database engine
+## Known bugs
+- [ ] (#1) Migration of collections/objects can't change the maximum string length because there is no way to reliable retrieve the current string length in the database engine
 
-Missing features
-- [X] There is no possibility to promote an object to another object
-- [X] Nested subqueries don't work reliable
-- [X] External references are not working
-- [ ] Infofields are not working
-- [X] InfoMarket not integtrated
-- [ ] Infomarket has no way to get the current offer
+## Missing features
+### objects
+- [X] (#2) There is no possibility to promote an object to another object
 
-Wish list
-- [ ] It should be possible to combine queries of different entities (like dummy->search()->where('tag','contains',Tags::query()->where('name','begins with','A'))->get())
+### queries
+- [X] (#3) Nested subqueries don't work reliable
+- [ ] (#4) Classes query with ->whereHasPropertyOfType()
+- [ ] (#5) Classes query with ->whereHasPropertyOfName()
+- [ ] (#6) Classes query with ->whereHasParent()
+- [ ] (#7) Classes query with ->whereIsParentOf()
+
+### properties
+- [X] (#8) External references are not working
+- [ ] (#9) Infofields are not working
+
+### InfoMarket
+- [X] (#10) InfoMarket not integtrated
+- [ ] (#11) Infomarket has no way to get the current offer
+- [ ] (#12) It's not possible to get more results than one
+- [ ] (#13) It's not possible to get a list of wanted results
+      
+## Wish list
+- [ ] (#14) It should be possible to combine queries of different entities (like dummy->search()->where('tag','contains',Tags::query()->where('name','begins with','A'))->get())
 
