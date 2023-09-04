@@ -76,5 +76,18 @@
   "Semantic in time":"Zeitbezogene Semantic",
   "Point in time":"Zeitpunkt",
   "Duration":"Dauer",
-  "Age":"Alter"  
+  "Age":"Alter",  
+  
+  "***** Infomarket":"Infomarket ******************",
+  "An item query mustn't contain :symbol :name":"Eine Anfrage nach nicht das Symbol :symbol enthalten: :name",
+  "The item ':name' doesn't exists.":"Das item ':name' existiert nicht.",
+  "Unkown user group ':restriction'":"Unbekannte Benutzergruppe ':restriction'",
+  "The item ':name' is not accessible":"Auf das Item ':name' ist nicht zuzugreifen",
+  "The item ':name' is not readable":"Das Item ':name' ist nicht lesbar",
+  "Item ':name' is marked as readable but has no get_ method.":"Das Item ':name' ist als lesbar markiert definiert aber keine get_ Methode",
+  "The item ':name' is not writeable":"Das Item ':name' ist nicht schreibbar",
+  "Item ':name' is marked as writeable but has no set_ method.":"Das Item ':name' ist als schreibbar markiert definiert aber keine set_ Methode",
+  "Unknown type for installMarketeer.":"Unbekannter Typ für InstallMarketeer",
+  "Malformed json request for readItemList.":"Ungültige json Anfrage für readItemList"
+
 }
