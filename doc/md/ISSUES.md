@@ -7,7 +7,9 @@ Missing features
 - [X] There is no possibility to promote an object to another object
 - [X] Nested subqueries don't work reliable
 - [X] External references are not working
-- [ ] Infofields are not working due the fact that the info market is not integrated
+- [ ] Infofields are not working
+- [X] InfoMarket not integtrated
+- [ ] Infomarket has no way to get the current offer
 
 Wish list
 - [ ] It should be possible to combine queries of different entities (like dummy->search()->where('tag','contains',Tags::query()->where('name','begins with','A'))->get())
