@@ -25,4 +25,153 @@ class ClassQuery extends ArrayQuery
         return Classes::getAllClasses();
     }
     
+    public function __construct()
+    {
+        $this->condition_builder = new ClassConditionBuilder();    
+    }
+    
+    public function whereHasPropertyOfType(string $type, bool $not_inhertied = false): ClassQuery
+    {
+        if ($not_inhertied) {
+            $this->condition_builder->where('property','has own type',$type);
+        } else {
+            $this->condition_builder->where('property','has type',$type);            
+        }
+        return $this;    
+    }
+    
+    public function orWhereHasPropertyOfType(string $type, bool $not_inhertied = false): ClassQuery
+    {
+        if ($not_inhertied) {
+            $this->condition_builder->orWhere('property','has own type',$type);
+        } else {
+            $this->condition_builder->orWhere('property','has type',$type);
+        }
+        return $this;        
+    }
+    
+    public function whereNotHasPropertyOfType(string $type, bool $not_inhertied = false): ClassQuery
+    {
+        if ($not_inhertied) {
+            $this->condition_builder->whereNot('property','has own type',$type);
+        } else {
+            $this->condition_builder->whereNot('property','has type',$type);
+        }
+        return $this;        
+    }
+    
+    public function orWhereNotHasPropertyOfType(string $type, bool $not_inhertied = false): ClassQuery
+    {
+        if ($not_inhertied) {
+            $this->condition_builder->orWhereNot('property','has own type',$type);
+        } else {
+            $this->condition_builder->orWhereNot('property','has type',$type);
+        }
+        return $this;        
+    }
+    
+    public function whereHasPropertyOfName(string $name, bool $not_inhertied = false): ClassQuery
+    {
+        if ($not_inhertied) {
+            $this->condition_builder->where('property','has own name',$name);
+        } else {
+            $this->condition_builder->where('property','has name',$name);
+        }
+        return $this;
+    }
+    
+    public function orWhereHasPropertyOfName(string $name, bool $not_inhertied = false): ClassQuery
+    {
+        if ($not_inhertied) {
+            $this->condition_builder->orWhere('property','has own name',$name);
+        } else {
+            $this->condition_builder->orWhere('property','has name',$name);
+        }
+        return $this;
+    }
+    
+    public function whereNotHasPropertyOfName(string $name, bool $not_inhertied = false): ClassQuery
+    {
+        if ($not_inhertied) {
+            $this->condition_builder->whereNot('property','has own name',$name);
+        } else {
+            $this->condition_builder->whereNot('property','has name',$name);
+        }
+        return $this;
+    }
+    
+    public function orWhereNotHasPropertyOfName(string $name, bool $not_inhertied = false): ClassQuery
+    {
+        if ($not_inhertied) {
+            $this->condition_builder->orWhereNot('property','has own name',$name);
+        } else {
+            $this->condition_builder->orWhereNot('property','has name',$name);
+        }
+        return $this;
+    }
+    
+    public function whereHasParent(string $name): ClassQuery
+    {
+        $this->condition_builder->where('parent','is',$name);
+        return $this;
+    }
+    
+    public function orWhereHasParent(string $name): ClassQuery
+    {
+        $this->condition_builder->orWhere('parent','is',$name);
+        return $this;
+    }
+    
+    public function whereNotHasParent(string $name): ClassQuery
+    {
+        $this->condition_builder->whereNot('parent','is',$name);
+        return $this;
+    }
+    
+    public function orWhereNotHasParent(string $name): ClassQuery
+    {
+        $this->condition_builder->orWhereNot('parent','is',$name);
+        return $this;
+    }
+    
+    public function whereIsParentOf(string $name, bool $only_direct = false): ClassQuery
+    {
+        if ($only_direct) {
+            $this->condition_builder->where('parent','has direct',$name);
+        } else {
+            $this->condition_builder->where('parent','has',$name);            
+        }
+        return $this;
+    }
+    
+    public function orWhereIsParentOf(string $name, bool $only_direct = false): ClassQuery
+    {
+        if ($only_direct) {
+            $this->condition_builder->orWhere('parent','has direct',$name);
+        } else {
+            $this->condition_builder->orWhere('parent','has',$name);
+        }
+        return $this;
+    }
+    
+    public function whereNotIsParentOf(string $name, bool $only_direct = false): ClassQuery
+    {
+        if ($only_direct) {
+            $this->condition_builder->whereNot('parent','has direct',$name);
+        } else {
+            $this->condition_builder->whereNot('parent','has',$name);
+        }
+        return $this;
+    }
+    
+    public function orWhereNotIsParentOf(string $name, bool $only_direct = false): ClassQuery
+    {
+        if ($only_direct) {
+            $this->condition_builder->orWhereNot('parent','has direct',$name);
+        } else {
+            $this->condition_builder->orWhereNot('parent','has',$name);
+        }
+        return $this;
+    }
+        
 }

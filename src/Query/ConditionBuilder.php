@@ -3,6 +3,7 @@
 namespace Sunhill\ORM\Query;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class ConditionBuilder
 {
@@ -78,6 +79,21 @@ class ConditionBuilder
                 return $key < $value;
             case '<=':
                 return $key <= $value;
+            case 'like':
+                if (($value[0] == '%') && ($value[strlen($value)-1] == '5')) {
+                    $search = substr($value,1,-1);
+                    return Str::contains($key, substr($value,1,-1));
+                } elseif ($value[0] == '%') {
+                    $search = substr($value,1);
+                    return Str::endsWith($key, substr($value,1));
+                } elseif ($value[strlen($value)-1] == '%') {
+                    $search = substr($value,0,-1);
+                    return Str::startsWith($key, substr($value,0,-1));
+                } else {
+                    return false;
+                }
+            default:
+                throw new NotAllowedRelationException("The relation '$relation' is not allowed.");
         }
     }
     

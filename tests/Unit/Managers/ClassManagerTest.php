@@ -18,6 +18,10 @@ use Sunhill\ORM\Managers\Exceptions\ClassNotORMException;
 use Sunhill\ORM\Managers\Exceptions\ClassNotAccessibleException;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Managers\Exceptions\ClassNameForbiddenException;
+use Sunhill\ORM\Properties\PropertyInteger;
+use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Properties\PropertyBoolean;
+use Sunhill\ORM\Properties\PropertyDate;
 
 class BadClass1 extends ORMObject
 {
@@ -836,6 +840,16 @@ class ClassManagerTest extends TestCase
             [function($query) { return $query->count(); }, null, 5],
             [function($query) { return $query->first(); }, function($value) { return $value->name; }, 'object'],
             [function($query) { return $query->orderBy('name')->first(); }, function($value) { return $value->name; }, 'dummy'],
+            [function($query) { return $query->where('name','dummy')->first(); }, function($value) { return $value->name; }, 'dummy'],
+            [function($query) { return $query->where('name','like','test%')->count(); }, null, 2],
+            [function($query) { return $query->where('name','like','%child')->count(); }, null, 2],
+            [function($query) { return $query->where('name','like','dummy%')->count(); }, null, 2],
+            
+            [function($query) { return $query->whereHasPropertyOfType(PropertyInteger::class)->count(); }, null, 5],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyDate::class)->count(); }, null, 2],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyBoolean::class)->count(); }, null, 2],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyBoolean::class, true)->count(); }, null, 1],
+            
             ];
     }
 }
