@@ -119,14 +119,22 @@ class Market extends Marketeer
         if (is_null($item)) {
             return $this->itemNotFound($path);
         }
-        return $this->processResponse($this->translateToResponse($item), $format);
+        $response = $this->translateToResponse($item);
+        $response->request( $path );
+        $response->setElement('credentials', $credentials);
+        
+        return $this->processResponse($response->getStdClass(), $format);
     }
 
-    protected function translateToResponse($item): \StdClass
+    protected function translateToResponse($item): Response
     {
-        $response = new \StdClass();
-        $response->status = 'OK';
-        $response->value  = $item->getValue();
+        $response = new Response();
+        $response->OK()
+            ->unit($item->getUnit())
+            ->semantic($item->getSemantic())
+            ->value($item->getValue())
+            ->readable($item->isReadable())
+            ->writeable($item->isWriteable());
         return $response;
     }
     
@@ -137,7 +145,7 @@ class Market extends Marketeer
                 return $response;
                 break;
             case 'json':
-                return json_encode($repsonse);
+                return json_encode($response);
                 break;
         }
     }
