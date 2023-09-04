@@ -13,6 +13,6 @@ class InfoMarketMarketeer extends Marketeer
         parent::__construct();
         $this->setName('infomarket');
         $this->addEntry('name', InfoMarketNameItem::class);
-        $this->addEntry('name', InfoMarketVersionItem::class);
+        $this->addEntry('version', InfoMarketVersionItem::class);
     }
 }
