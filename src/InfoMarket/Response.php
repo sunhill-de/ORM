@@ -261,10 +261,13 @@ class Response
     public function readable(bool $value = true)
     {
         $this->setElement('readable',$value);
+        return $this;
     }
     
     public function writeable(bool $value = true)
     {
         $this->setElement('writeable',$value);
+        return $this;
     }
+    
 }

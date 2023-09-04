@@ -402,4 +402,10 @@ class AtomarProperty extends Property implements Commitable
         $result->shadow = $this->shadow;
         return $result;
     }
+    
+    public function isWriteable(): bool
+    {
+        return !$this->read_only;
+    }
+    
 }

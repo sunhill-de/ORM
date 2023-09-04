@@ -530,4 +530,14 @@ class Property extends Loggable
         }
         return $this->passItemRequest($next, $path);
     }
+    
+    public function isReadable(): bool
+    {
+        return true;
+    }
+    
+    public function isWriteable(): bool
+    {
+        return false;
+    }
 }
