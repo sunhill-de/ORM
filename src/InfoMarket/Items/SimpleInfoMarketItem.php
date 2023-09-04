@@ -11,9 +11,9 @@ use Sunhill\ORM\InfoMarket\Exceptions\ItemNotReadableException;
 class SimpleInfoMarketItem extends AtomarProperty
 {
     
-    protected static $item_semantic = Name::class;
+    protected static $item_semantic = 'Name';
     
-    protected static $item_unit = None::class;
+    protected static $item_unit = 'None';
     
     protected static $item_readable = true;
     
@@ -53,4 +53,15 @@ class SimpleInfoMarketItem extends AtomarProperty
     {
         return null;
     }
+    
+    public function isReadable(): bool
+    {
+        return static::$item_readable;
+    }
+    
+    public function isWriteable(): bool
+    {
+        return static::$item_writeable;
+    }
+    
 }
