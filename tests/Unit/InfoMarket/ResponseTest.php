@@ -203,7 +203,7 @@ class ResponseTest extends TestCase
             ['Duration',60*60*24*365*2+60*60*24+60*60+35,'2 years and 1 day'],
             ['Duration',60*60*24*365*2+60*60*24*2+60*60*2+35,'2 years and 2 days'],
             // Test Capacity
-   /*         ['Capacity',1,'1 Byte'],
+            ['Capacity',1,'1 Byte'],
             ['Capacity',2,'2 Byte'],
             ['Capacity',1000,'1 kB'],
             ['Capacity',1001,'1 kB'],
@@ -216,7 +216,7 @@ class ResponseTest extends TestCase
             ['Capacity',1000*1100*1000,'1.1 GB'],
             ['Capacity',1000*1000*1000*1000,'1 TB'],
             ['Capacity',1000*1010*1000*1000,'1 TB'],
-            ['Capacity',1000*1100*1000*1000,'1.1 TB'], */
+            ['Capacity',1000*1100*1000*1000,'1.1 TB'], 
         ];
     }
     

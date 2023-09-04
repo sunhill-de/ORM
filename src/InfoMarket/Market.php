@@ -23,6 +23,8 @@ use Sunhill\ORM\Units\Lux;
 use Sunhill\ORM\Units\Percent;
 use Sunhill\ORM\Units\Torr;
 use Sunhill\ORM\Semantic\Illuminance;
+use Sunhill\ORM\Semantic\Capacity;
+use Sunhill\ORM\Units\Byte;
 
 class Market extends Marketeer
 {
@@ -76,6 +78,7 @@ class Market extends Marketeer
         $this->installSemantic('SemanticInTime', SemanticInTime::class);        
         $this->installSemantic('Temperature', Temperature::class);
         $this->installSemantic('Illuminance', Illuminance::class);
+        $this->installSemantic('Capacity', Capacity::class);
     }
     
     protected function installDefaultUnits()
@@ -89,6 +92,7 @@ class Market extends Marketeer
         $this->installUnit('Lux', Lux::class);
         $this->installUnit('Percent', Percent::class);
         $this->installUnit('Torr', Torr::class);
+        $this->installUnit('Byte', Byte::class);
     }
     
     public function installMarketeer(string $name, string $marketeer)
