@@ -143,6 +143,9 @@ The ORM package defines an artisan console command called 'sunhill:migrate' that
 #### Queries
 All entitis of the ORM framework (like attributes, tags, classes, objects) should be able to be queried in a form laravel performs a database query (via QueryBuilder). Therefore all facaces define a query() method that returns a query class to be used in a QueryBuilder like chain. For more informations see [Queries](doc/md/QUERIES.md)
 
+### InfoMarket
+The ORM subsystem implements a centralized information exchange system called InfoMarket. For details see [InfoMarket]/doc/md/INFOMARKET.md)
+
 ## See also
 +[Developer Resources](doc/md/INTERNAL.md)
 +[Known issues](doc/md/ISSUES.md)
