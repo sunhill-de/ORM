@@ -56,7 +56,7 @@ class ClassConditionBuilder extends ConditionBuilder
     protected function matchHasName($entry, $value): bool
     {
         foreach ($entry->properties as $property) {
-            if ($this->matchesName($value, $entry['name'])) {
+            if ($this->matchesName($value, $property['name'])) {
                 return true;
             }
         }
