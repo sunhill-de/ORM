@@ -50,4 +50,13 @@ class MarketTest extends TestCase
         $this->assertEquals('OK', $info->result);
         $this->assertEquals('anybody', $info->credentials);        
     }
+    
+    public function testGetOffer()
+    {
+        $test = new Market();
+        $test->installMarketeer('dummy', DummyMarketeer::class);
+        
+        $info = $test->getOffer('', 'anybody', 'stdclass');
+        $this->assertEquals(['dummy'], $info);
+    }
 }

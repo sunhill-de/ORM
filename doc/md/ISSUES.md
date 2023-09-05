@@ -21,10 +21,9 @@
 
 ### InfoMarket
 - [X] (#10) InfoMarket not integtrated
-- [ ] (#11) Infomarket has no way to get the current offer
+- [X] (#11) Infomarket has no way to get the current offer
 - [ ] (#12) It's not possible to get more results than one
 - [ ] (#13) It's not possible to get a list of wanted results
       
 ## Wish list
 - [ ] (#14) It should be possible to combine queries of different entities (like dummy->search()->where('tag','contains',Tags::query()->where('name','begins with','A'))->get())
-

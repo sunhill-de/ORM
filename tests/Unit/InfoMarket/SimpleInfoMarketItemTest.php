@@ -63,4 +63,10 @@ class SimpleInfoMarketItemTest extends TestCase
         $this->expectException(ItemNotReadableException::class);
         $hilf = $test->getValue();
     }
+    
+    public function testGetOffer()
+    {
+        $test = new DummySimpleInfoMarketItem();
+        $this->assertFalse($test->requestOffer([]));
+    }
 }

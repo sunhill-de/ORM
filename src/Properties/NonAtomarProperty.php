@@ -104,5 +104,21 @@ abstract class NonAtomarProperty extends Property
         
         return $property->requestItem($path);
     }
+ 
+    protected function getMyOffer()
+    {
+        return array_keys($this->getAllProperties());
+    }
         
+    protected function passOfferRequest(string $name, array $path)
+    {
+        if (!$this->hasProperty($name)) {
+            return false;
+        }
+        $this->checkLoadingState();
+        $property = $this->getProperty($name);
+        
+        return $property->requestOffer($path);
+    }
+    
 }
