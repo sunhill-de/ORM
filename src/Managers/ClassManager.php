@@ -720,10 +720,7 @@ class ClassManager
     public function migrateClass(string $class_name) 
     {
         $class_namespace = $this->getNamespaceOfClass($class_name);
-        
-        $example = new $class_namespace();
-        $storage = Storage::createStorage($example);
-        $storage->migrate();
+        $class_namespace::migrate();
     }
     
     public function migrateClasses()
