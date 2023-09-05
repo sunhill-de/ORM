@@ -10,6 +10,13 @@ use Sunhill\ORM\Facades\Classes;
 class ClassConditionBuilder extends ConditionBuilder
 {
 
+    /**
+     * Returns true when the given class ($entry) has a property of the given type ($value)
+     * This returns true even for inherited properties
+     * @param unknown $entry
+     * @param unknown $value
+     * @return bool
+     */
     protected function matchHasType($entry, $value): bool
     {
         $properties = Classes::getPropertiesOfClass($entry->name);
@@ -32,6 +39,41 @@ class ClassConditionBuilder extends ConditionBuilder
         return false;        
     }
     
+    protected function matchesName($test, $target): bool
+    {
+        if (strpos($test,'%') !== false) {
+            $test = str_replace('%','*',$test);
+            if (Str::is($test, $target)) {
+                return true;
+            }
+        }
+        if ($target == $test) {
+            return true;
+        }        
+        return false;
+    }
+    
+    protected function matchHasName($entry, $value): bool
+    {
+        foreach ($entry->properties as $property) {
+            if ($this->matchesName($value, $entry['name'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    protected function matchHasOwnName($entry, $value): bool
+    {
+        $properties = Classes::getNamespaceOfClass($entry->name)::getPropertyDefinition();
+        foreach ($properties as $property) {
+            if ($this->matchesName($value, $property->getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     protected function matchPropertyCondition($entry, $relation, $value): bool
     {
         switch ($relation) {
@@ -39,23 +81,33 @@ class ClassConditionBuilder extends ConditionBuilder
                 return $this->matchHasType($entry, $value);
             case 'has own type':
                 return $this->matchHasOwnType($entry, $value);
+            case 'has name':
+                return $this->matchHasName($entry, $value);
+            case 'has own name':
+                return $this->matchHasOwnName($entry, $value);                
         }
         return false;        
     }
     
     protected function matchIsParent($entry, $value): bool
     {
-        
+        $classes = Classes::getInheritanceOfClass($value);
+        return in_array($entry->name, $classes);
+    }
+    
+    protected function matchIsDirectParent($entry, $value): bool
+    {
+        return $value == $entry->parent;        
     }
     
     protected function matchHasParent($entry, $value): bool
     {
-        
+        return false;        
     }
     
     protected function matchHasDirectParent($entry, $value): bool
     {
-        
+        return false;        
     }
     
     protected function matchParentCondition($entry, $relation, $value): bool
@@ -63,11 +115,14 @@ class ClassConditionBuilder extends ConditionBuilder
         switch ($relation) {
             case 'is':
                 return $this->matchIsParent($entry, $value);
+            case 'is direct':
+                return $this->matchIsDirectParent($entry, $value);
             case 'has':
                 return $this->matchHasParent($entry, $value);
             case 'has direct':
                 return $this->matchHasDirectParent($entry, $value);
         }
+        return false;
     }
     
     protected function matchCondition($entry, $condition): bool

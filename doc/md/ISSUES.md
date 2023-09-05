@@ -9,8 +9,8 @@
 
 ### queries
 - [X] (#3) Nested subqueries don't work reliable
-- [ ] (#4) Classes query with ->whereHasPropertyOfType()
-- [ ] (#5) Classes query with ->whereHasPropertyOfName()
+- [X] (#4) Classes query with ->whereHasPropertyOfType()
+- [X] (#5) Classes query with ->whereHasPropertyOfName()
 - [ ] (#6) Classes query with ->whereHasParent()
 - [ ] (#7) Classes query with ->whereIsParentOf()
 

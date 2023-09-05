@@ -110,27 +110,43 @@ class ClassQuery extends ArrayQuery
         return $this;
     }
     
-    public function whereHasParent(string $name): ClassQuery
+    public function whereHasParent(string $name, bool $only_direct = false): ClassQuery
     {
-        $this->condition_builder->where('parent','is',$name);
+        if ($only_direct) {
+            $this->condition_builder->where('parent','is direct',$name);            
+        } else {
+            $this->condition_builder->where('parent','is',$name);
+        }
         return $this;
     }
     
-    public function orWhereHasParent(string $name): ClassQuery
+    public function orWhereHasParent(string $name, bool $only_direct = false): ClassQuery
     {
-        $this->condition_builder->orWhere('parent','is',$name);
+        if ($only_direct) {
+            $this->condition_builder->orWhere('parent','is direct',$name);
+        } else {
+            $this->condition_builder->orWhere('parent','is',$name);
+        }
         return $this;
     }
     
-    public function whereNotHasParent(string $name): ClassQuery
+    public function whereNotHasParent(string $name, bool $only_direct = false): ClassQuery
     {
-        $this->condition_builder->whereNot('parent','is',$name);
+        if ($only_direct) {
+            $this->condition_builder->whereNot('parent','is direct',$name);
+        } else {
+            $this->condition_builder->whereNot('parent','is',$name);
+        }
         return $this;
     }
     
-    public function orWhereNotHasParent(string $name): ClassQuery
+    public function orWhereNotHasParent(string $name, bool $only_direct = false): ClassQuery
     {
-        $this->condition_builder->orWhereNot('parent','is',$name);
+        if ($only_direct) {
+            $this->condition_builder->orWhereNot('parent','is direct',$name);
+        } else {
+            $this->condition_builder->orWhereNot('parent','is',$name);
+        }
         return $this;
     }
     

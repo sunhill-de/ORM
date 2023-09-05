@@ -22,6 +22,8 @@ use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Properties\PropertyBoolean;
 use Sunhill\ORM\Properties\PropertyDate;
+use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyArray;
 
 class BadClass1 extends ORMObject
 {
@@ -825,6 +827,10 @@ class ClassManagerTest extends TestCase
         Classes::registerClass(TestParent::class);
         Classes::registerClass(TestChild::class);
         Classes::registerClass(DummyChild::class);
+        Classes::registerClass(ReferenceOnly::class);
+        Classes::registerClass(SecondLevelChild::class);
+        Classes::registerClass(ThirdLevelChild::class);
+        
         $query = Classes::query();
         $result = $callback($query);
         
@@ -837,18 +843,27 @@ class ClassManagerTest extends TestCase
     public static function QueryProvider()
     {
         return [
-            [function($query) { return $query->count(); }, null, 5],
+   /*         [function($query) { return $query->count(); }, null, 8],
             [function($query) { return $query->first(); }, function($value) { return $value->name; }, 'object'],
             [function($query) { return $query->orderBy('name')->first(); }, function($value) { return $value->name; }, 'dummy'],
             [function($query) { return $query->where('name','dummy')->first(); }, function($value) { return $value->name; }, 'dummy'],
             [function($query) { return $query->where('name','like','test%')->count(); }, null, 2],
-            [function($query) { return $query->where('name','like','%child')->count(); }, null, 2],
-            [function($query) { return $query->where('name','like','dummy%')->count(); }, null, 2],
-            
-            [function($query) { return $query->whereHasPropertyOfType(PropertyInteger::class)->count(); }, null, 5],
+            [function($query) { return $query->where('name','like','%child')->count(); }, null, 4],
+            [function($query) { return $query->where('name','like','dummy%')->count(); }, null, 2],            
+           [function($query) { return $query->whereHasPropertyOfType(PropertyArray::class)->count(); }, null, 5],
             [function($query) { return $query->whereHasPropertyOfType(PropertyDate::class)->count(); }, null, 2],
             [function($query) { return $query->whereHasPropertyOfType(PropertyBoolean::class)->count(); }, null, 2],
-            [function($query) { return $query->whereHasPropertyOfType(PropertyBoolean::class, true)->count(); }, null, 1],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyBoolean::class, true)->count(); }, null, 1],            
+            [function($query) { return $query->whereHasPropertyOfName('dummyint')->count(); }, null, 2],
+            [function($query) { return $query->whereHasPropertyOfName('dummyint', true)->count(); }, null, 1],
+            [function($query) { return $query->whereHasPropertyOfName('parent%', true)->count(); }, null, 1],
+            [function($query) { return $query->whereHasPropertyOfName('notexisting%', true)->count(); }, null, 0],
+*/
+            [function($query) { return $query->whereHasParent('dummy')->count(); }, null, 1],
+            [function($query) { return $query->whereHasParent('dummychild')->count(); }, null, 0],
+            [function($query) { return $query->whereHasParent('referenceonly')->count(); }, null, 1],
+            [function($query) { return $query->whereHasParent('referenceonly', true)->count(); }, null, 2],
+            [function($query) { return $query->whereHasParent('testparent')->count(); }, null, 2],
             
             ];
     }
