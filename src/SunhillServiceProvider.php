@@ -52,6 +52,7 @@ class SunhillServiceProvider extends ServiceProvider
         Checks::InstallChecker(TagChecks::class);
         Checks::InstallChecker(ObjectChecks::class);
         
+        $this->loadRoutesFrom(__DIR__.'/Routes/web.php');
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang','ORM');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         if ($this->app->runningInConsole()) {
