@@ -47,6 +47,29 @@ The methods ->first() and ->get() return a StdClass object or an array of StdCla
 #### query()
 This method makes it possible to use the result of a class query to do an object query
 
+#### whereHasPropertyOfType/whereNotHasPropertyOfType/orWhereHasPropertyOfType/orWhereNotHasPropertyOfType
+Filters all classes where the condition matches that the class defines a property of the given type. This condition takes two parameters:
+$type: string a mandarory parameter that takes the class of the property as a namespaced classname
+$not_inhertied: bool (defaults to false) an optional parameter that indicates if only classes that define the given property by their own should be passed or even those who inherit the property (default)
+
+#### whereHasPropertyOfName/whereNotHasPropertyOfName/orWhereHasPropertyOfName/orWhereNotHasPropertyOfName
+Filters all classes where the condition matches that the class defines a property with the given name. 
+This condition takes two parameters:
+$name: string a mandarory parameter that takes the name of the property. Wildcards with % are possible.
+$not_inhertied: bool (defaults to false) an optional parameter that indicates if only classes that define the given property by their own should be passed or even those who inherit the property (default)
+
+#### whereHasParent/whereNotHasParent/orWhereHasParent/orWhereNotHasParent
+Filters all classes where the condition matches that the class has the given parent (depending on the second parameter directly or indirectly).
+This condition takes two parameters:
+$name: string a mandatory parameter that takes the internal class name that should be the parent
+$only_direct: boolean (default to false): If true only pass classes that have the given class as direct ancestor otherwise (default) pass classes that have the given class anywhere in their ancestor list
+
+#### whereIsParentOf/whereNotIsParentOf/orWhereIsParentOf/orWhereNotIsParentOf
+Filters all classes where the condition matches that the class is the parent of the given class (depending on the second parameter directly or indirectly).
+This condition takes two paremeters:
+$name: string a mandatory parameter that takes the internal class name of the class which parent is searched
+$only_direct: boolean (default to false): If true only pass classes that are a direct ancestor of the given class otherwise (default) pass all classes that are in the ancestor list.
+
 ## Tags::query()
 The [Tags facade](doc/md/TAGS.md) defines a method ::query() that makes it possible to query for tags.
 
