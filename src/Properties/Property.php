@@ -513,6 +513,17 @@ class Property extends Loggable
     }
 
     /**
+     * Try to pass the offer request to a child element. If none is found return null
+     * @param string $name
+     * @param array $path
+     * @return NULL
+     */
+    protected function passOfferRequest(string $name, array $path)
+    {
+        return null;
+    }
+    
+    /**
      * When no path elements are left return $this, if only one is left check for 
      * terminal item (pseudo child, see requestTerminalItem. Otherwise try to pass
      * The request to a child.
@@ -529,6 +540,20 @@ class Property extends Loggable
             return $result;
         }
         return $this->passItemRequest($next, $path);
+    }
+    
+    protected function getMyOffer()
+    {
+        return false;    
+    }
+    
+    public function requestOffer(array $path)
+    {
+        if (empty($path)) {
+            return $this->getMyOffer();
+        }
+        $next = array_shift($path);
+        return $this->passOfferRequest($next, $path);
     }
     
     public function isReadable(): bool

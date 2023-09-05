@@ -100,6 +100,19 @@ class Market extends Marketeer
         $this->addEntry($name, $marketeer);  
     }
     
+    public function getOffer(string $path, string $credentials = 'anybody', string $format = 'json')
+    {
+        $path_elements = empty($path)?[]:explode('.',$path);
+        
+        try {
+            $offer = $this->requestOffer($path_elements);
+        } catch (\Exception $e) {
+            return $this->handleException($path, $format, $e);
+        }
+        
+        return $this->processResponse($offer, $format);
+    }
+    
     /**
      * gets the value and metadata of the given item $path, checks the access rights and returns it in the wanted format
      * @param $path string: The dot separated path to the item (or branch)
@@ -108,7 +121,7 @@ class Market extends Marketeer
      */
     public function getItem(string $path, string $credentials = 'anybody', string $format = 'json')
     {
-        $path_elements = explode('.',$path);
+        $path_elements = empty($path)?[]:explode('.',$path);
         
         try {
             $item = $this->requestItem($path_elements);

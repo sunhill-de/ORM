@@ -36,4 +36,12 @@ class MarketeerTest extends TestCase
         $this->assertTrue(is_a($item, Item1::class));
         $this->assertEquals('This is item 1', $item->getValue());
     }
+    
+    public function testGetOffer()
+    {
+        $test = new ParentMarketeer();
+        $this->assertEquals(['child'], $test->requestOffer([]));
+        $this->assertEquals(['item1','item2','item3','item4'],$test->requestOffer(['child']));
+        $this->assertFalse($test->requestOffer(['child','item1']));
+    }
 }
