@@ -20,7 +20,7 @@
 
 ### InfoMarket
 - [X] (#10) InfoMarket not integtrated
-- [ ] (#11) Infomarket has no way to get the current offer
+- [X] (#11) Infomarket has no way to get the current offer
 - [ ] (#12) It's not possible to get more results than one
 - [ ] (#13) It's not possible to get a list of wanted results
       
