@@ -97,7 +97,7 @@ class ClassConditionBuilder extends ConditionBuilder
     
     protected function matchIsDirectParent($entry, $value): bool
     {
-        return $value == $entry->parent;        
+        return Classes::getParentOfClass($value) == $entry->name;        
     }
     
     protected function matchHasParent($entry, $value): bool

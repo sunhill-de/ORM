@@ -12,7 +12,7 @@
 - [X] (#4) Classes query with ->whereHasPropertyOfType()
 - [X] (#5) Classes query with ->whereHasPropertyOfName()
 - [X] (#6) Classes query with ->whereHasParent()
-- [ ] (#7) Classes query with ->whereIsParentOf()
+- [X] (#7) Classes query with ->whereIsParentOf()
 - [ ] (#15) Classes query with ->query()
 
 ### properties

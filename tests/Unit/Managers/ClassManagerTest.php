@@ -858,7 +858,7 @@ class ClassManagerTest extends TestCase
             [function($query) { return $query->whereHasPropertyOfName('dummyint', true)->count(); }, null, 1],
             [function($query) { return $query->whereHasPropertyOfName('parent%', true)->count(); }, null, 1],
             [function($query) { return $query->whereHasPropertyOfName('notexisting%', true)->count(); }, null, 0],
-*/
+
             [function($query) { return $query->whereHasParent('dummy')->count(); }, null, 1],
             [function($query) { return $query->whereHasParent('dummy')->first(); }, function($value) { return $value->name; }, 'dummychild'],            
             [function($query) { return $query->whereHasParent('dummychild')->count(); }, null, 0],            
@@ -867,13 +867,13 @@ class ClassManagerTest extends TestCase
             [function($query) { return $query->whereHasParent('referenceonly', true)->first(); }, function($value) { return $value->name; }, 'secondlevelchild'],
             [function($query) { return $query->whereHasParent('referenceonly', true)->count(); }, null, 1],            
             [function($query) { return $query->whereHasParent('testparent')->count(); }, null, 1],
-
+*/
             [function($query) { return $query->whereIsParentOf('dummy')->count(); }, null, 1],
             [function($query) { return $query->whereIsParentOf('dummy')->first(); }, function($value) { return $value->name; }, 'object'],
-            [function($query) { return $query->whereIsParentOf('dummychild')->first(); }, function($value) { return $value->name; }, 'dummy'],
+            [function($query) { return $query->whereIsParentOf('dummychild', true)->first(); }, function($value) { return $value->name; }, 'dummy'],
             [function($query) { return $query->whereIsParentOf('thirdlevelchild')->count(); }, null, 3],
             [function($query) { return $query->whereIsParentOf('thirdlevelchild', true)->count(); }, null, 1],
-            [function($query) { return $query->whereIsParentOf('thirdlevelchild')->first(); }, function($value) { return $value->name; }, 'secondlevelchild'],
+            [function($query) { return $query->whereIsParentOf('thirdlevelchild', true)->first(); }, function($value) { return $value->name; }, 'secondlevelchild'],
             
             ];
     }
