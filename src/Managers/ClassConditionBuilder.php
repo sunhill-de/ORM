@@ -102,12 +102,16 @@ class ClassConditionBuilder extends ConditionBuilder
     
     protected function matchHasParent($entry, $value): bool
     {
-        return false;        
+        if ($entry->name == 'object') {
+            return false; // object has no parents
+        }
+        $classes = Classes::getInheritanceOfClass($entry->name);
+        return in_array($value, $classes);
     }
     
     protected function matchHasDirectParent($entry, $value): bool
     {
-        return false;        
+        return $value == $entry->parent;
     }
     
     protected function matchParentCondition($entry, $relation, $value): bool

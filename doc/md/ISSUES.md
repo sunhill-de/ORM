@@ -11,8 +11,9 @@
 - [X] (#3) Nested subqueries don't work reliable
 - [X] (#4) Classes query with ->whereHasPropertyOfType()
 - [X] (#5) Classes query with ->whereHasPropertyOfName()
-- [ ] (#6) Classes query with ->whereHasParent()
+- [X] (#6) Classes query with ->whereHasParent()
 - [ ] (#7) Classes query with ->whereIsParentOf()
+- [ ] (#15) Classes query with ->query()
 
 ### properties
 - [X] (#8) External references are not working
