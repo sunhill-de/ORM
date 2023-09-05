@@ -843,7 +843,7 @@ class ClassManagerTest extends TestCase
     public static function QueryProvider()
     {
         return [
-   /*         [function($query) { return $query->count(); }, null, 8],
+            [function($query) { return $query->count(); }, null, 8],
             [function($query) { return $query->first(); }, function($value) { return $value->name; }, 'object'],
             [function($query) { return $query->orderBy('name')->first(); }, function($value) { return $value->name; }, 'dummy'],
             [function($query) { return $query->where('name','dummy')->first(); }, function($value) { return $value->name; }, 'dummy'],
@@ -867,7 +867,7 @@ class ClassManagerTest extends TestCase
             [function($query) { return $query->whereHasParent('referenceonly', true)->first(); }, function($value) { return $value->name; }, 'secondlevelchild'],
             [function($query) { return $query->whereHasParent('referenceonly', true)->count(); }, null, 1],            
             [function($query) { return $query->whereHasParent('testparent')->count(); }, null, 1],
-*/
+
             [function($query) { return $query->whereIsParentOf('dummy')->count(); }, null, 1],
             [function($query) { return $query->whereIsParentOf('dummy')->first(); }, function($value) { return $value->name; }, 'object'],
             [function($query) { return $query->whereIsParentOf('dummychild', true)->first(); }, function($value) { return $value->name; }, 'dummy'],
