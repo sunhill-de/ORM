@@ -89,9 +89,9 @@ class StoreTest extends DatabaseTestCase
         
         $this->fillObject($object);
         $attr = $object->dynamicAddProperty('int_attribute', 'integer');
-        $attr->setAttributeID(1);
+        $attr->set_AttributeID(1);
         $attr = $object->dynamicAddProperty('char_attribute', 'string');
-        $attr->setAttributeID(3);
+        $attr->set_AttributeID(3);
         $object->int_attribute = 1509;
         $object->char_attribute = 'LOREM';
         $object->dummyint = 5;

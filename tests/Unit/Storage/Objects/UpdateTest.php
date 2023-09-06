@@ -189,11 +189,11 @@ class UpdateTest extends DatabaseTestCase
         $this->setProperty($object, 'parentmap', ['KeyA'=>'ValueA','KeyB'=>'ValueB']);
         
         $attr = $object->dynamicAddProperty('attribute1', 'integer');
-        $attr->setAttributeID(2);
+        $attr->set_AttributeID(2);
         $attr->loadValue(123);
         
         $attr = $object->dynamicAddProperty('attribute2', 'integer');
-        $attr->setAttributeID(3);
+        $attr->set_AttributeID(3);
         $attr->loadValue(222);
         
         return $object;        
@@ -254,7 +254,7 @@ class UpdateTest extends DatabaseTestCase
         $test->setCollection($object);
         
         $attr = $object->dynamicAddProperty('general_attribute', 'integer');
-        $attr->setAttributeID(4);
+        $attr->set_AttributeID(4);
         $attr->loadValue(222);
         
         $test->dispatch('update', 9);

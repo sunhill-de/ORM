@@ -100,7 +100,7 @@ class ORMObject extends PropertiesCollection
             return false;
         }
         $attribute_obj = $this->dynamicAddProperty($attribute->name, $attribute->type);
-        $attribute_obj->setAttributeID($attribute->id);
+        $attribute_obj->set_AttributeID($attribute->id);
         $attribute_obj->loadValue($value);
         return true;
 	}

@@ -287,7 +287,7 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	   $element_class = $this->element_type;
 	   $element_property = new $element_class();
 	   foreach ($this->getAttributes() as $key => $attr_value) {
-	       $method = 'set'.ucfirst($key);
+	       $method = 'set_'.ucfirst($key);
 	       if (($key !== 'value') && ($key !== 'shadow')) {
 	           $element_property->$method($attr_value);
 	       }

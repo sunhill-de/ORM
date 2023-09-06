@@ -54,7 +54,7 @@ class PropertyQuery extends ArrayQuery
             $entry->type = $value::class;
             $collection = $value->getActualPropertiesCollection();
             if (!is_null($collection) && ($entry->dynamic = $collection->isDynamicProperty($key))) {
-                $entry->attribute_id = $value->getAttributeID();   
+                $entry->attribute_id = $value->get_AttributeID();   
             }
             switch ($value::class) {
                 case PropertyArray::class:

@@ -249,7 +249,7 @@ class Property extends Loggable
         return $this->isDirty();
     }
     
-    protected function setDirty(bool $value = true): Property
+    public function setDirty(bool $value = true): Property
     {
         $this->dirty = $value;
         return $this;
@@ -452,15 +452,15 @@ class Property extends Loggable
      */
     public function __call(string $method, array $params)
     {
-        if (substr($method,0,3) == 'get') {
-            $name = strtolower(substr($method,3));
+        if (substr($method,0,4) == 'get_') {
+            $name = strtolower(substr($method,4));
             if (isset($this->additional_fields[$name])) {
                 return $this->additional_fields[$name];
             } else {
                 return null;
             }
-        } else if (substr($method,0,3) == 'set') {
-            $name = strtolower(substr($method,3));
+        } else if (substr($method,0,4) == 'set_') {
+            $name = strtolower(substr($method,4));
             $this->additional_fields[$name] = $params[0];
             return $this;
         }

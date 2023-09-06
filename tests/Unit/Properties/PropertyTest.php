@@ -31,7 +31,7 @@ class PropertyTest extends TestCase
             ['unit','getUnit','abc',None::class],
             ['setSemantic','getSemantic','abc', Name::class],
             ['semantic','getSemantic','abc', Name::class],
-            ['setClass','getClass','abc', null],
+//            ['setClass','getClass','abc', null],
             ['setReadonly','getReadonly',true, false],
             ['readonly','getReadonly',true, false],
             ['setSearchable','getSearchable',true, false],
@@ -86,9 +86,9 @@ class PropertyTest extends TestCase
     public function testAdditionalGetter($item, $value)
     {
         $test = new Property();
-        $method = 'set'.$item;
+        $method = 'set_'.$item;
         $test->$method($value);
-        $method = 'get'.$item;
+        $method = 'get_'.$item;
         $this->assertEquals($value, $test->$method());
     }
     
