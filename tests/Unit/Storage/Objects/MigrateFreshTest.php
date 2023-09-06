@@ -90,6 +90,7 @@ class MigrateFreshTest extends DatabaseTestCase
                 'referenceonlies'=>['id'],
                 'referenceonlies_testoarray'=>['id','value','index'],
                 'referenceonlies_testsarray'=>['id','value','index'],
+                'referenceonlies_testcarray'=>['id','value','index'],
             ]],            
         ];    
     }
