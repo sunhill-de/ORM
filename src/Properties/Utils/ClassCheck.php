@@ -35,6 +35,11 @@ trait ClassCheck
         return $this;
     }
     
+    public function getAllowedClass()
+    {
+        return $this->allowed_classes;    
+    }
+    
     public function getAllowedClasses(): array
     {
         return $this->allowed_classes;

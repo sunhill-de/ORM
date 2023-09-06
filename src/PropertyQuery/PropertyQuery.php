@@ -64,7 +64,7 @@ class PropertyQuery extends ArrayQuery
                         $entry->allowed_classes = $value->getAllowedClasses();
                     }
                     if ($value->getElementType() == PropertyCollection::class) {
-                        $entry->allowed_collection = $value->getAllowedCollection();
+                        $entry->allowed_collection = $value->getAllowedClass();
                     }
                     break;
                 case PropertyObject::class:    
