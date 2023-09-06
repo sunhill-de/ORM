@@ -18,6 +18,7 @@
 ### properties
 - [X] (#8) External references are not working
 - [ ] (#9) Infofields are not working
+- [ ] (#16) Arrays of collections cant set the allowed collection type
 
 ### InfoMarket
 - [X] (#10) InfoMarket not integtrated
