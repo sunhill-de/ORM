@@ -17,6 +17,8 @@ namespace Sunhill\ORM\Properties;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Storage\StorageBase;
 use Sunhill\ORM\Properties\Utils\ClassCheck;
+use Sunhill\ORM\Objects\Collection;
+use Sunhill\ORM\Facades\Collections;
 
 class PropertyCollection extends AtomarProperty
 {
@@ -29,7 +31,7 @@ class PropertyCollection extends AtomarProperty
 	
 	public function isValid($input): bool
 	{
-        return is_a($input, $this->allowed_collection);
+        return is_numeric($input) || is_a($input, $this->allowed_collection);
 	}
 
 	public function setAllowedCollection(string $allowed_collection): PropertyCollection
@@ -38,15 +40,20 @@ class PropertyCollection extends AtomarProperty
 	   return $this;
 	}
 	
+	public function convertValue($input)
+	{
+	    return $this->checkForCollectionConversion($input);
+	}
+	
 	public function getAllowedCollection(): string
 	{
 	   return $this->allowed_collection;    
 	}
 	
-	public function convertValue($input)
+	protected function checkForCollectionConversion($input)
 	{
 	    if (is_numeric($input)) {
-	        return Objects::load($input);	        
+	        return Collections::loadCollection($this->allowed_collection,$input);
 	    }
 	    return $input;
 	}

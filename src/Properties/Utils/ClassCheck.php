@@ -14,6 +14,7 @@ use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
+use Sunhill\ORM\Objects\Collection;
 
 trait ClassCheck 
 {
@@ -80,4 +81,6 @@ trait ClassCheck
         }
         return $input;        
     }
+    
+    
 }

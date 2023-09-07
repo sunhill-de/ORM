@@ -537,4 +537,28 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	    $storage->setCollection($dummy);
 	    return $storage->dispatch('migrate');	    
 	}
+	
+	protected static function seedRecord(array $data)
+	{
+	   $seed = new static();
+	   foreach ($data as $key => $value) {
+	       if (is_array($value)) {
+	           foreach ($value as $index => $subvalue) {
+	               $seed->$key[$index] = $subvalue;
+	           }
+	       } else {
+	           $seed->$key = $value;
+	       }
+	   }
+	   $seed->commit();
+	   return $seed->getID();
+	}
+	
+	public static function seed(array $data)
+	{
+	    foreach ($data as $record) {
+	        $last = static::seedRecord($record);
+	    }
+	    return $last;
+	}
 }
