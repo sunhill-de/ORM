@@ -83,7 +83,18 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	
 	public function getAllowedClasses()
 	{
-	   return $this->allowed_classes;    
+	    if (empty($this->allowed_classes)) {
+	        throw new InvalidParameterException("The allowed classes/collection for ".static::getInfo('name')." are not set.");
+	    }
+	    return $this->allowed_classes;    
+	}
+	
+	public function getAllowedCollection()
+	{
+	    if (empty($this->allowed_classes)) {
+	        throw new InvalidParameterException("The allowed collection for ".static::getInfo('name')." is not set.");
+	    }
+	    return $this->allowed_classes;
 	}
 	
 	public function setAllowedClass($allowed_class)

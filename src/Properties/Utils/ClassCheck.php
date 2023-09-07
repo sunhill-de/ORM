@@ -13,6 +13,7 @@ namespace Sunhill\ORM\Properties\Utils;
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Facades\Objects;
 use Sunhill\ORM\Objects\ORMObject;
+use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
 
 trait ClassCheck 
 {
@@ -35,8 +36,19 @@ trait ClassCheck
         return $this;
     }
     
-    public function getAllowedClasses(): array
+    public function getAllowedClasses()
     {
+        if (empty($this->allowed_classes)) {
+            throw new InvalidParameterException("The allowed classes for ".static::getInfo('name')." are not set.");
+        }
+        return $this->allowed_classes;
+    }
+    
+    public function getAllowedCollection()
+    {
+        if (empty($this->allowed_classes)) {
+            throw new InvalidParameterException("The allowed collection for ".static::getInfo('name')." is not set.");
+        }
         return $this->allowed_classes;
     }
     
