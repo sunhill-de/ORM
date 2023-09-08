@@ -35,7 +35,9 @@ class MysqlCollectionMigrateFresh extends MysqlCollectionMigrateBase
     
     public function run()
     {
-        $this->main_table_name = ($this->collection)::getInfo('table');
+        if (($this->main_table_name = ($this->collection)::getInfo('table')) == 'objects') {
+            return;
+        }
         Schema::create($this->main_table_name, function($table) {
             $table->integer('id')->primary();
             $this->table = $table;
