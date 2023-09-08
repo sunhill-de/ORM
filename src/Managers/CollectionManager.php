@@ -32,11 +32,12 @@ class CollectionManager
         if (!is_a($class, Collection::class, true)) {
             throw new IsNotACollectionException("The given class '$class' is not a collection.");
         }
+        return $class;
     }
     
     public function loadCollection(string $class, int $id)
     {
-        $this->checkCollection($class);
+        $class = $this->checkCollection($class);
         
         $object = new $class();
         $object->load($id);
@@ -80,5 +81,12 @@ class CollectionManager
     public function getRegisteredCollections()
     {
         return $this->collections;
+    }
+    
+    public function migrateCollections()
+    {
+        foreach ($this->collections as $name => $namespace) {
+            $namespace::migrate();
+        }
     }
 }
