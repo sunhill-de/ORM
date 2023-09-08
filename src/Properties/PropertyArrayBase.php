@@ -111,6 +111,11 @@ class PropertyArrayBase extends AtomarProperty implements \ArrayAccess,\Countabl
 	    return $this;	    
 	}
 	
+	public function getAllowedClass()
+	{
+	   return $this->allowed_classes;    
+	}
+	
 	/**
 	 * Returns the current element of the foreach loop
 	 * 

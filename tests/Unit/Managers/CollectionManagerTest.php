@@ -22,6 +22,7 @@ use Sunhill\ORM\Objects\Collection;
 use Sunhill\ORM\Facades\Collections;
 use Sunhill\ORM\Managers\Exceptions\CollectionClassDoesntExistException;
 use Sunhill\ORM\Managers\Exceptions\IsNotACollectionException;
+use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 
 class CollectionManagerTest extends TestCase
 {
@@ -37,7 +38,7 @@ class CollectionManagerTest extends TestCase
    
     public function testClassNotExist()
     {
-        $this->expectException(CollectionClassDoesntExistException::class);
+        $this->expectException(IsNotACollectionException::class);
         Collections::loadCollection('nonexisting', 2);
     }
     
@@ -46,4 +47,12 @@ class CollectionManagerTest extends TestCase
         $this->expectException(IsNotACollectionException::class);
         Collections::loadCollection(ORMObject::class, 2);
     }
+    
+    public function testRegisterCollection()
+    {
+        Collections::registerCollection(DummyCollection::class);
+        $this->assertEquals(DummyCollection::class, Collections::searchCollection('dummycollection'));
+        $this->assertEquals(['dummycollection'=>DummyCollection::class], Collections::getRegisteredCollections());
+    }
+    
 }

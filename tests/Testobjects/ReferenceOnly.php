@@ -15,6 +15,7 @@ use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Objects\PropertyList;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Properties\PropertyObject;
+use Sunhill\ORM\Properties\PropertyCollection;
 
 class ReferenceOnly extends ORMObject 
 {
@@ -23,7 +24,8 @@ class ReferenceOnly extends ORMObject
     {
         $list->array('testsarray')->setElementType(PropertyVarchar::class);
         $list->array('testoarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy','referenceonly']);
-	}
+        $list->array('testcarray')->setElementType(PropertyCollection::class)->setAllowedClass('dummycollection');
+    }
 
 	protected static function setupInfos()
 	{
