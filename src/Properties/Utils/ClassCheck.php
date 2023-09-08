@@ -60,7 +60,7 @@ trait ClassCheck
     
     protected function isAllowedObject($test): bool
     {
-        if (is_int($test)) {
+        if (is_numeric($test)) {
             $test = Objects::getClassNamespaceOf($test);
         }
         if (empty($this->allowed_classes)) {
