@@ -42,7 +42,7 @@ trait ClassCheck
         return $this->allowed_classes;    
     }
     
-    public function getAllowedClasses(): array
+    public function getAllowedClasses()
     {
         if (empty($this->allowed_classes)) {
             throw new InvalidParameterException("The allowed classes for ".static::getInfo('name')." are not set.");
