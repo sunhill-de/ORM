@@ -367,4 +367,5 @@ class PropertyValueTest extends TestCase
         $test->parentint = 122;
         $this->assertEquals('122A', $test->parentcalc);
     }
+    
 }

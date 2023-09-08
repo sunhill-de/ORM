@@ -7,6 +7,25 @@ use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Tests\Unit\Objects\TestCollections\DummyPropertyCollection;
 use Sunhill\ORM\Tests\Unit\Objects\TestCollections\AnotherDummyPropertyCollection;
+use Sunhill\ORM\Objects\Collection;
+use Sunhill\ORM\Objects\PropertyList;
+
+class NameCollection extends Collection
+{
+    protected static function setupProperties(PropertyList $list)
+    {
+        $list->varchar('name')->setMaxLen(20)->searchable()->setDefault(null);
+    }
+    
+    protected static function setupInfos()
+    {
+        static::addInfo('name', 'namecollection');
+        static::addInfo('table', 'namecollections');
+        static::addInfo('description', 'A test collection for special property names.');
+        static::addInfo('options', 0);
+    }
+    
+}
 
 class PropertyCollection_PropertyTest extends TestCase
 {
@@ -83,5 +102,13 @@ class PropertyCollection_PropertyTest extends TestCase
     public function testTestSimpleChild()
     {
         $this->assertEquals([], TestSimpleChild::getPropertyDefinition());        
+    }
+    
+    public function testNameCollection()
+    {
+         $test = new NameCollection();
+         $test->name = 'ABC';
+         $this->assertEquals('ABC',$test->name);
+         $this->assertEquals('name', $test->getProperty('name')->getName());
     }
 }
