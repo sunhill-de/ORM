@@ -44,7 +44,7 @@ class ComplexCollection extends Collection {
 
 	protected static function setupInfos()
 	{
-	    static::addInfo('name', 'compelxcollection');
+	    static::addInfo('name', 'complexcollection');
 	    static::addInfo('table', 'complexcollections');
 	    static::addInfo('description', 'A more complex collection.');
 	    static::addInfo('options', 0);
