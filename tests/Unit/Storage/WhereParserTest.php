@@ -110,7 +110,7 @@ class WhereParserTest extends TestCase
             [Dummy::class, 'where', 'has associations', 'A', null, TooManyWhereParametersException::class],
             [Dummy::class, 'where', 'int_attribute', 'all of', 3, NotAllowedRelationException::class],
             [Dummy::class, 'where', 'int_attribute', 'in', 3, WrongTypeException::class],
-            [TestParent::class, 'where', 'parentobject', '=', 3.3, WrongTypeException::class],
+            [TestParent::class, 'where', 'parentobject', '=', 'AB', WrongTypeException::class],
         ];
     }
 }
