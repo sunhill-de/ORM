@@ -33,6 +33,7 @@ class Dummy extends ORMObject {
 	    static::addInfo('name_p', 'dummies');
 	    static::addInfo('description', 'A dummy test object class that only provides an integer');
 	    static::addInfo('options', 0);
+	    static::addInfo('special', true);
 	}
 	
 }

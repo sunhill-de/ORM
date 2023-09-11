@@ -103,6 +103,9 @@ class ConditionBuilder
             return $this->matchCallbackCondition($entry, $condition);
         }
         $key_field = $condition->key;
+        if (!property_exists($entry,$key_field)) {
+            return false;
+        }
         $key = $entry->$key_field;
         $value = $condition->value;
         return $this->matchSimpleCondition($key, $condition->relation, $value);

@@ -875,6 +875,8 @@ class ClassManagerTest extends TestCase
             [function($query) { return $query->whereIsParentOf('thirdlevelchild', true)->count(); }, null, 1],
             [function($query) { return $query->whereIsParentOf('thirdlevelchild', true)->first(); }, function($value) { return $value->name; }, 'secondlevelchild'],
             
+            [function($query) { return $query->where('table','dummies')->first(); }, function($value) { return $value->name; }, 'dummy'],
+            [function($query) { return $query->where('special',true)->first(); }, function($value) { return $value->name; }, 'dummy'],
             ];
     }
 }
