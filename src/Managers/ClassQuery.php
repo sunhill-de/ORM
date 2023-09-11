@@ -189,5 +189,5 @@ class ClassQuery extends ArrayQuery
         }
         return $this;
     }
-        
-}
+    
+ }
