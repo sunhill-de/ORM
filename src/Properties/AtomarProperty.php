@@ -324,7 +324,7 @@ class AtomarProperty extends Property implements Commitable
                 $this->initialized = true;
             } else {
                 if (!$this->initializeValue()) {
-                    throw new UninitializedPropertyException("Read of a not initialized property: '".$this->name."'");
+                    throw new UninitializedPropertyException("Read of a not initialized property: '".$this->_name."'");
                 }
             }
         }

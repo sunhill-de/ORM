@@ -30,7 +30,7 @@ class Property extends Loggable
      * Property->getOwner() reads, Property->setOwner() writes
      * @var string
      */
-    protected $owner='';
+    protected $_owner='';
     
     protected static $type = 'none';
     
@@ -44,7 +44,7 @@ class Property extends Loggable
      */
     public function setOwner(string $owner): Property
     {
-        $this->owner = $owner;
+        $this->_owner = $owner;
         return $this;
     }
     
@@ -69,7 +69,7 @@ class Property extends Loggable
      */
     public function getOwner(): string
     {
-        return $this->owner;
+        return $this->_owner;
     }
     
     /**
@@ -79,7 +79,7 @@ class Property extends Loggable
      */
     public function hasOwner(): bool
     {
-        return !is_null($this->owner);    
+        return !is_null($this->_owner);    
     }
     
     protected $actual_properties_collection;
@@ -114,7 +114,7 @@ class Property extends Loggable
      * Property->getName() reads, Property->setName() writes
      * @var string
      */
-    protected $name = "";
+    protected $_name = "";
     
     /**
      * sets the field Property->name
@@ -126,7 +126,7 @@ class Property extends Loggable
     public function setName(string $name): Property
     {
         $this->checkName($name);
-        $this->name = $name;
+        $this->_name = $name;
         return $this;
     }
     
@@ -137,7 +137,7 @@ class Property extends Loggable
      */
     public function forceName(string $name): Property
     {
-        $this->name = $name;
+        $this->_name = $name;
         return $this;
     }
     
@@ -161,7 +161,7 @@ class Property extends Loggable
      */
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->_name;
     }
     
     // ============================== State-Handling ===========================================    
