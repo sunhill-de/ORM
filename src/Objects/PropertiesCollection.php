@@ -543,7 +543,7 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	public static function getSeedID(string $name)
 	{
 	    if (isset(static::$seed_ids[$name])) {
-	        return static::$seed_ids[$name];
+	        return intval(static::$seed_ids[$name]);
 	    }
 	    throw new PropertiesCollectionException("Requested unknown seed id '$name'");
 	}
