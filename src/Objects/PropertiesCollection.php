@@ -538,7 +538,17 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	    return $storage->dispatch('migrate');	    
 	}
 	
-	protected static function seedRecord(array $data)
+	protected static $seed_ids = [];
+	
+	public static function getSeedID(string $name)
+	{
+	    if (isset(static::$seed_ids[$name])) {
+	        return static::$seed_ids[$name];
+	    }
+	    throw new PropertiesCollectionException("Requested unknown seed id '$name'");
+	}
+	
+	protected static function seedRecord($seed_id, array $data)
 	{
 	   $seed = new static();
 	   foreach ($data as $key => $value) {
@@ -551,13 +561,16 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	       }
 	   }
 	   $seed->commit();
+	   if (is_string($seed_id)) {
+	       static::$seed_ids[$seed_id] = $seed->getID();
+	   }
 	   return $seed->getID();
 	}
 	
 	public static function seed(array $data)
 	{
-	    foreach ($data as $record) {
-	        $last = static::seedRecord($record);
+	    foreach ($data as $key => $record) {
+	        $last = static::seedRecord($key, $record);
 	    }
 	    return $last;
 	}

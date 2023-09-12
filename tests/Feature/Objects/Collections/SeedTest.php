@@ -23,15 +23,15 @@ class SeedTest extends DatabaseTestCase
         DB::table('dummycollections')->truncate();
         
         $id = DummyCollection::seed([
-            ['dummyint'=>123],
-            ['dummyint'=>234],
-            ['dummyint'=>345]
+            'dummy1'=>['dummyint'=>123],
+            'dummy2'=>['dummyint'=>234],
+            'dummy3'=>['dummyint'=>345]
         ]);
         DummyCollection::seed([
-            ['dummyint'=>456]
+            ['dummyint'=>DummyCollection::getSeedID('dummy2')]
         ]);
         $this->assertDatabaseHas('dummycollections',['id'=>1,'dummyint'=>123]);
-        $this->assertDatabaseHas('dummycollections',['id'=>4,'dummyint'=>456]);
+        $this->assertDatabaseHas('dummycollections',['id'=>4,'dummyint'=>2]);
         $this->assertEquals(3, $id);
     }
     
