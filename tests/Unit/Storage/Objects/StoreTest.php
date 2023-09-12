@@ -16,6 +16,8 @@ use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Properties\PropertyVarchar;
+use Sunhill\ORM\Tests\Testobjects\DummyCollection;
+use Sunhill\ORM\Facades\Collections;
 
 class StoreTest extends DatabaseTestCase
 {
@@ -379,10 +381,12 @@ class StoreTest extends DatabaseTestCase
         $object->testsarray[] = 'DEF';
         $object->testoarray[] = $this->getObject(1);
         $object->testoarray[] = $this->getObject(2);
-    
+        $object->testcarray[] = $this->getCollection(1);
+        $object->testcarray[] = $this->getCollection(1);
+        
         $test->dispatch('store');
         $id = $object->getID();
-        
+
         $this->assertDatabaseHas('referenceonlies',['id'=>$id]);
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>$id,'index'=>0,'value'=>'ABC']);
         $this->assertDatabaseHas('referenceonlies_testsarray',['id'=>$id,'index'=>1,'value'=>'DEF']);

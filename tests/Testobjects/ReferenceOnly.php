@@ -24,7 +24,9 @@ class ReferenceOnly extends ORMObject
     {
         $list->array('testsarray')->setElementType(PropertyVarchar::class);
         $list->array('testoarray')->setElementType(PropertyObject::class)->setAllowedClasses(['dummy','referenceonly']);
-        $list->array('testcarray')->setElementType(PropertyCollection::class)->setAllowedClass('dummycollection');
+        $list->array('testcarray')
+             ->setElementType(PropertyCollection::class)
+             ->setAllowedClass(DummyCollection::class);
     }
 
 	protected static function setupInfos()

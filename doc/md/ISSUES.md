@@ -3,6 +3,7 @@
 ## Known bugs
 - [ ] (#1) Migration of collections/objects can't change the maximum string length because there is no way to reliable retrieve the current string length in the database engine
 - [X] (#17) When a property is named "name" it fails because it overwrites the protected property name
+- [X] (#18) With array of collection an exception is raised due a unknown method
 
 ## Missing features
 ### objects
