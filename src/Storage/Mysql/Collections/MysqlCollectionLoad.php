@@ -73,7 +73,7 @@ class MysqlCollectionLoad extends MysqlAction implements HandlesProperties
                     $this->collection->getProperty($name)->loadIndexedValue($entry->index, $this->loadObject($entry->value));
                     break;
                 case PropertyCollection::class:
-                    $this->collection->getProperty($name)->loadIndexedValue($entry->index, $this->loadCollection($entry->value));
+                    $this->collection->getProperty($name)->loadIndexedValue($entry->index, $this->loadCollection($property->allowed_collection,$entry->value));
                     break;
                 default:
                     $this->collection->getProperty($name)->loadIndexedValue($entry->index, $entry->value);
