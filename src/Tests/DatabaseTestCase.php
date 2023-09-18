@@ -16,6 +16,7 @@ use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
 use Sunhill\ORM\Tests\Testobjects\SecondLevelChild;
 use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
+use Sunhill\ORM\Tests\Testobjects\Circular;
 
 class DatabaseTestCase extends TestCase
 {
@@ -48,6 +49,7 @@ class DatabaseTestCase extends TestCase
         Classes::registerClass(SecondLevelChild::class);
         Classes::registerClass(ThirdLevelChild::class);
         Classes::registerClass(CalcClass::class);
+        Classes::registerClass(Circular::class);
     }
         
 }
