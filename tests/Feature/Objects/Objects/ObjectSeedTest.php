@@ -28,7 +28,15 @@ class ObjectSeedTest extends DatabaseTestCase
         $this->assertEquals(919, $load->dummyint);
     }
     
-    public function testInsertTestParent()
+    public function testPostSeedDummy()
+    {
+        Dummy::postSeed([1=>['dummyint'=>987]]);
+        
+        $load = Objects::load(1);
+        $this->assertEquals(987, $load->dummyint);
+    }
+    
+    public function testSeedTestParent()
     {
         $id = TestParent::seed([
             [
@@ -65,6 +73,14 @@ class ObjectSeedTest extends DatabaseTestCase
         $this->assertEquals('Def Leppard', $load->parentsarray[1]);        
         $this->assertEquals('Value C', $load->parentmap['KeyC']);
         $this->assertEquals(123, $load->attribute2);
+    }
+    
+    public function testPostSeedTestParent()
+    {
+        TestParent::postSeed([17=>['parentobject'=>5]]);
+        
+        $load = Objects::load(17);
+        $this->assertEquals(5, $load->parentobject->getID());
     }
     
     public function testInsertTestChild()

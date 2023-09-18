@@ -32,6 +32,7 @@ use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyArray;
 use Sunhill\ORM\Properties\PropertyMap;
 use Sunhill\ORM\PropertyQuery\PropertyQuery;
+use Sunhill\ORM\Facades\Objects;
 
 /**
  * Basic class for all classes that have properties.
@@ -573,5 +574,28 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	        $last = static::seedRecord($key, $record);
 	    }
 	    return $last;
+	}
+	
+	protected static function postSeedRecord(int $object_id, array $data)
+	{
+	   $object = new static();
+	   $object->load($object_id);
+	   foreach ($data as $key => $value) {
+	       if (is_array($value)) {
+	           foreach ($value as $index => $subvalue) {
+	               $object->$key[$index] = $subvalue;
+	           }
+	       } else {
+	           $object->$key = $value;
+	       }
+	   }
+	   $object->commit();
+	}
+	
+	public static function postSeed(array $data)
+	{
+	    foreach ($data as $key => $record) {
+	        static::postSeedRecord($key, $record);
+	    }
 	}
 }
