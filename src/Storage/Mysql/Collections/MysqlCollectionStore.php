@@ -37,6 +37,11 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
         $this->storeOtherTables();
     }
 
+    protected function rerunProperties()
+    {
+            
+    }
+    
     protected function storeMainTable()
     {
         $this->storeTable($this->collection::getInfo('table'), $this->tables[$this->collection::getInfo('table')]);        
@@ -119,7 +124,9 @@ class MysqlCollectionStore extends MysqlAction implements HandlesProperties
     {
         $value = $property->value;
         if (!is_null($value)) {
-            $value->commit(); // For the case that the object is not commited yet
+            if ($value->getDirty()) {
+                $value->commit(); // For the case that the object is not commited yet
+            }
             $this->handleLinearField($property, $value->getID());
             $this->objectAssigned($value->getID());
         } else {
