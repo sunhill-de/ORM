@@ -67,6 +67,10 @@ class ObjectObjectAssignsTableSeeder extends Seeder {
 	        
 	        ['container_id'=>33,'target_id'=>1],
 	        
+	        ['container_id'=>34,'target_id'=>35],
+	        ['container_id'=>35,'target_id'=>36],
+	        ['container_id'=>35,'target_id'=>34],
+	        ['container_id'=>36,'targer_id'=>35],
 	        
 	    ]);
 	}

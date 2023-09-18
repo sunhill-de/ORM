@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ReferenceOnliesTableSeeder::class);
         $this->call(ReferenceOnliesTestOArrayTableSeeder::class);
         $this->call(ReferenceOnliesTestSArrayTableSeeder::class);
+        $this->call(CircularsTableSeeder::class);
         
         $this->call(SecondLevelChildrenTableSeeder::class);
         $this->call(ThirdLevelChildrenTableSeeder::class);
