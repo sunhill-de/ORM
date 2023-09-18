@@ -10,6 +10,7 @@ use Sunhill\ORM\Tests\Testobjects\TestChild;
 use Sunhill\ORM\Storage\Mysql\MysqlStorage;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
+use Sunhill\ORM\Tests\Testobjects\Circular;
 
 class LoadTest extends DatabaseTestCase
 {
@@ -138,4 +139,29 @@ class LoadTest extends DatabaseTestCase
         $this->assertEquals('Test B', $test->testsarray[1]);
     }
     
+    /**
+     * @group circular
+     */
+    public function testCircular()
+    {
+        $test1 = new Circular();
+        $test1->load(34);
+        $this->assertEquals(111,$test1->payload);
+        $this->assertNull($test1->parent);
+        $this->assertEquals(222,$test1->child->payload);
+        $this->assertEquals(333,$test1->child->child->payload);
+        
+        $test2 = new Circular();
+        $test2->load(35);
+        $this->assertEquals(222,$test2->payload);
+        $this->assertEquals(111,$test2->parent->payload);
+        $this->assertEquals(333,$test2->child->payload);
+        
+        $test3 = new Circular();
+        $test3->load(36);
+        $this->assertEquals(333,$test3->payload);
+        $this->assertEquals(222,$test3->parent->payload);
+        $this->assertEquals(111,$test3->parent->parent->payload);
+        
+    }
 }

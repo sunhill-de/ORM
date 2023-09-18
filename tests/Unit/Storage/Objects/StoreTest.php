@@ -18,6 +18,7 @@ use Sunhill\ORM\Properties\PropertyInteger;
 use Sunhill\ORM\Properties\PropertyVarchar;
 use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Facades\Collections;
+use Sunhill\ORM\Tests\Testobjects\Circular;
 
 class StoreTest extends DatabaseTestCase
 {
@@ -533,6 +534,43 @@ class StoreTest extends DatabaseTestCase
         $this->assertDatabaseHas('testparents_parentsarray',['id'=>$id, 'value'=>'GHI', 'index'=>2]);
         $this->assertDatabaseHas('testparents_parentmap',['id'=>$id, 'value'=>'ValueA', 'index'=>'KeyA']);
         $this->assertDatabaseHas('testparents_parentmap',['id'=>$id, 'value'=>'ValueB', 'index'=>'KeyB']);        
+    }
+    
+    /**
+     * @group circular
+     */
+    public function testCircular1()
+    {
+        $test1 = new Circular();
+        $test1->load(34);
+        $test2 = new Circular();
+        $test2->payload=2222;
+        
+        $test2->parent = $test1;
+        
+        $test2->commit();
+        
+        $this->assertDatabaseHas('circulars',['id'=>$test2->getID(),'payload'=>2222,'parent'=>34]);
+    }
+    
+    /**
+     * @group circular
+     */
+    public function testCircular2()
+    {
+        $test1 = new Circular();
+        $test2 = new Circular();
+        $test1->payload=1111;
+        $test2->payload=2222;
+        
+        $test1->child = $test2;
+        $test2->parent = $test1;
+        
+        $test1->commit();
+        $test2->commit();
+        
+        $this->assertDatabaseHas('circulars',['id'=>$test1->getID(),'payload'=>1111,'child'=>$test2->getID()]);
+        $this->assertDatabaseHas('circulars',['id'=>$test2->getID(),'payload'=>2222,'parent'=>$test1->getID()]);        
     }
     
 }
