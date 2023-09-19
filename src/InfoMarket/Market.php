@@ -129,8 +129,8 @@ class Market extends Marketeer
             return $this->handleException($path, $format, $e);
         }
         
-        if (is_null($item)) {
-            return $this->itemNotFound($path);
+        if (($item === false) || is_null($item)) {
+            return $this->itemNotFound($path, $format);
         }
         $response = $this->translateToResponse($item);
         $response->request( $path );
@@ -153,28 +153,29 @@ class Market extends Marketeer
     
     protected function processResponse($response, string $format)
     {
-        switch ($format) {
-            case 'stdclass':
-                return $response;
-                break;
-            case 'json':
-                return json_encode($response);
-                break;
-        }
+        return $response->get($format);
     }
     
     protected function handleException(string $path, string $format, $exception)
     {
         switch ($exception::class) {
             case ItemNotReadableException::class:
-                return $this->handleError('ITEMNOTREADABLE', "The item is not readable.");
+                return $this->handleError('ITEMNOTREADABLE', "The item is not readable.", $format);
                 break;
         }
     }
     
     protected function itemNotFound(string $path, string $format)
     {
-        
+        return $this->handleError('ITEMNOTFOUND', "The item '$path' was not found.", $format);
+    }
+    
+    protected function handleError($error_code, $error_message, $format)
+    {
+        $response = new Response();
+        $response->failed()
+            ->error($error_message,$error_code);
+        return $this->processResponse($response, $format);
     }
     
     /**
