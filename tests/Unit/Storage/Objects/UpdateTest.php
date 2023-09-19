@@ -13,6 +13,7 @@ use Sunhill\ORM\Tests\Testobjects\ReferenceOnly;
 use Sunhill\ORM\Objects\Tag;
 use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
+use Sunhill\ORM\Tests\Testobjects\Circular;
 
 class UpdateTest extends DatabaseTestCase
 {
@@ -355,6 +356,7 @@ class UpdateTest extends DatabaseTestCase
      * @group updateobject
      * @group object
      * @group update
+     * @group child
      */
     public function testTestChild()
     {
@@ -569,6 +571,22 @@ class UpdateTest extends DatabaseTestCase
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27,'value'=>2,'index'=>0]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27,'value'=>1,'index'=>1]);
         $this->assertDatabaseHas('referenceonlies_testoarray',['id'=>27,'value'=>3,'index'=>2]);
+    }
+
+    /**
+     * @group circular
+     */
+    public function testCircular()
+    {
+        $test1 = new Circular();
+        $test1->load(34);
+        
+        $test2 = new Circular();
+        $test2->load(36);
+        $test2->child = $test1;
+        $test2->commit();
+        
+        $this->assertDatabaseHas('circulars',['id'=>36,'payload'=>333,'child'=>34]);
     }
         
 }

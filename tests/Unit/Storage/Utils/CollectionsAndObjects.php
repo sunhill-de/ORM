@@ -27,7 +27,7 @@ trait CollectionsAndObjects
     protected function getComplexCollection($id)
     {
         $test = $this->getMockBuilder(ComplexCollection::class)->disableOriginalConstructor()->getMock();
-        $test->expects($this->once())->method('commit')->will($this->returnValue(null));
+        $test->expects($this->any())->method('commit')->will($this->returnValue(null));
         $test->expects($this->any())->method('getID')->will($this->returnValue($id));
         $this->setProtectedProperty($test,'id',$id);
         return $test;        

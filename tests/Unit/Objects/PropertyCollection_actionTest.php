@@ -66,18 +66,22 @@ class PropertyCollection_actionTest extends TestCase
             // ************** Creating ************************
             [DummyCollection::class, null, function($object) 
             { 
+                $object->setDirty(true);
                 $object->commit(); 
             }, 'collection_store'],
             [ComplexCollection::class, null, function($object) 
             { 
+                $object->setDirty(true);
                 $object->commit(); 
             }, 'collection_store'],
             [Dummy::class, null, function($object) 
             { 
+                $object->setDirty(true);
                 $object->commit(); 
             }, 'object_store'],
             [TestParent::class, null, function($object) 
             { 
+                $object->setDirty(true);                
                 $object->commit(); 
             }, 'object_store'],
             
