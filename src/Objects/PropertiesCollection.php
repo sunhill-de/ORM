@@ -481,7 +481,9 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	public function commit()
 	{
 	    if ($this->isCommitting()) {
-	        $this->setState('needsrecommit');
+	        return;
+	    }
+	    if (!$this->isDirty()) {
 	        return;
 	    }
 	    $this->setState('committing');
