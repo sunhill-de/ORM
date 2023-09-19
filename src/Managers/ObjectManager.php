@@ -132,7 +132,7 @@ class ObjectManager
 		      $query = $query->offset($delta);
 		    }
 	        if ($limit > 0) {
-	            $query->query->limit($limit);
+	            $query = $query->limit($limit);
 	        }
 		    $objects = $query->get();
 		    if ($nochildren) {
