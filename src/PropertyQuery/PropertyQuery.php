@@ -94,7 +94,9 @@ class PropertyQuery extends ArrayQuery
             $entry->semantic = $value->getSemantic();
             $entry->searchable = $value->getSearchable();
             $entry->initialized = $value->getInitialized();
-            
+            foreach ($value->getAdditionalFields() as $key => $keyvalue) {
+                $entry->$key = $keyvalue;
+            }
             if ($value->getInitialized() && $this->include_values && !is_a($value, PropertyExternalReference::class) && ($value::class !== PropertyInformation::class)) {
                 $entry->value = $value->getValue();
                 $entry->shadow = $value->getShadow();
