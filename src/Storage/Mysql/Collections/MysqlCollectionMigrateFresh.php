@@ -39,7 +39,7 @@ class MysqlCollectionMigrateFresh extends MysqlCollectionMigrateBase
             return;
         }
         Schema::create($this->main_table_name, function($table) {
-            $table->integer('id')->primary();
+            $table->integer('id')->autoIncrement();
             $this->table = $table;
             $this->runProperties(true);
         });
