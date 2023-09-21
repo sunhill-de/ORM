@@ -486,6 +486,11 @@ class Property extends Loggable
         return $result;
     }
     
+    public function getAdditionalFields()
+    {
+        return $this->additional_fields;
+    }
+    
     public static function getType(): string
     {
         return static::$type;
