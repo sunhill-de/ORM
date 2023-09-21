@@ -136,7 +136,7 @@ class Market extends Marketeer
         $response->request( $path );
         $response->setElement('credentials', $credentials);
         
-        return $this->processResponse($response->getStdClass(), $format);
+        return $this->processResponse($response, $format);
     }
 
     protected function translateToResponse($item): Response
@@ -153,7 +153,22 @@ class Market extends Marketeer
     
     protected function processResponse($response, string $format)
     {
-        return $response->get($format);
+        if (is_array($response)) {
+            switch ($format) {
+                    case 'json':
+                        return json_encode($response);
+                        break;
+                    case 'stdclass':
+                    case 'object':
+                        return json_decode(json_encode($response), false);
+                        break;
+                    case 'array':
+                        return $response;
+                        break;
+             }            
+        } else {
+            return $response->get($format);
+        }
     }
     
     protected function handleException(string $path, string $format, $exception)
