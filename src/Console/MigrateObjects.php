@@ -18,6 +18,7 @@ namespace Sunhill\ORM\Console;
 
 use Illuminate\Console\Command;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Collections;
 
 class MigrateObjects extends Command
 {
@@ -42,6 +43,8 @@ class MigrateObjects extends Command
                 Classes::migrateClass($name);
             }
         }
+        $this->info(__('Migrating collections...'));
+        Collections::migrateCollections();
         $this->info(__('Migrating finished.'));
     }
 }
