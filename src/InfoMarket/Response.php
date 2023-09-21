@@ -68,6 +68,7 @@ class Response
             case 'raw':
                 return $this->elements->value;
                 break;
+            case 'stdclass':
             case 'object':
                 return $this->elements;
                 break;
