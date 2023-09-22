@@ -42,6 +42,14 @@ class MysqlQuery extends DBQuery
         return $this->execute();        
     }
     
+    protected function handleOrder()
+    {
+        if (is_a($this->collection,ORMObject::class) && ($this->order_key == 'id')) {
+            $this->order_key = 'objects.id';
+        }
+        parent::handleOrder();    
+    }
+    
     protected function returnObjects()
     {
         $result = $this->finalizeQuery()->get();

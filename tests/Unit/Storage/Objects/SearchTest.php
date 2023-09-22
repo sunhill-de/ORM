@@ -325,6 +325,11 @@ class SearchTest extends DatabaseTestCase
                     $query->where('parentsarray','has','ABCD')->where('parentsarray','has','DEFG');
                 })->get();
             }, [9,10] ],
+            [TestParent::class, function($query) {
+                return $query->where('parentint',111)->orWhere(function($query) {
+                    $query->where('parentsarray','has','ABCD')->where('parentsarray','has','DEFG');
+                })->orderBy('id','desc')->get();
+            }, [10,9] ],
             ];
     }
 }
