@@ -11,6 +11,7 @@
 ## Missing features
 ### objects
 - [X] (#2) There is no possibility to promote an object to another object
+- [ ] (#22) It's not possible to modify the type of an attribute
 
 ### queries
 - [X] (#3) Nested subqueries don't work reliable
