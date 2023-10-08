@@ -203,5 +203,22 @@ class Market extends Marketeer
     public function setItem(string $path, $value, string $credentials = 'anybody', string $format = 'json')
     {
     }
+    
+    public function lookupValueInCache(string $path, string $type = 'unknown', string $credentials = 'anybody')
+    {
         
+    }
+    
+    /**
+     * Inserts a value in the market cache. 
+     * @param string $path The ID of the item that should be inserted
+     * @param string $type The name of the type. If set to unknown the method looks it up
+     * @param bool $track Is set to true, the previous value is saved to allow a history
+     * @param string $credentials The credentials of the current user
+     */
+    public function insertValueInCache(string $path, string $type = 'unknown', bool $track = false, string $credentials = 'anybody')
+    {
+        
+    }
+    
 }
