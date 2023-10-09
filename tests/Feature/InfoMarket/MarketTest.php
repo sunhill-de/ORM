@@ -17,4 +17,15 @@ class MarketTest extends TestCase
         $this->assertEquals('InfoMarket', $info->value);
     }
     
+    public function testGetOffer()
+    {
+        InfoMarket::installMarketeer('infomarket',InfoMarketMarketeer::class);
+        
+        $offer = InfoMarket::getOffer('', 'anybody', 'stdclass');
+        $this->assertEquals('infomarket', $offer[0]);
+        
+        $offer = InfoMarket::getOffer('infomarket', 'anybody', 'stdclass');
+        $this->assertEquals(['name','version'], $offer);
+        
+    }
 }
