@@ -196,7 +196,24 @@ class MysqlAttributeQuery extends DBQuery
     public function insert($fields)
     {
         $id = DB::table('attributes')->insertGetId($this->getRealUpdate($fields));
-        return $id;
+        Schema::create('attr_'.$fields['name'], function($table) use ($fields) {
+            $table->integer('object_id')->primary();
+            switch ($fields['type']) {
+                case 'integer':
+                    $table->integer('value');
+                    break;
+                case 'string':
+                    $table->string('value');
+                    break;
+                case 'float':
+                    $table->float('value');
+                    break;
+                case 'text':
+                    $table->text('value');
+                    break;
+            }
+        });
+            return $id;
     }
     
     public function delete()
