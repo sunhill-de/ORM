@@ -17,6 +17,7 @@ use Sunhill\ORM\Semantic\Name;
 use Sunhill\ORM\Units\None;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\Exceptions\InvalidNameException;
+use Sunhill\ORM\InfoMarket\Response;
 
 class Property extends Loggable
 {
@@ -570,4 +571,12 @@ class Property extends Loggable
     {
         return false;
     }
+    
+    public function createResponseFromValue($value): Response
+    {
+        $result = new Response();
+        $result->value($value);
+        return $result;
+    }
+    
 }
