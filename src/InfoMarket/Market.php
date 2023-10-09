@@ -25,6 +25,7 @@ use Sunhill\ORM\Units\Torr;
 use Sunhill\ORM\Semantic\Illuminance;
 use Sunhill\ORM\Semantic\Capacity;
 use Sunhill\ORM\Units\Byte;
+use Sunhill\ORM\Semantic\Count;
 
 class Market extends Marketeer
 {
@@ -79,6 +80,7 @@ class Market extends Marketeer
         $this->installSemantic('Temperature', Temperature::class);
         $this->installSemantic('Illuminance', Illuminance::class);
         $this->installSemantic('Capacity', Capacity::class);
+        $this->installSemantic('Count', Count::class);
     }
     
     protected function installDefaultUnits()
@@ -141,6 +143,9 @@ class Market extends Marketeer
 
     protected function translateToResponse($item): Response
     {
+        if (is_a($item, Response::class)) {
+            return $item; // Been there done that
+        }
         $response = new Response();
         $response->OK()
             ->unit($item->getUnit())
