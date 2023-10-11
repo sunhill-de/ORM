@@ -128,7 +128,7 @@ class Market extends Marketeer
         try {
             $item = $this->requestItem($path_elements);
         } catch (\Exception $e) {
-            return $this->handleException($path, $format, $e);
+            return $this->handleException($path, $format, $e); 
         }
         
         if (($item === false) || is_null($item)) {
@@ -145,6 +145,17 @@ class Market extends Marketeer
     {
         if (is_a($item, Response::class)) {
             return $item; // Been there done that
+        }
+        if (is_a($item, Marketeer::class)) {
+            $response = new Response();
+            $response->OK()
+                ->unit('none')
+                ->semantic('Name')
+                ->value($item->getOffer('','anybody','array'))
+                ->readable(true)
+                ->writeable(false);
+                
+            return $response;
         }
         $response = new Response();
         $response->OK()
