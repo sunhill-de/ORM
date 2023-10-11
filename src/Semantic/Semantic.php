@@ -52,7 +52,11 @@ class Semantic
      */
     public static function processHumanReadableValue($input, string $unit): string
     {
-        return empty($unit)?$input:$input.' '.$unit; // By default just append unit (if any)
+        if (is_string($input)) {
+            return empty($unit)?$input:$input.' '.$unit; // By default just append unit (if any)
+        } else {
+            return '';
+        }
     }
     
     protected static function translate(string $input): string
