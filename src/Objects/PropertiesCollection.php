@@ -606,4 +606,12 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	        static::postSeedRecord($key, $record);
 	    }
 	}
+	
+	public static function IDExists(int $id)
+	{
+	    $storage = static::getStorage();
+	    $dummy = new static();
+	    $storage->setCollection($dummy);
+	    return $storage->IDExists($id);
+	}
 }

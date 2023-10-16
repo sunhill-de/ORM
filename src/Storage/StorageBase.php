@@ -59,4 +59,5 @@ abstract class StorageBase
         return $action->run();
     }
     
+    abstract public function IDExists($id): bool;
 }

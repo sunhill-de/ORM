@@ -38,11 +38,18 @@ class CollectionManager
     public function loadCollection(string $class, int $id)
     {
         $class = $this->checkCollection($class);
-        
+                
         $object = new $class();
         $object->load($id);
         
         return $object;
+    }
+    
+    public function collectionExists(string $class, int $id)
+    {
+        $class = $this->checkCollection($class);
+        
+        return $class::IDExists($id);
     }
     
     public function deleteCollection(string $class, int $id)

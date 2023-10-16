@@ -12,6 +12,13 @@ use Sunhill\ORM\Facades\Collections;
 class LoadTest extends DatabaseTestCase
 {
     
+    public function testIDExists()
+    {
+        $test = new DummyCollection();
+        
+        $this->assertTrue($test::IDExists(1));
+    }
+    
     /**
      * @group loadcollection
      * @group collection

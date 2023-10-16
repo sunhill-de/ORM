@@ -35,6 +35,7 @@ use Sunhill\ORM\Storage\Mysql\Collections\MysqlCollectionMigrate;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectDegrade;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectMigrate;
 use Sunhill\ORM\Storage\Mysql\Objects\MysqlObjectPromote;
+use Illuminate\Support\Facades\DB;
 
 /**
  * The implementation for storing a property into a mysql/maria database
@@ -131,6 +132,12 @@ class MysqlStorage extends StorageBase
             default:
                 throw new ActionNotFoundException("The action '$action' is unhandled.");
         }
+    }
+    
+    public function IDExists($id): bool
+    {
+        $query = DB::table(($this->collection)::getInfo('table'))->where('id',$id)->first();
+        return !empty($query);
     }
     
 }

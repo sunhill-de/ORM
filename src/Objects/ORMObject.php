@@ -180,5 +180,5 @@ class ORMObject extends PropertiesCollection
 	    static::addInfo('table', 'objects');
 	    static::addInfo('description', 'A base class that defines storable properties.');
 	}
-
+	
 }

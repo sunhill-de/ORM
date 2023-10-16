@@ -31,6 +31,7 @@ class CollectionManagerTest extends TestCase
     {
         $collectionMock = \Mockery::mock(Collection::class);
         $collectionMock->shouldReceive('load')->with(2)->andReturn(true);
+        $collectionMock->shouldReceive('forceLoading')->andReturn(true);
         
         $collection = Collections::loadCollection(Collection::class, 2);  
         $this->assertEquals(2, $collection->getID());
