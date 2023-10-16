@@ -21,4 +21,10 @@ class TestStorage extends StorageBase
             
         $this->last_action .= $action;
     }
+    
+    public function IDExists($id): bool
+    {
+        return true;
+    }
+    
 }

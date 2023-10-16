@@ -52,7 +52,7 @@ class Semantic
      */
     public static function processHumanReadableValue($input, string $unit): string
     {
-        if (is_string($input)) {
+        if (is_scalar($input)) {
             return empty($unit)?$input:$input.' '.$unit; // By default just append unit (if any)
         } else {
             return '';
