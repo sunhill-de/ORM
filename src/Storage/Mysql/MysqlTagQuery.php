@@ -98,12 +98,21 @@ class MysqlTagQuery extends DBQuery
         return parent::first();        
     }
     
+    protected function deleteTag(int $id)
+    {
+        DB::table('tagcache')->where('tag_id', $id)->delete();
+        DB::table('tagobjectassigns')->where('tag_id',$id)->delete();
+        foreach (DB::table('tags')->where('parent_id', $id)->get() as $subid) {
+            $this->deleteTag($subid->id);
+        }
+        DB::table('tags')->where('id', $id)->delete();
+    }
+    
     public function delete()
     {        
-        $this->query->select('tags.id');
-        DB::table('tagcache')->whereIn('tag_id',$this->query)->delete();
-        DB::table('tagobjectassigns')->whereIn('tag_id',$this->query)->delete();
-        $this->query->delete();
+        foreach ($this->query->get() as $tag) {
+            $this->deleteTag($tag->id);
+        }
     }
     
     protected function updateCache(int $id)
