@@ -34,4 +34,8 @@ class ObjectDataGenerator
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));        
     }
     
+    public function getUniqueID(int $digits = 10)
+    {
+        return substr(md5(uniqid()),0,$digits);
+    }
 }
