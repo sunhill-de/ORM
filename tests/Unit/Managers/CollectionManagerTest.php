@@ -23,6 +23,7 @@ use Sunhill\ORM\Facades\Collections;
 use Sunhill\ORM\Managers\Exceptions\CollectionClassDoesntExistException;
 use Sunhill\ORM\Managers\Exceptions\IsNotACollectionException;
 use Sunhill\ORM\Tests\Testobjects\DummyCollection;
+use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 
 class CollectionManagerTest extends TestCase
 {
@@ -56,4 +57,30 @@ class CollectionManagerTest extends TestCase
         $this->assertEquals(['dummycollection'=>DummyCollection::class], Collections::getRegisteredCollections());
     }
     
+    /**
+     * @dataProvider CollectionQueryProvider
+     */
+    public function testCollectionQuery($callback, $modifier, $expect)
+    {
+        Collections::registerCollection(DummyCollection::class);
+        Collections::registerCollection(ComplexCollection::class);
+        
+        $query = Collections::query();
+        $result = $callback($query);
+        
+        if (is_callable($modifier)) {
+            $result = $modifier($result);
+        }
+        $this->assertEquals($expect, $result);
+        
+    }
+    
+    public static function CollectionQueryProvider()
+    {
+        return [
+            [function($query) { $query->count(); },null, 2],            
+            [function($query) { $query->first(); },function($result) { return $result->name; }, 'dummycollection'],
+            [function($query) { $query->orderBy('name')->first(); },function($result) { return $result->name; }, 'complexcollection'],
+            ];
+    }
 }
