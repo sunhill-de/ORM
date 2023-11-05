@@ -246,6 +246,11 @@ class ClassManager extends RegistableManagerBase
         return $this->buildClassInformation($item);
     }
     
+    protected function getItemKey($item): string
+    {
+        return $item::getInfo('name');
+    }
+    
     /**
      * Clears the class information array and insert the ORMObject by hand
      * @todo: buildClassInformation builds an infinite loop. So this is done by hand

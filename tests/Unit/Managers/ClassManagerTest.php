@@ -24,6 +24,7 @@ use Sunhill\ORM\Properties\PropertyBoolean;
 use Sunhill\ORM\Properties\PropertyDate;
 use Sunhill\ORM\Properties\PropertyObject;
 use Sunhill\ORM\Properties\PropertyArray;
+use Sunhill\ORM\Managers\Exceptions\DuplicateEntryException;
 
 class BadClass1 extends ORMObject
 {
@@ -70,7 +71,7 @@ class ClassManagerTest extends TestCase
         
         $this->callProtectedMethod($test,'registerClass',[Dummy::class]);
         
-        $result = $this->getProtectedProperty($test,'classes');
+        $result = $this->getProtectedProperty($test,'registered_items');
         
         $this->assertEquals(Dummy::class,$result['dummy']->class);
         $this->assertEquals('dummy',$result['dummy']->name);
@@ -108,7 +109,7 @@ class ClassManagerTest extends TestCase
      */
     public function testRegisterClass_duplicate()
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(DuplicateEntryException::class);
         
         $test = new ClassManager();
 
@@ -121,12 +122,12 @@ class ClassManagerTest extends TestCase
      */
     public function testFlushClasses() {
         $test = new ClassManager();
-        $this->setProtectedProperty($test,'classes',['test']);
-        $this->assertFalse(empty($this->getProtectedProperty($test,'classes')));
+        $this->setProtectedProperty($test,'registered_items',['test']);
+        $this->assertFalse(empty($this->getProtectedProperty($test,'registered_items')));
         
         $test->flushClasses();
         
-        $this->assertEquals(1,count($this->getProtectedProperty($test,'classes')));
+        $this->assertEquals(1,count($this->getProtectedProperty($test,'registered_items')));
     }
     
     /**
