@@ -40,26 +40,13 @@ use Sunhill\ORM\Managers\Exceptions\ClassNameForbiddenException;
   * @author lokal
   * Test: Unit/Managers/ManagerClassesTest.php
   */
-class ClassManager 
+class ClassManager extends RegistableManagerBase
 {
  
     const FORBIDDEN_NAMES = ['object','class','integer','string','float','boolean','tag'];
     const FORBIDDEN_BEGINNINGS = ['attr_'];
-    
-    /**
-     * Stores the information about the classes
-     * @var array|null
-     */
-    protected $classes=[];
-    
-    private $flushing = false;
-    
+            
 // ********************************** Register class ******************************************
-
-    public function __construct() 
-    {
-         $this->flushClasses();
-    }
         
     /**
      * Get the class informations and adds them to $result
@@ -235,22 +222,28 @@ class ClassManager
      * 
      * Test: testRegisterClass*
      */
-    public function registerClass(string $classname, bool $ignore_duplicate = false): bool 
+    public function registerClass(string $classname, bool $ignore_duplicate = false) 
     {
-        $this->checkClassExistance($classname);
-        $this->checkClassType($classname);
-        $this->checkClassName($classname);
-        
-        $information = $this->buildClassInformation($classname);
-        if (isset($this->classes[$information->name])) {
-            if ($ignore_duplicate) {
-                return $this->classes[$information->name]; 
-            } else {
-                throw new ORMException("The class '$classname' is already registered.");
-            } 
-        }
-        $this->classes[$information->name] = $information;
-        return true;
+        $this->register($classname, $ignore_duplicate);
+    }
+    
+    protected function initialize()
+    {
+        $this->registered_items = [
+        'object'=>$this->getItemInformation(ORMObject::class)
+        ];
+    }
+    
+    protected function checkValidity($item)
+    {
+        $this->checkClassExistance($item);
+        $this->checkClassType($item);
+        $this->checkClassName($item);        
+    }
+    
+    protected function getItemInformation($item)
+    {
+        return $this->buildClassInformation($item);
     }
     
     /**
@@ -260,7 +253,7 @@ class ClassManager
      */
     public function flushClasses(): void 
     {
-        $this->classes = [
+        $this->registered_items = [
             'object'=>
             $this->buildClassInformation(ORMObject::class)
         ];
@@ -277,7 +270,7 @@ class ClassManager
     public function getClassCount(): int 
     {
 
-        return count($this->classes);       
+        return count($this->registered_items);       
     }
     
     /**
@@ -290,7 +283,7 @@ class ClassManager
     public function getAllClasses(): array 
     {
         
-        return $this->classes;        
+        return $this->registered_items;        
     }
     
     /**
@@ -352,7 +345,7 @@ class ClassManager
     protected function checkForNamespace(string $needle)
     {
         $needle = $this->normalizeNamespace($needle);
-        foreach ($this->classes as $name => $info) {
+        foreach ($this->registered_items as $name => $info) {
             if ($info->class == $needle) {
                 return $info->name;
             }
@@ -370,7 +363,7 @@ class ClassManager
      */
     protected function checkForClassname(string $needle)
     {
-        if (isset($this->classes[$needle]) || ($needle === 'object')) {
+        if (isset($this->registered_items[$needle]) || ($needle === 'object')) {
             return $needle;
         } 
 
@@ -423,7 +416,7 @@ class ClassManager
             throw new ORMException("Invalid Index '$index'");
         }
         $i=0;
-        foreach ($this->classes as $class_name => $info) {
+        foreach ($this->registered_items as $class_name => $info) {
             if ($i==$index) {
                 return $class_name;
             }
@@ -502,13 +495,13 @@ class ClassManager
         $name = $this->checkClass($this->getClassName($test));
 
         if (is_null($field)) {
-            return $this->classes[$name];
+            return $this->registered_items[$name];
         } else {
-            if ($this->classes[$name]->class::hasInfo($field)) {
+            if ($this->registered_items[$name]->class::hasInfo($field)) {
                 // Pass it through getField to get translation (if there is any)
-                return $this->classes[$name]->class::getInfo($field);                
+                return $this->registered_items[$name]->class::getInfo($field);                
             } else {
-                return $this->classes[$name]->$field;
+                return $this->registered_items[$name]->$field;
             }
         }
     }
@@ -582,7 +575,7 @@ class ClassManager
         if (!$level) { // We reached top level
             return $result;
         }
-        foreach ($this->classes as $class_name => $info) {
+        foreach ($this->registered_items as $class_name => $info) {
             if ($info->parent === $class) {
                 $result[$class_name] = $this->getChildrenOfClass($class_name,$level-1);
             }

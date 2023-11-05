@@ -24,6 +24,9 @@ use Sunhill\ORM\Managers\Exceptions\CollectionClassDoesntExistException;
 use Sunhill\ORM\Managers\Exceptions\IsNotACollectionException;
 use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
+use Sunhill\ORM\Properties\PropertyArray;
+use Sunhill\ORM\Properties\PropertyDate;
+use Sunhill\ORM\Properties\PropertyBoolean;
 
 class CollectionManagerTest extends TestCase
 {
@@ -78,9 +81,22 @@ class CollectionManagerTest extends TestCase
     public static function CollectionQueryProvider()
     {
         return [
-            [function($query) { $query->count(); },null, 2],            
-            [function($query) { $query->first(); },function($result) { return $result->name; }, 'dummycollection'],
-            [function($query) { $query->orderBy('name')->first(); },function($result) { return $result->name; }, 'complexcollection'],
+            [function($query) { return $query->count(); },null, 2],            
+            [function($query) { return $query->first(); },function($result) { return $result->name; }, 'dummycollection'],
+            [function($query) { return $query->orderBy('name')->first(); },function($result) { return $result->name; }, 'complexcollection'],
+
+            [function($query) { return $query->where('name','dummycollection')->first(); }, function($value) { return $value->name; }, 'dummycollection'],
+            [function($query) { return $query->where('name','like','complex%')->count(); }, null, 1],
+            [function($query) { return $query->where('name','like','%collection')->count(); }, null, 2],
+            [function($query) { return $query->where('name','like','dummy%')->count(); }, null, 1],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyArray::class)->count(); }, null, 5],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyDate::class)->count(); }, null, 2],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyBoolean::class)->count(); }, null, 2],
+            [function($query) { return $query->whereHasPropertyOfName('dummyint')->count(); }, null, 2],
+                        
+            [function($query) { return $query->where('table','dummies')->first(); }, function($value) { return $value->name; }, 'dummy'],
+            [function($query) { return $query->where('special',true)->first(); }, function($value) { return $value->name; }, 'dummy'],
+            
             ];
     }
 }
