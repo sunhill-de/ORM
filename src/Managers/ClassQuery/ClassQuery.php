@@ -12,7 +12,7 @@
  * Tests: tests/Unit/Managers/ManagerClassesTest.php
  * Coverage: 98,8% (2023-03-23)
  */
-namespace Sunhill\ORM\Managers;
+namespace Sunhill\ORM\Managers\ClassQuery;
 
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Query\ArrayQuery;

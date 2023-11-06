@@ -12,7 +12,7 @@
  * Tests: tests/Unit/Managers/CollectionManagerTest.php
  * Coverage: 
  */
-namespace Sunhill\ORM\Managers;
+namespace Sunhill\ORM\Managers\CollectionQuery;
 
 use Sunhill\ORM\Facades\Classes;
 use Sunhill\ORM\Query\ArrayQuery;

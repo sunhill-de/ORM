@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunhill\ORM\Managers;
+namespace Sunhill\ORM\Managers\CollectionQuery;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
