@@ -39,7 +39,7 @@ class DatabaseTestCase extends TestCase
     protected function registerClasses()
     {
         Objects::flushCache();
-        Classes::flushClasses();
+        Classes::flush();
         Classes::registerClass(Dummy::class);        
         Classes::registerClass(DummyChild::class);
         Classes::registerClass(TestParent::class);

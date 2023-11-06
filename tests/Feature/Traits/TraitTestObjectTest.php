@@ -24,7 +24,7 @@ class TraitTestObjectTest extends TestCase
 
     public function setUp() : void {
         parent::setUp();
-        Classes::flushClasses();
+        Classes::flush();
         Classes::registerClass(Dummy::class);
         Classes::registerClass(TestParent::class);
         Classes::registerClass(TestChild::class);

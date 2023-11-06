@@ -125,7 +125,7 @@ class ClassManagerTest extends TestCase
         $this->setProtectedProperty($test,'registered_items',['test']);
         $this->assertFalse(empty($this->getProtectedProperty($test,'registered_items')));
         
-        $test->flushClasses();
+        $test->flush();
         
         $this->assertEquals(1,count($this->getProtectedProperty($test,'registered_items')));
     }
@@ -145,7 +145,7 @@ class ClassManagerTest extends TestCase
      * Tests: ClassManager::getClassCount
      */
     public function testNumberOfClassesViaFacade() {
-        Classes::flushClasses();
+        Classes::flush();
         Classes::registerClass(Dummy::class);
         
         $this->assertEquals(2,Classes::getClassCount());
@@ -227,7 +227,7 @@ class ClassManagerTest extends TestCase
     
     protected function setupClasses() : void 
     {
-        Classes::flushClasses();
+        Classes::flush();
         Classes::registerClass(Dummy::class);
         Classes::registerClass(DummyChild::class);        
         Classes::registerClass(TestParent::class);
