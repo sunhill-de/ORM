@@ -43,21 +43,21 @@ class CollectionManagerTest extends TestCase
    
     public function testClassNotExist()
     {
-        $this->expectException(IsNotACollectionException::class);
+        $this->expectException(ClassNotAccessibleException::class);
         Collections::loadCollection('nonexisting', 2);
     }
     
     public function testIsNotACollection()
     {
-        $this->expectException(IsNotACollectionException::class);
+        $this->expectException(ClassNotORMException::class);
         Collections::loadCollection(ORMObject::class, 2);
     }
     
     public function testRegisterCollection()
     {
         Collections::registerCollection(DummyCollection::class);
-        $this->assertEquals(DummyCollection::class, Collections::searchCollection('dummycollection'));
-        $this->assertEquals(['dummycollection'=>DummyCollection::class], Collections::getRegisteredCollections());
+        $info = Collections::searchCollection('dummycollection');
+        $this->assertEquals(DummyCollection::class, $info->class);
     }
     
     /**
@@ -89,13 +89,12 @@ class CollectionManagerTest extends TestCase
             [function($query) { return $query->where('name','like','complex%')->count(); }, null, 1],
             [function($query) { return $query->where('name','like','%collection')->count(); }, null, 2],
             [function($query) { return $query->where('name','like','dummy%')->count(); }, null, 1],
-            [function($query) { return $query->whereHasPropertyOfType(PropertyArray::class)->count(); }, null, 5],
-            [function($query) { return $query->whereHasPropertyOfType(PropertyDate::class)->count(); }, null, 2],
-            [function($query) { return $query->whereHasPropertyOfType(PropertyBoolean::class)->count(); }, null, 2],
-            [function($query) { return $query->whereHasPropertyOfName('dummyint')->count(); }, null, 2],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyArray::class)->count(); }, null, 1],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyDate::class)->count(); }, null, 1],
+            [function($query) { return $query->whereHasPropertyOfType(PropertyBoolean::class)->count(); }, null, 1],
+            [function($query) { return $query->whereHasPropertyOfName('dummyint')->count(); }, null, 1],
                         
-            [function($query) { return $query->where('table','dummies')->first(); }, function($value) { return $value->name; }, 'dummy'],
-            [function($query) { return $query->where('special',true)->first(); }, function($value) { return $value->name; }, 'dummy'],
+            [function($query) { return $query->where('table','dummycollections')->first(); }, function($value) { return $value->name; }, 'dummycollection'],
             
             ];
     }

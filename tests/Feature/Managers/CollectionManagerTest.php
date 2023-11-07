@@ -40,7 +40,7 @@ class CollectionManagerTest extends DatabaseTestCase
         Collections::registerCollection(DummyCollection::class);
         Collections::registerCollection(ComplexCollection::class);
         
-        $collections = array_keys(Collections::getRegisteredCollections());
+        $collections = array_keys(Collections::getAllCollections());
         
         $this->assertEquals(['dummycollection','complexcollection'],$collections);
     }

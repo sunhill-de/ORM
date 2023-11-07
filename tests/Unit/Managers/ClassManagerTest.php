@@ -415,7 +415,7 @@ class ClassManagerTest extends TestCase
         
         try {
             $this->assertEquals($expect,Classes::getClassName($search));
-        } catch (ORMException $e) {
+        } catch (ClassNotAccessibleException $e) {
             if (is_null($expect)) {
                 $this->assertTrue(true);
             } else {
@@ -452,7 +452,7 @@ class ClassManagerTest extends TestCase
         
         try {
             $this->assertEquals($expect,$this->callProtectedMethod($test, 'checkClass', [$search]));
-        } catch (ORMException $e) {
+        } catch (ClassNotAccessibleException $e) {
             if (is_null($expect)) {
                 $this->assertTrue(true);
             } else {
