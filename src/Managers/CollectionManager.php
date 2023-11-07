@@ -24,6 +24,8 @@ use Sunhill\ORM\Managers\CollectionQuery\CollectionQuery;
 class CollectionManager extends PropertiesCollectionManager
 {
     
+    static protected $base_class = Collection::class;
+    
     /**
      * Checks if the given classpath is a descendant of ORMObject
      * @param string $classpath
@@ -38,8 +40,11 @@ class CollectionManager extends PropertiesCollectionManager
     
     public function loadCollection(string $class, int $id)
     {
-        $class = $this->checkValidity($class);
-                
+        if (strpos($class, '\\') == false) {
+            $class = $this->getNamespaceOfClass($this->searchClass($class));
+        }
+        $this->checkValidity($class);
+        
         $object = new $class();
         $object->load($id);
         
@@ -48,7 +53,7 @@ class CollectionManager extends PropertiesCollectionManager
     
     public function collectionExists(string $class, int $id)
     {
-        $class = $this->checkValidity($class);
+        $this->checkValidity($class);
         
         return $class::IDExists($id);
     }
@@ -92,7 +97,7 @@ class CollectionManager extends PropertiesCollectionManager
     public function migrateCollections()
     {
         foreach ($this->registered_items as $name => $namespace) {
-            $namespace::migrate();
+            ($namespace->class)::migrate();
         }
     }
     
