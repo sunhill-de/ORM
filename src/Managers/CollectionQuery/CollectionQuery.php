@@ -23,9 +23,7 @@ class CollectionQuery extends ArrayQuery
     
     protected function getRawData()
     {
-        $collections =  Collections::getRegisteredCollections();
-        $result = [];
-        foreac
+        return Collections::getAllCollections();
     }
     
     public function __construct()

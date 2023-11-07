@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Sunhill\ORM\Query\ConditionBuilder;
 use Sunhill\ORM\Facades\Classes;
+use Sunhill\ORM\Facades\Collections;
 
 class CollectionConditionBuilder extends ConditionBuilder
 {
@@ -19,7 +20,7 @@ class CollectionConditionBuilder extends ConditionBuilder
      */
     protected function matchHasType($entry, $value): bool
     {
-        $properties = Classes::getPropertiesOfClass($entry->name);
+        $properties = Collections::getPropertiesOfClass($entry->name);
         foreach ($properties as $property) {
             if ($property['type'] == $value::getType()) {
                 return true;
