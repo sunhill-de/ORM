@@ -531,12 +531,21 @@ abstract class PropertiesCollection extends NonAtomarProperty implements \Sunhil
 	}
 	
 	// ============================ Storagefunctions  =======================================
-	
-	public static function search() {
+	public static function query()
+	{
 	    $storage = static::getStorage();
 	    $dummy = new static();
 	    $storage->setCollection($dummy);
 	    return $storage->dispatch('search');
+	}
+	
+	/**
+	 * @deprecated Use query() instead
+	 * @return \Illuminate\Foundation\Bus\PendingDispatch
+	 */
+	public static function search() 
+	{
+	   return static::query();    
 	}
 	
 	public static function migrate() 
