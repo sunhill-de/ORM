@@ -13,9 +13,20 @@ use Sunhill\ORM\Tests\Testobjects\CalcClass;
 use Sunhill\ORM\Tests\Testobjects\ThirdLevelChild;
 use Sunhill\ORM\Tests\Testobjects\TestSimpleChild;
 use Sunhill\ORM\Objects\Tag;
+use Sunhill\ORM\Query\UnknownFieldException;
 
 class SearchTest extends DatabaseTestCase
 {
+    
+    public function testUnknownField()
+    {
+        $this->expectException(UnknownFieldException::class);
+        $collection = new Dummy();
+        $test = new MysqlStorage();
+        $test->setCollection($collection);
+        
+        $query = $test->dispatch('search')->where('unkown_field','=','ABC')->get();
+    }
     
     protected function processResult($input)
     {
