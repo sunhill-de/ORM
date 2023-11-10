@@ -172,6 +172,7 @@ class MysqlAttributeQuery extends DBQuery
         foreach ($old_values as $entry) {
             if (isset($real_fields['name'])) {
                 $this->updateName($entry->id, $entry->name, $real_fields['name']);
+                $entry->name = $real_fields['name'];
             }
             if (isset($real_fields['type'])) {
                 $this->updateType($entry->id, $entry->name, $real_fields['type']);
