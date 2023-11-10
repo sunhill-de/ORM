@@ -510,8 +510,28 @@ class WhereParser
         }        
     }
     
+    protected function checkForID()
+    {        
+        if (strtolower($this->key) == 'id') {
+            // Dirty hack to get rid of "ambiguous column name: id" exception
+            if (is_a($this->class,Collection::class,true)) {
+                $prefix = '';
+            } else {
+                $prefix = 'objects.';
+            }
+            if (is_null($this->value) && is_int($this->relation)) {
+                return ['handleWhereSimple', $this->connection, $prefix.$this->key, '=', $this->relation];                
+            } else {
+                return ['handleWhereSimple', $this->connection, $prefix.$this->key, $this->relation, $this->value];
+            }
+        }
+    }
+    
     public function parseWhere(): array
     {
+        if ($result = $this->checkForID()) {
+            return $result;
+        }
         if ($result = $this->checkUnaryRelation()) {
             return $result;
         }

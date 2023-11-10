@@ -6,7 +6,8 @@
 - [X] (#18) With array of collection an exception is raised due a unknown method
 - [ ] (#19) An exception is raised when two both modified/created propertiescollecion with a circular dependency is committed (Hint: due setting the state to committing and locking further commits)
 - [X] (#20) Stack overflow when commiting circular dependencies
-- [X] (#21) Ordering of combined queries failes due ambigious id in order clause 
+- [X] (#21) Ordering of combined queries failes due ambigious id in order clause
+- [X] (#23) Using id in where clause fails 
 
 ## Missing features
 ### objects

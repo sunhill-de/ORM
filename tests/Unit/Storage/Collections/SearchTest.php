@@ -58,6 +58,9 @@ class SearchTest extends DatabaseTestCase
             [DummyCollection::class, function($query) { return $query->get(); }, [1,2,3,4,5,6,7,8]],
             [DummyCollection::class, function($query) { return $query->first(); }, 1],
             
+            [DummyCollection::class, function($query) { return $query->where('id',1)->get(); },[1]],
+            [DummyCollection::class, function($query) { return $query->where('id','=',1)->get(); },[1]],
+            
             [DummyCollection::class, function($query) { return $query->where('dummyint',123)->get(); }, [1,3,5]],
             [DummyCollection::class, function($query) { return $query->where('dummyint',0)->orWhere('dummyint',123)->get(); }, [1,3,5]],
             [DummyCollection::class, function($query) { return $query->where('dummyint',123)->count(); }, 3],

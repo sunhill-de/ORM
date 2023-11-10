@@ -56,6 +56,8 @@ class SearchTest extends DatabaseTestCase
             [CalcClass::class, function($query) { return $query->get(); }, [31]],
             [TestSimpleChild::class, function($query) { return $query->get(); }, [25,26]],
             [ThirdLevelChild::class, function($query) { return $query->get(); }, [33]],
+            [Dummy::class, function($query) { return $query->where('id',1)->get(); },[1]],
+            [Dummy::class, function($query) { return $query->where('id','=',1)->get(); },[1]],
             [Dummy::class, function($query) { return $query->where('dummyint','>',500)->orderBy('dummyint','desc')->get(); },[8,7,6]],
             [Dummy::class, function($query) { return $query->orderBy('dummyint')->get(); },[1,3,5,2,4,6,7,8]],
             [TestParent::class, function($query) { return $query->where('parentint','<',600)->where('parentchar','<','EEE')->orderBy('parentchar')->get(); },[9,23,10,13,21]],
