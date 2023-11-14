@@ -151,9 +151,10 @@ class Market extends Marketeer
             $response->OK()
                 ->unit('none')
                 ->semantic('Name')
-                ->value($item->getOffer('','anybody','array'))
+                ->value($item->getAllProperties())
                 ->readable(true)
-                ->writeable(false);
+                ->writeable(false)
+                ->type($item::getType());
                 
             return $response;
         }
@@ -163,7 +164,8 @@ class Market extends Marketeer
             ->semantic($item->getSemantic())
             ->value($item->getValue())
             ->readable($item->isReadable())
-            ->writeable($item->isWriteable());
+            ->writeable($item->isWriteable())
+            ->type($item::getType());
         return $response;
     }
     
