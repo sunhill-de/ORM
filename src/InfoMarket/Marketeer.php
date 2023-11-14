@@ -9,6 +9,8 @@ class Marketeer extends NonAtomarProperty
 {
     
     protected $entries = [];
+
+    protected static $type = 'array';
     
     protected function addEntry(string $name, $entry)
     {
