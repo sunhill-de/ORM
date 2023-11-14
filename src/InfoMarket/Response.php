@@ -162,6 +162,10 @@ class Response
      */
     public function unit(string $unit): Response
     {
+        if (class_exists($unit)) {
+            $array = explode('\\',$unit);
+            $unit = array_pop($array);
+        }
         $unit = ucfirst(strtolower($unit));
         if (empty($unit) || ($unit == ' ')) {
             $unit = 'None';
@@ -193,6 +197,10 @@ class Response
      */
     public function semantic(string $semantic): Response
     {
+        if (class_exists($semantic)) {
+            $array = explode('\\',$semantic);
+            $semantic = array_pop($array);
+        }
         $semantic = ucfirst(strtolower($semantic));
         if (!($namespace = InfoMarket::findSemantic($semantic))) {
             throw new SemanticNotFoundException("Unknown semantic '$semantic'.");            
