@@ -26,7 +26,7 @@ abstract class PreloadedArrayItem extends BaseArrayItem
     {
         $this->checkPreload();
         
-        return array_keys($this->items);
+        return $this->items;
     }
     
     protected function getEntryCount(): int

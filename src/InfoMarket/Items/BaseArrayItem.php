@@ -26,7 +26,7 @@ abstract class BaseArrayItem extends AtomarProperty
     
     protected function &doGetValue()
     {
-        $offer = array_merge(['count'],$this->getArrayOffering());
+        $offer = array_merge(['count'=>$this->getCount()],$this->getArrayOffering());
         return $offer;
     }
     

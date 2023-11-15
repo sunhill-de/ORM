@@ -43,7 +43,7 @@ class BaseArrayItemTest extends TestCase
     public function testGetOffering()
     {
         $test = new DummyBaseArrayItem();
-        $this->assertEquals(['count',0,1,2], $test->getValue());
+        $this->assertEquals(['count',0,1,2], array_keys($test->getValue()));
     }
     
     public function testGetCount()

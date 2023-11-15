@@ -45,7 +45,7 @@ class PreloadedArrayItemTest extends TestCase
     public function testGetOffering()
     {
         $test = new DummyPreloadedArrayItem();
-        $this->assertEquals(['count',0,1,2], $test->getValue());
+        $this->assertEquals(['count',0,1,2], array_keys($test->getValue()));
     }
     
     public function testGetCount()
@@ -63,7 +63,7 @@ class PreloadedArrayItemTest extends TestCase
     public function testNamedGetOffering()
     {
         $test = new NamedDummyPreloadedArrayItem();
-        $this->assertEquals(['count','A','B','C'], $test->getValue());
+        $this->assertEquals(['count','A','B','C'], array_keys($test->getValue()));
     }
     
     public function testNamedGetCount()
