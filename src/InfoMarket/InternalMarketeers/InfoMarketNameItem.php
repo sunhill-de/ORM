@@ -7,7 +7,7 @@ use Sunhill\ORM\InfoMarket\Items\SimpleInfoMarketItem;
 class InfoMarketNameItem extends SimpleInfoMarketItem
 {
     
-    protected static $type = 'varchar';
+    protected static $type = 'string';
     
     protected static $item_unit = 'None';
     
