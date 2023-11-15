@@ -12,7 +12,7 @@ use Sunhill\ORM\Facades\InfoMarket;
 class Response
 {
     
-    const DEFINED_TYPES = ['int','float','bool','varchar','text','date','time','datetime','array','object'];    
+    const DEFINED_TYPES = ['int','float','bool','string','text','date','time','datetime','array','object'];    
     
     const DEFINES_UPDATES = ['asap','second','minute','hour','day','late'];
     

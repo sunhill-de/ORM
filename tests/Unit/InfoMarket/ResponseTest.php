@@ -82,7 +82,7 @@ class ResponseTest extends TestCase
             ['Float','float'],
             ['Int','int'],
             ['object','object'],
-            ['varchar','varchar'],
+            ['string','string'],
             ['Time','time'],
             ['unknown','except'],
             ['dAtE','date'],
