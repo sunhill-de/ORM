@@ -8,6 +8,8 @@ use Sunhill\ORM\InfoMarket\Items\SimpleInfoMarketItem;
 class Item1 extends SimpleInfoMarketItem
 {
     
+    protected static $type = 'string';
+    
     protected function readItem()
     {
         return 'This is item 1';
@@ -17,6 +19,9 @@ class Item1 extends SimpleInfoMarketItem
 
 class Item2 extends SimpleInfoMarketItem
 {
+    protected static $type = 'string';
+    
+    
     protected function readItem()
     {
         return 'This is item 2';
@@ -26,6 +31,8 @@ class Item2 extends SimpleInfoMarketItem
 
 class Item3 extends SimpleInfoMarketItem
 {
+    protected static $type = 'string';
+    
     protected function readItem()
     {
         return 'This is item 3';
@@ -35,6 +42,8 @@ class Item3 extends SimpleInfoMarketItem
 
 class Item4 extends SimpleInfoMarketItem
 {
+    protected static $type = 'string';
+    
     protected static $item_semantic = 'Temperature';
     
     protected static $item_unit = 'Degreecelsius';
