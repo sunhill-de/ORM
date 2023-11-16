@@ -47,6 +47,11 @@ class Market extends Marketeer
         return null;
     }
     
+    public function getSemantics(): array
+    {
+        return $this->semantics;    
+    }
+    
     public function installUnit(string $name, string $unit)
     {
         $this->units[$name] = $unit;    
@@ -58,6 +63,11 @@ class Market extends Marketeer
             return $this->units[$name];
         }
         return null;        
+    }
+    
+    public function getUnits()
+    {
+        return $this->units;    
     }
     
     public function __construct()
