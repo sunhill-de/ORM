@@ -26,12 +26,6 @@
   "Check for gaps in object tables":"Überprüfe auf Lücken in den Objekttabellen",
   "Objects ':return' have gaps.":"Objekte ':return' haben Lücken",
   
-  "***** src/Console/MigrateObjects":"***** src/Console/MigrateObjects",
-  "Migrates the provided objects":"Migriert die zur Verfügung gestellten Objekte",
-  "Migrating objects...":"Migriert Objekte...",
-  "Migrating :name: ":"Migrierge :name: ",
-  "Migrating finished.":"Migration beendet",
-  
   "***** src/Objects/PropertyCollection":"src/Objects/PropertyCollection *****",
   "Invalided object called.":"Invalidiertes Objekt aufgerufen",
   "Unknown property ':name'":"Unbekannte Property ':name'",
@@ -88,6 +82,13 @@
   "The item ':name' is not writeable":"Das Item ':name' ist nicht schreibbar",
   "Item ':name' is marked as writeable but has no set_ method.":"Das Item ':name' ist als schreibbar markiert definiert aber keine set_ Methode",
   "Unknown type for installMarketeer.":"Unbekannter Typ für InstallMarketeer",
-  "Malformed json request for readItemList.":"Ungültige json Anfrage für readItemList"
+  "Malformed json request for readItemList.":"Ungültige json Anfrage für readItemList",
 
+  "***** sunhill:migrate":"sunhill:migrate **********",
+  "Migrates the provided objects and collections":"Migriert die übergebenen Objekte und Sammlungen",
+  "Migrating objects...":"Migriere Objekte...",
+  "Migrating collections...":"Migriere Sammlungen...",
+  "Finished migrating objects":"Fertig mit Migrieren der Objekte",
+  "Finished migrating collections":"Fertig mit Migrieren der Sammlungen",
+  "Migrating :name: ":"Migriere :name"
 }

@@ -24,15 +24,15 @@ class MigrateObjects extends Command
 {
     protected $signature = 'sunhill:migrate';
     
-    protected $description = 'Migrates the provided objects';
+    protected $description = 'Migrates the provided objects and collections';
     
     public function __construct() 
     {
         parent::__construct();
-        $this->description = __('Migrates the provided objects');
+        $this->description = __('Migrates the provided objects and collections');
     }
     
-    public function handle()
+    protected function migrateObjects()
     {
         $this->info(__('Migrating objects...'));
         
@@ -43,8 +43,26 @@ class MigrateObjects extends Command
                 Classes::migrateClass($name);
             }
         }
+        
+        $this->info(__('Finished migrating objects'));
+    }
+    
+    protected function migrateCollections()
+    {
         $this->info(__('Migrating collections...'));
-        Collections::migrateCollections();
-        $this->info(__('Migrating finished.'));
+        
+        $collections = Collections::getAllCollections();
+        
+        foreach ($collections as $name => $namespace) {
+            $this->info(__('Migrating :name: ',['name'=>$name]));
+            ($namespace->class)::migrate();
+        }
+        $this->info(__('Finished migrating collections'));
+    }
+    
+    public function handle()
+    {        
+        $this->migrateObjects();
+        $this->migrateCollections();
     }
 }
