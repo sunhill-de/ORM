@@ -44,7 +44,7 @@ class MysqlCollectionMigrateAlter extends MysqlCollectionMigrateBase
         
         $this->searchDroppedSimpleColumns();
         $this->searchDroppedArrayColumns();
-        $this->runProperties();
+        $this->runProperties(true);
     }
 
     /**

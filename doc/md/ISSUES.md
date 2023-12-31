@@ -8,6 +8,7 @@
 - [X] (#20) Stack overflow when commiting circular dependencies
 - [X] (#21) Ordering of combined queries failes due ambigious id in order clause
 - [X] (#23) Using id in where clause fails 
+- [X] (#24) Double migration of objects migrates field of ancestors
 
 ## Missing features
 ### objects
