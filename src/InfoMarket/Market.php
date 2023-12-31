@@ -80,17 +80,18 @@ class Market extends Marketeer
     protected function installDefaultSemantics()
     {
         $this->installSemantic('Age',Age::class);
+        $this->installSemantic('Capacity', Capacity::class);
+        $this->installSemantic('Count', Count::class);
         $this->installSemantic('Duration',Duration::class);
         $this->installSemantic('Identifier',Identifier::class);
+        $this->installSemantic('Illuminance', Illuminance::class);
         $this->installSemantic('IP4Address', IP4Address::class);
         $this->installSemantic('Name', Name::class);
         $this->installSemantic('PointInTime', PointInTime::class);
         $this->installSemantic('SemanticInSpace', SemanticInSpace::class);
         $this->installSemantic('SemanticInTime', SemanticInTime::class);        
+        $this->installSemantic('Status', Temperature::class);
         $this->installSemantic('Temperature', Temperature::class);
-        $this->installSemantic('Illuminance', Illuminance::class);
-        $this->installSemantic('Capacity', Capacity::class);
-        $this->installSemantic('Count', Count::class);
     }
     
     protected function installDefaultUnits()
