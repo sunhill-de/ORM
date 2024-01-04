@@ -26,6 +26,15 @@ use Sunhill\ORM\Semantic\Illuminance;
 use Sunhill\ORM\Semantic\Capacity;
 use Sunhill\ORM\Units\Byte;
 use Sunhill\ORM\Semantic\Count;
+use Sunhill\ORM\Semantic\Direction;
+use Sunhill\ORM\Semantic\Height;
+use Sunhill\ORM\Semantic\Pressure;
+use Sunhill\ORM\Semantic\Speed;
+use Sunhill\ORM\Units\Degree;
+use Sunhill\ORM\Units\Kilometerperhour;
+use Sunhill\ORM\Units\Meterpersecond;
+use Sunhill\ORM\Units\Millimeter;
+use Sunhill\ORM\Units\Pascal;
 
 class Market extends Marketeer
 {
@@ -82,30 +91,39 @@ class Market extends Marketeer
         $this->installSemantic('Age',Age::class);
         $this->installSemantic('Capacity', Capacity::class);
         $this->installSemantic('Count', Count::class);
+        $this->installSemantic('Direction', Direction::class);
         $this->installSemantic('Duration',Duration::class);
+        $this->installSemantic('Height', Height::class);
         $this->installSemantic('Identifier',Identifier::class);
         $this->installSemantic('Illuminance', Illuminance::class);
         $this->installSemantic('IP4Address', IP4Address::class);
         $this->installSemantic('Name', Name::class);
         $this->installSemantic('PointInTime', PointInTime::class);
+        $this->installSemantic('Pressure', Pressure::class);
         $this->installSemantic('SemanticInSpace', SemanticInSpace::class);
         $this->installSemantic('SemanticInTime', SemanticInTime::class);        
+        $this->installSemantic('Speed', Speed::class);
         $this->installSemantic('Status', Temperature::class);
         $this->installSemantic('Temperature', Temperature::class);
     }
     
     protected function installDefaultUnits()
     {
-        $this->installUnit('Centimeter', Centimeter::class);
-        $this->installUnit('Kilometer', Kilometer::class);
-        $this->installUnit('Meter', Meter::class);
-        $this->installUnit('None', None::class);
-        $this->installUnit('Second', Second::class);
-        $this->installUnit('Degreecelsius', Degreecelsius::class);
-        $this->installUnit('Lux', Lux::class);
-        $this->installUnit('Percent', Percent::class);
-        $this->installUnit('Torr', Torr::class);
         $this->installUnit('Byte', Byte::class);
+        $this->installUnit('Centimeter', Centimeter::class);
+        $this->installUnit('Degree', Degree::class);
+        $this->installUnit('Degreecelsius', Degreecelsius::class);
+        $this->installUnit('Kilometer', Kilometer::class);
+        $this->installUnit('Kilometerperhour', Kilometerperhour::class);
+        $this->installUnit('Lux', Lux::class);
+        $this->installUnit('Meter', Meter::class);
+        $this->installUnit('Meterpersecond', Meterpersecond::class);
+        $this->installUnit('Millimeter', Millimeter::class);
+        $this->installUnit('None', None::class);
+        $this->installUnit('Pascal', Pascal::class);
+        $this->installUnit('Percent', Percent::class);
+        $this->installUnit('Second', Second::class);
+        $this->installUnit('Torr', Torr::class);
     }
     
     public function installMarketeer(string $name, string $marketeer)

@@ -13,7 +13,7 @@
 
 namespace Sunhill\ORM\Semantic;
 
-class PointInTime extends SemanticInTime
+class Pointintime extends SemanticInTime
 {
     protected static $name = 'Point in time';
     
