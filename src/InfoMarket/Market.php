@@ -249,6 +249,25 @@ class Market extends Marketeer
      */
     public function setItem(string $path, $value, string $credentials = 'anybody', string $format = 'json')
     {
+        $path_elements = empty($path)?[]:explode('.',$path);
+        
+        try {
+            $item = $this->requestItem($path_elements);
+        } catch (\Exception $e) {
+            return $this->handleException($path, $format, $e);
+        }
+        
+        if (($item === false) || is_null($item)) {
+            return $this->itemNotFound($path, $format);
+        }
+        
+        $item->setValue($value);
+       
+        $response = $this->translateToResponse($item);
+        $response->request( $path );
+        $response->setElement('credentials', $credentials);
+        
+        return $this->processResponse($response, $format);
     }
     
     public function lookupValueInCache(string $path, string $type = 'unknown', string $credentials = 'anybody')
