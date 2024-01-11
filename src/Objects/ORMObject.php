@@ -160,7 +160,7 @@ class ORMObject extends PropertiesCollection
 	//    $list->addProperty(PropertyTags::class,'tags')->searchable();
 	    $list->forceAddProperty(PropertyDatetime::class, '_created_at');
 	    $list->forceAddProperty(PropertyDatetime::class, '_updated_at');
-	    $list->forceAddProperty(PropertyVarchar::class, '_uuid')->setMaxLen(20)->default(null)->nullable();
+	    $list->forceAddProperty(PropertyVarchar::class, '_uuid')->setMaxLen(40)->default(null)->nullable();
 	    $list->forceAddProperty(PropertyInteger::class, '_owner')->default(0);
 	    $list->forceAddProperty(PropertyInteger::class, '_group')->default(0);
 	    $list->forceAddProperty(PropertyInteger::class, '_read')->default(7);

@@ -9,6 +9,7 @@
 - [X] (#21) Ordering of combined queries failes due ambigious id in order clause
 - [X] (#23) Using id in where clause fails 
 - [X] (#24) Double migration of objects migrates field of ancestors
+- [X] (#25) the _uuid property cuts an uuid to 20 characters
 
 ## Missing features
 ### objects
