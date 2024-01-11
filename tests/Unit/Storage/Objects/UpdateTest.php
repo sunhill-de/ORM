@@ -588,5 +588,22 @@ class UpdateTest extends DatabaseTestCase
         
         $this->assertDatabaseHas('circulars',['id'=>36,'payload'=>333,'child'=>34]);
     }
+    
+    /**
+     * @group uuid
+     */
+    public function testChangeUUID()
+    {
+        $object = $this->getDummy1();
+        $test = new MysqlStorage();
+        $test->setCollection($object);
         
+        $object->dummyint = 321;
+        $object->_uuid = 'ABC';
+        
+        $test->dispatch('update',1);
+        
+        $this->assertDatabaseHas('objects', ['id'=>1,'_uuid'=>'ABC']);
+        $this->assertDatabaseHas('dummies',['id'=>1,'dummyint'=>321]);
+    }
 }
