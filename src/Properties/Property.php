@@ -24,6 +24,34 @@ class Property extends Loggable
     
     const FORBIDDEN_NAMES = ['object','string','integer','float','boolean','collection', 'id', 'classname'];
     
+    protected $cache_philosophy = 'single';
+    
+    /**
+     * Sets the cache philosophy for this property. The values have the following meaning:
+     * - single = only the value field of this property is cached when requested via InfoMarket
+     * - group = all children of this property are cached when requested via InfoMarket
+     * - nocaching = The value of this property will not be cached at all
+     * 
+     * @param string $philosophy
+     * @return \Sunhill\ORM\Properties\Property
+     * 
+     * @throws Exception When the given philosophy is none of the above
+     */
+    public function setCachePhilosophy(string $philosophy)
+    {
+        if (!in_array($philosophy, ['single', 'group', 'nocaching'])) {
+            throw new \Exception("Cache philosophy must be 'single', 'group' or 'nocaching'");
+        }
+        
+        $this->cache_philosophy = $philosophy;
+        return $this;    
+    }
+    
+    public function getCachePhilosophy(): string
+    {
+        return $this->cache_philosophy;    
+    }
+    
     // ============================ Owner handling =====================================
     
     /**
