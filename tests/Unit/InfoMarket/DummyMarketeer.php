@@ -81,3 +81,32 @@ class DummyMarketeer extends Marketeer
     }
     
 }
+
+class CachedDummyMarketeer extends Marketeer
+{
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setCachePhilosophy('group');
+        
+        $this->setName('dummy');
+        $this->addEntry('item1', Item1::class);
+        $this->addEntry('item2', Item2::class);
+        $this->addEntry('item3', Item3::class);
+        $this->addEntry('item4', Item4::class);
+    }
+    
+}
+
+class TopLevelMarketeer extends Marketeer
+{
+    public function __construct()
+    {
+        parent::__construct();
+        
+        $this->setName('top');
+        $this->addEntry('dummy', CachedDummyMarketeer::class);
+    }
+    
+}

@@ -35,13 +35,41 @@ use Sunhill\ORM\Units\Kilometerperhour;
 use Sunhill\ORM\Units\Meterpersecond;
 use Sunhill\ORM\Units\Millimeter;
 use Sunhill\ORM\Units\Pascal;
+use Illuminate\Support\Facades\Cache;
 
 class Market extends Marketeer
 {
+/**
+ * **************** Cache management *************************
+ */
     
+ /*   
+ * @var boolean indicates if the cache is enabled or not
+ */    
+    protected $cache_enabled = true;
+    
+    /**
+     * Sets the value for cache_enabled
+     * @param bool $value (default true)
+     * @return \Sunhill\ORM\InfoMarket\Market (returns $this)
+     */
+    public function setCacheEnabled(bool $value = true)
+    {
+        $this->cache_enabled = $value;
+        return $this;
+    }
+    
+    /**
+     * Gets the value for cache_enabled
+     * @return bool
+     */
+    public function getCacheEnabled(): bool
+    {
+        return $this->cache_enabled;    
+    }
+    
+// ***************************** Semantics ************************************    
     protected $semantics = [];
-    
-    protected $units = [];
     
     public function installSemantic(string $name, string $semantic)
     {
@@ -60,6 +88,9 @@ class Market extends Marketeer
     {
         return $this->semantics;    
     }
+    
+// ********************************* Units ************************************    
+    protected $units = [];
     
     public function installUnit(string $name, string $unit)
     {
@@ -130,8 +161,56 @@ class Market extends Marketeer
     {
         $this->addEntry($name, $marketeer);  
     }
+
+    protected function postprocessCacheValue($value, $format)
+    {
+        switch ($format) {
+            case 'json':
+                return $value;
+                break;
+            case 'stdclass':
+            case 'object':
+                return json_decode($value, false);
+                break;
+            case 'array':
+                return json_decode($value, true);
+                break;
+        }
+    }
     
-    public function getOffer(string $path, string $credentials = 'anybody', string $format = 'json')
+    protected function searchCache($key, $format)
+    {
+        if (!$this->cache_enabled) {
+            return;
+        }
+        
+        if (Cache::has($key)) {
+            return $this->postprocessCacheValue(Cache::get($key), $format);
+        }
+    }
+    
+    /**
+     * If the cache is enabled than store this value to the cache
+     * 
+     * @param string $key The cache key
+     * @param string $value The cache value 
+     * @param int $ttl How many second should this entry be value (default 1 second = ASAP)
+     */
+    protected function updateCache(string $key, string $value, int $ttl=1, string $philosophy = 'single')
+    {
+        if (!$this->cache_enabled) {
+            return;
+        }
+        switch ($philosophy) {
+            case 'nocaching':
+                return;
+            default: 
+                $expires = now()->addSeconds($ttl);
+                Cache::add($key, $value, $expires);
+        }
+    }
+        
+    protected function getOfferCacheMiss(string $path, string $credentials, string $format)
     {
         $path_elements = empty($path)?[]:explode('.',$path);
         
@@ -141,7 +220,89 @@ class Market extends Marketeer
             return $this->handleException($path, $format, $e);
         }
         
-        return $this->processResponse($offer, $format);
+        $this->updateCache('offer:'.$path, json_encode($offer));
+        
+        return $this->processResponse($offer, $format);        
+    }
+    
+    public function getOffer(string $path, string $credentials = 'anybody', string $format = 'json')
+    {        
+        if ($result = $this->searchCache('offer:'.$path, $format)) {
+            return $result;
+        }
+        return $this->getOfferCacheMiss($path, $credentials, $format);
+    }
+    
+    protected function requestGroup($path_elements)
+    {
+        if (empty($path_elements)) {
+            return;            
+        }
+        
+        do {
+            $item = $this->requestItem($path_elements);
+            $last = array_pop($path_elements);
+        } while (!empty($path_elements) && ($item->getCachePhilosophy() !== 'group'));
+        
+        if ($item->getCachePhilosophy() == 'group') {
+            array_push($path_elements, $last);
+            return ['item'=>$item, 'path'=>implode('.', $path_elements)];
+        } else {
+            return;
+        }
+    }
+    
+    protected function getUpdate($update)
+    {
+        return 1;    
+    }
+    
+    protected function handleCacheGroup($item)
+    {
+        if (!($offering = $item['item']->requestOffer([]))) {
+            return;
+        }
+        foreach ($offering as $offer) {
+            $subitem = $item['item']->getProperty($offer);
+            $this->handleCacheGroup(['item'=>$subitem,'path'=>$item['path'].'.'.$subitem->getName()]);
+            $response = $this->translateToResponse($subitem);
+            $ttl = $this->getUpdate($response->get('stdclass')->update);
+            $this->updateCache($item['path'].'.'.$subitem->getName(), $response->get('json'), $ttl);
+        }
+    }
+    
+    protected function searchItemOrCacheGroup($path_elements)
+    {
+        if ($item_info = $this->requestGroup($path_elements)) {
+            $this->handleCacheGroup($item_info, implode('.',$path_elements)); 
+            if ($item = $this->searchCache(implode('.',$path_elements),'stdclass')) {
+                return $item;
+            }
+        }
+        $item = $this->requestItem($path_elements);
+        return $item;
+    }
+    
+    protected function getItemCacheMiss(string $path, string $credentials, string $format)
+    {
+        $path_elements = empty($path)?[]:explode('.',$path);
+        
+        try {
+            $item = $this->searchItemOrCacheGroup($path_elements);
+        } catch (\Exception $e) {
+            return $this->handleException($path, $format, $e);
+        }
+        
+        if (($item === false) || is_null($item)) {
+            return $this->itemNotFound($path, $format);
+        }
+        $response = $this->translateToResponse($item);
+        $response->request( $path );
+        $response->setElement('credentials', $credentials);
+   
+        $this->updateCache($path, $response->get('json'));
+        
+        return $this->processResponse($response, $format);        
     }
     
     /**
@@ -152,50 +313,49 @@ class Market extends Marketeer
      */
     public function getItem(string $path, string $credentials = 'anybody', string $format = 'json')
     {
-        $path_elements = empty($path)?[]:explode('.',$path);
-        
-        try {
-            $item = $this->requestItem($path_elements);
-        } catch (\Exception $e) {
-            return $this->handleException($path, $format, $e); 
+        if ($result = $this->searchCache($path, $format)) {
+            return $result;
         }
         
-        if (($item === false) || is_null($item)) {
-            return $this->itemNotFound($path, $format);
-        }
-        $response = $this->translateToResponse($item);
-        $response->request( $path );
-        $response->setElement('credentials', $credentials);
-        
-        return $this->processResponse($response, $format);
+        return $this->getItemCacheMiss($path, $credentials, $format);
     }
 
     protected function translateToResponse($item): Response
     {
         if (is_a($item, Response::class)) {
-            return $item; // Been there done that
-        }
-        if (is_a($item, Marketeer::class)) {
-            $response = new Response();
-            $response->OK()
-                ->unit('none')
-                ->semantic('Name')
-                ->value($item->getAllProperties())
-                ->readable(true)
-                ->writeable(false)
-                ->type($item::getType());
-                
-            return $response;
-        }
-        $response = new Response();
-        $response->OK()
-            ->unit($item->getUnit())
-            ->semantic($item->getSemantic())
-            ->value($item->getValue())
-            ->readable($item->isReadable())
-            ->writeable($item->isWriteable())
-            ->type($item::getType());
-        return $response;
+                    return $item;
+        } else if (is_a($item, Marketeer::class)) {
+                    $response = new Response();
+                    $response->OK()
+                    ->unit('none')
+                    ->semantic('Name')
+                    ->value($item->getAllProperties())
+                    ->readable(true)
+                    ->writeable(false)
+                    ->type($item::getType());
+                    
+                    return $response;
+        } else if (is_a($item, \Stdclass::class)) {
+                    $response = new Response();
+                    $response->OK()
+                    ->unit($item->unit)
+                    ->semantic($item->semantic)
+                    ->value($item->value)
+                    ->readable($item->readable)
+                    ->writeable($item->writeable)
+                    ->type($item->type);
+                    return $response;
+        } else if (is_a($item, Property::class)) {
+                    $response = new Response();
+                    $response->OK()
+                    ->unit($item->getUnit())
+                    ->semantic($item->getSemantic())
+                    ->value($item->getValue())
+                    ->readable($item->isReadable())
+                    ->writeable($item->isWriteable())
+                    ->type($item::getType());
+                    return $response;
+         }
     }
     
     protected function processResponse($response, string $format)

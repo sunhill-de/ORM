@@ -12,6 +12,8 @@ class MarketTest extends TestCase
     public function testRequestItem()
     {        
         $test = new Market();
+        $test->setCacheEnabled(false);
+
         $test->installMarketeer('dummy',DummyMarketeer::class);
         
         $item = $test->requestItem(['dummy','item1']);
@@ -21,6 +23,8 @@ class MarketTest extends TestCase
     public function testGetItem()
     {
         $test = new Market();
+        $test->setCacheEnabled(false);
+        
         $test->installMarketeer('dummy',DummyMarketeer::class);
         
         $info = $test->getItem('dummy.item1','anybody','stdclass');
@@ -37,6 +41,8 @@ class MarketTest extends TestCase
     public function testGetItemWithUnit()
     {
         $test = new Market();
+        $test->setCacheEnabled(false);
+        
         $test->installMarketeer('dummy',DummyMarketeer::class);
         
         $info = $test->getItem('dummy.item4','anybody','stdclass');
@@ -54,6 +60,8 @@ class MarketTest extends TestCase
     public function testGetOffer()
     {
         $test = new Market();
+        $test->setCacheEnabled(false);
+        
         $test->installMarketeer('dummy', DummyMarketeer::class);
         
         $info = $test->getOffer('', 'anybody', 'stdclass');
@@ -63,6 +71,8 @@ class MarketTest extends TestCase
     public function testSetItem()
     {
         $test = new Market();
+        $test->setCacheEnabled(false);
+        
         $test->installMarketeer('dummy', DummyMarketeer::class);
         
         $info = $test->getItem('dummy.item4', 'anybody', 'stdclass');
@@ -72,4 +82,5 @@ class MarketTest extends TestCase
         $info = $test->getItem('dummy.item4', 'anybody', 'stdclass');
         $this->assertEquals(10, $info->value);
     }
+    
 }

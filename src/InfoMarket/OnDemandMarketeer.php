@@ -31,6 +31,7 @@ abstract class OnDemandMarketeer extends MarketeerBase
         if (is_string($entry)) {
             $entry = new $entry();
             $entry->setActualPropertiesCollection($this);
+            $entry->setName($name);
         }
         return $entry;
     }
