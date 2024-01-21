@@ -242,9 +242,9 @@ class Market extends Marketeer
         do {
             $item = $this->requestItem($path_elements);
             $last = array_pop($path_elements);
-        } while (!empty($path_elements) && ($item->getCachePhilosophy() !== 'group'));
+        } while (!empty($path_elements) && !empty($item) && ($item->getCachePhilosophy() !== 'group'));
         
-        if ($item->getCachePhilosophy() == 'group') {
+        if (!empty($item) && ($item->getCachePhilosophy() == 'group')) {
             array_push($path_elements, $last);
             return ['item'=>$item, 'path'=>implode('.', $path_elements)];
         } else {
