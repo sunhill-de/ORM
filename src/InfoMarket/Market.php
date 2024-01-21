@@ -267,7 +267,7 @@ class Market extends Marketeer
             $this->handleCacheGroup(['item'=>$subitem,'path'=>$item['path'].'.'.$subitem->getName()]);
             $response = $this->translateToResponse($subitem);
             $ttl = $this->getUpdate($response->get('stdclass')->update);
-            $this->updateCache($item['path'].'.'.$subitem->getName(), $response->get('json'), $ttl);
+            $this->updateCache($item['path'].'.'.$offer, $response->get('json'), $ttl);
         }
     }
     
