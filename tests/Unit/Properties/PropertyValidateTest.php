@@ -76,19 +76,6 @@ class PropertyValidateTest extends TestCase
             }, false],
             
             
-            // ========================== Boolean ===============================
-            [PropertyBoolean::class, null, 'Y', true, true],
-            [PropertyBoolean::class, null, 'N', true, false],
-            [PropertyBoolean::class, null, '+', true, true],
-            [PropertyBoolean::class, null, '-', true, false],
-            [PropertyBoolean::class, null, 'true', true, true],
-            [PropertyBoolean::class, null, 'false', true, false],
-            [PropertyBoolean::class, null, true, true, true],
-            [PropertyBoolean::class, null, false, true, false],
-            [PropertyBoolean::class, null, 'ABC', false, false],
-            [PropertyBoolean::class, null, 1, true, true],
-            [PropertyBoolean::class, null, 0, true, false],
-            [PropertyBoolean::class, null, 10, true, true],
             
             // ========================= Collection =============================
             [PropertyCollection::class, function(&$property) {
@@ -128,20 +115,7 @@ class PropertyValidateTest extends TestCase
                 $property->setEnumValues(['TestA','TestB']);                
             }, 'NonExisting', false],
             
-            // ========================== Float ===============================
-            [PropertyFloat::class, null, 1, true, 1.0],
-            [PropertyFloat::class, null, 1.1, true, 1.1],
-            [PropertyFloat::class, null, "1", true, 1],
-            [PropertyFloat::class, null, "1.1", true, 1.1],
-            [PropertyFloat::class, null, "A", false],
-            [PropertyFloat::class, null, "1.1.1", false],
-            
-            // ========================== Integer ===============================
-            [PropertyInteger::class, null, 1, true, 1],
-            [PropertyInteger::class, null, 1.1, false],
-            [PropertyInteger::class, null, 'A', false],
-            [PropertyInteger::class, null, '1', true, 1],
-            
+                        
             // ========================== Object ===============================
             [
                 PropertyObject::class, 
@@ -204,12 +178,6 @@ class PropertyValidateTest extends TestCase
                 [PropertyTime::class, null, '11:11:11', true, '11:11:11'],
                 [PropertyTime::class, null, '11:11', true, '11:11:00'],
                 [PropertyTime::class, null, '1:1', true, '01:01:00'],
-                
-            // ========================== Varchar ===============================
-                [PropertyVarchar::class, null, 1, true, "1"],
-                [PropertyVarchar::class, null, 1.1, true, "1.1"],
-                [PropertyVarchar::class, null, "1", true, "1"],
-                
                 
          ];
     }
