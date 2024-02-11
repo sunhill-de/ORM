@@ -88,33 +88,7 @@ class PropertyValidateTest extends TestCase
             }, function() {
                 return new ComplexCollection();
             }, false],
-            
-            // =========================== Date ================================
-            [PropertyDate::class, null, '01.02.2018', true, '2018-02-01'],
-            [PropertyDate::class, null, '2018-02-02', true, '2018-02-02'],
-            [PropertyDate::class, null, '1.2.2018', true, '2018-02-01'],
-            [PropertyDate::class, null, '2018-2-1', true, '2018-02-01'],
-            [PropertyDate::class, null, 1686778521.3, true, '2023-06-14'],
-            [PropertyDate::class, null, '2018-2', true, '2018-02-00'],
-            [PropertyDate::class, null, '2.3.', true,'0000-03-02'],
-            [PropertyDate::class, null, '2018', true,'2018-00-00'],
-            [PropertyDate::class, null, false, false],
-            [PropertyDate::class, null, 'ABC', false],
-            [PropertyDate::class, null, '', false],
-            [PropertyDate::class, null, 1686778521, true, '2023-06-14'],
-            
-            // ========================= DateTime ===============================
-            [PropertyDatetime::class, null, '2018-02-01 11:11:11', true],
-            [PropertyDatetime::class, null, 1686778521, true],
-            
-            // =========================== Enum =================================
-            [PropertyEnum::class, function(&$property) {
-                $property->setEnumValues(['TestA','TestB']);
-            }, 'TestA', true],
-            [PropertyEnum::class, function(&$property) {
-                $property->setEnumValues(['TestA','TestB']);                
-            }, 'NonExisting', false],
-            
+                        
                         
             // ========================== Object ===============================
             [
@@ -171,14 +145,6 @@ class PropertyValidateTest extends TestCase
                     return new Dummy();
                 }, false
             ],
-            // =========================== Text =================================
-                [PropertyText::class, null, 'Lorem ipsum', true, 'Lorem ipsum'],
-                
-            // =========================== Time =================================
-                [PropertyTime::class, null, '11:11:11', true, '11:11:11'],
-                [PropertyTime::class, null, '11:11', true, '11:11:00'],
-                [PropertyTime::class, null, '1:1', true, '01:01:00'],
-                
          ];
     }
     

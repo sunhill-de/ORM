@@ -19,7 +19,7 @@ use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\Exceptions\InvalidNameException;
 use Sunhill\ORM\InfoMarket\Response;
 
-class Property extends AbstractProperty
+class Property 
 {
     
     protected $cache_philosophy = 'single';

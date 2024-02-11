@@ -95,7 +95,7 @@ class TypeVarchar extends AbstractType
      */
     public function isValid($input): bool
     {
-        return (($this->length_exceed_policy <> 'invalid') || (strlen($input) <= $this->max_length));
+        return (is_scalar($input) && (($this->length_exceed_policy <> 'invalid') || (strlen($input) <= $this->max_length)));
     }
     
     /**

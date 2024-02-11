@@ -19,6 +19,27 @@ use Illuminate\Support\Facades\Log;
 abstract class ValidatorBase 
 {
     /**
+     * The type for this validator. Per default 'none'
+     * 
+     * @var string
+     */
+    public static $type = 'none';
+    
+    /**
+     * The unit for this validator. Per default 'none'
+     * 
+     * @var string
+     */
+    public static $unit = 'none';
+    
+    /**
+     * The semantic for this validator. Per default 'none'
+     * 
+     * @var string
+     */
+    public static $semantic = 'none';
+
+    /**
      * 
      * @var AbstractProperty|null
      * The owner of this validator or null if none is defined

@@ -31,7 +31,8 @@ class PropertyCollection extends AtomarProperty
 	
 	public function isValid($input): bool
 	{
-        return is_numeric($input) || is_a($input, Collections::searchCollection($this->allowed_collection));
+        $namepace = Collections::searchCollection($this->allowed_collection);
+	    return is_numeric($input) || is_a($input, Collections::searchCollection($this->allowed_collection));
 	}
 
 	public function setAllowedCollection(string $allowed_collection): PropertyCollection

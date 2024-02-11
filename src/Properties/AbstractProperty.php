@@ -16,6 +16,9 @@ use Sunhill\ORM\Properties\Exceptions\InvalidNameException;
 use Sunhill\ORM\Properties\Exceptions\PropertyNotReadableException;
 use Sunhill\ORM\Properties\Exceptions\UserNotAuthorizedForReadingException;
 use Sunhill\ORM\Properties\Exceptions\NoUserManagerInstalledException;
+use Sunhill\ORM\Properties\Exceptions\PropertyNotWriteableException;
+use Sunhill\ORM\Properties\Exceptions\UserNotAuthorizedForWritingException;
+use Sunhill\ORM\Properties\Types\AbstractType;
 
 abstract class AbstractProperty
 {
@@ -200,28 +203,175 @@ abstract class AbstractProperty
        $this->doCheckReadCapability($capability);
     }
     
-    protected function passOutputFilter($raw_value)
-    {
-        
-    }
-    
-    abstract protected function doGetValue();
-    
-    public function getValue()
+    /**
+     * Call this method before any reading attempts
+     */
+    protected function checkForReading()
     {
         $this->checkIsReadable();
-        $this->checkIsAuthorizedForReading();
-        return $this->passOutputFilters($this->doGetValue());
+        $this->checkIsAuthorizedForReading();        
     }
     
-    protected function passHumanReadableFilters($value)
+    /**
+     * Performs the reading process
+     * 
+     */
+    protected function doGetValue()
     {
+       // Leavy empty by default for write-only properties 
+    }
+    
+    /**
+     * Checks the reading restrictions and if passed performs the reading
+     * 
+     * @return unknown
+     */
+    public function getValue()
+    {
+        $this->checkForReading();
+        return $this->doGetValue();
+    }
+    
+    /**
+     * Returns the required capability to read this property or null if none is required
+     *
+     * @return string|NULL
+     */
+    abstract public function writeCapability(): ?string;
+    
+    /**
+     * Returns true, when the property is readable
+     *
+     * @return bool true, if the property is readable otherwise false
+     */
+    abstract public function isWriteable(): bool;
+    
+    /**
+     * Returns true, when this property was already modified by an user. This is important for
+     * a eventually existing modifyCapability
+     * 
+     * @return bool
+     */
+    abstract public function isInitialized(): bool;
+    
+    /**
+     * Returns the required capability to modify this property or null if none is required
+     *
+     * @return string|NULL
+     */
+    abstract public function modifyCapability(): ?string;
+    
+    /**
+     * Checks if this property is writeable. If not it raises an exception
+     *
+     * @throws PropertyNotWriteableException::class When this property is not writeable
+     */
+    private function checkIsWriteable()
+    {
+        if (!$this->isWriteable()) {
+            throw new PropertyNotWriteableException("The property '".$this->_name."' is not writeable.");
+        }
+    }
+    
+    /**
+     * Checks if a user manager is installed. If yes it checks if the current user has the capability
+     * to write this property
+     *
+     * @param string $capability
+     * @throws NoUserManagerInstalledException::class When no user manager is installed
+     * @throws UserNotAuthorizedForWritingException::class When the current user is not authorized to write
+     */
+    private function doCheckWriteCapability(string $capability)
+    {
+        if (empty(static::$current_usermanager_fascade)) {
+            throw new NoUserManagerInstalledException("Property has a read restriction but no user manager is installed.");
+        }
+        if (!static::$current_usermanager_fascade::hasCapability($capability)) {
+            throw new UserNotAuthorizedForWritingException("The current user is not authorized to write '".$this->_name."'");
+        }
+    }
+    
+    /**
+     * Checks if this property has any restrictions for writing at all and if yes if the
+     * current user has this capability.
+     *
+     * @throw
+     */
+    private function checkIsAuthorizedForWriting()
+    {
+        $capability = $this->writeCapability();
         
+        if (empty($capability)) {
+            return; // If capability is empty, just leave
+        }
+        
+        $this->doCheckWriteCapability($capability);
     }
     
-    public function getHumanReadableValue()
+    /**
+     * Call this method before any writing attempts
+     */
+    protected function checkForWriting()
     {
-        return $this->passHumanReadableFilters($this->getValue());
+        $this->checkIsWriteable();
+    }
+
+    /**
+     * Performs the writing process
+     *
+     */
+    protected function doSetValue($value)
+    {
+        // Leavy empty by default for read-only properties
+    }
+    
+    /**
+     * Checks the writing restrictions and if passed performs the writing
+     *
+     * @return unknown
+     */
+    public function setValue()
+    {
+        $this->checkForWriting();
+        return $this->doSetValue();
+    }
+ 
+// *************************************** Metadata **********************************************
+    
+    /**
+     * Defines the type for all objects of this class (therefore static)
+     * 
+     * @var string
+     */
+    protected static $type = 'none';
+    
+    /**
+     * Returns the type or null if none is defines (shouldn't happen)
+     *  
+     * @return AbstractType|NULL
+     */
+    public function getType(): ?AbstractType
+    {
+        $types = require_once('Types.php');
+        return isset($types[static::$type])?$types[static::$type]:null;
+    }
+    
+    /**
+     * Defines the unit for all objects of this class 
+     * 
+     * @var string
+     */
+    protected static $unit = 'none';
+    
+    /**
+     * Returns the unit 
+     *
+     * @return AbstractType|NULL
+     */
+    public function getUnit(): string
+    {
+        $units = require_once('Types.php');
+        return $units[static::$unit];
     }
     
 }
