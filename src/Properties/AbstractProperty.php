@@ -19,9 +19,47 @@ use Sunhill\ORM\Properties\Exceptions\NoUserManagerInstalledException;
 use Sunhill\ORM\Properties\Exceptions\PropertyNotWriteableException;
 use Sunhill\ORM\Properties\Exceptions\UserNotAuthorizedForWritingException;
 use Sunhill\ORM\Properties\Types\AbstractType;
+use Sunhill\ORM\Storage\AbstractStorage;
+use Sunhill\ORM\Properties\Exceptions\NoStorageSetException;
 
 abstract class AbstractProperty
 {
+    
+    /**
+     * Stores the current storage
+     * 
+     * @var unknown
+     */
+    protected $storage;
+    
+    /**
+     * Setter for $storage
+     * 
+     * @param AbstractStorage $storage
+     * @return \Sunhill\ORM\Properties\AbstractProperty
+     */
+    public function setStorage(AbstractStorage $storage)
+    {
+        $this->storage = $storage;
+        return $this;
+    }
+    
+    /**
+     * Getter for storage
+     * 
+     * @return AbstractStorage
+     */
+    public function getStorage(): AbstractStorage
+    {
+        return $this->storage;
+    }
+    
+    protected function checkForStorage(string $action)
+    {
+        if (empty($this->storage)) {
+            throw new NoStorageSetException("There is no storage set: $action");
+        }
+    }
     
 // ====================================== Name =====================================================    
     /**
@@ -147,14 +185,22 @@ abstract class AbstractProperty
      * 
      * @return string|NULL
      */
-    abstract public function readCapability(): ?string;
+    public function readCapability(): ?string
+    {
+        $this->checkForStorage('readCapability');
+        return $this->getStorage()->getReadCapability($this->getName());
+    }
     
     /**
      * Returns true, when the property is readable
      * 
      * @return bool true, if the property is readable otherwise false
      */
-    abstract public function isReadable(): bool;
+    public function isReadable(): bool
+    {
+        $this->checkForStorage('isReadable');
+        return $this->getStorage()->getIsReadable($this->getName());
+    }
     
     /**
      * Checks if this property is readable. If not it raises an exception
@@ -218,7 +264,7 @@ abstract class AbstractProperty
      */
     protected function doGetValue()
     {
-       // Leavy empty by default for write-only properties 
+        return $this->getStorage()->getValue($this->getName());
     }
     
     /**
@@ -228,6 +274,7 @@ abstract class AbstractProperty
      */
     public function getValue()
     {
+        $this->checkForStorage('read');
         $this->checkForReading();
         return $this->doGetValue();
     }
@@ -237,14 +284,22 @@ abstract class AbstractProperty
      *
      * @return string|NULL
      */
-    abstract public function writeCapability(): ?string;
+    public function writeCapability(): ?string
+    {
+        $this->checkForStorage('writeCapability');
+        return $this->getStorage()->getWriteCapability($this->getName());
+    }
     
     /**
      * Returns true, when the property is readable
      *
      * @return bool true, if the property is readable otherwise false
      */
-    abstract public function isWriteable(): bool;
+    public function isWriteable(): bool
+    {
+        $this->checkForStorage('isWriteable');
+        return $this->getStorage()->getIsWriteable($this->getName());
+    }
     
     /**
      * Returns true, when this property was already modified by an user. This is important for
@@ -252,14 +307,22 @@ abstract class AbstractProperty
      * 
      * @return bool
      */
-    abstract public function isInitialized(): bool;
+    public function isInitialized(): bool
+    {
+        $this->checkForStorage('isInitialized');
+        return $this->getStorage()->getIsInitialized($this->getName());
+    }
     
     /**
      * Returns the required capability to modify this property or null if none is required
      *
      * @return string|NULL
      */
-    abstract public function modifyCapability(): ?string;
+    public function modifyCapability(): ?string
+    {
+        $this->checkForStorage('modifyCapability');
+        return $this->getStorage()->getModifyCapability($this->getName());
+    }
     
     /**
      * Checks if this property is writeable. If not it raises an exception
@@ -314,15 +377,60 @@ abstract class AbstractProperty
     protected function checkForWriting()
     {
         $this->checkIsWriteable();
+        $this->checkIsAuthorizedForWriting();
     }
 
+    /**
+     * Checks if a user manager is installed. If yes it checks if the current user has the capability
+     * to write this property
+     *
+     * @param string $capability
+     * @throws NoUserManagerInstalledException::class When no user manager is installed
+     * @throws UserNotAuthorizedForWritingException::class When the current user is not authorized to write
+     */
+    private function doCheckModifyCapability(string $capability)
+    {
+        if (empty(static::$current_usermanager_fascade)) {
+            throw new NoUserManagerInstalledException("Property has a read restriction but no user manager is installed.");
+        }
+        if (!static::$current_usermanager_fascade::hasCapability($capability)) {
+            throw new UserNotAuthorizedForWritingException("The current user is not authorized to modify '".$this->_name."'");
+        }
+    }
+    
+    /**
+     * Checks if this property has any restrictions for modifying at all and if yes if the
+     * current user has this capability.
+     *
+     * @throw
+     */
+    private function checkIsAuthorizedForModify()
+    {
+        $capability = $this->modifyCapability();
+        
+        if (empty($capability)) {
+            return; // If capability is empty, just leave
+        }
+        
+        $this->doCheckModifyCapability($capability);
+    }
+    
+    /**
+     * Call this method before any modify attempts
+     */
+    protected function checkForModify()
+    {
+        $this->checkIsModifiable();
+        $this->checkIsAuthorizedForModify();
+    }
+    
     /**
      * Performs the writing process
      *
      */
     protected function doSetValue($value)
     {
-        // Leavy empty by default for read-only properties
+        $this->getStorage()->setValue($this->getName(), $value);
     }
     
     /**
@@ -332,46 +440,80 @@ abstract class AbstractProperty
      */
     public function setValue()
     {
-        $this->checkForWriting();
+        $this->checkForStorage('write');
+        if ($this->isInitialized()) {
+            $this->checkForModify();
+        } else {
+            $this->checkForWriting();
+        }
         return $this->doSetValue();
     }
  
-// *************************************** Metadata **********************************************
-    
-    /**
-     * Defines the type for all objects of this class (therefore static)
-     * 
-     * @var string
-     */
-    protected static $type = 'none';
-    
-    /**
-     * Returns the type or null if none is defines (shouldn't happen)
-     *  
-     * @return AbstractType|NULL
-     */
-    public function getType(): ?AbstractType
+    public function commit()
     {
-        $types = require_once('Types.php');
-        return isset($types[static::$type])?$types[static::$type]:null;
+        $this->checkForStorage('commit');
+        $this->getStorage()->commit();
+    }
+    
+    public function rollback()
+    {
+        $this->checkForStorage('rollback');    
+        $this->getStorage()->rollback();
+    }
+    
+// *************************************** Metadata **********************************************
+
+    /**
+     * Returns the unique id string for the semantic of this property
+     * 
+     * @return string
+     */
+    public function getSemantic(): string
+    {
+        return 'none';
     }
     
     /**
-     * Defines the unit for all objects of this class 
+     * Returns the unique id string for the unit of this property
      * 
-     * @var string
-     */
-    protected static $unit = 'none';
-    
-    /**
-     * Returns the unit 
-     *
-     * @return AbstractType|NULL
+     * @return string
      */
     public function getUnit(): string
     {
-        $units = require_once('Types.php');
-        return $units[static::$unit];
+        return 'none';
     }
     
+    /**
+     * Returns the access type of this property. The access type is the hint in the metadata how
+     * this property could be processed. The access type is not equivalent to the type of the property
+     * 
+     * Access type could be:
+     * - string
+     * - ingteger
+     * - date
+     * - datetiume
+     * - time
+     * - float
+     * - boolean
+     * - array
+     * - record
+     * 
+     * @return string
+     */
+    abstract public function getAccessType(): string;
+    
+    /**
+     * Assembles the metadata of this property and returns them as a associative array
+     * 
+     * @return string[]
+     */
+    public function getMetadata()
+    {
+        $result = [];
+        $result['semantic'] = $this->getSemantic();
+        $result['unit'] = $this->getUnit();
+        $result['type'] = $this->getAccessType();
+        
+        return $result;
+    }
 }

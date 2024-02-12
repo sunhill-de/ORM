@@ -1,8 +1,8 @@
 <?php
 /**
- * @file AbstractStorage.php
- * The basic class for storages. While properties are responsible for the processing of data
- * a storage is responsible for accessing and storing data.
+ * @file AbstractCachedStorage.php
+ * The basic class for storages that are cached. When writing to such a storage the values 
+ * are written delayed to the underlying storage system
  * @author Klaus Dimde
  * Lang en
  * Reviewstatus: 2024-02-11
@@ -15,31 +15,47 @@
 
 namespace Sunhill\ORM\Storage;
 
-abstract class AbstractStorage
+abstract class AbstractCachedStorage
 {
     
     /**
-     * Returns the required read capability or null if there is none
-     * 
-     * @param string $name
-     * @return string
+     * The current if in the storage
+     * @var integer
      */
-    abstract public function getReadCapability(string $name): ?string;
+    protected $id = 0;
     
-    /**
-     * Returns if the property is readable
-     * 
-     * @param string $name
-     * @return bool
-     */
-    abstract public function getIsReadable(string $name): bool;
+    protected $values = [];
+    
+    protected $shadows = [];
+
+    public function setID(int $id): AbstractCachedStorage
+    {
+        $this->id = $id;
+        return $this;
+    }
+    
+    public function getID(): int
+    {
+        return $this->id;    
+    }
+    
+    abstract protected function doReadFromUnderlying(int $id);
+    
+    abstract protected function doWriteToUnderlying(): int;
+    
+    abstract protected function doUpdateUnderlying(int $id);
     
     /**
      * Performs the retrievement of the value
      * 
      * @param string $name
      */
-    abstract protected function doGetValue(string $name);
+    protected function doGetValue(string $name)
+    {
+        if (!isset($this->values[$name])) {
+            
+        }
+    }
     
     /**
      * Prepares the retrievement of the value
