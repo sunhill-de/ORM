@@ -15,46 +15,93 @@
 
 namespace Sunhill\ORM\Storage;
 
-abstract class AbstractCachedStorage
+use Sunhill\ORM\Storage\Exceptions\PropertyNotFoundException;
+
+abstract class AbstractCachedStorage extends AbstractStorage
 {
     
     /**
-     * The current if in the storage
-     * @var integer
+     * Stores the current values
+     * 
+     * @var array
      */
-    protected $id = 0;
-    
     protected $values = [];
     
+    /**
+     * Stores the backup values (for rollback and dirty)
+     * 
+     * @var array
+     */
     protected $shadows = [];
 
-    public function setID(int $id): AbstractCachedStorage
+    /**
+     * Read storage from underlying storage
+     */
+    abstract protected function doReadFromUnderlying();
+    
+    /**
+     * When this storage was not stored before call write function
+     */
+    abstract protected function doWriteToUnderlying();
+    
+    /**
+     * When this storage was stored before call update function
+     */
+    abstract protected function doUpdateUnderlying();
+    
+    /**
+     * Returns true, if this storage is already stored 
+     * 
+     * @return bool
+     */    
+    abstract protected function isAlreadyStored(): bool;
+    
+    /**
+     * Returns true, when this storage was already loaded
+     * 
+     * @return bool
+     */
+    protected function storageIsLoaded(): bool
     {
-        $this->id = $id;
-        return $this;
+        return !empty($this->values);    
+    }
+
+    /**
+     * Checks if the given property. Must only be called after the storage was loaded
+     * 
+     * @param string $name
+     */
+    private function checkPropertyExists(string $name)
+    {
+        // Is the property defined?
+        if (!isset($this->values[$name])) {
+            // No, throw exception
+            throw new PropertyNotFoundException("The property '$name' was not found in this storage.");
+        }        
     }
     
-    public function getID(): int
+    /**
+     * Loads the storage if necessary
+     */
+    private function loadOnDemand()
     {
-        return $this->id;    
+        // Storage already loaded?
+        if (!$this->storageIsLoaded()) {
+            $this->doReadFromUnderlying(); // No, load it
+        }        
     }
-    
-    abstract protected function doReadFromUnderlying(int $id);
-    
-    abstract protected function doWriteToUnderlying(): int;
-    
-    abstract protected function doUpdateUnderlying(int $id);
     
     /**
      * Performs the retrievement of the value
      * 
      * @param string $name
+     * @throws PropertyNotFoundException When the property is not defined in this storage
      */
     protected function doGetValue(string $name)
-    {
-        if (!isset($this->values[$name])) {
-            
-        }
+    {        
+        $this->checkPropertyExists($name);
+        
+        return $this->values[$name];
     }
     
     /**
@@ -64,81 +111,111 @@ abstract class AbstractCachedStorage
      */
     protected function prepareGetValue(string $name)
     {
-        
+        $this->loadOnDemand();
     }
-    
+
     /**
-     * Gets the given value
+     * Returns true, when the given property was already assigned a value
      * 
-     * @param string $name
-     * @return unknown
-     */
-    public function getValue(string $name)
-    {
-        $this->prepareGetValue($name);
-        return $this->doGetValue($name);
-    }
-    
-    /**
-     * Returns the required write capability or null if there is none
-     * 
-     * @param string $name
-     * @return string|NULL
-     */
-    abstract public function getWriteCapability(string $name): ?string;
-    
-    /**
-     * Returns if this property is writeable
      * @param string $name
      * @return bool
      */
-    abstract public function getWriteable(string $name): bool;
+    protected function isInitialized(string $name): bool
+    {
+        return isset($this->values[$name]);
+    }
     
     /**
-     * Returns the modify capability or null if there is none
+     * Returns true, when the given property was alread modified
      * 
      * @param string $name
-     * @return string|NULL
+     * @return bool
      */
-    abstract public function getModifyCapability(string $name): ?string;
-        
+    protected function isModified(string $name): bool
+    {
+        return isset($this->shadows[$name]);    
+    }
+    
+    /**
+     * Handles the value change of a already initialized property
+     * 
+     * @param string $name
+     * @param unknown $value
+     */
+    private function handleInitializedValue(string $name, $value)
+    {
+        if ($this->values[$name] <> $value) { // Is there any change?
+            if (!$this->isModified($name)) { // Not already shadowed
+                $this->shadows[$name] = $this->values[$name]; // No, than store old value to shadow
+            }
+            $this->values[$name] = $value; // Store value
+        }        
+    }
+    
+    /**
+     * Handles th value change of a uninitialized property
+     * 
+     * @param string $name
+     * @param unknown $value
+     */
+    private function handleUninitializedValue(string $name, $value)
+    {
+        $this->values[$name] = $value;        
+    }
+    
     /**
      * Performs the setting of the value
      * 
      * @param string $name
      * @param unknown $value
      */
-    abstract protected function doSetValue(string $name, $value);
-    
-    /**
-     * Perfoms action after setting the value
-     * 
-     * @param string $name
-     * @param unknown $value
-     */
-    protected function postprocessSetValue(string $name, $value)
+    protected function doSetValue(string $name, $value)
     {
+        if ($this->isAlreadyStored()) {
+            $this->loadOnDemand();
+            $this->checkPropertyExists($name);
+        }
         
+        if ($this->isInitialized($name)) {
+            $this->handleInitializedValue($name, $value);
+        } else {
+            $this->handleUninitializedValue($name, $value);            
+        }
     }
     
     /**
-     * Sets the given value
+     * Returns if this storage was modified
      * 
-     * @param string $name
-     * @param unknown $value
+     * @return bool
      */
-    public function setValue(string $name, $value)
+    public function isDirty(): bool
     {
-        $this->doSetValue($name, $value);
-        $this->postprocessSetValue($name, $value);
+        return !empty($this->shadows) || (!$this->isAlreadyStored() && !empty($this->values));    
     }
     
     /**
-     * For cached storages performs the flush of the cache. Has to be called by property.
+     * Depeding on if the storage was already stored call update or write and clean shadow
+     */
+    protected function doCommit()
+    {
+        if ($this->isAlreadyStored()) {
+            $this->doUpdateUnderlying();
+        } else {
+            $this->doWriteToUnderlying();
+        }
+        $this->shadows = [];
+    }
+    
+    /**
+     * Only if dirty call doCommit()
+     * {@inheritDoc}
+     * @see \Sunhill\ORM\Storage\AbstractStorage::commit()
      */
     public function commit()
     {
-        
+        if ($this->isDirty() || !$this->isAlreadyStored()) {
+            $this->doCommit();
+        }
     }
     
     /**
@@ -148,7 +225,11 @@ abstract class AbstractCachedStorage
      */
     public function rollback()
     {
-        
+        foreach ($this->shadows as $name => $value)
+        {
+            $this->values[$name] = $value;
+        }
+        $this->shadows = [];
     }
     
 }

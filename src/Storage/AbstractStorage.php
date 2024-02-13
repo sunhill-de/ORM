@@ -118,6 +118,13 @@ abstract class AbstractStorage
     }
     
     /**
+     * Returns if this storage was modified
+     *
+     * @return bool
+     */
+    abstract public function isDirty(): bool;
+
+    /**
      * For cached storages performs the flush of the cache. Has to be called by property.
      */
     public function commit()
