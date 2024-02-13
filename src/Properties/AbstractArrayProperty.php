@@ -26,5 +26,10 @@ abstract class AbstractArrayProperty extends AbstractProperty
      * @return int
      */
     abstract public function count(): int;
-        
+    
+    public function getAccessType(): string
+    {
+        return 'array';
+    }
+    
 }

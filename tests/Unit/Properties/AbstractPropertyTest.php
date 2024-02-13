@@ -8,43 +8,25 @@ use Sunhill\ORM\Units\None;
 use Sunhill\ORM\Objects\ORMObject;
 use Sunhill\ORM\Properties\Exceptions\InvalidNameException;
 use Sunhill\ORM\Properties\AbstractProperty;
+use Sunhill\ORM\Tests\TestSupport\TestAbstractIDStorage;
 
 class NonAbstractProperty extends AbstractProperty
 {
     
+    public function __construct()
+    {
+        $this->setName('test_int');
+    }
+    
+    public function getAccessType(): string
+    {
+        return 'integer';    
+    }
 }
 
 class AbstractPropertyTest extends TestCase
 {
- 
-    /**
-     * @dataProvider StandardGettersProvider
-     */
-    public function testStandardGetters($setter, $getter, $value, $default)
-    {
-        $test = new NonAbstractProperty();
-        $this->assertEquals($default, $test->$getter());
-        $this->assertEquals($test,$test->$setter($value));
-        $this->assertEquals($value, $test->$getter());
-    }
-    
-    public static function StandardGettersProvider()
-    {
-        return [
-            ['setName','getName','test', ''],
-            ['name','getName','test', ''],
-            ['setUnit','getUnit','abc',None::class],
-            ['unit','getUnit','abc',None::class],
-            ['setSemantic','getSemantic','abc', Name::class],
-            ['semantic','getSemantic','abc', Name::class],
-//            ['setClass','getClass','abc', null],
-            ['setReadonly','getReadonly',true, false],
-            ['readonly','getReadonly',true, false],
-            ['setSearchable','getSearchable',true, false],
-            ['searchable','getSearchable',true, false],
-        ];
-    }
-    
+     
     /**
      * @dataProvider NamesProvider
      * @param unknown $test
@@ -55,7 +37,7 @@ class AbstractPropertyTest extends TestCase
         if ($forbidden) {
             $this->expectException(InvalidNameException::class);
         }
-        $test = new Property();
+        $test = new NonAbstractProperty();
         
         $test->setName($name);
         
@@ -76,14 +58,7 @@ class AbstractPropertyTest extends TestCase
             ['namewith1digit', false],
         ];    
     }
-    
-    public function testOwner()
-    {
-        $test = new ORMObject();
-        $test->setOwner(ORMObject::class);
-        $this->assertEquals(ORMObject::class, $test->getOwner());        
-    }
-    
+        
     /**
      * @dataProvider AdditionalGetterProvider
      * @param unknown $item
@@ -91,7 +66,7 @@ class AbstractPropertyTest extends TestCase
      */
     public function testAdditionalGetter($item, $value)
     {
-        $test = new Property();
+        $test = new NonAbstractProperty();
         $method = 'set_'.$item;
         $test->$method($value);
         $method = 'get_'.$item;
@@ -111,8 +86,26 @@ class AbstractPropertyTest extends TestCase
     {
         $this->expectException(PropertyException::class);
         
-        $test = new Property();
+        $test = new NonAbstractProperty();
         $test->unknownMethod();
     }
+    
+    public function testSetName()
+    {
+        $test = new NonAbstractProperty();
+        $this->assertEquals('test_int', $test->getName());
+        $test->setName('another');
+        $this->assertEquals('another', $test->getName());        
+    }
+    
+    public function testSetStorage()
+    {
+        $storage = new TestAbstractIDStorage();
+        $storage->setID(1);
         
+        $test = new NonAbstractProperty();
+        $test->setStorage($storage);
+        $this->assertEquals($storage, $test->getStorage());
+        $this->assertEquals(345, $test->getValue());
+    }
 }

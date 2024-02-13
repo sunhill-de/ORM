@@ -19,5 +19,10 @@ use Sunhill\ORM\Properties\Exceptions\NoUserManagerInstalledException;
 
 abstract class AbstractRecordProperty extends AbstractProperty
 {
-    
+ 
+    public function getAccessType(): string
+    {
+        return 'record';
+    }
+        
 }

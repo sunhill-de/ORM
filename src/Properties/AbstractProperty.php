@@ -21,6 +21,7 @@ use Sunhill\ORM\Properties\Exceptions\UserNotAuthorizedForWritingException;
 use Sunhill\ORM\Properties\Types\AbstractType;
 use Sunhill\ORM\Storage\AbstractStorage;
 use Sunhill\ORM\Properties\Exceptions\NoStorageSetException;
+use Sunhill\ORM\Properties\Exceptions\PropertyException;
 
 abstract class AbstractProperty
 {
@@ -89,7 +90,7 @@ abstract class AbstractProperty
         if ($name[0] == '_') {
             throw new InvalidNameException("The property name '$name' must not start with an underscore.");
         }
-        if (in_array(strtolower($name), Property::FORBIDDEN_NAMES)) {
+        if (in_array(strtolower($name), static::FORBIDDEN_NAMES)) {
             throw new InvalidNameException("The property name '$name' is reserved and not allowed.");
         }
     }
@@ -491,7 +492,7 @@ abstract class AbstractProperty
      * - string
      * - ingteger
      * - date
-     * - datetiume
+     * - datetime
      * - time
      * - float
      * - boolean
@@ -516,4 +517,79 @@ abstract class AbstractProperty
         
         return $result;
     }
+    
+// ========================= Infomarket functionallity =========================================
+    /**
+     * Some atomar properties could have pseudo child elements (like count for arrays)
+     * @param string $name
+     * @return NULL
+     */
+    protected function requestTerminalItem(string $name)
+    {
+        return null;
+    }
+    
+    /**
+     * Try to pass the request to a child element. If none is found return null
+     * @param string $name
+     * @param array $path
+     * @return NULL
+     */
+    protected function passItemRequest(string $name, array $path)
+    {
+        return null;
+    }
+    
+    /**
+     * When no path elements are left return $this, if only one is left check for
+     * terminal item (pseudo child, see requestTerminalItem. Otherwise try to pass
+     * The request to a child.
+     * @param array $path
+     * @return \Sunhill\ORM\Properties\Property|NULL
+     */
+    public function requestItem(array $path)
+    {
+        if (empty($path)) {
+            return $this;
+        }
+        $next = array_shift($path);
+        if (empty($path) && ($result = $this->requestTerminalItem($next))) {
+            return $result;
+        }
+        return $this->passItemRequest($next, $path);
+    }
+    
+    // ================================= Additional Fields ======================================
+    /**
+     * Properties get the possibility to add additinal fields (like property->set_additional)
+     */
+    private $additional_fields = [];
+    
+    /**
+     * Extends the property with the possibility to deal with additional getters and setters
+     *
+     * @param string $method
+     * @param array $params
+     * @return mixed|NULL|\Sunhill\ORM\Properties\Property
+     *
+     * Test: /Unit/Properties/PropertyTest::testAdditionalGetter
+     * Test: /Unit/Properties/PropertyTest::testUnknownMethod
+     */
+    public function __call(string $method, array $params)
+    {
+        if (substr($method,0,4) == 'get_') {
+            $name = strtolower(substr($method,4));
+            if (isset($this->additional_fields[$name])) {
+                return $this->additional_fields[$name];
+            } else {
+                return null;
+            }
+        } else if (substr($method,0,4) == 'set_') {
+            $name = strtolower(substr($method,4));
+            $this->additional_fields[$name] = $params[0];
+            return $this;
+        }
+        throw new PropertyException(static::class.": Unknown method '$method' called");
+    }
+            
 }
