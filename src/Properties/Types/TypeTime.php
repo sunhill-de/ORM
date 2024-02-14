@@ -28,5 +28,11 @@ class TypeTime extends TypeDateTime
     {
         return $input->format('H:i:m');
     }
-        
+     
+    public function getAccessType(): string
+    {
+        return 'time';
+    }
+    
+    
 }

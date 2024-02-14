@@ -13,9 +13,9 @@
 
 namespace Sunhill\ORM\Properties\Types;
 
-use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
+use Sunhill\ORM\Properties\AbstractSimpleProperty;
 
-class TypeDateTime extends AbstractType
+class TypeDateTime extends AbstractSimpleProperty
 {
    
     
@@ -83,4 +83,9 @@ class TypeDateTime extends AbstractType
         return new \DateTime($output);
     }
     
+    public function getAccessType(): string
+    {
+        return 'datetime';
+    }
+        
 }

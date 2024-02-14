@@ -14,8 +14,9 @@
 namespace Sunhill\ORM\Properties\Types;
 
 use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
+use Sunhill\ORM\Properties\AbstractSimpleProperty;
 
-abstract class TypeNumeric extends AbstractType
+abstract class TypeNumeric extends AbstractSimpleProperty
 {
    
     /**

@@ -13,10 +13,10 @@
 
 namespace Sunhill\ORM\Properties\Types;
 
-use Sunhill\ORM\Properties\ValidatorBase;
 use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
+use Sunhill\ORM\Properties\AbstractSimpleProperty;
 
-class TypeVarchar extends AbstractType
+class TypeVarchar extends AbstractSimpleProperty
 {
    
     /**
@@ -108,4 +108,10 @@ class TypeVarchar extends AbstractType
     {
         return substr($input,0,$this->max_length);
     }
+    
+    public function getAccessType(): string
+    {
+        return 'string';
+    }
+        
 }

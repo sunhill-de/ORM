@@ -13,8 +13,6 @@
 
 namespace Sunhill\ORM\Properties\Types;
 
-use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
-
 class TypeDate extends TypeDateTime
 {
        
@@ -27,6 +25,11 @@ class TypeDate extends TypeDateTime
     public function doConvertToStorage($input)
     {
         return $input->format('Y-m-d');
+    }
+    
+    public function getAccessType(): string
+    {
+        return 'date';
     }
         
 }

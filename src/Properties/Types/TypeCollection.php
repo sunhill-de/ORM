@@ -13,11 +13,11 @@
 
 namespace Sunhill\ORM\Properties\Types;
 
-use Sunhill\ORM\Properties\ValidatorBase;
 use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
 use Sunhill\ORM\Facades\Collections;
+use Sunhill\ORM\Properties\AbstractSimpleProperty;
 
-class TypeCollection extends AbstractType
+class TypeCollection extends AbstractSimpleProperty
 {
 
     /**
@@ -100,4 +100,10 @@ class TypeCollection extends AbstractType
         $this->checkAllowedCollectionSet();
         return $input;
     }
+    
+    public function getAccessType(): string
+    {
+        return 'record';
+    }
+        
 }

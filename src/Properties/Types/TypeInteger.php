@@ -13,14 +13,17 @@
 
 namespace Sunhill\ORM\Properties\Types;
 
-use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
-
 class TypeInteger extends TypeNumeric
 {
    
     protected function isNumericType($input): bool
     {
         return (ctype_digit($input) || is_int($input));
+    }
+    
+    public function getAccessType(): string
+    {
+        return 'integer';
     }
     
 }

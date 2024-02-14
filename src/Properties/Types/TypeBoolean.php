@@ -13,12 +13,10 @@
 
 namespace Sunhill\ORM\Properties\Types;
 
-use Sunhill\ORM\Properties\ValidatorBase;
-use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
+use Sunhill\ORM\Properties\AbstractSimpleProperty;
 
-class TypeBoolean extends AbstractType
+class TypeBoolean extends AbstractSimpleProperty
 {
-
     
     /**
      * Tests if input can be solved to an boolean (always true, because everything can be solved to
@@ -50,4 +48,10 @@ class TypeBoolean extends AbstractType
         }
         return empty($input)?0:1;
     }
+
+    public function getAccessType(): string
+    {
+        return 'boolean';
+    }
+    
 }

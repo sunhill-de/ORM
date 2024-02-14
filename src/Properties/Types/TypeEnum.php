@@ -13,10 +13,9 @@
 
 namespace Sunhill\ORM\Properties\Types;
 
-use Sunhill\ORM\Properties\ValidatorBase;
-use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
+use Sunhill\ORM\Properties\AbstractSimpleProperty;
 
-class TypeEnum extends AbstractType
+class TypeEnum extends AbstractSimpleProperty
 {
    
     /**
@@ -59,4 +58,9 @@ class TypeEnum extends AbstractType
         return in_array($input, $this->allowed_values);
     }
     
+    public function getAccessType(): string
+    {
+        return 'string';
+    }
+        
 }

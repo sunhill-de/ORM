@@ -13,10 +13,9 @@
 
 namespace Sunhill\ORM\Properties\Types;
 
-use Sunhill\ORM\Properties\ValidatorBase;
-use Sunhill\ORM\Properties\Exceptions\InvalidParameterException;
+use Sunhill\ORM\Properties\AbstractSimpleProperty;
 
-class TypeText extends AbstractType
+class TypeText extends AbstractSimpleProperty
 {
    
     /**
@@ -29,5 +28,10 @@ class TypeText extends AbstractType
     {
         return is_scalar($input);
     }
-    
+
+    public function getAccessType(): string
+    {
+        return 'string';
+    }
+        
 }

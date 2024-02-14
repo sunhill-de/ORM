@@ -22,6 +22,8 @@ use Sunhill\ORM\Properties\Types\AbstractType;
 use Sunhill\ORM\Storage\AbstractStorage;
 use Sunhill\ORM\Properties\Exceptions\NoStorageSetException;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
+use Sunhill\ORM\Properties\Exceptions\InvalidValueException;
+use Illuminate\Support\Facades\Log;
 
 abstract class AbstractProperty
 {
@@ -426,20 +428,33 @@ abstract class AbstractProperty
     }
     
     /**
+     * Converts the input to an defined value to store. For example an object is returned as
+     * a object instance even if only a id is passed. By default this method just passes the input data
+     *
+     * @param unknown $input
+     */
+    protected function doConvertToInput($input)
+    {
+        return $input;
+    }
+    
+    /**
      * Performs the writing process
      *
      */
     protected function doSetValue($value)
     {
-        $this->getStorage()->setValue($this->getName(), $value);
+        $this->getStorage()->setValue($this->getName(), $this->doConvertToInput($value));
     }
+    
+    abstract protected function validateInput($input);
     
     /**
      * Checks the writing restrictions and if passed performs the writing
      *
      * @return unknown
      */
-    public function setValue()
+    public function setValue($value)
     {
         $this->checkForStorage('write');
         if ($this->isInitialized()) {
@@ -447,7 +462,8 @@ abstract class AbstractProperty
         } else {
             $this->checkForWriting();
         }
-        return $this->doSetValue();
+        $this->validateInpout($value);
+        return $this->doSetValue($value);
     }
  
     public function commit()
