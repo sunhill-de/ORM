@@ -10,15 +10,25 @@ class TestAbstractIDStorage extends AbstractIDStorage
     public $data = [['test_str'=>'ABC','test_int'=>123],['test_str'=>'DEF','test_int'=>345]];
     
     public $next_id = 2;
+
+    public $read_capability;
+    
+    public $write_capability;
+    
+    public $modify_capability;
+    
+    public $is_readable = true;
+    
+    public $is_writeable = true;
     
     public function getReadCapability(string $name): ?string
     {
-        return null; // No need to test
+        return $this->read_capability; // No need to test
     }
     
     public function getIsReadable(string $name): bool
     {
-        return true;
+        return $this->is_readable;
     }
     
     protected function doGetValue(string $name)
@@ -28,17 +38,17 @@ class TestAbstractIDStorage extends AbstractIDStorage
     
     public function getWriteCapability(string $name): ?string
     {
-        return null;
+        return $this->write_capability;
     }
     
-    public function getWriteable(string $name): bool
+    public function getIsWriteable(string $name): bool
     {
-        return true;
+        return $this->is_writeable;
     }
     
     public function getModifyCapability(string $name): ?string
     {
-        return null;
+        return $this->modify_capability;
     }
     
     protected function readFromID(int $id)

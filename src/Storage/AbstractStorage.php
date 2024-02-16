@@ -76,7 +76,7 @@ abstract class AbstractStorage
      * @param string $name
      * @return bool
      */
-    abstract public function getWriteable(string $name): bool;
+    abstract public function getIsWriteable(string $name): bool;
     
     /**
      * Returns the modify capability or null if there is none
@@ -141,5 +141,12 @@ abstract class AbstractStorage
     {
         
     }
+
+    /**
+     * Returns if the value was already initialized with a value
+     * 
+     * @return bool
+     */
+    abstract public function getIsInitialized(string $name): bool;
     
 }

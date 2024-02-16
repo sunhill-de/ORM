@@ -67,9 +67,14 @@ class TypeDateTime extends AbstractSimpleProperty
      * @param unknown $input
      * @return unknown, by dafult just return the value
      */
-    public function doConvertToStorage($input)
+    protected function formatForStorage($input)
     {
         return $input->format('Y-m-d H:i:s');
+    }
+    
+    protected function formatForHuman($input)
+    {
+        return $input->format('d.m.Y H:i:s');
     }
     
     /**
@@ -78,7 +83,7 @@ class TypeDateTime extends AbstractSimpleProperty
      * @param unknown $output
      * @return unknown,. by default just pass the value
      */
-    public function doConvertFromStorage($output)
+    public function formatFromStorage($output)
     {
         return new \DateTime($output);
     }

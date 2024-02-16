@@ -24,15 +24,30 @@ class TypeTime extends TypeDateTime
      * @param unknown $input
      * @return unknown, by dafult just return the value
      */
-    public function doConvertToStorage($input)
+    protected function formatForStorage($input)
     {
-        return $input->format('H:i:m');
+        return $input->format('H:i:s');
     }
-     
+    
+    /**
+     * Formats the time in a human readable format
+     * 
+     * {@inheritDoc}
+     * @see \Sunhill\ORM\Properties\Types\TypeDateTime::formatForHuman()
+     */
+    protected function formatForHuman($input)
+    {
+        return $input->format('H:i:s');
+    }
+    
+    /**
+     * Returns the access type (in this case 'time')
+     * {@inheritDoc}
+     * @see \Sunhill\ORM\Properties\Types\TypeDateTime::getAccessType()
+     */
     public function getAccessType(): string
     {
         return 'time';
     }
-    
-    
+        
 }

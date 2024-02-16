@@ -22,9 +22,14 @@ class TypeDate extends TypeDateTime
      * @param unknown $input
      * @return unknown, by dafult just return the value
      */
-    public function doConvertToStorage($input)
+    protected function formatForStorage($input)
     {
         return $input->format('Y-m-d');
+    }
+    
+    protected function formatForHuman($input)
+    {
+        return $input->format('d.m.Y');    
     }
     
     public function getAccessType(): string

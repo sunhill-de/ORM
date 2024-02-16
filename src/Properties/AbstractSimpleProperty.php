@@ -32,89 +32,142 @@ abstract class AbstractSimpleProperty extends AbstractProperty
         }
     }
     
+
+    // ========================== Default value handling ================================
     /**
-     * Returns true, if the given value is accepted as an input value for this validator
-     *
-     * @param unknown $input The value to test
-     * @return bool true if valid otherwise false
+     * The default value for the value field. In combination with Property->defaults_null this default value
+     * is used:
+     * $default  | $defaults_null | Default value
+     * ----------+----------------+------------------------------
+     * not null  | any            | the value stored in $default
+     * null      | true           | null
+     * null      | false          | no default value
+     * With a default value an property is never unititialized
+     * @var void
      */
-    abstract public function isValid($input): bool;
+    protected $default;
     
     /**
-     * Checks if the given input value is acceptes, If not it raises an exception
-     *
-     * @param unknown $input
-     * @throws InvalidValudException is thrown when the given valu is not valid
+     * See above
+     * @var bool
      */
-    protected function validateInput($input)
+    protected $defaults_null = false;
+    
+    /**
+     * Is this property allowed to take null as a value (by default yes)
+     * @var boolean
+     */
+    protected $nullable = true;
+    
+    /**
+     * sets the field Property->default (and perhaps Property->defaults_null too)
+     *
+     * @return PropertyOld a reference to this to make setter chains possible
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function setDefault($default): Property
     {
-        if (!$this->isValid($input)) {
-            if (is_scalar($input)) {
-                $this->error("The value '$input* is not valid.");
-                throw new InvalidValueException("The value '$input' is not valid.");
-            } else {
-                $this->error("The non scalar value is not valid.");
-                throw new InvalidValueException("The value is not valuid.");
-            }
+        if (!isset($default)) {
+            $this->defaults_null = true;
         }
+        $this->default = $default;
+        return $this;
     }
     
     /**
-     * Converts the input to an defined value to store. For example an object is returned as
-     * a object instance even if only a id is passed. By default this method just passes the input data
+     * Alias for setDefault()
      *
-     * @param unknown $input
-     */
-    protected function doConvertToInput($input)
-    {
-        return $input;
-    }
-    
-    /**
-     * Checks if the given input is valid. If yes try to convert it to a internal value
+     * @return PropertyOld a reference to this to make setter chains possible
      *
-     * @param unknown $input
-     * @return unknown
+     * Test: Unit/Properties/PropertyTest::testDefault
      */
-    public function convertToInput($input)
+    public function default($default)
     {
-        $this->validateInput($input);
-        return $this->doConvertToInput($input);
+        return $this->setDefault($default);
     }
     
     /**
-     * When a value is requested it it passed through this method to eventually perform a
-     * processing first
-     
-     * @param unknown $output
-     * @return unknown By default just the output
-     */
-    protected function convertToOutput($output)
-    {
-        return $output;
-    }
-    
-    /**
-     * Sometimes the value is stored in the storage in another format than it is in the property
+     * Returns the current default value
      *
-     * @param unknown $input
-     * @return unknown, by dafult just return the value
+     * @return null means no default value, DefaultNull::class means null is Default
+     * otheriwse it return the default value
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
      */
-    public function doConvertToStorage($input)
+    public function getDefault()
     {
-        return $input;
+        if ($this->defaults_null) {
+            return DefaultNull::class;
+        }
+        return $this->default;
     }
     
     /**
-     * Sometimen the value was stored in the storage in another format than it is in the property
+     * Is null the default value?
      *
-     * @param unknown $output
-     * @return unknown,. by default just pass the value
+     * @return boolean
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
      */
-    public function doConvertFromStorage($output)
+    public function getDefaultsNull(): bool
     {
-        return $output;
+        return $this->defaults_null;
     }
     
+    /**
+     * Marks this property as nullable (null may be assigned as value). If there is
+     * not already a default value, set null as default too
+     *
+     * @param bool $value
+     * @return PropertyOld
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function nullable(bool $value = true): Property
+    {
+        $this->nullable = $value;
+        if (!$this->defaults_null && !is_null($this->default)) {
+            $this->default(null);
+        }
+        return $this;
+    }
     
+    /**
+     * Alias for nullable()
+     *
+     * @param bool $value
+     * @return PropertyOld
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function setNullable(bool $value = true): Property
+    {
+        return $this->nullable($value);
+    }
+    
+    /**
+     * Alias for nullable(false)
+     *
+     * @return PropertyOld
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function notNullable(): Property
+    {
+        return $this->nullable(false);
+    }
+    
+    /**
+     * Getter for nullable
+     *
+     * @return bool
+     *
+     * Test: Unit/Properties/PropertyTest::testDefault
+     */
+    public function getNullable(): bool
+    {
+        return $this->nullable;
+    }
+        
 }

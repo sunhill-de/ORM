@@ -6,7 +6,7 @@
  * Reviewstatus: 2024-02-04
  * Localization: complete
  * Documentation: complete
- * Tests: Unit/PropertyTest.php, Unit/PropertyValidateTest.php
+ * Tests: Unit/Properties/AbstractPropertyTest.php
  * Coverage: unknown
  */
 
@@ -24,6 +24,7 @@ use Sunhill\ORM\Properties\Exceptions\NoStorageSetException;
 use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\Exceptions\InvalidValueException;
 use Illuminate\Support\Facades\Log;
+use Sunhill\ORM\Properties\Exceptions\UserNotAuthorizedForModifyException;
 
 abstract class AbstractProperty
 {
@@ -40,6 +41,8 @@ abstract class AbstractProperty
      * 
      * @param AbstractStorage $storage
      * @return \Sunhill\ORM\Properties\AbstractProperty
+     * 
+     * @test AbstractPropertyTest::testSetStorage()
      */
     public function setStorage(AbstractStorage $storage)
     {
@@ -51,12 +54,22 @@ abstract class AbstractProperty
      * Getter for storage
      * 
      * @return AbstractStorage
+     * 
+     * @test AbstractPropertyTest::testSetStorage()
      */
     public function getStorage(): AbstractStorage
     {
         return $this->storage;
     }
     
+    /**
+     * Checks if a storage is set. If not raises an exception
+     * 
+     * @param string $action
+     * @throes NoStorageExcveption
+     * 
+     * @test AbstractPropertyTest::testNoStorage()
+     */
     protected function checkForStorage(string $action)
     {
         if (empty($this->storage)) {
@@ -83,6 +96,8 @@ abstract class AbstractProperty
      * 
      * @param string $name
      * @exception InvalidNameException When the given name is not valid
+     * 
+     * @test AbstractPropertyTest::testNames()
      */
     protected function checkName(string $name)
     {
@@ -102,7 +117,7 @@ abstract class AbstractProperty
      * @param $name The name of the property
      * @return PropertyOld a reference to this to make setter chains possible
      *
-     * Test Unit/Properties/PropertyTest::testStandardGetters
+     * Test Unit/Properties/PropertyTest::testNames()
      */
     public function setName(string $name): AbstractProperty
     {
@@ -115,6 +130,8 @@ abstract class AbstractProperty
      * Skips the name checking (for system properties)
      * @param string $name
      * @return Proeprty
+     *
+     * Test Unit/Properties/PropertyTest::forceNames()
      */
     public function forceName(string $name): AbstractProperty
     {
@@ -128,7 +145,7 @@ abstract class AbstractProperty
      * @param string $name
      * @return PropertyOld
      *
-     * Test Unit/Properties/PropertyTest::testStandardGetters
+     * Test Unit/Properties/PropertyTest::testNames
      */
     public function name(string $name): AbstractProperty
     {
@@ -138,7 +155,7 @@ abstract class AbstractProperty
     /**
      * Returns the name of this property
      *
-     * Test Unit/Properties/PropertyTest::testStandardGetters
+     * Test Unit/Properties/PropertyTest::testNames
      */
     public function getName(): ?string
     {
@@ -150,6 +167,8 @@ abstract class AbstractProperty
      * 
      * @param string $test
      * @return bool
+     *
+     * Test Unit/Properties/PropertyTest::testNames
      */
     public function isValidPropertyName(string $test): bool
     {
@@ -177,6 +196,8 @@ abstract class AbstractProperty
      * otherwise false. 
      * 
      * @param string $user_manager
+     * 
+     * @test AbstractPropertyTest::testGetCapabilities
      */
     public static function setUserManager(string $user_manager)
     {
@@ -187,6 +208,8 @@ abstract class AbstractProperty
      * Returns the required capability to read this property or null if none is required
      * 
      * @return string|NULL
+     * 
+     * @test AbstractPropertyTest::testGetCapabilities
      */
     public function readCapability(): ?string
     {
@@ -198,6 +221,8 @@ abstract class AbstractProperty
      * Returns true, when the property is readable
      * 
      * @return bool true, if the property is readable otherwise false
+     * 
+     * @test AbstractPropertyTest::testPropertyNotReadable
      */
     public function isReadable(): bool
     {
@@ -209,6 +234,8 @@ abstract class AbstractProperty
      * Checks if this property is readable. If not it raises an exception
      * 
      * @throws PropertyNotReadableException::class When this property is not readbale
+     * 
+     * @test AbstractPropertyTest::testPropertyNotReadable()
      */
     private function checkIsReadable()
     {
@@ -223,7 +250,11 @@ abstract class AbstractProperty
      * 
      * @param string $capability
      * @throws NoUserManagerInstalledException::class When no user manager is installed
-     * @throws UserNotAuthorizedForReadingException::class When the current user is not authorized to read 
+     * @throws UserNotAuthorizedForReadingException::class When the current user is not authorized to read
+     * 
+     *  @test AbstractPropertyTest::testNoUserManagerInstalled()
+     *  @test AbstractPropertyTest::testUserNotAuthorizedForReading()
+     *  @test AbstractPropertyTest::testUserAuthorizedForReading()
      */
     private function doCheckReadCapability(string $capability)
     {
@@ -239,7 +270,10 @@ abstract class AbstractProperty
      * Checks if this property has any restrictions for reading at all and if yes if the 
      * current user has this capability.
      * 
-     * @throw 
+     * 
+     *  @test AbstractPropertyTest::testNoUserManagerInstalled()
+     *  @test AbstractPropertyTest::testUserNotAuthorizedForReading()
+     *  @test AbstractPropertyTest::testUserAuthorizedForReading()
      */
     private function checkIsAuthorizedForReading()
     {
@@ -254,6 +288,11 @@ abstract class AbstractProperty
     
     /**
      * Call this method before any reading attempts
+     * 
+     *  @test AbstractPropertyTest::testPropertyNotReadable()
+     *  @test AbstractPropertyTest::testNoUserManagerInstalled()
+     *  @test AbstractPropertyTest::testUserNotAuthorizedForReading()
+     *  @test AbstractPropertyTest::testUserAuthorizedForReading()
      */
     protected function checkForReading()
     {
@@ -264,6 +303,10 @@ abstract class AbstractProperty
     /**
      * Performs the reading process
      * 
+     *  @test AbstractPropertyTest::testPropertyNotReadable()
+     *  @test AbstractPropertyTest::testNoUserManagerInstalled()
+     *  @test AbstractPropertyTest::testUserNotAuthorizedForReading()
+     *  @test AbstractPropertyTest::testUserAuthorizedForReading()
      */
     protected function doGetValue()
     {
@@ -274,6 +317,11 @@ abstract class AbstractProperty
      * Checks the reading restrictions and if passed performs the reading
      * 
      * @return unknown
+     * 
+     *  @test AbstractPropertyTest::testPropertyNotReadable()
+     *  @test AbstractPropertyTest::testNoUserManagerInstalled()
+     *  @test AbstractPropertyTest::testUserNotAuthorizedForReading()
+     *  @test AbstractPropertyTest::testUserAuthorizedForReading()
      */
     public function getValue()
     {
@@ -281,11 +329,59 @@ abstract class AbstractProperty
         $this->checkForReading();
         return $this->doGetValue();
     }
+
+    /**
+     * Returns the value in a human readable format. The possible read restrictions are already
+     * checked
+     * @param unknown $input
+     * @return unknown
+     */
+    protected function formatForHuman($input)
+    {
+        return $input;        
+    }
     
+    /**
+     * Returns the value for saving in the storafge
+     * 
+     * @param unknown $input
+     * @return unknown
+     */
+    protected function formatForStorage($input)
+    {
+        return $input;
+    }
+    
+    /**
+     * Returns the value as loaded from a storage
+     * 
+     * @param unknown $input
+     * @return unknown
+     */
+    protected function formatFromStorage($input)
+    {
+        return $input;
+    }
+    
+    /**
+     * Returns the value in a human readable form 
+     * 
+     * @return \Sunhill\ORM\Properties\unknown
+     * 
+     * @tests AbstractPropertyTest::testFormatForHuman
+     */
+    public function getHumanValue()
+    {
+        $this->checkForStorage('read');
+        $this->checkForReading();
+        return $this->formatForHuman($this->doGetValue());
+    }
     /**
      * Returns the required capability to read this property or null if none is required
      *
      * @return string|NULL
+     * 
+     * @test AbstractPropertyTest::testGetCapabilities
      */
     public function writeCapability(): ?string
     {
@@ -297,6 +393,8 @@ abstract class AbstractProperty
      * Returns true, when the property is readable
      *
      * @return bool true, if the property is readable otherwise false
+     * 
+     * @test AbstractPropertyTest::testPropertyMotWriteable
      */
     public function isWriteable(): bool
     {
@@ -320,6 +418,8 @@ abstract class AbstractProperty
      * Returns the required capability to modify this property or null if none is required
      *
      * @return string|NULL
+     * 
+     * @test AbstractPropertyTest::testGetCapabilities
      */
     public function modifyCapability(): ?string
     {
@@ -331,6 +431,7 @@ abstract class AbstractProperty
      * Checks if this property is writeable. If not it raises an exception
      *
      * @throws PropertyNotWriteableException::class When this property is not writeable
+     * @test AbstractPropertyTest::testPropertyNotWriteable
      */
     private function checkIsWriteable()
     {
@@ -346,6 +447,8 @@ abstract class AbstractProperty
      * @param string $capability
      * @throws NoUserManagerInstalledException::class When no user manager is installed
      * @throws UserNotAuthorizedForWritingException::class When the current user is not authorized to write
+     * @test AbstractPropertyTest::testNoUserManagerInstalledWhileWriting()
+     * 
      */
     private function doCheckWriteCapability(string $capability)
     {
@@ -361,7 +464,8 @@ abstract class AbstractProperty
      * Checks if this property has any restrictions for writing at all and if yes if the
      * current user has this capability.
      *
-     * @throw
+     * @test AbstractPropertyTest::testUserNotAuthorizedForWriting()
+     * @test AbstractPropertyTest::testUserAuthorizedForWriting()
      */
     private function checkIsAuthorizedForWriting()
     {
@@ -376,6 +480,10 @@ abstract class AbstractProperty
     
     /**
      * Call this method before any writing attempts
+     * 
+     * @test AbstractPropertyTest::testPropertyNotWriteable
+     * @test AbstractPropertyTest::testUserNotAuthorizedForWriting()
+     * @test AbstractPropertyTest::testUserAuthorizedForWriting()
      */
     protected function checkForWriting()
     {
@@ -390,6 +498,8 @@ abstract class AbstractProperty
      * @param string $capability
      * @throws NoUserManagerInstalledException::class When no user manager is installed
      * @throws UserNotAuthorizedForWritingException::class When the current user is not authorized to write
+     * @test AbstractPropertyTest::testUserAuthorizedForModify
+     * @test AbstractPropertyTest::testUserNotAuthorizedForModify
      */
     private function doCheckModifyCapability(string $capability)
     {
@@ -397,7 +507,7 @@ abstract class AbstractProperty
             throw new NoUserManagerInstalledException("Property has a read restriction but no user manager is installed.");
         }
         if (!static::$current_usermanager_fascade::hasCapability($capability)) {
-            throw new UserNotAuthorizedForWritingException("The current user is not authorized to modify '".$this->_name."'");
+            throw new UserNotAuthorizedForModifyException("The current user is not authorized to modify '".$this->_name."'");
         }
     }
     
@@ -405,7 +515,8 @@ abstract class AbstractProperty
      * Checks if this property has any restrictions for modifying at all and if yes if the
      * current user has this capability.
      *
-     * @throw
+     * @test AbstractPropertyTest::testUserAuthorizedForModify
+     * @test AbstractPropertyTest::testUserNotAuthorizedForModify
      */
     private function checkIsAuthorizedForModify()
     {
@@ -420,10 +531,13 @@ abstract class AbstractProperty
     
     /**
      * Call this method before any modify attempts
+     * @test AbstractPropertyTest::testUserAuthorizedForModify
+     * @test AbstractPropertyTest::testUserNotAuthorizedForModify
+     * @test AbstractPropertyTest::testPropertyNoWriteableWhileModify
      */
     protected function checkForModify()
     {
-        $this->checkIsModifiable();
+        $this->checkIsWriteable();
         $this->checkIsAuthorizedForModify();
     }
     
@@ -432,6 +546,7 @@ abstract class AbstractProperty
      * a object instance even if only a id is passed. By default this method just passes the input data
      *
      * @param unknown $input
+     * @test AbstractPropertyTest::testDoSetValue
      */
     protected function doConvertToInput($input)
     {
@@ -441,13 +556,39 @@ abstract class AbstractProperty
     /**
      * Performs the writing process
      *
+     * @test AbstractPropertyTest::testDoSetValue  
      */
     protected function doSetValue($value)
     {
         $this->getStorage()->setValue($this->getName(), $this->doConvertToInput($value));
     }
     
-    abstract protected function validateInput($input);
+    /**
+     * Returns true, if the given value is accepted as an input value for this validator
+     *
+     * @param unknown $input The value to test
+     * @return bool true if valid otherwise false
+     * @test AbstractPropertyTest::testValidateInput  
+     */
+    abstract public function isValid($input): bool;
+    
+    /**
+     * Checks if the given input value is acceptes, If not it raises an exception
+     *
+     * @param unknown $input
+     * @throws InvalidValudException is thrown when the given valu is not valid
+     * @test AbstractPropertyTest::testValidateInput  
+     */
+    protected function validateInput($input)
+    {
+        if (!$this->isValid($input)) {
+            if (is_scalar($input)) {
+                throw new InvalidValueException("The value '$input' is not valid.");
+            } else {
+                throw new InvalidValueException("The value is not valuid.");
+            }
+        }
+    }
     
     /**
      * Checks the writing restrictions and if passed performs the writing
@@ -462,7 +603,7 @@ abstract class AbstractProperty
         } else {
             $this->checkForWriting();
         }
-        $this->validateInpout($value);
+        $this->validateInput($value);
         return $this->doSetValue($value);
     }
  
@@ -501,6 +642,22 @@ abstract class AbstractProperty
     }
     
     /**
+     * Returns ths suggested update frequency
+     * 
+     * The ressults mean:
+     * - ASAP = No caching suggested, always request value directly
+     * - second = A short time caching for a couple of seconds is possible
+     * - minute = Cache for about one minutze
+     * - hour = Cache for about one hour
+     * - late = The value doesn't change often, update only from time to time
+     * @return string
+     */
+    public function getUpdate(): string
+    {
+        return 'ASAP';    
+    }
+    
+    /**
      * Returns the access type of this property. The access type is the hint in the metadata how
      * this property could be processed. The access type is not equivalent to the type of the property
      * 
@@ -530,7 +687,7 @@ abstract class AbstractProperty
         $result['semantic'] = $this->getSemantic();
         $result['unit'] = $this->getUnit();
         $result['type'] = $this->getAccessType();
-        
+        $result['update'] = $this->getUpdate();
         return $result;
     }
     
