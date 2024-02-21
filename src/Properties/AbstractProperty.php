@@ -25,6 +25,7 @@ use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\Exceptions\InvalidValueException;
 use Illuminate\Support\Facades\Log;
 use Sunhill\ORM\Properties\Exceptions\UserNotAuthorizedForModifyException;
+use Sunhill\ORM\Properties\Exceptions\InvalidTypeOrSemanticException;
 
 abstract class AbstractProperty
 {
@@ -764,5 +765,53 @@ abstract class AbstractProperty
         }
         throw new PropertyException(static::class.": Unknown method '$method' called");
     }
-            
+    
+    /**
+     * Looks in the registered types. If the type is found returns its namespace otherwise null
+     * 
+     * @param string $type
+     * @return string|NULL
+     */
+    protected function getTypeNamespace(string $type): ?string
+    {
+        $types = inlcude('Types.php');
+        $type = strtolower($type);
+        
+        return isset($types[$type])?$types[$type]:null;
+    }
+    
+    /**
+     * Looks in the registered semantics. If the semangic it found returns its namespaxce otherwise null
+     * 
+     * @param string $semantic
+     * @return string|NULL
+     */
+    protected function getSemanticNamespace(string $semantic): ?string
+    {
+        $semantics = include('Semantics.php');
+        $semnatic = strtolower($semantic);
+        
+        return isset($semantics[$semantic])?$semantics[$semantic]:null;
+    }
+    
+    /**
+     * Returns a blank property with the given name or type
+     * 
+     * @param string $name
+     * @param string $type_or_semantic
+     * @return AbstractProperty
+     */
+    protected function getProperty(string $name, string $type_or_semantic = 'string'): AbstractProperty
+    {
+       $namespace = $this->getTypeNamespace($type_or_semantic)??$this->getSemanticNamespace($type_or_semantic);
+       
+       if (empty($namespace)) {
+            throw new InvalidTypeOrSemanticException("The given '$type_or_semantic' is neither a type nor a semantic");          
+       }
+       
+       $property = new $namespace();
+       $property->setName($name);
+       
+       return $property;
+    }
 }

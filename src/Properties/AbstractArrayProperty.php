@@ -17,16 +17,9 @@ use Sunhill\ORM\Properties\Exceptions\PropertyNotReadableException;
 use Sunhill\ORM\Properties\Exceptions\UserNotAuthorizedForReadingException;
 use Sunhill\ORM\Properties\Exceptions\NoUserManagerInstalledException;
 
-abstract class AbstractArrayProperty extends AbstractProperty
+abstract class AbstractArrayProperty extends AbstractProperty implements \ArrayAccess,\Countable,\Iterator
 {
-   
-    /**
-     * Returns the item count of this array
-     * 
-     * @return int
-     */
-    abstract public function count(): int;
-    
+       
     public function getAccessType(): string
     {
         return 'array';
