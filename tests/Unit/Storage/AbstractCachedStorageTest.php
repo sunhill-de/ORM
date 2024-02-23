@@ -22,6 +22,11 @@ class TestAbstractCachedStorage extends AbstractCachedStorage
         return true;
     }
     
+    public function getIsWriteable(string $name): bool
+    {
+        return true;
+    }
+    
     protected function doGetValue(string $name)
     {
         return $this->values[$name];
@@ -33,6 +38,11 @@ class TestAbstractCachedStorage extends AbstractCachedStorage
     }
     
     public function getWriteable(string $name): bool
+    {
+        return true;
+    }
+    
+    public function getIsInitialized(string $name): bool
     {
         return true;
     }

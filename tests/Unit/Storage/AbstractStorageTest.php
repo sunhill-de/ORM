@@ -39,6 +39,15 @@ class TestAbstractStorage extends AbstractStorage
         return null;
     }
     
+    public function getIsWriteable(string $name): bool
+    {
+        return true;
+    }
+    
+    public function getIsInitialized(string $name): bool
+    {
+        return true;
+    }
     protected function doSetValue(string $name, $value)
     {
         $this->values[$name] = $value;        

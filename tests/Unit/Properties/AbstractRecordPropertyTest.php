@@ -13,7 +13,12 @@ use Sunhill\ORM\Properties\AbstractRecordProperty;
 
 class NonAbstractRecordProperty extends AbstractRecordProperty
 {
+    public function isValid($test): bool
+    {
         
+    }
+    
+    
 }
 
 class AbstractRecordPropertyTest extends TestCase
