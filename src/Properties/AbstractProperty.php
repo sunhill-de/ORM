@@ -311,7 +311,7 @@ abstract class AbstractProperty
      */
     protected function doGetValue()
     {
-        return $this->getStorage()->getValue($this->getName());
+        return $this->formatFromStorage($this->getStorage()->getValue($this->getName()));
     }
     
     /**
@@ -543,25 +543,13 @@ abstract class AbstractProperty
     }
     
     /**
-     * Converts the input to an defined value to store. For example an object is returned as
-     * a object instance even if only a id is passed. By default this method just passes the input data
-     *
-     * @param unknown $input
-     * @test AbstractPropertyTest::testDoSetValue
-     */
-    protected function doConvertToInput($input)
-    {
-        return $input;
-    }
-    
-    /**
      * Performs the writing process
      *
      * @test AbstractPropertyTest::testDoSetValue  
      */
     protected function doSetValue($value)
     {
-        $this->getStorage()->setValue($this->getName(), $this->doConvertToInput($value));
+        $this->getStorage()->setValue($this->getName(), $this->formatForStorage($value));
     }
     
     /**

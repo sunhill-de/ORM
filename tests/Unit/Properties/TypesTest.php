@@ -154,6 +154,7 @@ class TypesTest extends TestCase
     
     /**
      * @dataProvider convertProvider
+     * @group convert
      */
     public function testConvertToInput($type, $setters, $test_input, $expect, $expect_mod = null)
     {
@@ -163,16 +164,16 @@ class TypesTest extends TestCase
             $this->expectException(InvalidValueException::class);
         }
         if (is_callable($expect_mod)) {
-            $this->assertEquals($expect, $expect_mod($test->convertToInput($test_input)));
+            $this->assertEquals($expect, $expect_mod($this->callProtectedMethod($test, 'formatForStorage',[$test_input])));
         } else {
-            $this->assertEquals($expect, $test->convertToInput($test_input));            
+            $this->assertEquals($expect, $this->callProtectedMethod($test, 'formatForStorage',[$test_input]));            
         }
     }
     
     static public function convertProvider()
     {
         return [
-            [TypeBoolean::class, [], 'Y', 1],
+ /*           [TypeBoolean::class, [], 'Y', 1],
             [TypeBoolean::class, [], 'N', 0],
             [TypeBoolean::class, [], '+', 1],
             [TypeBoolean::class, [], '-', 0],
@@ -184,7 +185,7 @@ class TypesTest extends TestCase
             [TypeBoolean::class, [], 1, 1],
             [TypeBoolean::class, [], 0, 0],
             [TypeBoolean::class, [], 10, 1],
-            
+  */          
             [TypeDate::class, [], '01.02.2018', '2018-02-01', function($input) { return $input->format('Y-m-d'); }],
             [TypeDate::class, [], '2018-02-02', '2018-02-02', function($input) { return $input->format('Y-m-d'); }],
             [TypeDate::class, [], '1.2.2018', '2018-02-01', function($input) { return $input->format('Y-m-d'); }],

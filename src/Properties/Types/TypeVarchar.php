@@ -104,7 +104,7 @@ class TypeVarchar extends AbstractSimpleProperty
      * {@inheritDoc}
      * @see \Sunhill\ORM\Properties\ValidatorBase::doConvertToInput()
      */
-    protected function doConvertToInput($input)
+    protected function formatForStorage($input)
     {
         return substr($input,0,$this->max_length);
     }

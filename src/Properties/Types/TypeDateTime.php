@@ -83,7 +83,7 @@ class TypeDateTime extends AbstractSimpleProperty
      * @param unknown $output
      * @return unknown,. by default just pass the value
      */
-    public function formatFromStorage($output)
+    protected function formatFromStorage($output)
     {
         return new \DateTime($output);
     }

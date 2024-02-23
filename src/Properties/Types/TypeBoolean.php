@@ -41,7 +41,7 @@ class TypeBoolean extends AbstractSimpleProperty
      * {@inheritDoc}
      * @see \Sunhill\ORM\Properties\ValidatorBase::doConvertToInput()
      */
-    protected function doConvertToInput($input)
+    protected function formatForStorage($input)
     {
         if (is_string($input)) {
             return $this->convertString($input);

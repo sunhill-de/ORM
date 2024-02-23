@@ -3,7 +3,7 @@
  * @file Property.php
  * Defines a property
  * Lang de,en
- * Reviewstatus: 2024-02-04
+ * Reviewstatus: 2023-05-08
  * Localization: complete
  * Documentation: complete
  * Tests: Unit/PropertyTest.php, Unit/PropertyValidateTest.php
@@ -19,8 +19,10 @@ use Sunhill\ORM\Properties\Exceptions\PropertyException;
 use Sunhill\ORM\Properties\Exceptions\InvalidNameException;
 use Sunhill\ORM\InfoMarket\Response;
 
-class Property 
+class Property extends Loggable
 {
+    
+    const FORBIDDEN_NAMES = ['object','string','integer','float','boolean','collection', 'id', 'classname'];
     
     protected $cache_philosophy = 'single';
     
@@ -120,6 +122,75 @@ class Property
     public function getActualPropertiesCollection()
     {
         return $this->actual_properties_collection;    
+    }
+    
+    // ******************************* Name handling ********************************
+    protected function checkName(string $name)
+    {
+        if (empty($name)) {
+            throw new InvalidNameException("The property name '$name' must not be empty.");            
+        }
+        if ($name[0] == '_') {
+            throw new InvalidNameException("The property name '$name' must not start with an underscore.");
+        }
+        if (in_array(strtolower($name), Property::FORBIDDEN_NAMES)) {
+            throw new InvalidNameException("The property name '$name' is reserved and not allowed.");
+        }
+    }
+    
+    /**
+     * The name of this property
+     * Property->getName() reads, Property->setName() writes
+     * @var string
+     */
+    protected $_name = "";
+    
+    /**
+     * sets the field Property->name
+     * @param $name The name of the property
+     * @return PropertyOld a reference to this to make setter chains possible
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function setName(string $name): Property
+    {
+        $this->checkName($name);
+        $this->_name = $name;
+        return $this;
+    }
+    
+    /**
+     * Skips the name checking (for system properties)
+     * @param string $name
+     * @return Proeprty
+     */
+    public function forceName(string $name): Property
+    {
+        $this->_name = $name;
+        return $this;
+    }
+    
+    /**
+     * Alias for setName()
+     *
+     * @param string $name
+     * @return PropertyOld
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function name(string $name): Property
+    {
+        return $this->setName($name);
+    }
+    
+    /**
+     * Returns the name of this property
+     *
+     * Test Unit/Properties/PropertyTest::testStandardGetters
+     */
+    public function getName(): ?string
+    {
+        return $this->_name;
     }
     
     // ============================== State-Handling ===========================================    
