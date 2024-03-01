@@ -695,6 +695,7 @@ abstract class AbstractProperty
     {
         $result = [];
         $result['semantic'] = $this->getSemantic();
+        $result['semantic_group'] = $this->getSemanticGroup();
         $result['unit'] = $this->getUnit();
         $result['type'] = $this->getAccessType();
         $result['update'] = $this->getUpdate();
