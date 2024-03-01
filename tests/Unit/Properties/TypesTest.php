@@ -16,6 +16,7 @@ use Sunhill\ORM\Properties\Types\TypeCollection;
 use Sunhill\ORM\Tests\Testobjects\DummyCollection;
 use Sunhill\ORM\Tests\Testobjects\ComplexCollection;
 use Sunhill\ORM\Tests\Testobjects\AnotherDummyCollection;
+use Sunhill\ORM\Tests\TestSupport\TestAbstractStorage;
 
 class TypesTest extends TestCase
 {
@@ -153,27 +154,125 @@ class TypesTest extends TestCase
     }
     
     /**
-     * @dataProvider convertProvider
-     * @group convert
+     * @dataProvider readStorageProvider
+     * @group read
      */
-    public function testConvertToInput($type, $setters, $test_input, $expect, $expect_mod = null)
+    public function testReadStorage($type, $setters, $test_value, $expect)
     {
         $test = $this->getTestType($type, $setters);
+        $test->setName('test');
         
-        if ($expect == 'except') {
-            $this->expectException(InvalidValueException::class);
-        }
-        if (is_callable($expect_mod)) {
-            $this->assertEquals($expect, $expect_mod($this->callProtectedMethod($test, 'formatForStorage',[$test_input])));
+        $storage = new TestAbstractStorage();
+        $storage->values['test'] = $test_value;
+        $test->setStorage($storage);
+        
+        if (is_callable($expect)) {
+            $this->assertTrue($expect($test->getValue()));
         } else {
-            $this->assertEquals($expect, $this->callProtectedMethod($test, 'formatForStorage',[$test_input]));            
+            $this->assertEquals($expect, $test->getValue());
         }
     }
     
-    static public function convertProvider()
+    static public function readStorageProvider()
     {
         return [
- /*           [TypeBoolean::class, [], 'Y', 1],
+            [TypeBoolean::class, [], 1, 1],
+            [TypeBoolean::class, [], 0, 0],
+            
+            [TypeDate::class, [], '2023-12-24', function($date) { return $date->format('Y-m-d') == '2023-12-24'; }],
+
+            [TypeDateTime::class, [], '2023-12-24 12:13:14', function($date) { return $date->format('Y-m-d H:i:s') == '2023-12-24 12:13:14'; }],
+            
+            [TypeEnum::class, ['EnumValues'=>['TestA','TestB']], 'TestA', 'TestA' ],
+            
+            [TypeFloat::class, [], 3.14, 3.14],            
+            [TypeFloat::class, ['Precision'=>1], 3.14, 3.14],
+            
+            [TypeInteger::class, [], 3, 3],
+            
+            [TypeText::class, [], 'Lorem ipsum','Lorem ipsum'],
+            
+            [TypeTime::class, [], '11:12:13', function($date) { return $date->format('H:i:s') == '11:12:13'; }],
+
+            [TypeVarchar::class, [], 'Lorem ipsum', 'Lorem ipsum'],
+        ];    
+    }
+    
+    /**
+     * @dataProvider readStorageHumanProvider
+     * @group readHuman
+     */
+    public function testReadStorageHuman($type, $setters, $test_value, $expect)
+    {
+        $test = $this->getTestType($type, $setters);
+        $test->setName('test');
+        
+        $storage = new TestAbstractStorage();
+        $storage->values['test'] = $test_value;
+        $test->setStorage($storage);
+        
+        if (is_callable($expect)) {
+            $this->assertTrue($expect($test->getHumanValue()));
+        } else {
+            $this->assertEquals($expect, $test->getHumanValue());
+        }
+    }
+    
+    static public function readStorageHumanProvider()
+    {
+        return [
+            [TypeBoolean::class, [], 1, 'true'],
+            [TypeBoolean::class, [], 0, 'false'],
+
+            [TypeDate::class, [], '2023-01-02', '2.1.2023'],
+            [TypeDate::class, [], '2023-01-02', '2.1.2023'],
+            
+            [TypeDateTime::class, [], '2023-01-02 11:12:13', '2.1.2023 11:12:13'],
+            
+            [TypeEnum::class, ['EnumValues'=>['TestA','TestB']], 'TestA', 'TestA' ],
+
+            [TypeFloat::class, [], 3.14, 3.14],
+            [TypeFloat::class, ['Precision'=>1], 3.14, 3.1],
+            [TypeFloat::class, ['Precision'=>1], 3.15, 3.2],
+
+            [TypeInteger::class, [], 3, 3],
+            
+            [TypeText::class, [], 'Lorem ipsum','Lorem ipsum'],
+
+            [TypeTime::class, [], '11:12:13', '11:12:13'],
+
+            [TypeVarchar::class, [], 'Lorem ipsum', 'Lorem ipsum'],
+            
+        ];
+    }
+    
+    /**
+     * @dataProvider writeStorageProvider
+     * @group write
+     */
+    public function testWriteStorage($type, $setters, $test_input, $expect)
+    {
+        $test = $this->getTestType($type, $setters);
+        $test->setName('test');
+        
+        $storage = new TestAbstractStorage();
+        $test->setStorage($storage);
+        if ($expect == 'except') {
+            $this->expectException(InvalidValueException::class);
+        }
+       
+        if (is_callable($test_input)) {
+            $test->setValue($test_input());
+        } else {
+            $test->setValue($test_input);
+        }
+        $this->assertEquals($expect, $storage->values['test']);
+    }
+    
+    static public function writeStorageProvider()
+    {
+        return [
+/*            [TypeBoolean::class, [], 'Y', 1],
             [TypeBoolean::class, [], 'N', 0],
             [TypeBoolean::class, [], '+', 1],
             [TypeBoolean::class, [], '-', 0],
@@ -185,21 +284,21 @@ class TypesTest extends TestCase
             [TypeBoolean::class, [], 1, 1],
             [TypeBoolean::class, [], 0, 0],
             [TypeBoolean::class, [], 10, 1],
-  */          
-            [TypeDate::class, [], '01.02.2018', '2018-02-01', function($input) { return $input->format('Y-m-d'); }],
-            [TypeDate::class, [], '2018-02-02', '2018-02-02', function($input) { return $input->format('Y-m-d'); }],
-            [TypeDate::class, [], '1.2.2018', '2018-02-01', function($input) { return $input->format('Y-m-d'); }],
-            [TypeDate::class, [], '2018-2-1', '2018-02-01', function($input) { return $input->format('Y-m-d'); }],
-            [TypeDate::class, [], 1686778521.3, '2023-06-14', function($input) { return $input->format('Y-m-d'); }],
-            [TypeDate::class, [], '2018-2', '2018-02-01', function($input) { return $input->format('Y-m-d'); }],
+            */
+            [TypeDate::class, [], '01.02.2018', '2018-02-01'],
+            [TypeDate::class, [], '2018-02-02', '2018-02-02'],
+            [TypeDate::class, [], '1.2.2018', '2018-02-01'],
+            [TypeDate::class, [], '2018-2-1', '2018-02-01'],
+            [TypeDate::class, [], 1686778521.3, '2023-06-14'],
+            [TypeDate::class, [], '2018-2', '2018-02-01'],
             [TypeDate::class, [], false, 'except'],
             [TypeDate::class, [], 'ABC', 'except'],
             [TypeDate::class, [], '', 'except'],
-            [TypeDate::class, [], 1686778521, '2023-06-14', function($input) { return $input->format('Y-m-d'); }],
+            [TypeDate::class, [], 1686778521, '2023-06-14'],
             
-            [TypeDatetime::class, [], '2018-02-01 11:11:11', '2018-02-01 11:11:11', function($input) { return $input->format('Y-m-d H:i:s'); }],
-            [TypeDatetime::class, [], '1.2.2018 11:11:11', '2018-02-01 11:11:11', function($input) { return $input->format('Y-m-d H:i:s'); }],
-            [TypeDateTime::class, [], 1686778521, '2023-06-14 21:35:21', function($input) { return $input->format('Y-m-d H:i:s'); }],
+            [TypeDatetime::class, [], '2018-02-01 11:11:11', '2018-02-01 11:11:11'],
+            [TypeDatetime::class, [], '1.2.2018 11:11:11', '2018-02-01 11:11:11'],
+            [TypeDateTime::class, [], 1686778521, '2023-06-14 21:35:21'],
             
             [TypeEnum::class, ['EnumValues'=>['TestA','TestB']], 'TestA', 'TestA'],
             
@@ -227,4 +326,5 @@ class TypesTest extends TestCase
             [TypeVarchar::class,['MaxLen'=>2,'LengthExceedPolicy'=>'invalid'],'Test','except']
         ];
     }
+    
 }
