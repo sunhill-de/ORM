@@ -29,7 +29,7 @@ class TypeDate extends TypeDateTime
     
     protected function formatForHuman($input)
     {
-        return $input->format('d.m.Y');    
+        return $input->format('j.n.Y');    
     }
     
     public function getAccessType(): string

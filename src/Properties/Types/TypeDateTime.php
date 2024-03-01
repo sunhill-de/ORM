@@ -50,7 +50,7 @@ class TypeDateTime extends AbstractSimpleProperty
      * {@inheritDoc}
      * @see \Sunhill\ORM\Properties\ValidatorBase::doConvertToInput()
      */
-    protected function doConvertToInput($input)
+    protected function formatFromInput($input)
     {
         if (is_a($input, \DateTime::class)) {
             return $input;
@@ -74,7 +74,7 @@ class TypeDateTime extends AbstractSimpleProperty
     
     protected function formatForHuman($input)
     {
-        return $input->format('d.m.Y H:i:s');
+        return $input->format('j.n.Y H:i:s');
     }
     
     /**

@@ -49,6 +49,15 @@ class TypeBoolean extends AbstractSimpleProperty
         return empty($input)?0:1;
     }
 
+    protected function formatForHuman($input)
+    {
+        if ($input) {
+            return __('true');
+        } else {
+            return __('false');
+        }
+    }
+    
     public function getAccessType(): string
     {
         return 'boolean';
