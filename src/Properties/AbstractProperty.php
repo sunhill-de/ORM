@@ -543,13 +543,24 @@ abstract class AbstractProperty
     }
     
     /**
+     * Sometimes a property accepts several different input types. With this method those inputs
+     * can be normalized
+     * @param unknown $input
+     * @return unknown
+     */
+    protected function formatFromInput($input)
+    {
+        return $input;    
+    }
+    
+    /**
      * Performs the writing process
      *
      * @test AbstractPropertyTest::testDoSetValue  
      */
     protected function doSetValue($value)
     {
-        $this->getStorage()->setValue($this->getName(), $this->formatForStorage($value));
+        $this->getStorage()->setValue($this->getName(), $this->formatForStorage($this->formatFromInput($value)));
     }
     
     /**
