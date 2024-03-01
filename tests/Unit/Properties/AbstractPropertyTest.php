@@ -41,7 +41,7 @@ class NonAbstractProperty extends AbstractProperty
         return $this->is_valid;
     }
     
-    protected function doConvertToInput($input)
+    protected function formatFromInput($input)
     {
         return 'Input'.$input;
     }
