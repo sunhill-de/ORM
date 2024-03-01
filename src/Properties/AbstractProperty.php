@@ -632,6 +632,16 @@ abstract class AbstractProperty
     }
     
     /**
+     * Returns the group of the semantic of this property (like time, distance, area, etc.)
+     * 
+     * @return string
+     */
+    public function getSemanticGroup(): string
+    {
+        return 'none';    
+    }
+    
+    /**
      * Returns the unique id string for the unit of this property
      * 
      * @return string
